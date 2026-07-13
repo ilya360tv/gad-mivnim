@@ -19,7 +19,6 @@
     /* ----- מסך פתיחה ----- */
     welcome_title: { he: 'ברוכים הבאים לאתר הבית שלנו', ru: 'Добро пожаловать на наш домашний сайт', en: 'Welcome to Our Home Site' },
     welcome_slogan: { he: 'בכל מקום במפה', ru: 'везде на карте', en: 'Everywhere on the Map' },
-    welcome_soon: { he: 'בקרוב', ru: 'Скоро', en: 'Soon' },
     welcome_enter: { he: 'כניסה לאתר', ru: 'Вход на сайт', en: 'Enter Site' },
 
     /* ----- ניווט ----- */
@@ -39,7 +38,6 @@
     hero_showroom: { he: 'לרשותכם אולם תצוגה לתצוגות בנייה ועיצובים', ru: 'К вашим услугам шоурум строительства и дизайна', en: 'A construction & design showroom at your service' },
     hero_location: { he: 'הרצליה ישראל | HERZLIYA ISRAEL', ru: 'הרצליה ישראל | HERZLIYA ISRAEL', en: 'הרצליה ישראל | HERZLIYA ISRAEL' },
     hero_podcast:  { he: 'פודקאסט | קבלנים משתפים', ru: 'Подкаст | Подрядчики делятся', en: 'Podcast | Contractors Share' },
-    podcast_soon:  { he: 'בקרוב', ru: 'Скоро', en: 'Coming Soon' },
 
     /* ----- אודות הקבוצה ----- */
     about_eyebrow: { he: 'אודות הקבוצה', ru: 'О группе', en: 'About the Group' },
@@ -234,6 +232,8 @@
 
     var label = document.getElementById('langLabel');
     if (label) { label.textContent = NATIVE[lang]; }
+    var flag = document.getElementById('langFlag');
+    if (flag) { flag.className = 'flag flag-' + lang; }
     document.querySelectorAll('#langMenu [data-lang]').forEach(function (b) {
       b.classList.toggle('is-active', b.getAttribute('data-lang') === lang);
     });
