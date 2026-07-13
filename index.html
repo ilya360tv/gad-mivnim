@@ -66,14 +66,20 @@
   <header class="site-header">
     <div class="container header-inner">
 
-      <!-- לוגו -->
-      <a href="#hero" class="logo">
+      <!-- ימין ויזואלי: כפתור המבורגר — בכל הגדלים -->
+      <button class="nav-toggle" id="navToggle" type="button"
+              aria-label="Menu" aria-expanded="false" aria-controls="mainNav">
+        <span></span><span></span><span></span>
+      </button>
+
+      <!-- מרכז: הלוגו העגול — קישור לדף הבית -->
+      <a href="#hero" class="logo" aria-label="GAD MIVNIM — דף הבית">
         <img src="images/image2.jpeg" alt="GAD MIVNIM" class="logo-img" decoding="async">
-        <span class="logo-text">GAD MIVNIM</span>
       </a>
 
-      <!-- פעולות: בורר שפה + כפתור המבורגר -->
-      <div class="header-actions">
+      <!-- שמאל ויזואלי: שם המותג + בורר שפה -->
+      <div class="header-side">
+        <span class="logo-text">GAD MIVNIM</span>
         <div class="lang-switch" id="langSwitch">
           <button class="lang-btn" id="langBtn" type="button" aria-haspopup="true" aria-expanded="false">
             <span class="flag flag-he" id="langFlag" aria-hidden="true"></span>
@@ -85,11 +91,6 @@
             <li><button type="button" data-lang="ru"><span class="flag flag-ru" aria-hidden="true"></span> Русский</button></li>
           </ul>
         </div>
-
-        <button class="nav-toggle" id="navToggle" type="button"
-                aria-label="Menu" aria-expanded="false" aria-controls="mainNav">
-          <span></span><span></span><span></span>
-        </button>
       </div>
     </div>
 
