@@ -2790,3 +2790,43 @@ a, button { transition: color .18s ease, background-color .18s ease, border-colo
 
 /* placeholder קריא על שדות הקלט הכהים (ניגודיות AA) */
 .form-field input::placeholder { color: #8d97a1; opacity: 1; }
+
+/* ==========================================================================
+   MOBILE RESPONSIVENESS PASS — התאמות גודל בלבד (עיצוב ותוכן ללא שינוי)
+   ========================================================================== */
+
+/* טקסטים קטנים מ-16px — מוגדלים בטלפונים ובטאבלטים */
+@media (max-width: 1024px) {
+  .section-eyebrow { font-size: .9rem; }
+  .project-tag     { font-size: .9rem; }
+  .footer-copy     { font-size: .9rem; }
+}
+
+@media (max-width: 560px) {
+  .lang-btn { font-size: .9rem; } /* דורס את ההקטנה הישנה — נשאר קריא */
+}
+
+/* מסך הפתיחה בטלפונים צרים (≤400px): כיווץ עדין נוסף —
+   הטקסטים נשברים שם לשתי שורות והתוכן גלש מעבר למסך אחד */
+@media (max-width: 400px) {
+  .wg { gap: clamp(5px, 1vh, 12px); }
+
+  .wg-title { font-size: clamp(1.05rem, 2.4vh, 1.5rem); }
+
+  .wg-logo {
+    width: clamp(52px, 9vh, 96px);
+    height: clamp(52px, 9vh, 96px);
+    width: clamp(52px, 9svh, 96px);
+    height: clamp(52px, 9svh, 96px);
+  }
+
+  .wg-brand .wg-img {
+    height: clamp(70px, 12vh, 140px);
+    height: clamp(70px, 12svh, 140px);
+  }
+
+  .wg-rounded {
+    height: clamp(76px, 13.5vh, 150px);
+    height: clamp(76px, 13.5svh, 150px);
+  }
+}
