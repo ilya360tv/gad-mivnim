@@ -2939,3 +2939,43 @@ a, button { transition: color .18s ease, background-color .18s ease, border-colo
 @media (max-width: 700px) {
   .logo-text { display: none; }
 }
+
+/* ==========================================================================
+   CENTERED HEADINGS — מרכוז כותרות הסקשנים בכל האתר
+   (מאפיינים לוגיים — עובד זהה בעברית, אנגלית ורוסית)
+   ========================================================================== */
+
+/* התווית הקטנה (eyebrow) — בלוק מכווץ וממורכז, שומר על הקו המקדים */
+.section-eyebrow {
+  display: flex;
+  width: fit-content;
+  margin-inline: auto;
+}
+
+/* הכותרת הראשית — ממורכזת */
+.section-title { text-align: center; }
+
+/* קו ההדגשה הירוק מתחת לכותרת — ממורכז מתחתיה */
+.section-title::after {
+  inset-inline: 0;
+  margin-inline: auto;
+}
+
+/* פסקת הפתיחה — שומרת על רוחב מקסימלי אך ממורכזת כבלוק וכטקסט */
+.section-lead {
+  text-align: center;
+  margin-inline: auto;
+}
+
+/* כותרות החטיבות בסקשן השירותים — ממורכזות כקבוצה */
+.division-head {
+  width: fit-content;
+  margin-inline: auto;
+  text-align: center;
+}
+
+/* שורת הפילטרים של הפרויקטים — ממורכזת, מיושרת לכותרת */
+.filters { justify-content: center; }
+
+/* "לקוחות יקרים" — יושבת בין הכותרת לפסקה הממורכזות, מיושרת אליהן */
+.contact-dear { text-align: center; }
