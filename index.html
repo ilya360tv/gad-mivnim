@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GAD MIVNIM | גד מבנים — בכל מקום במפה</title>
+  <meta name="description" content="GAD MIVNIM (גד מבנים) — בכל מקום במפה. משנים את הדרך לבנייה נכונה !">
+
+  <!-- מסמן שיש JavaScript — מונע הבהוב באנימציות הגלילה -->
+  <script>document.documentElement.classList.add('has-js');</script>
+
+  <!-- פונט Rubik — תומך עברית, לטינית וקירילית (רוסית) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;900&family=Frank+Ruhl+Libre:wght@500;700;900&display=swap" rel="stylesheet">
+
+  <!-- העיצוב שלנו -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <a class="skip-link" href="#main">דילוג לתוכן</a>
+
+  <!-- ===== מסך פתיחה (Welcome) — העתק נאמן של העמוד הראשון במסמך ===== -->
+  <div class="welcome" id="welcome" role="dialog" aria-label="Welcome">
+    <div class="wg">
+
+      <!-- 1) כותרת עליונה -->
+      <p class="wg-title" data-i18n="welcome_title">ברוכים הבאים לאתר הבית שלנו</p>
+
+      <!-- 2) ימין למעלה: אולם התצוגה הירוק + GAD MIVNIM -->
+      <div class="wg-cell wg-brand">
+        <img class="wg-img" src="images/image1.jpeg" alt="" decoding="async">
+        <p class="wg-gad" dir="ltr"><span class="wg-g-cyan">G</span>A<span class="wg-g-green">D</span> MIVNIM</p>
+        <p class="wg-slogan" data-i18n="welcome_slogan">בכל מקום במפה</p>
+      </div>
+
+      <!-- 3) שמאל למעלה: לוגו + משנים את הדרך -->
+      <div class="wg-cell wg-logo-cell">
+        <img class="wg-logo" src="images/image2.jpeg" alt="GAD MIVNIM" decoding="async">
+        <p class="wg-way" data-i18n="hero_subtitle">משנים את הדרך לבנייה נכונה !</p>
+      </div>
+
+      <!-- 4) שורה חוצה -->
+      <p class="wg-mid" data-i18n="hero_showroom">לרשותכם אולם תצוגה לתצוגות בנייה ועיצובים</p>
+
+      <!-- 5) שמאל למטה: הדמיית האולם הכחול + הרצליה -->
+      <div class="wg-cell wg-render">
+        <img class="wg-img wg-rounded" src="images/image13.jpeg" alt="" decoding="async">
+        <p class="wg-location" data-i18n="hero_location">הרצליה ישראל | HERZLIYA ISRAEL</p>
+      </div>
+
+      <!-- 6) ימין למטה: הגיטרות + פודקאסט -->
+      <div class="wg-cell wg-podcast">
+        <img class="wg-img wg-rounded" src="images/image3.png" alt="" decoding="async">
+        <p class="wg-pod-line"><span data-i18n="hero_podcast">פודקאסט | קבלנים משתפים</span> <span class="wg-soon" data-i18n="welcome_soon">בקרוב</span></p>
+      </div>
+
+      <!-- 7) כפתור כניסה — המסך לא נסגר לבד -->
+      <button class="wg-enter" type="button" data-i18n="welcome_enter">כניסה לאתר</button>
+
+    </div>
+  </div>
+
+  <!-- ===== Header / תפריט ניווט ===== -->
+  <header class="site-header">
+    <div class="container header-inner">
+
+      <!-- לוגו -->
+      <a href="#hero" class="logo">
+        <img src="images/image2.jpeg" alt="GAD MIVNIM" class="logo-img" decoding="async">
+        <span class="logo-text">GAD MIVNIM</span>
+      </a>
+
+      <!-- פעולות: בורר שפה + כפתור המבורגר -->
+      <div class="header-actions">
+        <div class="lang-switch" id="langSwitch">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="true" aria-expanded="false">
+            <span id="langLabel">עברית</span> <span class="lang-caret">▾</span>
+          </button>
+          <ul class="lang-menu" id="langMenu" hidden>
+            <li><button type="button" data-lang="he">עברית</button></li>
+            <li><button type="button" data-lang="en">English</button></li>
+            <li><button type="button" data-lang="ru">Русский</button></li>
+          </ul>
+        </div>
+
+        <button class="nav-toggle" id="navToggle" type="button"
+                aria-label="Menu" aria-expanded="false" aria-controls="mainNav">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ניווט — בסדר של מסמך המקור -->
+    <nav class="main-nav" id="mainNav" aria-label="Main menu">
+      <ul class="container">
+        <li><a href="#hero"     data-i18n="nav_home">דף הבית</a></li>
+        <li><a href="#about"    data-i18n="nav_about">אודות הקבוצה — מסורת משפחתית</a></li>
+        <li><a href="#services" data-i18n="nav_services">השירותים שלנו</a></li>
+        <li><a href="#projects" data-i18n="nav_projects">הפרויקטים שלנו</a></li>
+        <li><a href="#partners" data-i18n="nav_partners">השותפים שלנו</a></li>
+        <li><a href="#teams"    data-i18n="nav_teams">הצוותים שלנו</a></li>
+        <li><a href="#gallery"  data-i18n="nav_gallery">גלריה בנייה ועיצובים</a></li>
+        <li><a href="#info"     data-i18n="nav_info">מידע לאזרח ולבונה</a></li>
+        <li><a href="#contact" class="nav-cta" data-i18n="nav_contact">צור קשר</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main">
+
+  <!-- ===== Hero ===== -->
+  <section id="hero" class="hero">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-overlay"></div>
+    <div class="container hero-content">
+      <h1 class="hero-title reveal" data-i18n="hero_title">GAD MIVNIM — בכל מקום במפה</h1>
+      <p class="hero-subtitle reveal reveal-d1" data-i18n="hero_subtitle">משנים את הדרך לבנייה נכונה !</p>
+      <p class="hero-showroom reveal reveal-d2" data-i18n="hero_showroom">לרשותכם אולם תצוגה לתצוגות בנייה ועיצובים</p>
+      <p class="hero-location reveal reveal-d2" data-i18n="hero_location">הרצליה ישראל | HERZLIYA ISRAEL</p>
+      <div class="hero-actions reveal reveal-d3">
+        <a href="#contact" class="btn btn-primary" data-i18n="nav_contact">צור קשר</a>
+        <span class="hero-chip" data-i18n="hero_podcast">פודקאסט | קבלנים משתפים</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== אודות הקבוצה — מסורת משפחתית ===== -->
+  <section id="about" class="section about">
+    <div class="container">
+      <span class="section-eyebrow reveal" data-i18n="about_eyebrow">אודות הקבוצה</span>
+      <h2 class="section-title reveal reveal-d1" data-i18n="about_title">מסורת משפחתית</h2>
+
+      <div class="about-grid">
+        <div class="about-text reveal reveal-d1">
+          <p class="about-strong" data-i18n="about_p1">מייסד הקבוצה והשותפים למלאכה</p>
+          <p data-i18n="about_p2">מדוע נולד הרעיון לאחד את הבנייה והעיצובים לבית אחד ולקבוצה שמנצחת על הכל !</p>
+          <p class="about-tags"><span class="about-tag" data-i18n="about_since">מאז ועד היום</span> <span class="about-tag" data-i18n="about_country">המדינה שלנו</span></p>
+          <p data-i18n="about_p3">את ערכי היסוד האיכות המקצועיות והיחס המשפחתי והאישי בחרנו כבחירה לאבני היסוד של הקבוצה</p>
+          <p data-i18n="about_p4">החברה דוגלת בעבודה שיתופית מלאה</p>
+          <p data-i18n="about_p5">ורק ככה נצליח לבנות את ביתנו בהצלחה רבה</p>
+          <p class="about-strong"><span data-i18n="about_p6">בחירתנו היא שותפות מלאה</span> — <span data-i18n="about_p7">לקבלת תוצאות שלא פחות ממצוינות</span></p>
+          <p class="about-quote" data-i18n="about_p8">אווירת שירות משפחתית ואישית לכל לקוח</p>
+        </div>
+
+        <div class="about-media reveal reveal-d2">
+          <img src="images/image19.jpeg" alt="מאז ועד היום" loading="lazy" decoding="async">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== השירותים שלנו ===== -->
+  <section id="services" class="section services">
+    <div class="container">
+      <span class="section-eyebrow reveal" data-i18n="svc_eyebrow">השירותים שלנו</span>
+      <h2 class="section-title reveal reveal-d1" data-i18n="svc_lead">רמת תכנון תיאום ניהול פיקוח וביצוע מהגבוהות ביותר !</h2>
+      <div class="badges-row reveal reveal-d2">
+        <span class="badge-chip" data-i18n="svc_b1">אבטחה סגורה מעגל סגור 24/7</span>
+        <span class="badge-chip" data-i18n="svc_b2">סובב פרויקטים</span>
+        <span class="badge-chip" data-i18n="svc_b3">מתאמים לכם פרויקט מושלם</span>
+        <span class="badge-chip" data-i18n="svc_b4">חשיבה מחוץ לקופסא</span>
+      </div>
+
+      <!-- חטיבה 1: תכנון והנדסת בנייה -->
+      <div class="division">
+        <div class="division-head reveal">
+          <h3 class="division-title" data-i18n="d1_title">חטיבת תכנון והנדסת בנייה</h3>
+          <p class="division-slogan" data-i18n="d1_slogan">תכנון נכון , חיסכון מוכח</p>
+        </div>
+        <div class="cards-grid reveal-group">
+          <article class="card">
+            <div class="card-media"><img src="images/image7.jpeg" alt="" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h4 class="card-title" data-i18n="c11">תאום פרויקטים</h4>
+              <p class="card-tagline" data-i18n="c11s">מתאמים אתכם פרויקט מושלם</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-media"><img src="images/image54.jpeg" alt="" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h4 class="card-title" data-i18n="c12">תכנון וליווי פרויקטים</h4>
+              <p class="card-tagline" data-i18n="c12s">מתכננים ומלווים אתכם בשותפות מלאה</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-media"><img src="images/image24.jpeg" alt="" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h4 class="card-title" data-i18n="c13">אדריכלות והנדסת מבנים</h4>
+              <p class="card-tagline" data-i18n="c13s">נוגעים בפרטים הקטנים</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-media"><img src="images/image26.jpeg" alt="" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h4 class="card-title" data-i18n="c14">עיצוב פנים והדמיות</h4>
+              <p class="card-tagline" data-i18n="c14s">השלב הכי כיפי והמאתגר בפרויקט</p>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- חטיבה 2: בינוי ותשתיות -->
+      <div class="division">
+        <div class="division-head reveal">
+          <h3 class="division-title" data-i18n="d2_title">חטיבת בינוי ותשתיות</h3>
+          <p class="division-slogan" data-i18n="d2_slogan">בונים אתכם מבנה נכון</p>
+        </div>
+        <div class="cards-grid reveal-group">
+          <article class="card">
+            <div class="card-media"><img src="images/image28.jpeg" alt="" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h4 class="card-title" data-i18n="c21">בנייה והרחבות מבנים</h4>
+              <p class="card-tagline" data-i18n="c21s">מבנה חדש נולד !</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-media"><img src="images/image55.jpeg" alt="" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h4 class="card-title" data-i18n="c22">שיקום שחזור ושימור מבנים</h4>
+              <p class="card-tagline" data-i18n="c22s">חובה לשמור על המבנה שלנו</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-media"><img src="images/image11.png" alt="" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h4 class="card-title" data-i18n="c23">שיפוצים והשבחת נכסים</h4>
+              <p class="card-tagline" data-i18n="c23s">נצייר לכם ציור חדש !</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-media"><img src="images/image31.jpeg" alt="" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h4 class="card-title" data-i18n="c24">ליקויי בנייה</h4>
+              <p class="card-tagline" data-i18n="c24s">נתקן את זה !</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-media"><img src="images/image29.jpeg" alt="" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h4 class="card-title" data-i18n="c25">תשתיות ופיתוח</h4>
+              <p class="card-tagline" data-i18n="c25s">הכל מתחיל ביסודות טובים</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-media"><img src="images/image35.jpeg" alt="" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h4 class="card-title" data-i18n="c26">אספלט וכבישים</h4>
+              <p class="card-tagline" data-i18n="c26s">גם הכבשים צריכים להיות מושלמים</p>
+              <p class="card-tagline" data-i18n="c26s2">חובה לשמור על בטיחות בדרכים !</p>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- חטיבה 3: שותפויות נדל"ן -->
+      <div class="division">
+        <div class="division-head reveal">
+          <h3 class="division-title" data-i18n="d3_title">חטיבת שותפויות נדל"ן</h3>
+          <p class="division-slogan" data-i18n="d3_slogan">עושים שותפות מתוך כבוד הדדי וערכים משפחתיים</p>
+          <p class="division-extra" data-i18n="d3_extra">אתם זה אנחנו !  ואנחנו זה אתם !  משפחה !</p>
+        </div>
+        <div class="cards-grid reveal-group">
+          <article class="card">
+            <div class="card-media"><img src="images/image36.png" alt="" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h4 class="card-title" data-i18n="c31">תמ"א 38</h4>
+              <p class="card-tagline" data-i18n="c31s">נעשה את זה ביחד ובהצלחה גדולה</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-media"><img src="images/image37.jpeg" alt="" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h4 class="card-title" data-i18n="c32">פינוי בינוי</h4>
+              <p class="card-tagline" data-i18n="c32s">תמיד כיף לקבל חדש !</p>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- חטיבה 4: השירותים שלנו -->
+      <div class="division">
+        <div class="division-head reveal">
+          <h3 class="division-title" data-i18n="d4_title">חטיבת השירותים שלנו</h3>
+          <p class="division-slogan" data-i18n="d4_slogan">שירות מכל הלב</p>
+          <p class="division-extra" data-i18n="d4_extra">ישראל שלנו  הארץ שלנו</p>
+        </div>
+        <div class="cards-grid reveal-group">
+          <article class="card">
+            <div class="card-media"><img src="images/image39.jpeg" alt="" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h4 class="card-title" data-i18n="c41">מערכות בידוד ואיטום</h4>
+              <p class="card-tagline" data-i18n="c41s">תמיד חשוב מבנה יבש</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-media"><img src="images/image41.jpeg" alt="" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h4 class="card-title" data-i18n="c42">עבודות בגבהים</h4>
+              <p class="card-tagline" data-i18n="c42s">פותרים לכם את הגובה</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-media"><img src="images/image43.jpeg" alt="" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h4 class="card-title" data-i18n="c43">ניקוי חול והתזות</h4>
+              <p class="card-tagline" data-i18n="c43s">תנקו אותי כבר</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-media"><img src="images/image44.jpeg" alt="" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h4 class="card-title" data-i18n="c44">גגות רעפים ופרגולות</h4>
+              <p class="card-tagline" data-i18n="c44s">יצירות עץ מושלמות</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-media"><img src="images/image46.jpeg" alt="" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h4 class="card-title" data-i18n="c45">גננות ופיתוח סבבתי</h4>
+              <p class="card-tagline" data-i18n="c45s">לכל גינה אופי משלה</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-media"><img src="images/image47.jpeg" alt="" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h4 class="card-title" data-i18n="c46">גבס ודקורציה</h4>
+              <p class="card-tagline" data-i18n="c46s">מעצבים יצירות</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-media"><img src="images/image49.jpeg" alt="" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h4 class="card-title" data-i18n="c47">צבע וציפויים</h4>
+              <p class="card-tagline" data-i18n="c47s">לכם רק נשאר לבחור את הצבע</p>
+              <p class="card-tagline" data-i18n="c47s2">איזה ריח טוב</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-media"><img src="images/image50.jpeg" alt="" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h4 class="card-title" data-i18n="c48">אינסטלציה וביוב</h4>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-media"><img src="images/image52.jpeg" alt="" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h4 class="card-title" data-i18n="c49">חשמל ותקשורת</h4>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- חטיבה 5: המיוחדים שלנו -->
+      <div class="division">
+        <div class="division-head reveal">
+          <h3 class="division-title" data-i18n="d5_title">חטיבת המיוחדים שלנו</h3>
+          <p class="division-slogan" data-i18n="d5_slogan">מובילים שינוי למבנה שלכם !</p>
+        </div>
+        <div class="cards-grid reveal-group">
+          <article class="card">
+            <div class="card-media"><img src="images/image53.jpeg" alt="" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h4 class="card-title" data-i18n="c51">ניהול ואחזקת מבני מגורים ומסחר</h4>
+              <p class="card-tagline" data-i18n="c51s">משנים אתכם דרך לתחזוקה נכונה</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-media"><img src="images/image58.jpeg" alt="" loading="lazy" decoding="async"></div>
+            <div class="card-body">
+              <h4 class="card-title" data-i18n="c52">תיווך נכסים</h4>
+            </div>
+          </article>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== הפרויקטים שלנו ===== -->
+  <section id="projects" class="section projects">
+    <div class="container">
+      <span class="section-eyebrow reveal" data-i18n="proj_eyebrow">הפרויקטים שלנו</span>
+      <h2 class="section-title reveal reveal-d1" data-i18n="proj_eyebrow">הפרויקטים שלנו</h2>
+
+      <div class="filters reveal" role="tablist" aria-label="Project filters">
+        <button class="filter-btn is-active" data-filter="all"      data-i18n="filter_all">הכל</button>
+        <button class="filter-btn"           data-filter="private"  data-i18n="filter_private">מגזר פרטי</button>
+        <button class="filter-btn"           data-filter="business" data-i18n="filter_business">מגזר עסקי</button>
+      </div>
+
+      <div class="projects-grid reveal-group">
+        <article class="project-item" data-category="business">
+          <img src="images/image57.jpeg" alt="" loading="lazy" decoding="async">
+          <div class="project-info">
+            <span class="project-tag" data-i18n="filter_business">מגזר עסקי</span>
+            <h3 data-i18n="p1">יזמות ונדל"ן</h3>
+          </div>
+        </article>
+        <article class="project-item" data-category="private">
+          <img src="images/image8.png" alt="" loading="lazy" decoding="async">
+          <div class="project-info">
+            <span class="project-tag" data-i18n="filter_private">מגזר פרטי</span>
+            <h3 data-i18n="p2">שותפויות נדל"ן</h3>
+          </div>
+        </article>
+        <article class="project-item" data-category="private">
+          <img src="images/image77.jpeg" alt="" loading="lazy" decoding="async">
+          <div class="project-info">
+            <span class="project-tag" data-i18n="filter_private">מגזר פרטי</span>
+            <h3 data-i18n="p3">מבנים פרטיים</h3>
+          </div>
+        </article>
+        <article class="project-item" data-category="business">
+          <img src="images/image89.jpeg" alt="" loading="lazy" decoding="async">
+          <div class="project-info">
+            <span class="project-tag" data-i18n="filter_business">מגזר עסקי</span>
+            <h3 data-i18n="p4">מבנים ציבוריים</h3>
+          </div>
+        </article>
+        <article class="project-item" data-category="business">
+          <img src="images/image15.jpeg" alt="" loading="lazy" decoding="async">
+          <div class="project-info">
+            <span class="project-tag" data-i18n="filter_business">מגזר עסקי</span>
+            <h3 data-i18n="p5">מבני מסחר וקניות</h3>
+          </div>
+        </article>
+        <article class="project-item" data-category="business">
+          <img src="images/image1.jpeg" alt="" loading="lazy" decoding="async">
+          <div class="project-info">
+            <span class="project-tag" data-i18n="filter_business">מגזר עסקי</span>
+            <h3 data-i18n="p6">קניונים</h3>
+          </div>
+        </article>
+        <article class="project-item" data-category="business">
+          <img src="images/image104.jpeg" alt="" loading="lazy" decoding="async">
+          <div class="project-info">
+            <span class="project-tag" data-i18n="filter_business">מגזר עסקי</span>
+            <h3 data-i18n="p7">בתי מלונות</h3>
+          </div>
+        </article>
+        <article class="project-item" data-category="private">
+          <img src="images/image76.jpeg" alt="" loading="lazy" decoding="async">
+          <div class="project-info">
+            <span class="project-tag" data-i18n="filter_private">מגזר פרטי</span>
+            <h3 data-i18n="p8">בתי אב</h3>
+          </div>
+        </article>
+        <article class="project-item" data-category="business">
+          <img src="images/image98.jpeg" alt="" loading="lazy" decoding="async">
+          <div class="project-info">
+            <span class="project-tag" data-i18n="filter_business">מגזר עסקי</span>
+            <h3 data-i18n="p9">מבנים מיוחדים</h3>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== חטיבת השותפים שלנו ===== -->
+  <section id="partners" class="section partners">
+    <div class="container">
+      <span class="section-eyebrow reveal" data-i18n="partners_eyebrow">השותפים שלנו</span>
+      <h2 class="section-title reveal reveal-d1"><span data-i18n="partners_title">חטיבת השותפים שלנו</span> — <span data-i18n="partners_sub">המותגים והחברות המובלים בישראל</span></h2>
+      <div class="badges-row reveal reveal-d2">
+        <span class="badge-chip" data-i18n="partners_badge">המותגים המובלים</span>
+        <span class="badge-chip" data-i18n="partners_lead">בית טוב זה משפחה</span>
+      </div>
+
+      <div class="partners-grid reveal-group">
+        <div class="partner-chip"><strong data-i18n="pt1">מטבחים</strong><span data-i18n="pt1s">המטבח זה הלב של הבית</span></div>
+        <div class="partner-chip"><strong data-i18n="pt2">נגרות בהתאמה אישית</strong><span data-i18n="pt2s">יוצרים אתכם אומנות חדשה</span></div>
+        <div class="partner-chip"><strong data-i18n="pt3">רהיטים מעוצבים</strong><span data-i18n="pt3s">מצאתי את הרהיט החדש שלי</span></div>
+        <div class="partner-chip"><strong data-i18n="pt4">ריצוף וחיפויים</strong><span data-i18n="pt4s">בחירה נכונה משנה את סגנון הבית והמבנה שלנו</span></div>
+        <div class="partner-chip"><strong data-i18n="pt5">משטחים</strong></div>
+        <div class="partner-chip"><strong data-i18n="pt6">פרקטיים</strong></div>
+        <div class="partner-chip"><strong data-i18n="pt7">צבעיים וציפויים</strong></div>
+        <div class="partner-chip"><strong data-i18n="pt8">כלים סניטריים</strong></div>
+        <div class="partner-chip"><strong data-i18n="pt9">ריהוט ואבזרי אמבט</strong></div>
+        <div class="partner-chip"><strong data-i18n="pt10">תאורה</strong><span data-i18n="pt10s">אור מביא אור</span></div>
+        <div class="partner-chip"><strong data-i18n="pt11">דלתות פנים</strong></div>
+        <div class="partner-chip"><strong data-i18n="pt12">דלתות כניסה</strong></div>
+        <div class="partner-chip"><strong data-i18n="pt13">שערים וגדרות</strong></div>
+        <div class="partner-chip"><strong data-i18n="pt14">זגגות בנייה</strong></div>
+        <div class="partner-chip"><strong data-i18n="pt15">מסגרות בנייה</strong></div>
+        <div class="partner-chip"><strong data-i18n="pt16">אלומיניום</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== חטיבת הצוותים שלנו ===== -->
+  <section id="teams" class="section teams">
+    <div class="container">
+      <div class="teams-grid">
+        <div class="teams-media reveal">
+          <img src="images/image10.jpeg" alt="GAD MIVNIM" loading="lazy" decoding="async">
+        </div>
+        <div class="teams-text reveal reveal-d1">
+          <span class="section-eyebrow" data-i18n="nav_teams">הצוותים שלנו</span>
+          <h2 class="section-title" data-i18n="teams_title">חטיבת הצוותים שלנו</h2>
+          <p class="teams-slogan" data-i18n="teams_slogan">מצוינות ללא פשרות</p>
+          <ul class="teams-list">
+            <li data-i18n="teams_l1">קבלני בית משותפים</li>
+            <li data-i18n="teams_l2">אמינות ומקצועיות ללא פשרות</li>
+            <li data-i18n="teams_l3">קבלנים מוסמכים</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== גלריה בנייה ועיצובים ===== -->
+  <section id="gallery" class="section gallery">
+    <div class="container">
+      <span class="section-eyebrow reveal" data-i18n="nav_gallery">גלריה בנייה ועיצובים</span>
+      <h2 class="section-title reveal reveal-d1" data-i18n="gal_title">גלריה בנייה ועיצובים</h2>
+      <p class="section-lead reveal reveal-d2" data-i18n="gal_slogan">לחלום ולהגשים !</p>
+
+      <div class="gallery-grid reveal-group">
+        <button class="gallery-item" type="button" aria-label="הגדלת תמונה"><img src="images/image20.jpeg"  alt="" loading="lazy" decoding="async"></button>
+        <button class="gallery-item" type="button" aria-label="הגדלת תמונה"><img src="images/image40.jpeg"  alt="" loading="lazy" decoding="async"></button>
+        <button class="gallery-item" type="button" aria-label="הגדלת תמונה"><img src="images/image45.jpeg"  alt="" loading="lazy" decoding="async"></button>
+        <button class="gallery-item" type="button" aria-label="הגדלת תמונה"><img src="images/image48.jpeg"  alt="" loading="lazy" decoding="async"></button>
+        <button class="gallery-item" type="button" aria-label="הגדלת תמונה"><img src="images/image60.jpeg"  alt="" loading="lazy" decoding="async"></button>
+        <button class="gallery-item" type="button" aria-label="הגדלת תמונה"><img src="images/image63.jpeg"  alt="" loading="lazy" decoding="async"></button>
+        <button class="gallery-item" type="button" aria-label="הגדלת תמונה"><img src="images/image72.jpeg"  alt="" loading="lazy" decoding="async"></button>
+        <button class="gallery-item" type="button" aria-label="הגדלת תמונה"><img src="images/image88.jpeg"  alt="" loading="lazy" decoding="async"></button>
+        <button class="gallery-item" type="button" aria-label="הגדלת תמונה"><img src="images/image100.jpeg" alt="" loading="lazy" decoding="async"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Lightbox (הגדלת תמונה) ===== -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <button class="lightbox-close" id="lightboxClose" aria-label="Close">&times;</button>
+    <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="Previous">&#8250;</button>
+    <img class="lightbox-img" id="lightboxImg" src="" alt="">
+    <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Next">&#8249;</button>
+  </div>
+
+  <!-- ===== מידע לאזרח ולבונה ===== -->
+  <section id="info" class="section info">
+    <div class="container">
+      <span class="section-eyebrow reveal" data-i18n="info_title">מידע לאזרח ולבונה</span>
+      <h2 class="section-title reveal reveal-d1"><span data-i18n="info_l1">עם קצת ידע והכוונה נכונה</span> — <span data-i18n="info_l2">כל אחד יכול לבנות את מבנה חיו</span></h2>
+      <p class="section-lead reveal reveal-d2" data-i18n="info_l3">חשבנו בשבילכם על הכל</p>
+
+      <div class="info-note reveal">
+        <p data-i18n="info_l4">מומלץ לשמוע ברמקול וליהנות מחוויית צפייה אתגרית בידע והכוונה לצרכים שלכם.     שותפים למבנה שלכם !</p>
+        <p data-i18n="info_l5">האתר מושמע בקריינות והסברה לבונה ולמשפץ</p>
+      </div>
+
+      <div class="media-grid reveal-group">
+        <div class="media-tile">
+          <span class="media-label" data-i18n="media_label">מסך פרסום</span>
+          <p data-i18n="media_1">סרטון - משמעות הצבע הירוק</p>
+        </div>
+        <div class="media-tile">
+          <span class="media-label" data-i18n="media_label">מסך פרסום</span>
+          <p data-i18n="media_2">תמונות רצות</p>
+        </div>
+        <div class="media-tile">
+          <span class="media-label" data-i18n="media_label">מסך פרסום</span>
+          <p data-i18n="media_3">סרטונים של שלבי בניה</p>
+        </div>
+      </div>
+
+      <!-- פודקאסט "קבלנים משתפים" — עם התמונה מהמסמך + תגית בקרוב -->
+      <div class="podcast-banner reveal">
+        <div class="podcast-media">
+          <img src="images/image3.png" alt="פודקאסט | קבלנים משתפים" loading="lazy" decoding="async">
+          <span class="soon-badge" data-i18n="podcast_soon">בקרוב</span>
+        </div>
+        <div class="podcast-text">
+          <h3 data-i18n="hero_podcast">פודקאסט | קבלנים משתפים</h3>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== צור קשר — קוד משתמש ===== -->
+  <section id="contact" class="section contact">
+    <div class="container">
+      <span class="section-eyebrow reveal" data-i18n="ct_code">קוד משתמש</span>
+      <h2 class="section-title reveal reveal-d1"><span data-i18n="ct_t1">המבנה שלכם שווה הרבה !</span><br><span data-i18n="ct_t2">והוא רק שלכם !</span></h2>
+      <p class="contact-dear reveal reveal-d2" data-i18n="ct_dear">לקוחות יקרים</p>
+      <p class="section-lead reveal reveal-d2" data-i18n="ct_lead">לצורך הבטחה על האתר והמשתמשים בו עליכם להירשם באמצעות מספרכם ושמכם וישלח אליכם קוד משתמש</p>
+
+      <div class="contact-grid">
+        <div class="contact-card reveal">
+          <form id="contactForm" class="contact-form" novalidate>
+            <div class="form-row">
+              <div class="form-field">
+                <label for="firstName" data-i18n="f_first">שם</label>
+                <input type="text" id="firstName" name="firstName" autocomplete="given-name" data-i18n-ph="f_first" placeholder="שם" required>
+              </div>
+              <div class="form-field">
+                <label for="lastName" data-i18n="f_last">משפחה</label>
+                <input type="text" id="lastName" name="lastName" autocomplete="family-name" data-i18n-ph="f_last" placeholder="משפחה" required>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label for="phone" data-i18n="f_phone">טלפון</label>
+              <input type="tel" id="phone" name="phone" autocomplete="tel" placeholder="00000000" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary form-submit" data-i18n="f_submit">שלח</button>
+
+            <p class="form-success" id="formSuccess" role="status" data-i18n="f_success" hidden>
+              קוד המשתמש בדרך אליכם..     תודה שבחרתם לצפות באתר הבית שלנו
+            </p>
+          </form>
+        </div>
+
+        <div class="contact-info reveal reveal-d1">
+          <a class="phone-big" href="tel:00000000" dir="ltr">
+            <span class="phone-big-icon" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
+            <span class="phone-big-num">0 0 0 0 0 0 0 0</span>
+          </a>
+          <div class="contact-map">
+            <iframe
+              src="https://www.google.com/maps?q=Herzliya,Israel&output=embed"
+              title="Herzliya map"
+              width="100%" height="100%"
+              style="border:0;"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+
+      <div class="footer-brand">
+        <img src="images/image2.jpeg" alt="GAD MIVNIM" class="footer-logo" loading="lazy" decoding="async">
+        <p class="footer-line1" data-i18n="footer_l1">מקווים שהנהנתם לצפות באתר הבית שלנו</p>
+        <p class="footer-line2" data-i18n="footer_l2">נשמח לראותם בין קהל לקוחותינו וממשפחת <bdi>G A D MIVNIM</bdi> בכל מקום במפה</p>
+      </div>
+
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="#hero"     data-i18n="nav_home">דף הבית</a>
+        <a href="#about"    data-i18n="about_eyebrow">אודות הקבוצה</a>
+        <a href="#services" data-i18n="nav_services">השירותים שלנו</a>
+        <a href="#projects" data-i18n="nav_projects">הפרויקטים שלנו</a>
+        <a href="#gallery"  data-i18n="nav_gallery">גלריה בנייה ועיצובים</a>
+        <a href="#contact"  data-i18n="nav_contact">צור קשר</a>
+      </nav>
+
+      <p class="footer-copy" data-i18n="footer_copy">*** כל הזכויות שמורת לחברת גד מבנים בע"מ ואין לאף אדם או גוף כלשהו לעשות שום שימוש במוצג באתר לשום עניין ודבר.</p>
+
+    </div>
+  </footer>
+
+  <!-- כפתור חזרה למעלה -->
+  <button class="back-top" id="backTop" type="button" aria-label="Back to top"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg></button>
+
+  <!-- הסקריפטים שלנו -->
+  <script src="js/i18n.js"></script>
+  <script src="js/premium.js"></script>
+  <script src="js/script.js"></script>
+
+</body>
+</html>
