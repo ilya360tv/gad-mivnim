@@ -2979,3 +2979,17 @@ a, button { transition: color .18s ease, background-color .18s ease, border-colo
 
 /* "לקוחות יקרים" — יושבת בין הכותרת לפסקה הממורכזות, מיושרת אליהן */
 .contact-dear { text-align: center; }
+
+/* ==========================================================================
+   HERO VIDEO — סרטון רקע במקום תמונת הפרלקסה
+   (poster = תמונת הרקע הישנה: מוצגת בזמן הטעינה וכ-fallback)
+   ========================================================================== */
+.hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  background: url('../images/hero-bg.jpg') center / cover no-repeat; /* רשת ביטחון נוספת */
+}
