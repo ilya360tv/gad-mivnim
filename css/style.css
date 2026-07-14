@@ -2428,7 +2428,10 @@ a, button { transition: color .18s ease, background-color .18s ease, border-colo
 .hero .hero-showroom {
   margin-top: 0;
   margin-bottom: 20px;
-  font-size: 1.15rem;
+  font-size: 1.28rem;    /* +11% — עדיין קטן בבירור מה-H1 */
+  line-height: 1.44;     /* שומר גובה-שורה קבוע כדי שה-H1/location לא יזוזו */
+  position: relative;    /* הזזה ויזואלית בלבד — לא משפיע על זרימת האחים */
+  top: -24px;            /* מרים רק את ה-subtitle למעלה; H1 ו-location במקומם */
 }
 
 /* הרצליה ישראל — סימטרית: ריווח אותיות מאוזן וממורכז */
