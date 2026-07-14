@@ -2420,6 +2420,8 @@ a, button { transition: color .18s ease, background-color .18s ease, border-colo
 /* ריווח סימטרי: 36px אחרי הכותרת, 20px קבוע בין כל שאר השורות */
 .hero .hero-title {
   margin-bottom: 36px;
+  position: relative;   /* הזזה ויזואלית בלבד — לא משפיע על זרימת האחים */
+  top: -40px;           /* מרים רק את ה-H1 למעלה; subtitle + location נשארים במקומם */
 }
 
 /* שורת אולם התצוגה — רווח אחיד */
