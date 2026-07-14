@@ -2402,6 +2402,16 @@ a, button { transition: color .18s ease, background-color .18s ease, border-colo
   letter-spacing: .045em;
 }
 
+/* יישור גובה הטקסט הלטיני (GAD MIVNIM) לגובה האותיות העבריות בכותרת ה-Hero.
+   ב-Rubik האותיות הלטיניות נמוכות מהעבריות — מגדילים מעט את הרַץ הלטיני בלבד.
+   העטיפה מופיעה רק בעברית (במילון), לכן אין השפעה על en/fr/ru. */
+.hero-title__latin {
+  font-size: 1.13em;      /* מיישר את גובה האותיות הלטיניות לגובה העברית (קצה עליון זהה) */
+  line-height: 1;
+  display: inline-block;  /* קופסה עקבית ליישור אנכי; הרַץ נשאר במקומו ב-bidi */
+  vertical-align: baseline;
+}
+
 /* הכותרת יושבת במרכז ההירו — מאוזנת */
 .hero-content {
   margin-top: 0;
@@ -2460,6 +2470,11 @@ a, button { transition: color .18s ease, background-color .18s ease, border-colo
 /* רוסיה */
 .flag-ru {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 16'%3E%3Crect width='22' height='16' fill='%23ffffff'/%3E%3Crect y='5.33' width='22' height='10.67' fill='%230039a6'/%3E%3Crect y='10.67' width='22' height='5.33' fill='%23d52b1e'/%3E%3C/svg%3E");
+}
+
+/* צרפת — כחול/לבן/אדום אנכי */
+.flag-fr {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 16'%3E%3Crect width='22' height='16' fill='%23ffffff'/%3E%3Crect width='7.33' height='16' fill='%230055a4'/%3E%3Crect x='14.67' width='7.33' height='16' fill='%23ef4135'/%3E%3C/svg%3E");
 }
 
 /* יישור הדגל בתוך הכפתורים */
@@ -2767,4 +2782,25 @@ a, button { transition: color .18s ease, background-color .18s ease, border-colo
   object-fit: cover;
   z-index: 0;
   background: url('../images/hero-bg.jpg') center / cover no-repeat; /* רשת ביטחון נוספת */
+}
+
+/* ==========================================================================
+   NAV V4 — התאמת תפריט הדסקטופ לכל השפות (כולל צרפתית/רוסית הארוכות)
+   בלי חפיפה בין הגלולות ללוגו/לבורר השפה. בלוק דריסה סופי — מנצח לפי סדר.
+   ========================================================================== */
+@media (min-width: 1024px) {
+  /* הטקסט "GAD MIVNIM" בצד כפול ללוגו המרכזי — מוסתר בדסקטופ כדי לפנות
+     מקום לשמונה הגלולות בכל שפה (הלוגו המרכזי ממשיך להציג את שם המותג) */
+  .site-header .logo-text { display: none; }
+
+  /* רווח אחיד ונוח בין הגלולות — שורה אחת בכל רוחב דסקטופ */
+  .main-nav ul { gap: 12px; }
+  .main-nav a  { padding: 8px 13px; font-size: .82rem; }
+}
+
+/* דסקטופ צר (1024–1200): כפתורים קומפקטיים + רווח קטן יותר כדי שגם
+   צרפתית/רוסית הארוכות יישארו בשורה אחת בלי גלישה */
+@media (min-width: 1024px) and (max-width: 1200px) {
+  .main-nav ul { gap: 6px; }
+  .main-nav a  { padding: 6px 9px; font-size: .74rem; }
 }
