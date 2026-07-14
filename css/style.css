@@ -2421,7 +2421,7 @@ a, button { transition: color .18s ease, background-color .18s ease, border-colo
 .hero .hero-title {
   margin-bottom: 36px;
   position: relative;   /* הזזה ויזואלית בלבד — לא משפיע על זרימת האחים */
-  top: -40px;           /* מרים רק את ה-H1 למעלה; subtitle + location נשארים במקומם */
+  top: -64px;           /* מרים את ה-H1 עוד יותר למעלה; subtitle + location נשארים במקומם */
 }
 
 /* שורת אולם התצוגה — רווח אחיד */
