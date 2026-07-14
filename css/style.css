@@ -2422,26 +2422,6 @@ a, button { transition: color .18s ease, background-color .18s ease, border-colo
   margin-bottom: 36px;
 }
 
-/* תגית "בקרוב" מעל שורת אולם התצוגה — מעוצבת, עם טבעת ירוקה כמו הלוגו */
-.hero-soon-wrap {
-  margin-top: 0;
-  margin-bottom: 20px;
-}
-
-.hero-soon {
-  display: inline-block;
-  padding: 6px 22px;
-  border-radius: 999px;
-  background: rgba(22, 163, 74, .22);
-  color: #ffffff;
-  font-weight: 700;
-  font-size: .95rem;
-  letter-spacing: .12em;
-  box-shadow:
-    0 0 0 2px rgba(22, 163, 74, .65),
-    0 0 18px rgba(22, 163, 74, .4);
-}
-
 /* שורת אולם התצוגה — רווח אחיד */
 .hero .hero-showroom {
   margin-top: 0;
