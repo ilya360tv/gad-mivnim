@@ -23,17 +23,19 @@
 
     /* ----- ניווט ----- */
     nav_home:     { he: 'דף הבית', ru: 'Главная', en: 'Home' },
-    nav_about:    { he: 'אודות הקבוצה — מסורת משפחתית', ru: 'О группе — семейная традиция', en: 'About — A Family Tradition' },
+    nav_about:    { he: 'אודות הקבוצה', ru: 'О группе', en: 'About the Group' },
     nav_services: { he: 'השירותים שלנו', ru: 'Наши услуги', en: 'Our Services' },
     nav_projects: { he: 'הפרויקטים שלנו', ru: 'Наши проекты', en: 'Our Projects' },
     nav_partners: { he: 'השותפים שלנו', ru: 'Наши партнёры', en: 'Our Partners' },
     nav_teams:    { he: 'הצוותים שלנו', ru: 'Наши команды', en: 'Our Teams' },
     nav_gallery:  { he: 'גלריה בנייה ועיצובים', ru: 'Галерея — строительство и дизайн', en: 'Gallery — Building & Design' },
-    nav_info:     { he: 'מידע לאזרח ולבונה', ru: 'Информация для клиента и застройщика', en: 'Info for the Citizen & Builder' },
+    nav_gallery_short: { he: 'גלריה', ru: 'Галерея', en: 'Gallery' },
+    nav_info:     { he: 'מידע לאזרח', ru: 'Информация для клиента', en: 'Citizen Info' },
     nav_contact:  { he: 'צור קשר', ru: 'Связаться', en: 'Contact' },
+    nav_podcast:  { he: 'פודקאסט', ru: 'Подкаст', en: 'Podcast' },
 
     /* ----- Hero ----- */
-    hero_title:    { he: 'GAD MIVNIM — בכל מקום במפה', ru: 'GAD MIVNIM — везде на карте', en: 'GAD MIVNIM — Everywhere on the Map' },
+    hero_title:    { he: 'GAD MIVNIM בכל מקום במפה', ru: 'GAD MIVNIM везде на карте', en: 'GAD MIVNIM Everywhere on the Map' },
     hero_subtitle: { he: 'משנים את הדרך לבנייה נכונה !', ru: 'Меняем подход к правильному строительству!', en: 'Changing the way to build right!' },
     hero_showroom: { he: 'לרשותכם אולם תצוגה לתצוגות בנייה ועיצובים', ru: 'К вашим услугам шоурум строительства и дизайна', en: 'A construction & design showroom at your service' },
     hero_location: { he: 'הרצליה ישראל | HERZLIYA ISRAEL', ru: 'הרצליה ישראל | HERZLIYA ISRAEL', en: 'הרצליה ישראל | HERZLIYA ISRAEL' },

@@ -1094,120 +1094,6 @@ a {
   box-shadow: 0 30px 60px rgba(0, 0, 0, .30);
 }
 
-/* ----- מסך פתיחה (Welcome) ----- */
-.welcome { display: none; } /* בלי JS — אין מסך פתיחה, האתר נגיש מיד */
-
-.has-js .welcome {
-  position: fixed;
-  inset: 0;
-  z-index: 3000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #050607;
-  text-align: center;
-  padding: 24px;
-  overflow: hidden; /* חותך את הכותרת בזמן אנימציית הריווח — בלי גלישה */
-  transition: transform .85s cubic-bezier(.65, 0, .35, 1), visibility .85s;
-}
-
-.welcome-inner {
-  max-width: 100%;
-  min-width: 0;
-}
-
-.has-js .welcome.is-done {
-  transform: translateY(-100%);
-  visibility: hidden;
-}
-
-.welcome-title {
-  font-size: clamp(1.5rem, 5.4vw, 3rem);
-  font-weight: 900;
-  color: var(--green);
-  text-shadow:
-    0 0 14px rgba(22, 163, 74, .8),
-    0 0 46px rgba(45, 212, 191, .35);
-  margin-bottom: 30px;
-  animation: welcomeTitle 1.15s cubic-bezier(.22, .61, .36, 1) both;
-}
-
-@keyframes welcomeTitle {
-  from { opacity: 0; letter-spacing: .35em; filter: blur(7px); }
-  to   { opacity: 1; letter-spacing: .02em; filter: blur(0); }
-}
-
-/* במסך צר — אנימציית ריווח עדינה יותר כדי שהכותרת לא תיחתך */
-@media (max-width: 700px) {
-  .welcome-title { animation-name: welcomeTitleMobile; }
-
-  @keyframes welcomeTitleMobile {
-    from { opacity: 0; letter-spacing: .10em; filter: blur(6px); transform: translateY(18px); }
-    to   { opacity: 1; letter-spacing: .01em; filter: blur(0);   transform: none; }
-  }
-}
-
-.welcome-logo {
-  width: clamp(120px, 24vw, 180px);
-  height: auto;
-  border-radius: 50%;
-  margin: 0 auto 26px;
-  box-shadow: 0 0 46px rgba(45, 212, 191, .28);
-  animation: welcomeRise .9s .5s cubic-bezier(.22, .61, .36, 1) both;
-}
-
-@keyframes welcomeRise {
-  from { opacity: 0; transform: translateY(38px); }
-  to   { opacity: 1; transform: none; }
-}
-
-.welcome-line1 {
-  color: var(--white);
-  font-weight: 700;
-  font-size: clamp(1.05rem, 2.8vw, 1.5rem);
-  margin-bottom: 8px;
-  animation: welcomeRise .8s .85s cubic-bezier(.22, .61, .36, 1) both;
-  /* אותו כלל כמו כותרת ה-Hero: אנגלית שמאל, עברית ימין — בכל דפדפן */
-  direction: ltr;
-  unicode-bidi: isolate;
-}
-
-.welcome-line2 {
-  color: var(--teal);
-  font-size: clamp(.95rem, 2.3vw, 1.2rem);
-  animation: welcomeRise .8s 1.05s cubic-bezier(.22, .61, .36, 1) both;
-}
-
-.welcome-hint {
-  position: absolute;
-  bottom: 26px;
-  left: 0;
-  right: 0;
-  color: #8b949c;
-  font-size: 1.4rem;
-  animation:
-    welcomeRise .8s 1.5s cubic-bezier(.22, .61, .36, 1) both,
-    welcomeBob 1.7s 2.4s ease-in-out infinite;
-}
-
-@keyframes welcomeBob {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(9px); }
-}
-
-/* נעילת גלילה כל עוד מסך הפתיחה מוצג */
-body.welcome-open { overflow: hidden; }
-
-/* כיבוי אנימציות למי שביקש פחות תנועה */
-@media (prefers-reduced-motion: reduce) {
-  .welcome-title,
-  .welcome-logo,
-  .welcome-line1,
-  .welcome-line2,
-  .welcome-hint {
-    animation: none;
-  }
-}
 
 /* כיבוי אנימציות למי שביקש פחות תנועה */
 @media (prefers-reduced-motion: reduce) {
@@ -1524,7 +1410,7 @@ html {
     justify-content: center;
     align-items: center;
     flex-wrap: nowrap;
-    gap: 4px;
+    gap: 16px;
     height: 58px;
     padding: 0 24px;
     max-width: 1400px;
@@ -1893,272 +1779,11 @@ html {
   }
 }
 
-/* ==========================================================================
-   WELCOME V2 — העתק נאמן של העמוד הראשון במסמך: רשת 2x2 + כותרת
-   (דורס את פריסת מסך הפתיחה הישנה; .welcome הבסיסי ו-is-done נשארים)
-   ========================================================================== */
-
-.has-js .welcome {
-  align-items: flex-start;      /* התוכן נצמד למעלה — כמו עמוד מסמך */
-  overflow-y: auto;             /* ליתר ביטחון במסכים נמוכים */
-  overscroll-behavior: contain; /* מונע גלילת הדף שמאחורי המסך */
-  padding: clamp(8px, 1.5vh, 24px) 20px;
-}
-
-/* הרשת: 2 עמודות (בימין RTL העמודה הראשונה = ימין, כמו במסמך) */
-.wg {
-  width: min(1100px, 96vw);
-  margin: auto; /* מרכוז אנכי כשיש מקום; גלילה בטוחה כשאין */
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-areas:
-    "title  title"
-    "brand  logo"
-    "mid    mid"
-    "pod    render"
-    "enter  enter";
-  column-gap: clamp(24px, 5vw, 60px);
-  row-gap: clamp(4px, 1vh, 10px);
-  align-items: start;
-}
-
-/* כפתור כניסה לאתר — ברור וגדול, במיוחד לקהל מבוגר */
-.wg-enter {
-  grid-area: enter;
-  justify-self: center;
-  margin-top: clamp(2px, 0.6vh, 6px);
-  padding: clamp(9px, 1.4vh, 13px) 44px;
-  border: none;
-  border-radius: 999px;
-  background: var(--green);
-  color: var(--white);
-  font-family: inherit;
-  font-size: 1.15rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 8px 26px rgba(22, 163, 74, .45);
-  transition: transform .15s ease, background .2s ease;
-  animation: wgUp .8s 1.3s cubic-bezier(.22, .61, .36, 1) both;
-}
-
-.wg-enter:hover {
-  background: var(--green-dark);
-  transform: translateY(-2px);
-}
-
-/* ----- מסכים נמוכים (לפטופים): טיפוגרפיה מתכווצת לפי גובה המסך ----- */
-@media (min-width: 701px) and (max-height: 860px) {
-  .wg-title  { font-size: clamp(1.1rem, 3vh, 1.8rem); margin-bottom: 2px; }
-  .wg-gad    { font-size: clamp(1.3rem, 3.4vh, 2rem); }
-  .wg-slogan { font-size: clamp(.8rem, 1.9vh, 1.05rem); }
-  .wg-way    { font-size: clamp(.9rem, 2.1vh, 1.15rem); }
-  .wg-mid    { font-size: clamp(.9rem, 2.1vh, 1.2rem); padding: 0; }
-  .wg-enter  { font-size: 1.05rem; }
-}
-
-/* 1) כותרת עליונה — ירוק זוהר */
-.wg-title {
-  grid-area: title;
-  text-align: center;
-  font-size: clamp(1.4rem, 3.2vw, 2.4rem);
-  font-weight: 900;
-  color: #66FF66; /* הצבע המדויק מהמסמך */
-  text-shadow:
-    0 0 16px rgba(102, 255, 102, .75),
-    0 0 52px rgba(102, 255, 102, .3);
-  margin-bottom: 4px;
-  animation: wgUp .8s .05s cubic-bezier(.22, .61, .36, 1) both;
-}
-
-/* תאים */
-.wg-cell { text-align: center; }
-
-.wg-brand  { grid-area: brand;  animation: wgUp .8s .30s cubic-bezier(.22, .61, .36, 1) both; }
-.wg-logo-cell { grid-area: logo; animation: wgUp .8s .50s cubic-bezier(.22, .61, .36, 1) both; }
-.wg-mid    { grid-area: mid;    animation: wgUp .8s .70s cubic-bezier(.22, .61, .36, 1) both; }
-.wg-render { grid-area: render; animation: wgUp .8s .90s cubic-bezier(.22, .61, .36, 1) both; }
-.wg-podcast{ grid-area: pod;    animation: wgUp .8s 1.10s cubic-bezier(.22, .61, .36, 1) both; }
-
-@keyframes wgUp {
-  from { opacity: 0; transform: translateY(26px); }
-  to   { opacity: 1; transform: none; }
-}
-
-/* תמונות התאים */
-.wg-img {
-  width: 100%;
-  max-width: 400px;
-  height: clamp(80px, 15vh, 150px);
-  height: clamp(80px, 15svh, 150px);
-  object-fit: cover;
-  margin: 0 auto clamp(4px, 0.8vh, 8px);
-  border-radius: 10px;
-}
-
-/* האולם הירוק — בפרופורציה הטבעית שלו, בלי חיתוך */
-.wg-brand .wg-img {
-  width: auto;
-  max-width: 100%;
-  height: clamp(90px, 17vh, 170px);
-  height: clamp(90px, 17svh, 170px);
-  object-fit: contain;
-}
-
-/* התמונות התחתונות — מוצגות שלמות בפרופורציה הטבעית, בלי חיתוך (כמו במסמך) */
-.wg-rounded {
-  width: auto;
-  max-width: 100%;
-  height: clamp(110px, 23vh, 215px);
-  height: clamp(110px, 23svh, 215px);
-  object-fit: contain;
-  border-radius: 18px;
-}
-
-/* 2) ימין למעלה: GAD MIVNIM ענק — G ו-D בירוק */
-.wg-gad {
-  font-size: clamp(1.7rem, 3.8vw, 2.6rem);
-  font-weight: 900;
-  color: var(--white);
-  letter-spacing: .06em;
-  line-height: 1.05;
-}
-
-/* צבעי האותיות המדויקים מהמסמך: G טורקיז, D ירוק זוהר */
-.wg-g-cyan  { color: #08F8F8; }
-.wg-g-green { color: #1DFF68; }
-
-.wg-slogan {
-  font-size: clamp(1rem, 2vw, 1.35rem);
-  color: var(--green);
-  font-weight: 700;
-  letter-spacing: .45em;
-  margin-top: 4px;
-  padding-inline-start: .45em; /* מאזן את ריווח האות האחרונה */
-}
-
-/* 3) שמאל למעלה: לוגו עגול + משנים את הדרך */
-.wg-logo {
-  width: clamp(70px, 11vh, 120px);
-  height: clamp(70px, 11vh, 120px);
-  width: clamp(70px, 11svh, 120px);
-  height: clamp(70px, 11svh, 120px);
-  border-radius: 50%;
-  object-fit: cover;
-  margin: 0 auto clamp(5px, 1vh, 10px);
-  box-shadow: 0 0 42px rgba(45, 212, 191, .3);
-}
-
-.wg-way {
-  font-size: clamp(1.05rem, 2.2vw, 1.45rem);
-  color: #00B0F0; /* הכחול המדויק מהמסמך */
-  font-weight: 700;
-}
-
-/* 4) שורה חוצה — נטוי אלגנטי וקריא (בלי פונט כתב-יד שיוצא ג'יבריש) */
-.wg-mid {
-  text-align: center;
-  font-family: 'Rubik', sans-serif;
-  font-style: italic;
-  font-size: clamp(1.05rem, 2.2vw, 1.45rem);
-  font-weight: 500;
-  color: #f2f5f7;
-  letter-spacing: .03em;
-  padding: 2px 0;
-}
-
-/* 5) שמאל למטה: הדמיה + הרצליה */
-.wg-location {
-  font-size: clamp(.85rem, 1.6vw, 1rem);
-  color: #d7dbe0;
-  font-weight: 500;
-  letter-spacing: .3em;
-  unicode-bidi: plaintext; /* עברית מימין, HERZLIYA ISRAEL משמאל */
-}
-
-/* 6) ימין למטה: גיטרות + פודקאסט + "בקרוב" */
-.wg-pod-line {
-  font-size: clamp(1rem, 2vw, 1.2rem);
-  color: var(--white);
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.wg-soon {
-  display: inline-block;
-  padding: 3px 14px;
-  border-radius: 999px;
-  background: var(--green);
-  color: var(--white);
-  font-size: .8rem;
-  font-weight: 700;
-}
-
-/* ----- מובייל: עמודה אחת בסדר המסמך ----- */
-@media (max-width: 700px) {
-  .wg {
-    display: flex;
-    flex-direction: column;
-    gap: clamp(6px, 1.1vh, 16px);
-  }
-
-  /* הסדר: כותרת, לוגו+סלוגן, אולם ירוק+GAD, שורת אולם, הדמיה, גיטרות */
-  .wg-title     { order: 1; margin-bottom: 0; }
-  .wg-logo-cell { order: 2; }
-  .wg-brand     { order: 3; }
-  .wg-mid       { order: 4; }
-  .wg-render    { order: 5; }
-  .wg-podcast   { order: 6; }
-  .wg-enter     { order: 7; width: 100%; }
-
-  .wg-img {
-    height: clamp(70px, 12vh, 140px);
-    height: clamp(70px, 12svh, 140px);
-    max-width: 100%;
-  }
-  .wg-brand .wg-img {
-    height: clamp(76px, 13vh, 160px);
-    height: clamp(76px, 13svh, 160px);
-    width: auto;
-    max-width: 100%;
-  }
-  .wg-rounded {
-    height: clamp(84px, 15vh, 170px);
-    height: clamp(84px, 15svh, 170px);
-    width: auto;
-    max-width: 100%;
-  }
-  .wg-logo {
-    width: clamp(56px, 10vh, 108px);
-    height: clamp(56px, 10vh, 108px);
-    width: clamp(56px, 10svh, 108px);
-    height: clamp(56px, 10svh, 108px);
-  }
-
-  .wg-title  { font-size: clamp(1.15rem, 2.6vh, 1.7rem); }
-  .wg-gad    { font-size: clamp(1.35rem, 2.9vh, 2rem); }
-  .wg-way    { font-size: clamp(.95rem, 2vh, 1.25rem); }
-  .wg-mid    { font-size: clamp(.95rem, 2vh, 1.25rem); }
-
-  .wg-slogan   { letter-spacing: .3em; padding-inline-start: .3em; }
-  .wg-location { letter-spacing: .18em; }
-}
-
-/* פחות תנועה — בלי אנימציות כניסה */
-@media (prefers-reduced-motion: reduce) {
-  .wg-title, .wg-brand, .wg-logo-cell, .wg-mid, .wg-render, .wg-podcast {
-    animation: none;
-  }
-}
 
 /* ==========================================================================
    PREMIUM V3 — Trust & Authority (ui-ux-pro-max)
    יוקרה שקטה לוועדי בניין: סריף עברי לכותרות, ירוק-עמוק/שחור/לבן,
    משטחים לבנים עם קווי מתאר עדינים, ריווח נדיב, ניגודיות AAA.
-   (מסך הפתיחה .welcome/.wg — לא נגעים בו)
    ========================================================================== */
 
 :root {
@@ -2275,8 +1900,7 @@ body { color: var(--ink-soft); }
 
 /* ----- כפתורים: יציבים, ללא קפיצה, פוקוס ברור ----- */
 .btn,
-.form-submit,
-.wg-enter {
+.form-submit {
   transition: background .22s ease, box-shadow .22s ease;
 }
 
@@ -2485,7 +2109,6 @@ a, button, input, .filter-btn, .gallery-item {
 /* משוב לחיצה מיידי ויציב (בלי הזזת פריסה) */
 .btn:active,
 .filter-btn:active,
-.wg-enter:active,
 .form-submit:active,
 .back-top:active,
 .phone-big:active {
@@ -2515,7 +2138,7 @@ a, button, input, .filter-btn, .gallery-item {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .btn:active, .filter-btn:active, .wg-enter:active,
+  .btn:active, .filter-btn:active,
   .form-submit:active, .back-top:active, .phone-big:active {
     transform: none;
   }
@@ -2753,6 +2376,77 @@ a, button { transition: color .18s ease, background-color .18s ease, border-colo
   vertical-align: -3px;
 }
 
+/* ==========================================================================
+   רווחים נכונים בין גלולות התפריט (דסקטופ)
+   ========================================================================== */
+@media (min-width: 1024px) {
+  .main-nav ul {
+    gap: 14px;
+    justify-content: center;
+  }
+}
+
+/* מסך ביניים — רווח קטן יותר כדי שהכל יישאר בשורה אחת */
+@media (min-width: 1024px) and (max-width: 1300px) {
+  .main-nav ul { gap: 8px; }
+}
+
+/* ==========================================================================
+   HERO — ליטוש לפי בקשה: פונט רציני, תגית "בקרוב", ריווח סימטרי
+   ========================================================================== */
+
+/* כותרת ראשית — Rubik במשקל עדין ואלגנטי */
+.hero-title {
+  font-family: 'Rubik', 'Segoe UI', Arial, sans-serif;
+  font-weight: 500;
+  letter-spacing: .045em;
+}
+
+/* הכותרת יושבת במרכז ההירו — מאוזנת */
+.hero-content {
+  margin-top: 0;
+}
+
+/* ריווח סימטרי: 36px אחרי הכותרת, 20px קבוע בין כל שאר השורות */
+.hero .hero-title {
+  margin-bottom: 36px;
+}
+
+/* תגית "בקרוב" מעל שורת אולם התצוגה — מעוצבת, עם טבעת ירוקה כמו הלוגו */
+.hero-soon-wrap {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.hero-soon {
+  display: inline-block;
+  padding: 6px 22px;
+  border-radius: 999px;
+  background: rgba(22, 163, 74, .22);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: .95rem;
+  letter-spacing: .12em;
+  box-shadow:
+    0 0 0 2px rgba(22, 163, 74, .65),
+    0 0 18px rgba(22, 163, 74, .4);
+}
+
+/* שורת אולם התצוגה — רווח אחיד */
+.hero .hero-showroom {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.15rem;
+}
+
+/* הרצליה ישראל — סימטרית: ריווח אותיות מאוזן וממורכז */
+.hero .hero-location {
+  margin-top: 0;
+  letter-spacing: .3em;
+  padding-inline-start: .3em; /* מפצה על הריווח אחרי האות האחרונה — מרכוז אמיתי */
+  text-align: center;
+}
+
 /* ישראל */
 .flag-he {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 16'%3E%3Crect width='22' height='16' fill='%23ffffff'/%3E%3Crect y='1.8' width='22' height='2.3' fill='%230038b8'/%3E%3Crect y='11.9' width='22' height='2.3' fill='%230038b8'/%3E%3Cpath d='M11 4.9 13.5 9.2H8.5z' fill='none' stroke='%230038b8' stroke-width='.85'/%3E%3Cpath d='M11 11.1 8.5 6.8h5z' fill='none' stroke='%230038b8' stroke-width='.85'/%3E%3C/svg%3E");
@@ -2806,30 +2500,6 @@ a, button { transition: color .18s ease, background-color .18s ease, border-colo
   .lang-btn { font-size: .9rem; } /* דורס את ההקטנה הישנה — נשאר קריא */
 }
 
-/* מסך הפתיחה בטלפונים צרים (≤400px): כיווץ עדין נוסף —
-   הטקסטים נשברים שם לשתי שורות והתוכן גלש מעבר למסך אחד */
-@media (max-width: 400px) {
-  .wg { gap: clamp(5px, 1vh, 12px); }
-
-  .wg-title { font-size: clamp(1.05rem, 2.4vh, 1.5rem); }
-
-  .wg-logo {
-    width: clamp(52px, 9vh, 96px);
-    height: clamp(52px, 9vh, 96px);
-    width: clamp(52px, 9svh, 96px);
-    height: clamp(52px, 9svh, 96px);
-  }
-
-  .wg-brand .wg-img {
-    height: clamp(70px, 12vh, 140px);
-    height: clamp(70px, 12svh, 140px);
-  }
-
-  .wg-rounded {
-    height: clamp(76px, 13.5vh, 150px);
-    height: clamp(76px, 13.5svh, 150px);
-  }
-}
 
 /* ==========================================================================
    HEADER V2 — פריסה תלת-חלקית: המבורגר (ימין) | לוגו (מרכז) | שם+שפה (שמאל)
@@ -2938,6 +2608,111 @@ a, button { transition: color .18s ease, background-color .18s ease, border-colo
 /* מובייל (עד 700px): מסתירים את שם המותג — הדגל והלוגו נשארים */
 @media (max-width: 700px) {
   .logo-text { display: none; }
+}
+
+/* ==========================================================================
+   NAV V3 — דסקטופ (1024px+): בלי המבורגר, קטגוריות-גלולה מלאות בשורה אחת
+   לוגו בימין | גלולות במרכז | שפה בשמאל. מתחת ל-1024px — המגירה כרגיל.
+   ========================================================================== */
+@media (min-width: 1024px) {
+  /* ההמבורגר נעלם בדסקטופ */
+  .nav-toggle { display: none; }
+
+  /* ההדר הופך לגריד תלת-אזורי; ילדי header-inner מצטרפים דרך display:contents */
+  .site-header {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 14px;
+    padding-inline: clamp(14px, 2vw, 36px);
+  }
+
+  .site-header .header-inner { display: contents; }
+
+  .logo        { order: 1; justify-self: start; }  /* RTL: start = ימין */
+  .main-nav    { order: 2; justify-self: center; min-width: 0; }
+  .header-side { order: 3; justify-self: end; }
+
+  /* הניווט חוזר להיות שורה רגילה — מבטל את כללי המגירה */
+  .main-nav {
+    position: static;
+    transform: none;
+    opacity: 1;
+    visibility: visible;
+    background: transparent;
+    backdrop-filter: none;
+    border-bottom: none;
+    max-height: none;
+    overflow: visible;
+    transition: none;
+  }
+
+  .main-nav ul {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 0;
+    margin: 0;
+    max-width: none;
+  }
+
+  .main-nav li { width: auto; }
+
+  /* גלולה: עגולה לגמרי — טבעת ירוקה + זוהר, בדיוק כמו העיגול של הלוגו */
+  .main-nav a {
+    display: inline-block;
+    white-space: nowrap;
+    padding: 9px 18px;
+    font-size: .9rem;
+    color: #ffffff;
+    background: transparent;
+    border: none;
+    border-radius: 999px;
+    box-shadow:
+      0 0 0 2px rgba(22, 163, 74, .55),
+      0 0 16px rgba(22, 163, 74, .35);
+    transition: background .2s ease, box-shadow .2s ease, color .2s ease;
+  }
+
+  .main-nav a:hover {
+    background: var(--green);
+    color: #ffffff;
+    box-shadow:
+      0 0 0 2px rgba(22, 163, 74, .9),
+      0 0 22px rgba(22, 163, 74, .55);
+  }
+
+  /* הסקשן הנוכחי (scrollspy) — טבעת ירוקה מלאה יותר */
+  .main-nav a.is-current {
+    background: rgba(22, 163, 74, .18);
+    color: #ffffff;
+    box-shadow:
+      0 0 0 2px rgba(22, 163, 74, .9),
+      0 0 18px rgba(22, 163, 74, .45);
+  }
+
+  /* צור קשר — גלולת ה-CTA: ירוק מלא תמיד, עם אותה טבעת */
+  .main-nav a.nav-cta {
+    background: var(--green);
+    color: #ffffff;
+    margin-top: 0;
+    text-align: center;
+    box-shadow:
+      0 0 0 2px rgba(22, 163, 74, .9),
+      0 0 20px rgba(22, 163, 74, .5);
+  }
+
+  .main-nav a.nav-cta:hover { background: var(--green-dark); }
+}
+
+/* 1024–1300: מצמצמים עדינות כדי ששמונה הגלולות ייכנסו בשורה אחת */
+@media (min-width: 1024px) and (max-width: 1300px) {
+  .logo-text { display: none; }
+  .main-nav ul { gap: 10px; }
+  .main-nav a { padding: 7px 11px; font-size: .78rem; }
 }
 
 /* ==========================================================================

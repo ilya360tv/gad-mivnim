@@ -13,38 +13,6 @@
   document.addEventListener('DOMContentLoaded', function () {
 
     /* ---------------------------------------------------------------
-       0) מסך פתיחה (Welcome) — נסגר אחרי 3 שניות או בלחיצה/גלילה
-       --------------------------------------------------------------- */
-    var welcome = document.getElementById('welcome');
-
-    if (welcome) {
-      document.body.classList.add('welcome-open'); // נועל גלילה ברקע
-
-      var welcomeDone = false;
-      var dismissEvents = ['click', 'wheel', 'touchmove', 'keydown'];
-
-      var closeWelcome = function () {
-        if (welcomeDone) { return; }
-        welcomeDone = true;
-        welcome.classList.add('is-done'); // slide-up חלק למעלה
-        document.body.classList.remove('welcome-open');
-        dismissEvents.forEach(function (ev) {
-          window.removeEventListener(ev, closeWelcome);
-        });
-        // הסרה מה-DOM אחרי סיום האנימציה — משחרר זיכרון ומגע
-        setTimeout(function () {
-          if (welcome.parentNode) { welcome.parentNode.removeChild(welcome); }
-        }, 950);
-      };
-
-      dismissEvents.forEach(function (ev) {
-        window.addEventListener(ev, closeWelcome, { passive: true });
-      });
-
-      /* אין סגירה אוטומטית — המסך נשאר עד שהמבקר לוחץ, גולל או נוגע */
-    }
-
-    /* ---------------------------------------------------------------
        1) חשיפה בגלילה — fade-in + slide-up (Intersection Observer)
        --------------------------------------------------------------- */
     var revealTargets = document.querySelectorAll('.reveal, .reveal-group');

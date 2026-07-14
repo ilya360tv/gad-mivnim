@@ -21,47 +21,6 @@
 
   <a class="skip-link" href="#main">דילוג לתוכן</a>
 
-  <!-- ===== מסך פתיחה (Welcome) — העתק נאמן של העמוד הראשון במסמך ===== -->
-  <div class="welcome" id="welcome" role="dialog" aria-label="Welcome">
-    <div class="wg">
-
-      <!-- 1) כותרת עליונה -->
-      <p class="wg-title" data-i18n="welcome_title">ברוכים הבאים לאתר הבית שלנו</p>
-
-      <!-- 2) ימין למעלה: אולם התצוגה הירוק + GAD MIVNIM -->
-      <div class="wg-cell wg-brand">
-        <img class="wg-img" src="images/image1.jpeg" alt="" decoding="async">
-        <p class="wg-gad" dir="ltr"><span class="wg-g-cyan">G</span>A<span class="wg-g-green">D</span> MIVNIM</p>
-        <p class="wg-slogan" data-i18n="welcome_slogan">בכל מקום במפה</p>
-      </div>
-
-      <!-- 3) שמאל למעלה: לוגו + משנים את הדרך -->
-      <div class="wg-cell wg-logo-cell">
-        <img class="wg-logo" src="images/image2.jpeg" alt="GAD MIVNIM" decoding="async">
-        <p class="wg-way" data-i18n="hero_subtitle">משנים את הדרך לבנייה נכונה !</p>
-      </div>
-
-      <!-- 4) שורה חוצה -->
-      <p class="wg-mid" data-i18n="hero_showroom">לרשותכם אולם תצוגה לתצוגות בנייה ועיצובים</p>
-
-      <!-- 5) שמאל למטה: הדמיית האולם + הרצליה (image4 — לפי המסמך) -->
-      <div class="wg-cell wg-render">
-        <img class="wg-img wg-rounded" src="images/image4.jpeg" alt="" decoding="async">
-        <p class="wg-location" data-i18n="hero_location">הרצליה ישראל | HERZLIYA ISRAEL</p>
-      </div>
-
-      <!-- 6) ימין למטה: הגיטרות + פודקאסט -->
-      <div class="wg-cell wg-podcast">
-        <img class="wg-img wg-rounded" src="images/image3.png" alt="" decoding="async">
-        <p class="wg-pod-line"><span data-i18n="hero_podcast">פודקאסט | קבלנים משתפים</span></p>
-      </div>
-
-      <!-- 7) כפתור כניסה — המסך לא נסגר לבד -->
-      <button class="wg-enter" type="button" data-i18n="welcome_enter">כניסה לאתר</button>
-
-    </div>
-  </div>
-
   <!-- ===== Header / תפריט ניווט ===== -->
   <header class="site-header">
     <div class="container header-inner">
@@ -74,7 +33,7 @@
 
       <!-- מרכז: הלוגו העגול — קישור לדף הבית -->
       <a href="#hero" class="logo" aria-label="GAD MIVNIM — דף הבית">
-        <img src="images/image2.jpeg" alt="GAD MIVNIM" class="logo-img" decoding="async">
+        <img src="images/logo55.svg" alt="GAD MIVNIM" class="logo-img" decoding="async">
       </a>
 
       <!-- שמאל ויזואלי: שם המותג + בורר שפה -->
@@ -98,14 +57,14 @@
     <nav class="main-nav" id="mainNav" aria-label="Main menu">
       <ul class="container">
         <li><a href="#hero"     data-i18n="nav_home">דף הבית</a></li>
-        <li><a href="#about"    data-i18n="nav_about">אודות הקבוצה — מסורת משפחתית</a></li>
+        <li><a href="#about"    data-i18n="nav_about">אודות הקבוצה</a></li>
         <li><a href="#services" data-i18n="nav_services">השירותים שלנו</a></li>
         <li><a href="#projects" data-i18n="nav_projects">הפרויקטים שלנו</a></li>
-        <li><a href="#partners" data-i18n="nav_partners">השותפים שלנו</a></li>
         <li><a href="#teams"    data-i18n="nav_teams">הצוותים שלנו</a></li>
-        <li><a href="#gallery"  data-i18n="nav_gallery">גלריה בנייה ועיצובים</a></li>
-        <li><a href="#info"     data-i18n="nav_info">מידע לאזרח ולבונה</a></li>
+        <li><a href="#info"     data-i18n="nav_info">מידע לאזרח</a></li>
+        <li><a href="#gallery"  data-i18n="nav_gallery_short">גלריה</a></li>
         <li><a href="#contact" class="nav-cta" data-i18n="nav_contact">צור קשר</a></li>
+        <li><a href="#podcast" data-i18n="nav_podcast">פודקאסט</a></li>
       </ul>
     </nav>
   </header>
@@ -120,14 +79,10 @@
     </video>
     <div class="hero-overlay"></div>
     <div class="container hero-content">
-      <h1 class="hero-title reveal" data-i18n="hero_title">GAD MIVNIM — בכל מקום במפה</h1>
-      <p class="hero-subtitle reveal reveal-d1" data-i18n="hero_subtitle">משנים את הדרך לבנייה נכונה !</p>
+      <h1 class="hero-title reveal" data-i18n="hero_title">GAD MIVNIM בכל מקום במפה</h1>
+      <p class="hero-soon-wrap reveal reveal-d1"><span class="hero-soon" data-i18n="podcast_soon">בקרוב</span></p>
       <p class="hero-showroom reveal reveal-d2" data-i18n="hero_showroom">לרשותכם אולם תצוגה לתצוגות בנייה ועיצובים</p>
       <p class="hero-location reveal reveal-d2" data-i18n="hero_location">הרצליה ישראל | HERZLIYA ISRAEL</p>
-      <div class="hero-actions reveal reveal-d3">
-        <a href="#contact" class="btn btn-primary" data-i18n="nav_contact">צור קשר</a>
-        <span class="hero-chip" data-i18n="hero_podcast">פודקאסט | קבלנים משתפים</span>
-      </div>
     </div>
   </section>
 
@@ -582,7 +537,7 @@
       </div>
 
       <!-- פודקאסט "קבלנים משתפים" — עם התמונה מהמסמך + תגית בקרוב -->
-      <div class="podcast-banner reveal">
+      <div class="podcast-banner reveal" id="podcast">
         <div class="podcast-media">
           <img src="images/image3.png" alt="פודקאסט | קבלנים משתפים" loading="lazy" decoding="async">
         </div>
@@ -654,7 +609,7 @@
     <div class="container footer-inner">
 
       <div class="footer-brand">
-        <img src="images/image2.jpeg" alt="GAD MIVNIM" class="footer-logo" loading="lazy" decoding="async">
+        <img src="images/logo55.svg" alt="GAD MIVNIM" class="footer-logo" loading="lazy" decoding="async">
         <p class="footer-line1" data-i18n="footer_l1">מקווים שהנהנתם לצפות באתר הבית שלנו</p>
         <p class="footer-line2" data-i18n="footer_l2">נשמח לראותם בין קהל לקוחותינו וממשפחת <bdi>G A D MIVNIM</bdi> בכל מקום במפה</p>
       </div>
