@@ -33,6 +33,7 @@
     nav_info:     { he: 'מידע לאזרח', ru: 'Информация', en: 'Citizen Info', fr: 'Info citoyen' },
     nav_contact:  { he: 'צור קשר', ru: 'Связаться', en: 'Contact', fr: 'Contact' },
     nav_podcast:  { he: 'פודקאסט', ru: 'Подкаст', en: 'Podcast', fr: 'Podcast' },
+    hero_soon:    { he: 'בקרוב', ru: 'Скоро', en: 'Coming Soon', fr: 'Bientôt' },
 
     /* ----- Hero ----- */
     hero_title:    { he: '<span class="hero-title__latin">GAD MIVNIM</span> בכל מקום במפה', ru: 'GAD MIVNIM везде на карте', en: 'GAD MIVNIM Everywhere on the Map', fr: 'GAD MIVNIM Partout sur la carte' },
