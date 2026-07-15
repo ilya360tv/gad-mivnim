@@ -2421,17 +2421,17 @@ a, button { transition: color .18s ease, background-color .18s ease, border-colo
 .hero .hero-title {
   margin-bottom: 36px;
   position: relative;   /* הזזה ויזואלית בלבד — לא משפיע על זרימת האחים */
-  top: -64px;           /* מרים את ה-H1 עוד יותר למעלה; subtitle + location נשארים במקומם */
+  top: -90px;           /* מרים את ה-H1 עוד יותר למעלה; subtitle + location נשארים במקומם */
 }
 
 /* שורת אולם התצוגה — רווח אחיד */
 .hero .hero-showroom {
   margin-top: 0;
   margin-bottom: 20px;
-  font-size: 1.28rem;    /* +11% — עדיין קטן בבירור מה-H1 */
-  line-height: 1.44;     /* שומר גובה-שורה קבוע כדי שה-H1/location לא יזוזו */
+  font-size: 1.41rem;    /* +10% — עדיין קטן בבירור מה-H1 */
+  line-height: 1.305;    /* שומר גובה-שורה קבוע כך שה-location לא זז */
   position: relative;    /* הזזה ויזואלית בלבד — לא משפיע על זרימת האחים */
-  top: -24px;            /* מרים רק את ה-subtitle למעלה; H1 ו-location במקומם */
+  top: -44px;            /* מרים רק את ה-subtitle למעלה; H1 ו-location במקומם */
 }
 
 /* הרצליה ישראל — סימטרית: ריווח אותיות מאוזן וממורכז */
