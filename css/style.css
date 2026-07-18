@@ -2444,11 +2444,13 @@ a, button { transition: color .18s ease, background-color .18s ease, border-colo
   top: -44px;           /* זהה להרמת ה-subtitle — עוגן צמוד אליה */
 }
 
+/* מעטפת בקרוב+שורת האולם — מתכווצת לרוחב הטקסט, נשארת ממורכזת */
+.hero-sub-block { width: fit-content; margin-inline: auto; }
+
 .hero-badge {
   position: absolute;
   bottom: 8px;               /* 8px מעל ראש שורת "לרשותכם" — תמיד */
-  left: 50%;
-  transform: translateX(-50%); /* ממורכז על ציר ה-subtitle (עובד גם ב-RTL) */
+  inset-inline-start: 0;     /* RTL: צמוד לקצה הימני — מעל "לרשותכם" */
   display: inline-flex;      /* מתכווץ לתוכן — לא כפתור ברוחב מלא */
   align-items: center;
   gap: 6px;
