@@ -2434,14 +2434,21 @@ a, button { transition: color .18s ease, background-color .18s ease, border-colo
   top: -44px;            /* מרים רק את ה-subtitle למעלה; H1 ו-location במקומם */
 }
 
-/* תגית "בקרוב" קטנה מעל שורת האולם — מעטפת בגובה-אפס: לא מזיזה כלום */
+/* תגית "בקרוב" קטנה — מעוגנת ישירות מעל שורת "לרשותכם":
+   השורה בגובה-אפס יושבת בזרימה בדיוק בראש ה-subtitle, ומורמת באותו
+   היסט (-44px) — כך תחתית הבאדג׳ תמיד 8px מעל השורה, בכל מסך ופונט. */
 .hero-badge-row {
   height: 0;            /* תורמת 0 לזרימה — H1 ו-location לא זזים פיקסל */
   margin: 0;
-  overflow: visible;
+  position: relative;
+  top: -44px;           /* זהה להרמת ה-subtitle — עוגן צמוד אליה */
 }
 
 .hero-badge {
+  position: absolute;
+  bottom: 8px;               /* 8px מעל ראש שורת "לרשותכם" — תמיד */
+  left: 50%;
+  transform: translateX(-50%); /* ממורכז על ציר ה-subtitle (עובד גם ב-RTL) */
   display: inline-flex;      /* מתכווץ לתוכן — לא כפתור ברוחב מלא */
   align-items: center;
   gap: 6px;
@@ -2453,8 +2460,7 @@ a, button { transition: color .18s ease, background-color .18s ease, border-colo
   font-size: 1rem;           /* 18px ≈ 71% מה-subtitle — תווית, לא כפתור */
   font-weight: 500;
   letter-spacing: .06em;
-  position: relative;
-  top: -94px;                /* ממקם ויזואלית מעל ה-subtitle, מרווח 11px */
+  white-space: nowrap;       /* "בקרוב" לא נשבר לשורות */
 }
 
 .hero-badge svg { width: 15px; height: 15px; flex-shrink: 0; }
