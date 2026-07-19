@@ -2870,3 +2870,34 @@ html[dir="ltr"] .hero .hero-title { text-align: left; }
 
 /* פילטרי הפרויקטים — מיושרים לכותרת הימנית */
 .filters { justify-content: flex-start; }
+
+/* ==========================================================================
+   HERO CENTERED — ה-Hero בלבד חוזר למרכז (הסקשנים נשארים מיושרים לימין)
+   שכבת דריסה סופית — מנצחת את שכבת היישור-לימין שמעליה.
+   ========================================================================== */
+.hero { text-align: center; }
+
+/* ה-H1 (כפוי ltr) — מרכוז בשני כיווני דף */
+html[dir="rtl"] .hero .hero-title,
+html[dir="ltr"] .hero .hero-title { text-align: center; }
+
+/* תיבת התוכן — חוזרת לרוחב מלא ממורכז */
+.hero .hero-content {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+
+/* בלוק הבאדג׳+שורת האולם — ממורכז */
+.hero .hero-sub-block { margin-inline: auto; }
+
+/* הבאדג׳ — ממורכז מעל השורה, עם פיצוי ריווח-אותיות למרכוז אופטי */
+.hero .hero-badge {
+  inset-inline-start: auto;
+  left: 50%;
+  transform: translateX(-50%);
+  padding-inline: calc(12px + .06em) 12px; /* מפצה על הרווח אחרי האות האחרונה */
+}
+
+/* שורת המיקום — ממורכזת; בלי פיצוי (נמדד: כך המרכוז האופטי מדויק) */
+.hero .hero-location { text-align: center; padding-inline-start: 0; }
