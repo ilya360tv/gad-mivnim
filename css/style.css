@@ -2412,9 +2412,9 @@ a, button { transition: color .18s ease, background-color .18s ease, border-colo
   vertical-align: baseline;
 }
 
-/* הכותרת יושבת במרכז ההירו — מאוזנת */
+/* הבלוק מוגבה עדינות מהמרכז */
 .hero-content {
-  margin-top: 0;
+  margin-top: clamp(-70px, -5vh, -24px);
 }
 
 /* ריווח סימטרי: 36px אחרי הכותרת, 20px קבוע בין כל שאר השורות */
@@ -2822,3 +2822,51 @@ a, button { transition: color .18s ease, background-color .18s ease, border-colo
   .main-nav ul { gap: 6px; }
   .main-nav a  { padding: 6px 9px; font-size: .74rem; }
 }
+
+/* ==========================================================================
+   RIGHT-ALIGNED HEADINGS — כל הכותרות לצד ימין (צד הקריאה), בלי מקפים
+   שכבת דריסה סופית — מנצחת לפי סדר המקור.
+   ========================================================================== */
+
+/* ----- Hero: כל הבלוק נצמד לימין, שלוש השורות חולקות קצה ימני אחד ----- */
+.hero { text-align: start; }                 /* RTL: start = ימין */
+
+/* ה-H1 כפוי ל-ltr (סדר GAD MIVNIM/עברית) — יישורו נקבע לפי כיוון הדף */
+html[dir="rtl"] .hero .hero-title { text-align: right; }
+html[dir="ltr"] .hero .hero-title { text-align: left; }
+
+.hero-content {
+  width: fit-content;                        /* הבלוק ברוחב השורה הרחבה (ה-H1) */
+  max-width: 100%;
+  margin-inline: 0 auto;                     /* דוחף את הבלוק לצד ימין */
+  padding-inline-start: clamp(24px, 5vw, 72px); /* מרווח נעים מהקצה */
+}
+
+.hero-sub-block { margin-inline: 0; }        /* הבאדג׳+שורת האולם נצמדים לקצה הימני */
+
+.hero .hero-location {
+  text-align: start;
+  padding-inline-start: 0;                   /* בלי פיצוי — קצה ימני מדויק */
+}
+
+/* ----- כותרות הסקשנים: לימין, בלי המקף הירוק ----- */
+.section-eyebrow { margin-inline: 0; }
+.section-eyebrow::before { display: none; }  /* המקף הירוק שליד התווית — הוסר */
+
+.section-title { text-align: start; }
+
+/* קו ההדגשה מתחת לכותרת — נצמד לימין מתחת לתחילת הטקסט */
+.section-title::after {
+  margin-inline: 0;
+  inset-inline-start: 2px;
+  inset-inline-end: auto;
+}
+
+.section-lead { text-align: start; margin-inline: 0; }
+
+.division-head { margin-inline: 0; text-align: start; }
+
+.contact-dear { text-align: start; }
+
+/* פילטרי הפרויקטים — מיושרים לכותרת הימנית */
+.filters { justify-content: flex-start; }
