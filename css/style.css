@@ -2402,8 +2402,8 @@ a, button { transition: color .18s ease, background-color .18s ease, border-colo
   letter-spacing: .045em;
 }
 
-/* יישור גובה הטקסט הלטיני (GAD MIVNIM) לגובה האותיות העבריות בכותרת ה-Hero.
-   ב-Rubik האותיות הלטיניות נמוכות מהעבריות — מגדילים מעט את הרַץ הלטיני בלבד.
+/* הרַץ הלטיני (GAD MIVNIM) בכותרת ה-Hero — באותו גודל כמו העברית:
+   ב-Rubik גובה ה-caps הלטיני שווה לגובה האות העברית, so 1em = יישור מדויק.
    העטיפה מופיעה רק בעברית (במילון), לכן אין השפעה על en/fr/ru. */
 .hero-title__latin {
   font-size: 1em;         /* ב-Rubik גובה ה-caps הלטיני = גובה האות העברית — יישור מושלם בלי טריקים */
