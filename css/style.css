@@ -2406,7 +2406,7 @@ a, button { transition: color .18s ease, background-color .18s ease, border-colo
    ב-Rubik האותיות הלטיניות נמוכות מהעבריות — מגדילים מעט את הרַץ הלטיני בלבד.
    העטיפה מופיעה רק בעברית (במילון), לכן אין השפעה על en/fr/ru. */
 .hero-title__latin {
-  font-size: 1.13em;      /* מיישר את גובה האותיות הלטיניות לגובה העברית (קצה עליון זהה) */
+  font-size: 1em;         /* ב-Rubik גובה ה-caps הלטיני = גובה האות העברית — יישור מושלם בלי טריקים */
   line-height: 1;
   display: inline-block;  /* קופסה עקבית ליישור אנכי; הרַץ נשאר במקומו ב-bidi */
   vertical-align: baseline;
