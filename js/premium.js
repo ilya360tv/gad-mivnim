@@ -13,6 +13,24 @@
   document.addEventListener('DOMContentLoaded', function () {
 
     /* ---------------------------------------------------------------
+       0) סרטון ה-Hero — כניסה חלקה: הפוסטר ברקע, הסרטון נחשף בפייד
+          כשהניגון מתחיל (בלי קפיצה מתמונה לווידאו)
+       --------------------------------------------------------------- */
+    var heroVideo = document.querySelector('.hero-video');
+
+    if (heroVideo) {
+      var showVideo = function () { heroVideo.classList.add('is-playing'); };
+
+      // אם הסרטון כבר רץ (מטמון מהיר) — מציגים מיד
+      if (!heroVideo.paused && heroVideo.currentTime > 0) {
+        showVideo();
+      } else {
+        heroVideo.addEventListener('playing', showVideo, { once: true });
+        heroVideo.addEventListener('canplay', showVideo, { once: true });
+      }
+    }
+
+    /* ---------------------------------------------------------------
        1) חשיפה בגלילה — fade-in + slide-up (Intersection Observer)
        --------------------------------------------------------------- */
     var revealTargets = document.querySelectorAll('.reveal, .reveal-group');

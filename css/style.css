@@ -2901,3 +2901,29 @@ html[dir="ltr"] .hero .hero-title { text-align: center; }
 
 /* שורת המיקום — ממורכזת; בלי פיצוי (נמדד: כך המרכוז האופטי מדויק) */
 .hero .hero-location { text-align: center; padding-inline-start: 0; }
+
+/* ==========================================================================
+   HERO VIDEO FADE-IN + באדג׳ מעל "לרשותכם" — תיקונים נקודתיים
+   ========================================================================== */
+
+/* הפוסטר כרקע הסקשן — נראה מיידית; הסרטון נחשף מעליו בפייד */
+.hero { background: url('../images/hero-poster.jpg') center / cover no-repeat; }
+
+.hero-video {
+  opacity: 0;
+  transition: opacity .6s ease;
+}
+
+.hero-video.is-playing { opacity: 1; }
+
+/* הבלוק מתכווץ לרוחב שורת האולם ונשאר ממורכז כמכלול (text-align:center של ההורה) */
+.hero .hero-sub-block { display: block; } /* block — בלי תיבת-שורה שמזיזה את המרכוז האנכי */
+
+/* הבאדג׳ — צמוד לקצה הימני של השורה: בדיוק מעל "לרשותכם" */
+.hero .hero-badge {
+  left: auto;
+  transform: none;
+  inset-inline-start: 0;
+  bottom: 10px;
+  padding-inline: 12px;
+}
