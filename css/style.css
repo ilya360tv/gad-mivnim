@@ -2338,23 +2338,6 @@ input:focus-visible {
 
 .card-media { border-bottom: 1px solid var(--line); }
 
-/* קו הדגשה ירוק קצר מתחת לכותרות סקשן — חתימה עיצובית עקבית */
-.section-title {
-  position: relative;
-  padding-bottom: 14px;
-}
-
-.section-title::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  inset-inline-start: 2px;
-  width: 56px;
-  height: 3px;
-  border-radius: 2px;
-  background: linear-gradient(90deg, var(--green), var(--teal));
-}
-
 /* תמונות נטענות בעדינות */
 img { image-rendering: auto; }
 
@@ -2763,12 +2746,6 @@ a, button { transition: color .18s ease, background-color .18s ease, border-colo
 /* הכותרת הראשית — ממורכזת */
 .section-title { text-align: center; }
 
-/* קו ההדגשה הירוק מתחת לכותרת — ממורכז מתחתיה */
-.section-title::after {
-  inset-inline: 0;
-  margin-inline: auto;
-}
-
 /* פסקת הפתיחה — שומרת על רוחב מקסימלי אך ממורכזת כבלוק וכטקסט */
 .section-lead {
   text-align: center;
@@ -2854,13 +2831,6 @@ html[dir="ltr"] .hero .hero-title { text-align: left; }
 .section-eyebrow::before { display: none; }  /* המקף הירוק שליד התווית — הוסר */
 
 .section-title { text-align: start; }
-
-/* קו ההדגשה מתחת לכותרת — נצמד לימין מתחת לתחילת הטקסט */
-.section-title::after {
-  margin-inline: 0;
-  inset-inline-start: 2px;
-  inset-inline-end: auto;
-}
 
 .section-lead { text-align: start; margin-inline: 0; }
 
