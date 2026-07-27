@@ -3167,13 +3167,21 @@ html.a11y-contrast .btn,
 html.a11y-contrast button[type="submit"] { background: #ffe600 !important; color: #000 !important; border: 2px solid #fff !important; }
 html.a11y-contrast input,
 html.a11y-contrast textarea { background: #000 !important; color: #fff !important; border: 1px solid #fff !important; }
-/* לא לפגוע בפאנל הנגישות עצמו */
+/* לא לפגוע בפאנל הנגישות עצמו — נשאר קריא: שחור עם טקסט לבן */
 html.a11y-contrast .a11y-panel,
-html.a11y-contrast .a11y-modal__box { background: #fff !important; color: #111 !important; }
+html.a11y-contrast .a11y-modal__box { background: #000 !important; color: #fff !important; }
 html.a11y-contrast .a11y-panel *,
-html.a11y-contrast .a11y-modal__box * { color: inherit !important; }
+html.a11y-contrast .a11y-modal__box * { background: #000 !important; color: #fff !important; }
 html.a11y-contrast .a11y-panel__head,
-html.a11y-contrast .a11y-panel__head * { background: #1e5aa8 !important; color: #fff !important; }
+html.a11y-contrast .a11y-panel__head * { background: #000 !important; color: #fff !important; }
+/* מסגרות ומתגים נשארים גלויים בניגודיות גבוהה */
+html.a11y-contrast .a11y-toggle,
+html.a11y-contrast .a11y-row,
+html.a11y-contrast .a11y-stepper button,
+html.a11y-contrast .a11y-reset { border: 1px solid #fff !important; }
+html.a11y-contrast .a11y-toggle::after { background: #555 !important; }
+html.a11y-contrast .a11y-toggle[aria-pressed="true"]::after { background: #ffe600 !important; }
+html.a11y-contrast .a11y-toggle[aria-pressed="true"]::before { background: #000 !important; }
 
 /* גווני אפור */
 html.a11y-grayscale body { filter: grayscale(100%); }
@@ -3182,7 +3190,8 @@ html.a11y-grayscale body { filter: grayscale(100%); }
 html.a11y-links a:not(.a11y-fab):not(.a11y-statement-link) {
   text-decoration: underline !important;
   text-underline-offset: 2px;
-  color: #0b3d91 !important;
+  text-decoration-thickness: 2px !important;
+  color: #22c55e !important;   /* ירוק מותג בהיר — בולט וקריא, ללא כחול */
   font-weight: 700 !important;
 }
 
@@ -3228,4 +3237,122 @@ html.a11y-big-cursor * {
 .a11y-modal__close:focus-visible {
   outline: 3px solid #1e5aa8;
   outline-offset: 2px;
+}
+
+/* ==========================================================================
+   סקין כהה לתוסף הנגישות — תואם לעיצוב האתר (שחור + ירוק, טבעת כמו הלוגו)
+   דורס את הכחול-לבן הגנרי. הפונקציונליות ללא שינוי.
+   ========================================================================== */
+
+/* הכפתור הצף — ירוק מותג עם טבעת זוהרת */
+.a11y-fab {
+  background: var(--green);
+  box-shadow:
+    0 0 0 2px rgba(22, 163, 74, .55),
+    0 0 18px rgba(22, 163, 74, .4),
+    0 6px 18px rgba(0, 0, 0, .35);
+}
+.a11y-fab:hover {
+  background: var(--green-dark, #0f7a37);
+  box-shadow:
+    0 0 0 2px rgba(22, 163, 74, .9),
+    0 0 26px rgba(22, 163, 74, .55),
+    0 8px 22px rgba(0, 0, 0, .4);
+}
+.a11y-fab:focus-visible { outline: 3px solid var(--green); outline-offset: 3px; }
+
+/* הפאנל — משטח כהה כמו כרטיסי האתר */
+.a11y-panel {
+  background: #12151a;
+  color: #e8ecef;
+  border: 1px solid #2a323b;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, .6);
+}
+
+.a11y-panel__head {
+  background: #161b22;
+  color: #ffffff;
+  border-bottom: 1px solid #2a323b;
+}
+
+.a11y-close {
+  background: rgba(255, 255, 255, .1);
+  color: #e8ecef;
+}
+.a11y-close:hover { background: rgba(22, 163, 74, .35); }
+
+/* שורת גודל טקסט */
+.a11y-row { background: #161b22; border: 1px solid #2a323b; }
+.a11y-row__label { color: #ffffff; }
+
+.a11y-stepper button {
+  background: #0e1216;
+  border-color: #2a323b;
+  color: #4ade80;
+}
+.a11y-stepper button:hover:not(:disabled) {
+  background: var(--green);
+  border-color: var(--green);
+  color: #ffffff;
+}
+.a11y-step-val { color: #ffffff; }
+
+/* מתגים */
+.a11y-toggle {
+  background: #161b22;
+  border-color: #2a323b;
+  color: #e8ecef;
+}
+.a11y-toggle:hover { background: #1a2028; border-color: rgba(22, 163, 74, .5); }
+.a11y-toggle__ico { color: #4ade80; }
+.a11y-toggle::after { background: #39424c; }
+.a11y-toggle[aria-pressed="true"] {
+  border-color: var(--green);
+  background: rgba(22, 163, 74, .14);
+}
+.a11y-toggle[aria-pressed="true"]::after { background: var(--green); }
+
+/* איפוס — משטח כהה עם מסגרת ירוקה, נמלא ירוק ב-hover */
+.a11y-reset {
+  background: #161b22;
+  color: #4ade80;
+  border: 1px solid var(--green);
+}
+.a11y-reset:hover { background: var(--green); color: #ffffff; border-color: var(--green); }
+.a11y-statement-link { color: #4ade80; }
+
+/* מודאל ההצהרה — כהה תואם */
+.a11y-modal__box {
+  background: #12151a;
+  color: #e8ecef;
+  border: 1px solid #2a323b;
+}
+.a11y-modal__box h2 { color: #4ade80; }
+.a11y-modal__content a { color: #4ade80; text-decoration: underline; }
+.a11y-modal__content a:hover { color: #6ee7a0; }
+.a11y-modal__content p[style] { color: #8b949e !important; }
+.a11y-modal__close {
+  background: rgba(255, 255, 255, .1);
+  color: #e8ecef;
+}
+.a11y-modal__close:hover { background: rgba(22, 163, 74, .35); }
+
+/* מיקוד — ירוק מותג במקום כחול */
+.a11y-fab:focus-visible,
+.a11y-toggle:focus-visible,
+.a11y-stepper button:focus-visible,
+.a11y-close:focus-visible,
+.a11y-reset:focus-visible,
+.a11y-modal__close:focus-visible {
+  outline: 3px solid var(--green);
+  outline-offset: 2px;
+}
+
+/* במצב ניגודיות גבוהה — הפאנל נשאר קריא (לא נצבע כחול) */
+html.a11y-contrast .a11y-panel,
+html.a11y-contrast .a11y-panel *,
+html.a11y-contrast .a11y-panel__head,
+html.a11y-contrast .a11y-panel__head * {
+  background: #000000 !important;
+  color: #ffffff !important;
 }
