@@ -2897,3 +2897,335 @@ html[dir="ltr"] .hero .hero-title { text-align: center; }
   bottom: 10px;
   padding-inline: 12px;
 }
+
+/* ==========================================================================
+   תוסף נגישות (ת"י 5568 / WCAG 2.0 AA)
+   ========================================================================== */
+
+/* ----- כפתור צף ----- */
+.a11y-fab {
+  position: fixed;
+  bottom: 22px;
+  right: 22px;              /* ימין ויזואלי (פיזי) — קבוע בכל כיווני הכתיבה */
+  z-index: 2000;
+  width: 56px;
+  height: 56px;
+  border: none;
+  border-radius: 50%;
+  background: #1e5aa8;       /* כחול נגישות סטנדרטי */
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .28);
+  transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
+}
+.a11y-fab:hover { background: #17497f; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,.34); }
+.a11y-fab svg { width: 30px; height: 30px; display: block; }
+.a11y-fab:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+
+/* ----- הפאנל ----- */
+.a11y-panel {
+  position: fixed;
+  bottom: 88px;
+  right: 22px;
+  z-index: 2001;
+  width: 320px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 110px);
+  overflow-y: auto;
+  background: #fff;
+  color: #111418;
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .30);
+  border: 1px solid #e5e7eb;
+  direction: rtl;
+  text-align: right;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(14px) scale(.98);
+  transform-origin: bottom right;
+  transition: opacity .2s ease, transform .2s ease, visibility .2s;
+}
+.a11y-panel.is-open { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+
+.a11y-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid #eef0f2;
+  background: #1e5aa8;
+  color: #fff;
+  border-radius: 16px 16px 0 0;
+}
+.a11y-panel__head h2 { font-size: 1.15rem; font-weight: 700; margin: 0; }
+.a11y-close {
+  border: none;
+  background: rgba(255, 255, 255, .16);
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  line-height: 1;
+}
+.a11y-close:hover { background: rgba(255, 255, 255, .3); }
+
+.a11y-panel__body { padding: 14px; display: grid; gap: 9px; }
+
+/* שורת גודל טקסט */
+.a11y-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #f5f6f7;
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+.a11y-row__label { font-weight: 700; font-size: .95rem; }
+.a11y-stepper { display: flex; align-items: center; gap: 6px; }
+.a11y-stepper button {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid #d0d5da;
+  background: #fff;
+  color: #1e5aa8;
+  font-weight: 700;
+  font-size: .95rem;
+  cursor: pointer;
+}
+.a11y-stepper button:hover:not(:disabled) { background: #1e5aa8; color: #fff; border-color: #1e5aa8; }
+.a11y-stepper button:disabled { opacity: .4; cursor: not-allowed; }
+.a11y-step-val { min-width: 46px; text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* כפתורי טוגל */
+.a11y-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e2e5e9;
+  border-radius: 10px;
+  background: #fff;
+  color: #1a1d21;
+  font-size: .95rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: start;
+  transition: background .15s ease, border-color .15s ease;
+}
+.a11y-toggle:hover { background: #f0f4fa; border-color: #c3d3e8; }
+.a11y-toggle__ico { flex: 0 0 auto; width: 22px; height: 22px; color: #1e5aa8; display: flex; align-items: center; }
+.a11y-toggle__ico svg { width: 22px; height: 22px; }
+.a11y-toggle span:last-child { flex: 1; }
+.a11y-toggle::after {
+  content: "";
+  flex: 0 0 auto;
+  width: 38px;
+  height: 20px;
+  border-radius: 20px;
+  background: #cfd4da;
+  position: relative;
+  transition: background .18s ease;
+}
+.a11y-toggle::before {
+  content: "";
+  position: absolute;
+  inset-inline-end: 14px;      /* מיקום כדור המתג בצד ההתחלה (RTL) */
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,.3);
+  transition: transform .18s ease;
+  z-index: 1;
+}
+.a11y-toggle { position: relative; }
+.a11y-toggle[aria-pressed="true"] { border-color: #1e5aa8; background: #eef4fc; }
+.a11y-toggle[aria-pressed="true"]::after { background: #1e5aa8; }
+.a11y-toggle[aria-pressed="true"]::before { transform: translateX(-18px); }
+
+/* איפוס + הצהרה */
+.a11y-reset {
+  margin-top: 4px;
+  padding: 11px;
+  border: none;
+  border-radius: 10px;
+  background: #111418;
+  color: #fff;
+  font-weight: 700;
+  font-size: .95rem;
+  cursor: pointer;
+}
+.a11y-reset:hover { background: #2a2f36; }
+.a11y-statement-link {
+  display: block;
+  text-align: center;
+  margin-top: 2px;
+  padding: 6px;
+  font-size: .88rem;
+  color: #1e5aa8;
+  text-decoration: underline;
+}
+
+/* ----- מודאל הצהרת נגישות ----- */
+.a11y-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, .55);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .2s ease, visibility .2s;
+}
+.a11y-modal.is-open { opacity: 1; visibility: visible; }
+.a11y-modal__box {
+  background: #fff;
+  color: #1a1d21;
+  border-radius: 16px;
+  max-width: 620px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 28px 30px;
+  position: relative;
+  direction: rtl;
+  text-align: right;
+  box-shadow: 0 20px 60px rgba(0,0,0,.4);
+}
+.a11y-modal__box h2 { font-size: 1.5rem; color: #1e5aa8; margin: 0 0 14px; }
+.a11y-modal__content p { margin: 0 0 12px; line-height: 1.7; font-size: 1rem; }
+.a11y-modal__content ul { margin: 0 0 12px; padding-inline-start: 22px; line-height: 1.7; }
+.a11y-modal__close {
+  position: absolute;
+  top: 14px;
+  inset-inline-start: 16px;    /* פינה שמאלית עליונה ב-RTL */
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 8px;
+  background: #f0f2f4;
+  color: #333;
+  font-size: 1.1rem;
+  cursor: pointer;
+  line-height: 1;
+}
+.a11y-modal__close:hover { background: #e2e5e9; }
+
+/* ----- מובייל: הפאנל כ-bottom sheet מלא ----- */
+@media (max-width: 560px) {
+  .a11y-fab { width: 48px; height: 48px; bottom: 16px; inset-inline-end: 16px; }
+  .a11y-fab svg { width: 26px; height: 26px; }
+  .a11y-panel {
+    inset-inline: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: 100%;
+    max-height: 82vh;
+    border-radius: 18px 18px 0 0;
+    transform: translateY(100%);
+    transform-origin: bottom center;
+  }
+  .a11y-panel.is-open { transform: translateY(0); }
+  .a11y-panel__head { border-radius: 18px 18px 0 0; }
+}
+
+/* ==========================================================================
+   מצבי הנגישות המופעלים (מחלקות על <html>)
+   ========================================================================== */
+
+/* ניגודיות גבוהה */
+html.a11y-contrast body { background: #000 !important; color: #fff !important; }
+html.a11y-contrast .site-header,
+html.a11y-contrast .main-nav,
+html.a11y-contrast section,
+html.a11y-contrast .site-footer,
+html.a11y-contrast .card,
+html.a11y-contrast .contact-form { background: #000 !important; }
+html.a11y-contrast h1,
+html.a11y-contrast h2,
+html.a11y-contrast h3,
+html.a11y-contrast h4,
+html.a11y-contrast p,
+html.a11y-contrast span,
+html.a11y-contrast li,
+html.a11y-contrast label,
+html.a11y-contrast .section-title { color: #fff !important; }
+html.a11y-contrast a { color: #ffe600 !important; }
+html.a11y-contrast .btn,
+html.a11y-contrast button[type="submit"] { background: #ffe600 !important; color: #000 !important; border: 2px solid #fff !important; }
+html.a11y-contrast input,
+html.a11y-contrast textarea { background: #000 !important; color: #fff !important; border: 1px solid #fff !important; }
+/* לא לפגוע בפאנל הנגישות עצמו */
+html.a11y-contrast .a11y-panel,
+html.a11y-contrast .a11y-modal__box { background: #fff !important; color: #111 !important; }
+html.a11y-contrast .a11y-panel *,
+html.a11y-contrast .a11y-modal__box * { color: inherit !important; }
+html.a11y-contrast .a11y-panel__head,
+html.a11y-contrast .a11y-panel__head * { background: #1e5aa8 !important; color: #fff !important; }
+
+/* גווני אפור */
+html.a11y-grayscale body { filter: grayscale(100%); }
+
+/* הדגשת קישורים */
+html.a11y-links a:not(.a11y-fab):not(.a11y-statement-link) {
+  text-decoration: underline !important;
+  text-underline-offset: 2px;
+  color: #0b3d91 !important;
+  font-weight: 700 !important;
+}
+
+/* פונט קריא */
+html.a11y-readable,
+html.a11y-readable body,
+html.a11y-readable button,
+html.a11y-readable input,
+html.a11y-readable textarea,
+html.a11y-readable .section-title,
+html.a11y-readable h1,
+html.a11y-readable h2,
+html.a11y-readable h3 {
+  font-family: Arial, "Segoe UI", Tahoma, sans-serif !important;
+  letter-spacing: normal !important;
+}
+
+/* עצירת אנימציות */
+html.a11y-no-motion * {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+html.a11y-no-motion #heroBg,
+html.a11y-no-motion .hero-bg,
+html.a11y-no-motion [class*="parallax"] { transform: none !important; }
+html.a11y-no-motion .reveal,
+html.a11y-no-motion .reveal-group { opacity: 1 !important; transform: none !important; }
+html.a11y-no-motion .hero-video { opacity: 1 !important; }
+
+/* סמן גדול */
+html.a11y-big-cursor,
+html.a11y-big-cursor * {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><path d="M6 2 L6 40 L16 30 L23 44 L30 41 L23 27 L38 27 Z" fill="black" stroke="white" stroke-width="2"/></svg>') 4 2, auto !important;
+}
+
+/* פוקוס נראה חזק יותר בכל האתר (חיזוק נגישות מקלדת) */
+.a11y-fab:focus-visible,
+.a11y-toggle:focus-visible,
+.a11y-stepper button:focus-visible,
+.a11y-close:focus-visible,
+.a11y-reset:focus-visible,
+.a11y-modal__close:focus-visible {
+  outline: 3px solid #1e5aa8;
+  outline-offset: 2px;
+}
