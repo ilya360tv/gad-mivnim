@@ -71,7 +71,6 @@
 
     /* ----- אודות הקבוצה ----- */
     about_eyebrow: { he: 'אודות הקבוצה', ru: 'О группе', en: 'About the Group', fr: 'À propos du groupe' },
-    about_title:   { he: 'מסורת משפחתית', ru: 'Семейная традиция', en: 'A Family Tradition', fr: 'Une tradition familiale' },
     about_p1: { he: 'מייסד הקבוצה והשותפים למלאכה', ru: 'Основатель группы и партнёры по ремеслу', en: 'The group founder and craft partners', fr: 'Le fondateur du groupe et les partenaires du métier' },
     about_p2: { he: 'מדוע נולד הרעיון לאחד את הבנייה והעיצובים לבית אחד ולקבוצה שמנצחת על הכל !', ru: 'Почему родилась идея объединить строительство и дизайн в один дом и в команду, которая побеждает во всём!', en: 'Why the idea was born to unite building and design under one home — and into a group that wins at everything!', fr: 'Pourquoi est née l’idée d’unir la construction et le design sous un même toit, en un groupe qui gagne sur tout !' },
     about_p3: { he: 'את ערכי היסוד האיכות המקצועיות והיחס המשפחתי והאישי בחרנו כבחירה לאבני היסוד של הקבוצה', ru: 'Базовые ценности — качество, профессионализм, семейное и личное отношение — мы выбрали краеугольными камнями группы', en: 'We chose the core values — quality, professionalism and a personal, family approach — as the cornerstones of the group', fr: 'Les valeurs fondamentales — la qualité, le professionnalisme et la relation familiale et personnelle — nous les avons choisies comme pierres angulaires du groupe' },
