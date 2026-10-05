@@ -169,7 +169,6 @@
     p9: { he: 'מבנים מיוחדים', ru: 'Особые здания', en: 'Special Buildings', fr: 'Bâtiments spéciaux' },
 
     /* ----- השותפים שלנו ----- */
-    partners_eyebrow: { he: 'השותפים שלנו', ru: 'Наши партнёры', en: 'Our Partners', fr: 'Nos partenaires' },
     partners_title: { he: 'חטיבת השותפים שלנו', ru: 'Подразделение наших партнёров', en: 'Our Partners Division', fr: 'Division de nos partenaires' },
     partners_sub:   { he: 'המותגים והחברות המובלים בישראל', ru: 'Ведущие бренды и компании Израиля', en: 'The leading brands and companies in Israel', fr: 'Les marques et entreprises leaders en Israël' },
     partners_badge: { he: 'המותגים המובלים', ru: 'Ведущие бренды', en: 'The leading brands', fr: 'Les marques leaders' },
