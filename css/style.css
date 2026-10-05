@@ -3435,3 +3435,66 @@ html.nav-open body { overflow: hidden; }
     text-align: center;
   }
 }
+
+/* ==========================================================================
+   NAV ENTRANCE — כניסת הגלולות מימין, אחת אחרי השנייה (CSS בלבד, פעם אחת)
+   transform + opacity בלבד — אפס הזזת פריסה. fill-mode: backwards => אחרי
+   הסיום לא נשאר שום ערך כפוי, ו-hover / סימון פעיל / לחיצה עובדים כרגיל.
+   ========================================================================== */
+@keyframes navPillIn {
+  from { opacity: 0; transform: translateX(40px); }   /* 40px ימינה */
+}
+@keyframes navRingIn {
+  /* טבעת הזוהר נדלקת קצת אחרי שהגלולה נוחתת (ערך הסיום = הערך הטבעי) */
+  from { box-shadow: 0 0 0 2px rgba(22, 163, 74, 0), 0 0 0 rgba(22, 163, 74, 0); }
+}
+@keyframes navFadeIn {
+  from { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* דסקטופ — בטעינת הדף: קודם לוגו + בורר שפה, ואז 12 הגלולות */
+  @media (min-width: 1024px) {
+    .site-header .logo,
+    .site-header .header-side {
+      animation: navFadeIn .3s ease-out backwards;
+    }
+
+    .main-nav a {
+      animation:
+        navPillIn .5s cubic-bezier(.22, .61, .36, 1) var(--d, 0s) backwards,
+        navRingIn .35s ease-out calc(var(--d, 0s) + .4s) backwards;
+    }
+  .main-nav li:nth-child(1) a { --d: 0.25s; }
+  .main-nav li:nth-child(2) a { --d: 0.32s; }
+  .main-nav li:nth-child(3) a { --d: 0.39s; }
+  .main-nav li:nth-child(4) a { --d: 0.46s; }
+  .main-nav li:nth-child(5) a { --d: 0.53s; }
+  .main-nav li:nth-child(6) a { --d: 0.6s; }
+  .main-nav li:nth-child(7) a { --d: 0.67s; }
+  .main-nav li:nth-child(8) a { --d: 0.74s; }
+  .main-nav li:nth-child(9) a { --d: 0.81s; }
+  .main-nav li:nth-child(10) a { --d: 0.88s; }
+  .main-nav li:nth-child(11) a { --d: 0.95s; }
+  .main-nav li:nth-child(12) a { --d: 1.02s; }
+  }
+
+  /* מובייל/טאבלט — בכל פתיחה של המגירה */
+  @media (max-width: 1023.98px) {
+    .main-nav.is-open a {
+      animation: navPillIn .45s cubic-bezier(.22, .61, .36, 1) var(--d, 0s) backwards;
+    }
+  .main-nav.is-open li:nth-child(1) a { --d: 0.05s; }
+  .main-nav.is-open li:nth-child(2) a { --d: 0.095s; }
+  .main-nav.is-open li:nth-child(3) a { --d: 0.14s; }
+  .main-nav.is-open li:nth-child(4) a { --d: 0.185s; }
+  .main-nav.is-open li:nth-child(5) a { --d: 0.23s; }
+  .main-nav.is-open li:nth-child(6) a { --d: 0.275s; }
+  .main-nav.is-open li:nth-child(7) a { --d: 0.32s; }
+  .main-nav.is-open li:nth-child(8) a { --d: 0.365s; }
+  .main-nav.is-open li:nth-child(9) a { --d: 0.41s; }
+  .main-nav.is-open li:nth-child(10) a { --d: 0.455s; }
+  .main-nav.is-open li:nth-child(11) a { --d: 0.5s; }
+  .main-nav.is-open li:nth-child(12) a { --d: 0.545s; }
+  }
+}
