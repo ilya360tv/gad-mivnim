@@ -142,15 +142,6 @@ a {
   background: rgba(255, 255, 255, .08);
 }
 
-.main-nav a.nav-cta {
-  background: var(--green);
-  color: var(--white);
-}
-
-.main-nav a.nav-cta:hover {
-  background: var(--green-dark);
-}
-
 /* פעולות בכותרת: בורר שפה + המבורגר */
 .header-actions {
   display: flex;
@@ -1195,12 +1186,6 @@ a {
     border-radius: 10px;
     border-bottom: 1px solid rgba(255, 255, 255, .07);
   }
-
-  .main-nav a.nav-cta {
-    text-align: center;
-    margin-top: 14px;
-    border-bottom: none;
-  }
 }
 
 /* ----- מטרות מגע נוחות (מינימום 44px) במובייל/טאבלט ----- */
@@ -1936,9 +1921,6 @@ a, button, .filter-btn, .gallery-item { cursor: pointer; }
   transition: color .2s ease, background .2s ease;
 }
 
-.main-nav a.nav-cta { background: var(--green-deep); }
-.main-nav a.nav-cta:hover { background: var(--green); }
-
 .logo-text {
   font-family: 'Frank Ruhl Libre', Georgia, serif;
   letter-spacing: .06em;
@@ -2615,12 +2597,6 @@ a, button { transition: color .18s ease, background-color .18s ease, border-colo
   border-bottom: 1px solid rgba(255, 255, 255, .07);
 }
 
-.main-nav a.nav-cta {
-  text-align: center;
-  margin-top: 14px;
-  border-bottom: none;
-}
-
 /* מובייל (עד 700px): מסתירים את שם המותג — הדגל והלוגו נשארים */
 @media (max-width: 700px) {
   .logo-text { display: none; }
@@ -2709,19 +2685,6 @@ a, button { transition: color .18s ease, background-color .18s ease, border-colo
       0 0 0 2px rgba(22, 163, 74, .9),
       0 0 18px rgba(22, 163, 74, .45);
   }
-
-  /* צור קשר — גלולת ה-CTA: ירוק מלא תמיד, עם אותה טבעת */
-  .main-nav a.nav-cta {
-    background: var(--green);
-    color: #ffffff;
-    margin-top: 0;
-    text-align: center;
-    box-shadow:
-      0 0 0 2px rgba(22, 163, 74, .9),
-      0 0 20px rgba(22, 163, 74, .5);
-  }
-
-  .main-nav a.nav-cta:hover { background: var(--green-dark); }
 }
 
 /* 1024–1300: מצמצמים עדינות כדי ששמונה הגלולות ייכנסו בשורה אחת */
@@ -3378,12 +3341,6 @@ html.a11y-contrast .a11y-panel__head * {
     display: flex;
     align-items: center;
     min-height: 48px;
-  }
-  /* "צור קשר" נשאר ירוק מלא, אבל באותו מקום ברשימה (לא מוזז) */
-  .main-nav a.nav-cta {
-    margin-top: 0;
-    justify-content: center;
-    border-bottom: none;
   }
   .main-nav { overscroll-behavior: contain; }
 }
