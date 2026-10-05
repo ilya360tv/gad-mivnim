@@ -155,6 +155,9 @@
 
     /* ----- הפרויקטים שלנו ----- */
     proj_eyebrow: { he: 'הפרויקטים שלנו', ru: 'Наши проекты', en: 'Our Projects', fr: 'Nos projets' },
+    proj_title2:  { he: 'העבודות שאנחנו גאים בהן', ru: 'Работы, которыми мы гордимся', en: 'Work We Are Proud Of', fr: 'Des réalisations dont nous sommes fiers' },
+    ip_title2:    { he: 'מה אנחנו בונים עכשיו', ru: 'Что мы строим сейчас', en: 'What We Are Building Now', fr: 'Ce que nous construisons maintenant' },
+    partners_eyebrow: { he: 'השותפים שלנו', ru: 'Наши партнёры', en: 'Our Partners', fr: 'Nos partenaires' },
     filter_all:      { he: 'הכל', ru: 'Все', en: 'All', fr: 'Tout' },
     filter_private:  { he: 'מגזר פרטי', ru: 'Частный сектор', en: 'Private Sector', fr: 'Secteur privé' },
     filter_business: { he: 'מגזר עסקי', ru: 'Коммерческий сектор', en: 'Business Sector', fr: 'Secteur commercial' },
