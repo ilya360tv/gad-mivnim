@@ -1560,19 +1560,6 @@ html {
 /* ----- אודות: תגים וציטוט ----- */
 .about-strong { font-weight: 700; color: #16191d !important; }
 
-.about-tags { display: flex; flex-wrap: wrap; gap: 10px; }
-
-.about-tag {
-  display: inline-block;
-  padding: 6px 16px;
-  border-radius: 999px;
-  background: rgba(22, 163, 74, .1);
-  border: 1px solid rgba(22, 163, 74, .3);
-  color: var(--green-dark);
-  font-weight: 500;
-  font-size: .95rem;
-}
-
 .about-quote {
   border-inline-start: 4px solid var(--green);
   padding-inline-start: 16px;
@@ -2166,7 +2153,6 @@ body {
 .about-text strong { color: var(--green); }
 .about-strong      { color: var(--white) !important; }
 .about-quote       { color: var(--green) !important; }
-.about-tag         { color: var(--green); border-color: rgba(22, 163, 74, .45); }
 
 /* ----- תגי אמינות ----- */
 .badge-chip {
