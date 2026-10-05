@@ -26,7 +26,7 @@
     nav_about:    { he: 'אודות הקבוצה', ru: 'О группе', en: 'About the Group', fr: 'À propos du groupe' },
     nav_services: { he: 'השירותים שלנו', ru: 'Наши услуги', en: 'Our Services', fr: 'Nos services' },
     nav_projects: { he: 'הפרויקטים שלנו', ru: 'Наши проекты', en: 'Our Projects', fr: 'Nos projets' },
-    nav_partners: { he: 'שותפים שלנו', ru: 'Наши партнёры', en: 'Our Partners', fr: 'Nos partenaires' },
+    nav_partners: { he: 'השותפים שלנו', ru: 'Наши партнёры', en: 'Our Partners', fr: 'Nos partenaires' },
     nav_teams:    { he: 'הצוותים שלנו', ru: 'Наши команды', en: 'Our Teams', fr: 'Nos équipes' },
     nav_gallery:  { he: 'גלריה בנייה ועיצובים', ru: 'Галерея — строительство и дизайн', en: 'Gallery — Building & Design', fr: 'Galerie — construction & design' },
     nav_gallery_short: { he: 'גלריה', ru: 'Галерея', en: 'Gallery', fr: 'Galerie' },
