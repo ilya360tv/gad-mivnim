@@ -3455,3 +3455,44 @@ html.nav-open body { overflow: hidden; }
   .main-nav.is-open li:nth-child(12) a { --d: 0.545s; }
   }
 }
+
+/* ==========================================================================
+   HERO BRIGHTER — וידאו בהיר יותר (רק ה-Hero)
+   ========================================================================== */
+
+/* שכבת הכהות — בערך חצי מהכהות הקודמת; חיזוק קל רק בתחתית למעבר חלק לסקשן הבא */
+.hero-overlay {
+  background: linear-gradient(
+    180deg,
+    rgba(12, 15, 18, .24) 0%,
+    rgba(12, 15, 18, .42) 40%,
+    rgba(12, 15, 18, .46) 70%,
+    rgba(12, 15, 18, .74) 100%
+  );
+}
+
+/* הסרטון עצמו — הבהרה עדינה */
+.hero-video { filter: brightness(1.15) saturate(1.05); }
+
+/* הפוסטר (רקע ה-Hero בזמן הטעינה) — אותה הבהרה, דרך שכבה מתחת לסרטון */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: url('../images/hero-poster.jpg') center / cover no-repeat;
+  filter: brightness(1.15) saturate(1.05);
+  pointer-events: none;
+}
+
+/* טקסט קריא על רקע בהיר: צל רך מאחורי כל הטקסטים */
+.hero .hero-title,
+.hero .hero-badge,
+.hero .hero-showroom,
+.hero .hero-location {
+  text-shadow: 0 2px 14px rgba(0, 0, 0, .55);
+}
+
+/* הטורקיז של "בקרוב" ו-HERZLIYA — גוון בהיר מעט יותר, כדי לעבור AA (4.5:1) על הרקע הבהיר */
+.hero .hero-badge,
+.hero .hero-location { color: #5eead4; }
