@@ -220,7 +220,6 @@
     media_3: { he: 'סרטונים של שלבי בניה', ru: 'Видео этапов строительства', en: 'Videos of construction stages', fr: 'Vidéos des étapes de construction' },
 
     /* ----- צור קשר / קוד משתמש ----- */
-    ct_code: { he: 'קוד משתמש', ru: 'Код пользователя', en: 'User Code', fr: 'Code utilisateur' },
     ct_t1:   { he: 'המבנה שלכם שווה הרבה !', ru: 'Ваше здание стоит многого!', en: 'Your building is worth a lot!', fr: 'Votre bâtiment vaut beaucoup !' },
     ct_t2:   { he: 'והוא רק שלכם !', ru: 'И оно только ваше!', en: 'And it is only yours!', fr: 'Et il n’est qu’à vous !' },
     ct_dear: { he: 'לקוחות יקרים', ru: 'Дорогие клиенты', en: 'Dear clients', fr: 'Chers clients' },
