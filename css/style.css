@@ -3706,3 +3706,13 @@ html[dir="ltr"] .form-field select {
   .careers-form-card .form-submit { align-self: stretch; }
   .podcast { padding-block: 48px; }
 }
+
+/* ==========================================================================
+   EYEBROW BIGGER — התוויות הירוקות מעל כותרות הסקשנים (כל האתר)
+   specificity גבוהה יותר מכל שכבות .section-eyebrow הישנות.
+   ========================================================================== */
+section .section-eyebrow {
+  font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+  font-weight: 700;
+  margin-bottom: 14px;
+}
