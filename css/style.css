@@ -3729,16 +3729,16 @@ section .section-eyebrow {
 
   .about-title {
     white-space: nowrap;
-    --k: 32.4;                                         /* עברית */
-    font-size: clamp(1.3rem, 2.3vw, 2rem);             /* גיבוי לדפדפנים בלי cqw */
+    --k: 49;                                           /* עברית (גדול = פונט קטן יותר) */
+    font-size: clamp(1rem, 1.6vw, 1.4rem);             /* גיבוי לדפדפנים בלי cqw */
     font-size: min(2.7rem, calc(100cqw / var(--k)));
   }
-  html[lang="en"] .about-title { --k: 42.3; }
-  html[lang="fr"] .about-title { --k: 42.3; }
-  html[lang="ru"] .about-title { --k: 54.7; }
+  html[lang="en"] .about-title { --k: 63; }
+  html[lang="fr"] .about-title { --k: 63; }
+  html[lang="ru"] .about-title { --k: 67; }
 }
 
 /* מובייל/טאבלט (<1024): גודל שמאפשר לעברית להישבר לשתי שורות מאוזנות */
 @media (max-width: 1023.98px) {
-  .about-title { font-size: clamp(1.15rem, 5.2vw, 1.7rem); }
+  .about-title { font-size: clamp(1rem, 4.4vw, 1.4rem); }
 }
