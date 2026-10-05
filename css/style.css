@@ -3356,3 +3356,82 @@ html.a11y-contrast .a11y-panel__head * {
   background: #000000 !important;
   color: #ffffff !important;
 }
+
+/* ==========================================================================
+   NAV V5 — תפריט 12 פריטים: דסקטופ בשתי שורות של 6 (גריד), מובייל = מגירה
+   בלוק דריסה סופי — מנצח את V2–V4 לפי סדר המקור.
+   ========================================================================== */
+
+/* ----- פוקוס נראה לעין בכל פריט ----- */
+.main-nav a:focus-visible,
+.nav-toggle:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 3px;
+}
+
+/* ----- מובייל/טאבלט (<1024): מגירה מלאה עם 12 פריטים ----- */
+@media (max-width: 1023.98px) {
+  .main-nav ul {
+    overscroll-behavior: contain;
+  }
+  .main-nav a {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+  }
+  /* "צור קשר" נשאר ירוק מלא, אבל באותו מקום ברשימה (לא מוזז) */
+  .main-nav a.nav-cta {
+    margin-top: 0;
+    justify-content: center;
+    border-bottom: none;
+  }
+  .main-nav { overscroll-behavior: contain; }
+}
+
+/* נעילת גלילת הרקע כשהמגירה פתוחה */
+html.nav-open,
+html.nav-open body { overflow: hidden; }
+
+/* ----- דסקטופ (1024+): שתי שורות, 6 בכל שורה, בלי נפתחים ובלי "עוד" ----- */
+@media (min-width: 1024px) {
+  :root { --header-height: 112px; }
+
+  .site-header {
+    height: var(--header-height);
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+  }
+
+  .main-nav {
+    width: 100%;
+    min-width: 0;
+    border-top: none;
+  }
+
+  .main-nav ul {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 10px 12px;               /* 10px בין השורות, 12px בין הגלולות */
+    width: 100%;
+    max-width: 980px;
+    margin-inline: auto;
+    padding: 0;
+    height: auto;
+  }
+
+  .main-nav li { width: auto; min-width: 0; }
+
+  .main-nav a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 100%;
+    height: 38px;
+    padding: 0 clamp(4px, .8vw, 14px);
+    font-size: clamp(.7rem, .46rem + .38vw, .9rem);
+    line-height: 1;
+    white-space: nowrap;
+    text-align: center;
+  }
+}

@@ -119,26 +119,52 @@
        --------------------------------------------------------------- */
     var navLinks = document.querySelectorAll('.main-nav a[href^="#"]');
 
-    if (navLinks.length && 'IntersectionObserver' in window) {
-      var linkByTarget = {};
+    if (navLinks.length) {
+      var linkById = {};
       navLinks.forEach(function (link) {
-        var id = link.getAttribute('href').slice(1);
-        if (document.getElementById(id)) { linkByTarget[id] = link; }
+        linkById[link.getAttribute('href').slice(1)] = link;
       });
 
-      var spy = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            navLinks.forEach(function (l) { l.classList.remove('is-current'); });
-            var link = linkByTarget[entry.target.id];
-            if (link) { link.classList.add('is-current'); }
-          }
+      // כל היעדים שקיימים בדף (גם סקשנים שאינם בתפריט — כדי לנקות סימון ישן)
+      var spyIds = ['hero', 'about', 'services', 'projects', 'in-progress', 'teams',
+                    'partners', 'home-services', 'orders', 'gallery', 'info',
+                    'podcast', 'contact', 'careers'];
+      var spyTargets = spyIds.map(function (id) { return document.getElementById(id); })
+                             .filter(Boolean);
+      var currentLink = null;
+
+      var setCurrent = function (link) {
+        if (link === currentLink) { return; }
+        navLinks.forEach(function (l) {
+          l.classList.remove('is-current');
+          l.removeAttribute('aria-current');
         });
-      }, { rootMargin: '-40% 0px -55% 0px' }); // הסקשן שבמרכז המסך
+        if (link) {
+          link.classList.add('is-current');
+          link.setAttribute('aria-current', 'location');
+        }
+        currentLink = link;
+      };
 
-      Object.keys(linkByTarget).forEach(function (id) {
-        spy.observe(document.getElementById(id));
-      });
+      var spyTicking = false;
+      var updateSpy = function () {
+        spyTicking = false;
+        var probe = window.innerHeight * 0.35;     // קו הבדיקה במסך
+        var atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
+        var best = null, bestTop = -Infinity;
+        spyTargets.forEach(function (el) {
+          var top = el.getBoundingClientRect().top;
+          if (top <= probe && top > bestTop) { best = el; bestTop = top; }
+        });
+        if (atBottom && linkById.contact) { setCurrent(linkById.contact); return; }
+        setCurrent(best ? (linkById[best.id] || null) : null);
+      };
+      var queueSpy = function () {
+        if (!spyTicking) { spyTicking = true; requestAnimationFrame(updateSpy); }
+      };
+      window.addEventListener('scroll', queueSpy, { passive: true });
+      window.addEventListener('resize', queueSpy);
+      updateSpy();
     }
 
     /* ---------------------------------------------------------------

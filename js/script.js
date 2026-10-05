@@ -117,33 +117,39 @@ document.addEventListener('DOMContentLoaded', function () {
      --------------------------------------------------------------- */
   var navToggle = document.getElementById('navToggle');
   var mainNav   = document.getElementById('mainNav');
+  var rootEl    = document.documentElement;
+  var desktopMq = window.matchMedia('(min-width: 1024px)');
 
-  function closeNav() {
-    mainNav.classList.remove('is-open');
-    navToggle.classList.remove('is-open');
-    navToggle.setAttribute('aria-expanded', 'false');
-    navToggle.setAttribute('aria-label', 'פתיחת תפריט');
+  function setNav(open) {
+    mainNav.classList.toggle('is-open', open);
+    navToggle.classList.toggle('is-open', open);
+    rootEl.classList.toggle('nav-open', open);      // נעילת גלילת הרקע
+    navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    navToggle.setAttribute('aria-label', open ? 'סגירת תפריט' : 'פתיחת תפריט');
   }
 
   if (navToggle && mainNav) {
     navToggle.addEventListener('click', function () {
-      var isOpen = mainNav.classList.toggle('is-open');
-      navToggle.classList.toggle('is-open', isOpen);
-      navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-      navToggle.setAttribute('aria-label', isOpen ? 'סגירת תפריט' : 'פתיחת תפריט');
+      setNav(!mainNav.classList.contains('is-open'));
     });
 
     // סגירת התפריט אחרי לחיצה על קישור
     mainNav.querySelectorAll('a').forEach(function (link) {
-      link.addEventListener('click', closeNav);
+      link.addEventListener('click', function () { setNav(false); });
     });
 
-    // סגירה במקש Escape
+    // סגירה במקש Escape (והחזרת המיקוד להמבורגר)
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && mainNav.classList.contains('is-open')) {
-        closeNav();
+        setNav(false);
+        navToggle.focus();
       }
     });
+
+    // מעבר לדסקטופ בזמן שהמגירה פתוחה — סוגרים ומשחררים את הגלילה
+    var onMq = function () { if (desktopMq.matches) { setNav(false); } };
+    if (desktopMq.addEventListener) { desktopMq.addEventListener('change', onMq); }
+    else if (desktopMq.addListener) { desktopMq.addListener(onMq); }
   }
 
 });
