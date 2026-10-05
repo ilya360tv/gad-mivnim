@@ -182,4 +182,32 @@ document.addEventListener('DOMContentLoaded', function () {
       careersForm.reset();
     });
   }
+
+  /* ---------------------------------------------------------------
+     6) מיקום עוגנים — מודדים את גובה ההדר הדביק בפועל (שתי שורות בדסקטופ,
+        עשוי להשתנות) ומעדכנים scroll-padding-top = גובה + 16px.
+        בנוסף, כל סקשן מקבל scroll-margin-top שמבטל את ריווח העליון שלו,
+        כך שהכותרת נוחתת ~36px מתחת להדר — בלי רווח ריק גדול.
+     --------------------------------------------------------------- */
+  var siteHeader = document.querySelector('.site-header');
+  var spySections = document.querySelectorAll('main > section[id]');
+  var CONTENT_GAP = 20;   // 16px (scroll-padding) + 20px = ~36px מתחת להדר
+
+  function updateAnchorOffsets() {
+    if (!siteHeader) { return; }
+    var h = Math.round(siteHeader.getBoundingClientRect().height);
+    document.documentElement.style.setProperty('--header-h', h + 'px');
+
+    spySections.forEach(function (sec) {
+      var pad = parseFloat(getComputedStyle(sec).paddingTop) || 0;
+      sec.style.scrollMarginTop = (pad > CONTENT_GAP ? (CONTENT_GAP - pad) : 0) + 'px';
+    });
+  }
+
+  updateAnchorOffsets();
+  window.addEventListener('resize', updateAnchorOffsets);
+  window.addEventListener('load', updateAnchorOffsets);
+  if ('ResizeObserver' in window && siteHeader) {
+    new ResizeObserver(updateAnchorOffsets).observe(siteHeader);   // גם אם ההדר מתכווץ בגלילה
+  }
 });

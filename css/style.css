@@ -1635,7 +1635,6 @@ html {
    ========================================================================== */
 .contact {
   background: linear-gradient(180deg, #eef8f1 0%, #f7fbf8 100%);
-  border-top: 5px solid var(--green);
 }
 
 .contact-dear {
@@ -1997,7 +1996,6 @@ a, button, .filter-btn, .gallery-item { cursor: pointer; }
 /* ----- צור קשר: הבמה המרכזית ----- */
 .contact {
   background: linear-gradient(180deg, #f0f7f2 0%, #fafcfa 100%);
-  border-top: 4px solid var(--green-deep);
 }
 
 .contact-card { border-top: 5px solid var(--green-deep); }
@@ -2157,7 +2155,7 @@ body {
 .teams    { background: #0a0c0e; }
 .gallery  { background: #12151a; }
 .info     { background: #0a0c0e; border-top: 1px solid var(--line); }
-.contact  { background: linear-gradient(180deg, #12151a 0%, #0a0c0e 100%); border-top-color: var(--green); }
+.contact  { background: linear-gradient(180deg, #12151a 0%, #0a0c0e 100%); }
 
 /* ----- טיפוגרפיה כללית ----- */
 .section-eyebrow { color: var(--green); }
@@ -2275,8 +2273,8 @@ body {
    פרטים קטנים שעושים אתר רציני: עוגנים, מיקוד, כפתורים, אחידות.
    ========================================================================== */
 
-/* עוגני התפריט לא מתחבאים מתחת להדר הדביק */
-html { scroll-padding-top: calc(var(--header-height) + 14px); }
+/* עוגני התפריט לא מתחבאים מתחת להדר הדביק — גובה ההדר האמיתי נמדד ב-JS (--header-h) */
+html { scroll-padding-top: calc(var(--header-h, var(--header-height)) + 16px); }
 
 /* סימון טקסט בצבע המותג */
 ::selection { background: rgba(22, 163, 74, .4); color: #ffffff; }
