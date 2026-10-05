@@ -35,6 +35,31 @@
     nav_podcast:  { he: 'פודקאסט', ru: 'Подкаст', en: 'Podcast', fr: 'Podcast' },
     nav_in_progress:   { he: 'פרויקטים בביצוע', ru: 'Текущие проекты', en: 'Projects in Progress', fr: 'Projets en cours' },
     nav_careers:       { he: 'דרושים', ru: 'Вакансии', en: 'Careers', fr: 'Recrutement' },
+    /* ----- פרויקטים בביצוע ----- */
+    ip_lead:     { he: 'פרויקטים שנמצאים כעת בעבודה - מתעדכן באופן שוטף', ru: 'Проекты, над которыми мы работаем сейчас — обновляется регулярно', en: 'Projects currently under construction — updated regularly', fr: 'Projets actuellement en cours de réalisation — mis à jour régulièrement' },
+    ip_status:   { he: 'בביצוע', ru: 'В работе', en: 'In Progress', fr: 'En cours' },
+    ip_name:     { he: 'שם הפרויקט', ru: 'Название проекта', en: 'Project name', fr: 'Nom du projet' },
+    ip_loc:      { he: 'מיקום', ru: 'Местоположение', en: 'Location', fr: 'Emplacement' },
+    ip_progress: { he: 'התקדמות', ru: 'Ход работ', en: 'Progress', fr: 'Avancement' },
+
+    /* ----- דרושים ----- */
+    car_title:  { he: 'בואו לבנות איתנו', ru: 'Стройте вместе с нами', en: 'Come Build With Us', fr: 'Venez construire avec nous' },
+    car_lead:   { he: 'אנחנו תמיד מחפשים אנשי מקצוע איכותיים להצטרף למשפחת GAD MIVNIM', ru: 'Мы всегда ищем качественных профессионалов в семью GAD MIVNIM', en: 'We are always looking for quality professionals to join the GAD MIVNIM family', fr: 'Nous recherchons toujours des professionnels de qualité pour rejoindre la famille GAD MIVNIM' },
+    car_r1:     { he: 'מנהלי עבודה', ru: 'Прорабы', en: 'Site Managers', fr: 'Chefs de chantier' },
+    car_r1s:    { he: 'אחראים על השטח, על לוח הזמנים ועל האיכות', ru: 'Отвечают за площадку, сроки и качество', en: 'In charge of the site, the schedule and the quality', fr: 'Responsables du chantier, du planning et de la qualité' },
+    car_r2:     { he: 'קבלני משנה ובעלי מקצוע', ru: 'Субподрядчики и мастера', en: 'Subcontractors & Tradespeople', fr: 'Sous-traitants et artisans' },
+    car_r2s:    { he: 'בעלי מקצוע מנוסים לעבודה משותפת לאורך זמן', ru: 'Опытные мастера для долгосрочного сотрудничества', en: 'Experienced professionals for long-term cooperation', fr: 'Des professionnels expérimentés pour une collaboration durable' },
+    car_r3:     { he: 'מהנדסים ואדריכלים', ru: 'Инженеры и архитекторы', en: 'Engineers & Architects', fr: 'Ingénieurs et architectes' },
+    car_r3s:    { he: 'תכנון והנדסה ברמה הגבוהה ביותר', ru: 'Проектирование и инженерия высочайшего уровня', en: 'Planning and engineering at the highest level', fr: 'Conception et ingénierie au plus haut niveau' },
+    car_r4:     { he: 'אנשי משרד ושירות', ru: 'Офис и сервис', en: 'Office & Service Staff', fr: 'Personnel de bureau et de service' },
+    car_r4s:    { he: 'שירות אישי וחם לכל לקוח', ru: 'Личный и тёплый сервис для каждого клиента', en: 'Personal, warm service for every client', fr: 'Un service personnel et chaleureux pour chaque client' },
+    car_btn:    { he: 'שלחו קורות חיים', ru: 'Отправить резюме', en: 'Send Your CV', fr: 'Envoyer votre CV' },
+    car_f_name: { he: 'שם מלא', ru: 'Полное имя', en: 'Full name', fr: 'Nom complet' },
+    car_f_field:{ he: 'תחום', ru: 'Направление', en: 'Field', fr: 'Domaine' },
+    car_f_pick: { he: 'בחרו תחום', ru: 'Выберите направление', en: 'Choose a field', fr: 'Choisissez un domaine' },
+    car_submit: { he: 'שליחה', ru: 'Отправить', en: 'Submit', fr: 'Envoyer' },
+    car_success:{ he: 'תודה! קיבלנו את הפרטים ונחזור אליכם בהקדם', ru: 'Спасибо! Мы получили ваши данные и скоро свяжемся с вами', en: 'Thank you! We received your details and will get back to you soon', fr: 'Merci ! Nous avons bien reçu vos informations et vous recontacterons rapidement' },
+
     hero_soon:    { he: 'בקרוב', ru: 'Скоро', en: 'Coming Soon', fr: 'Bientôt' },
 
     /* ----- Hero ----- */

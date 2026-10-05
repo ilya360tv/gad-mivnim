@@ -152,4 +152,34 @@ document.addEventListener('DOMContentLoaded', function () {
     else if (desktopMq.addListener) { desktopMq.addListener(onMq); }
   }
 
+
+  /* ---------------------------------------------------------------
+     5) דרושים — כפתור "שלחו קורות חיים" בוחר תחום וגולל לטופס;
+        הטופס מציג הודעת הצלחה (בלי שרת, כמו טופס צור קשר)
+     --------------------------------------------------------------- */
+  var careersForm    = document.getElementById('careersForm');
+  var careersSuccess = document.getElementById('careersSuccess');
+  var careerField    = document.getElementById('careerField');
+
+  if (careersForm) {
+    document.querySelectorAll('.role-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (careerField) { careerField.value = btn.getAttribute('data-role'); }
+        var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        careersForm.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+        var first = document.getElementById('careerName');
+        if (first) { first.focus({ preventScroll: true }); }
+      });
+    });
+
+    careersForm.addEventListener('submit', function (e) {
+      e.preventDefault(); // אין שרת — לא שולחים לשום מקום
+      if (!careersForm.checkValidity()) {
+        careersForm.reportValidity();
+        return;
+      }
+      careersSuccess.hidden = false;
+      careersForm.reset();
+    });
+  }
 });
