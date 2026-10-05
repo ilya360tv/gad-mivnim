@@ -127,7 +127,7 @@
 
       // כל היעדים שקיימים בדף (גם סקשנים שאינם בתפריט — כדי לנקות סימון ישן)
       var spyIds = ['hero', 'about', 'services', 'projects', 'in-progress', 'teams',
-                    'partners', 'home-services', 'orders', 'gallery', 'info',
+                    'partners', 'gallery', 'info',
                     'podcast', 'contact', 'careers'];
       var spyTargets = spyIds.map(function (id) { return document.getElementById(id); })
                              .filter(Boolean);
