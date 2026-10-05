@@ -3702,3 +3702,43 @@ section .section-eyebrow {
   font-weight: 700;
   margin-bottom: 14px;
 }
+
+/* ==========================================================================
+   ABOUT HEADING — כותרת "מדוע נולד הרעיון..." בשורה אחת בדסקטופ (#about בלבד)
+   הכותרת ברוחב מלא של הקונטיינר, מעל גריד הטקסט/תמונה.
+   ========================================================================== */
+
+/* תת-שורה ירוקה "מסורת משפחתית" (היתה הכותרת הישנה) */
+.about-text p.about-sub {
+  color: var(--green);
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: .02em;
+}
+
+/* מתחת ל-1024: שבירה לשתי שורות מאוזנות */
+.about-title {
+  white-space: normal;
+  text-wrap: balance;
+}
+
+/* 1024+: שורה אחת. הגודל נגזר מרוחב הקונטיינר עצמו (cqw) לפי יחס רוחב-הטקסט (--k)
+   שנמדד לכל שפה — כך שהמשפט תמיד נכנס בדיוק, בלי גלישה ובלי גלילה אופקית. */
+@media (min-width: 1024px) {
+  .about .container { container-type: inline-size; }
+
+  .about-title {
+    white-space: nowrap;
+    --k: 32.4;                                         /* עברית */
+    font-size: clamp(1.3rem, 2.3vw, 2rem);             /* גיבוי לדפדפנים בלי cqw */
+    font-size: min(2.7rem, calc(100cqw / var(--k)));
+  }
+  html[lang="en"] .about-title { --k: 42.3; }
+  html[lang="fr"] .about-title { --k: 42.3; }
+  html[lang="ru"] .about-title { --k: 54.7; }
+}
+
+/* מובייל/טאבלט (<1024): גודל שמאפשר לעברית להישבר לשתי שורות מאוזנות */
+@media (max-width: 1023.98px) {
+  .about-title { font-size: clamp(1.15rem, 5.2vw, 1.7rem); }
+}
