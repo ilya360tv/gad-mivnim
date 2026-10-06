@@ -90,22 +90,48 @@
       var k = btn.getAttribute('data-a11y');
       btn.setAttribute('aria-pressed', state[k] ? 'true' : 'false');
     });
+
+    var undoBtn = document.getElementById('a11yUndo');
+    if (undoBtn) { undoBtn.disabled = (stateHistory.length === 0); }
+  }
+
+  /* ---------- היסטוריה: "חזרה לשלב הקודם" ---------- */
+  var stateHistory = [];
+  var HISTORY_MAX = 30;
+
+  function pushHistory() {
+    stateHistory.push(JSON.stringify(state));
+    if (stateHistory.length > HISTORY_MAX) { stateHistory.shift(); }
+  }
+
+  function undo() {
+    if (!stateHistory.length) { return; }
+    try { state = JSON.parse(stateHistory.pop()); } catch (e) { return; }
+    save(); apply();
   }
 
   /* ---------- פעולות ---------- */
   function setText(delta) {
-    state.text = Math.max(MIN_STEP, Math.min(MAX_STEP, state.text + delta));
+    var next = Math.max(MIN_STEP, Math.min(MAX_STEP, state.text + delta));
+    if (next === state.text) { return; }
+    pushHistory();
+    state.text = next;
     save(); apply();
   }
 
   function toggle(key) {
+    pushHistory();
     state[key] = !state[key];
     save(); apply();
   }
 
   function reset() {
-    state = { text: 0, contrast: false, grayscale: false, links: false,
-              readable: false, motion: false, cursor: false };
+    var before = JSON.stringify(state);
+    var fresh = { text: 0, contrast: false, grayscale: false, links: false,
+                  readable: false, motion: false, cursor: false };
+    if (before === JSON.stringify(fresh)) { return; }
+    pushHistory();
+    state = fresh;
     save(); apply();
   }
 
@@ -204,7 +230,9 @@
       btn.addEventListener('click', function () { toggle(btn.getAttribute('data-a11y')); });
     });
 
-    // איפוס
+    // חזרה לשלב הקודם + איפוס
+    var undoBtn = document.getElementById('a11yUndo');
+    if (undoBtn) { undoBtn.addEventListener('click', undo); }
     document.getElementById('a11yReset').addEventListener('click', reset);
 
     // הצהרת נגישות

@@ -3131,7 +3131,9 @@ html.a11y-contrast .a11y-toggle[aria-pressed="true"]::after { background: #ffe60
 html.a11y-contrast .a11y-toggle[aria-pressed="true"]::before { background: #000 !important; }
 
 /* גווני אפור */
-html.a11y-grayscale body { filter: grayscale(100%); }
+/* filter על <html> ולא על <body>: filter על body הופך אותו ל-containing block של
+   אלמנטים position:fixed — וכפתור/תפריט הנגישות "ברחו" לתחתית העמוד ונעלמו. */
+html.a11y-grayscale { filter: grayscale(100%); }
 
 /* הדגשת קישורים */
 html.a11y-links a:not(.a11y-fab):not(.a11y-statement-link) {
@@ -3742,3 +3744,8 @@ section .section-eyebrow {
 @media (max-width: 1023.98px) {
   .about-title { font-size: clamp(1rem, 4.4vw, 1.4rem); }
 }
+
+/* ----- תפריט נגישות: כפתור "חזרה לשלב הקודם" ----- */
+.a11y-undo { margin-top: 4px; }
+.a11y-undo:disabled { opacity: .45; cursor: not-allowed; }
+.a11y-reset + .a11y-statement-link { margin-top: 8px; }
