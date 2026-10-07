@@ -3764,3 +3764,15 @@ section .section-eyebrow {
 .site-header .main-nav ul li a:focus-visible {
   color: #ffffff;
 }
+
+/* ----- כותרות ירוקות → צבע האות G בלוגו (טקסט בלבד; כפתורים, טבעות, באדג'ים ונגישות ללא שינוי) ----- */
+body .section-eyebrow,
+body .about-text p.about-sub,
+body .about-text p.about-quote,
+body .about-quote,
+body .division-slogan,
+body .card-tagline,
+body .contact-dear,
+body .contact-label {
+  color: var(--logo-g) !important;
+}
