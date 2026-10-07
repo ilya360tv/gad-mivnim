@@ -3893,3 +3893,35 @@ body .contact-label {
   justify-content: center;
   margin-top: 56px;
 }
+
+/* ----- כרטיסי חטיבות: קטנים יותר, והכותרת בראש הכרטיס מעל התמונה ----- */
+.division-cards {
+  max-width: 900px;
+  margin-inline: auto;
+  gap: 20px;
+}
+.division-card .card-media { aspect-ratio: 16 / 9; }
+.division-card-head { padding: 16px 18px 12px; }
+.division-card-head .card-title { margin: 0; font-size: 1.15rem; }
+.division-card .card-body { padding: 14px 18px 18px; }
+.division-card .card-tagline { font-size: .95rem; margin-bottom: 12px; }
+.division-card-btn { padding: 6px 16px; font-size: .85rem; }
+@media (max-width: 640px) {
+  .division-card .card-media { aspect-ratio: 21 / 9; }
+}
+
+/* דסקטופ: כל 5 הכרטיסים בשורה אחת */
+@media (min-width: 1024px) {
+  .division-cards {
+    max-width: none;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .division-cards .division-card,
+  .division-cards .division-card:nth-child(4),
+  .division-cards .division-card:nth-child(5) { grid-column: auto; }
+  .division-card-head { padding: 14px 14px 10px; min-height: 86px; }
+  .division-card-head .card-title { font-size: 1.02rem; }
+  .division-card .card-body { padding: 12px 14px 16px; }
+  .division-card .card-tagline { font-size: .88rem; }
+}
