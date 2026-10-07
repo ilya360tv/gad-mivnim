@@ -3762,3 +3762,9 @@ body .contact-dear,
 body .contact-label {
   color: var(--logo-g) !important;
 }
+
+/* ----- #services: כותרת הלבנה קטנה יותר (בלבד) ----- */
+#services .section-title {
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
+  text-wrap: balance;
+}
