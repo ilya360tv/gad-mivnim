@@ -3986,3 +3986,14 @@ body .contact-label {
   }
 }
 
+/* ----- דפי חטיבות: שני הכפתורים העליונים קטנים יותר (רק הם) ----- */
+.division-page .division-top .division-actions { gap: 10px; }
+.division-page .division-top .division-actions .btn {
+  padding: 10px 24px;
+  font-size: .95rem;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
