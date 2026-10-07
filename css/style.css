@@ -2516,8 +2516,8 @@ a, button { transition: color .18s ease, background-color .18s ease, border-colo
 }
 
 .logo-img {
-  width: 64px;
-  height: 64px;
+  width: 72px;
+  height: 72px;
   box-shadow:
     0 0 0 2px rgba(22, 163, 74, .55),
     0 0 16px rgba(22, 163, 74, .35);
