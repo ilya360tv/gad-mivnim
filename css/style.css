@@ -687,7 +687,6 @@ a {
 .partner-chip {
   background: var(--white);
   border: 1px solid #e5e8eb;
-  border-inline-start: 4px solid var(--green); /* קו הדגשה בצד תחילת הקריאה (RTL/LTR) */
   border-radius: 10px;
   padding: 14px 22px;
   font-weight: 500;
@@ -1469,8 +1468,6 @@ html {
 }
 
 .division-head {
-  border-inline-start: 5px solid var(--green);
-  padding-inline-start: 18px;
   margin-bottom: 24px;
 }
 
@@ -1561,8 +1558,6 @@ html {
 .about-strong { font-weight: 700; color: #16191d !important; }
 
 .about-quote {
-  border-inline-start: 4px solid var(--green);
-  padding-inline-start: 16px;
   font-size: 1.15rem !important;
   font-weight: 500;
   color: var(--green-dark) !important;
@@ -1571,7 +1566,6 @@ html {
 /* ----- מידע לאזרח ולבונה ----- */
 .info-note {
   background: var(--white);
-  border-inline-start: 5px solid var(--green);
   border-radius: 12px;
   box-shadow: 0 8px 22px rgba(0, 0, 0, .07);
   padding: 24px 26px;
@@ -1840,11 +1834,6 @@ body { color: var(--ink-soft); }
 /* ----- חטיבות: כותרת סריף + קו זהוב-ירוק ----- */
 .division { margin-top: 64px; }
 
-.division-head {
-  border-inline-start: 4px solid var(--green-deep);
-  padding-inline-start: 22px;
-}
-
 .division-title { font-size: 1.65rem; color: var(--ink); }
 .division-slogan { color: var(--green-deep); }
 
@@ -1948,7 +1937,6 @@ a, button, .filter-btn, .gallery-item { cursor: pointer; }
 .partner-chip {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-inline-start: 3px solid var(--green-deep);
   border-radius: 12px;
   box-shadow: 0 1px 2px rgba(16, 20, 24, .04);
   transition: border-color .25s ease, box-shadow .25s ease;
@@ -1957,7 +1945,6 @@ a, button, .filter-btn, .gallery-item { cursor: pointer; }
 .partner-chip:hover {
   transform: none;
   border-color: rgba(22, 101, 52, .4);
-  border-inline-start-color: var(--green);
   box-shadow: var(--shadow-soft);
 }
 
@@ -2162,7 +2149,6 @@ body {
 }
 
 /* ----- חטיבות ----- */
-.division-head   { border-inline-start-color: var(--green); }
 .division-slogan { color: var(--green); }
 .division-extra  { color: #c9d1d8; }
 
