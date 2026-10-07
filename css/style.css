@@ -3865,24 +3865,6 @@ body .contact-label {
   transform: translateY(-2px);
 }
 
-/* שביל פירורים */
-.breadcrumb { margin-bottom: 18px; }
-.breadcrumb ol {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px 10px;
-  margin: 0;
-  padding: 0;
-  font-size: .95rem;
-  color: var(--ink-soft);
-}
-.breadcrumb li + li::before { content: "›"; margin-inline-end: 10px; opacity: .6; }
-.breadcrumb a { color: var(--logo-g); text-decoration: none; }
-.breadcrumb a:hover { text-decoration: underline; }
-.breadcrumb [aria-current="page"] { color: #fff; font-weight: 500; }
-
 /* דף חטיבה */
 .division-page { padding-top: 72px; }
 .division-page .division-head { margin-top: 6px; margin-bottom: 36px; }
