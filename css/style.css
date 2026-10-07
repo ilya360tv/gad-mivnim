@@ -3767,4 +3767,7 @@ body .contact-label {
 #services .section-title {
   font-size: clamp(1.4rem, 2.6vw, 2rem);
   text-wrap: balance;
+  /* אותו פונט כמו "השירותים שלנו" (Rubik), מודגש */
+  font-family: 'Rubik', 'Segoe UI', Arial, sans-serif;
+  font-weight: 700;
 }
