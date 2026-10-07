@@ -3925,3 +3925,53 @@ body .contact-label {
   .division-card .card-body { padding: 12px 14px 16px; }
   .division-card .card-tagline { font-size: .88rem; }
 }
+
+/* ----- כרטיסי חטיבות: כותרות קטנות וממורכזות, יישור אחיד ----- */
+#services .division-cards .division-card {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+#services .division-cards .division-card .division-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  padding: 14px 10px 10px;
+}
+#services .division-cards .division-card .card-title {
+  text-align: center;
+  text-wrap: balance;
+  margin: 0;
+}
+#services .division-cards .division-card .card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  text-align: center;
+  padding: 12px 12px 16px;
+}
+#services .division-cards .division-card .card-tagline {
+  flex: 1;
+  text-align: center;
+}
+#services .division-cards .division-card .division-card-btn {
+  margin-top: auto;
+  margin-inline: auto;
+  align-self: center;
+}
+
+/* טאבלט: ראש הכרטיס בגובה קבוע (עד 2 שורות) כדי שהתמונות יישארו על קו אחד */
+@media (min-width: 641px) and (max-width: 1023.98px) {
+  #services .division-cards .division-card .division-card-head { min-height: 76px; }
+}
+
+/* דסקטופ 1024+: כותרת בשורה אחת */
+@media (min-width: 1024px) {
+  #services .division-cards .division-card .card-title {
+    font-size: clamp(.74rem, 1.25vw, .95rem);
+    white-space: nowrap;
+  }
+  #services .division-cards .division-card .division-card-head { min-height: 0; padding-inline: 8px; }
+}
+
