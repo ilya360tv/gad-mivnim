@@ -3957,3 +3957,32 @@ body .contact-label {
   #services .division-cards .division-card .division-card-head { min-height: 0; padding-inline: 8px; }
 }
 
+/* ----- דפי חטיבות: כותרת מימין, שני הכפתורים משמאל באותה שורה ----- */
+.division-page .division-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px 24px;
+  margin-bottom: 36px;
+}
+.division-page .division-top-text { min-width: 0; }
+.division-page .division-top .division-head { margin-bottom: 0; }
+.division-page .division-top .division-actions {
+  margin-top: 0;
+  gap: 12px;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+}
+.division-page .division-top .division-actions .btn { white-space: nowrap; }
+
+@media (max-width: 767.98px) {
+  .division-page .division-top { flex-direction: column; align-items: stretch; }
+  .division-page .division-top .division-actions { justify-content: flex-start; flex-wrap: wrap; }
+  .division-page .division-top .division-actions .btn {
+    flex: 1 1 auto;
+    text-align: center;
+    padding-inline: 18px;
+  }
+}
+
