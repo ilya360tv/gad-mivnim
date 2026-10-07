@@ -3749,3 +3749,18 @@ section .section-eyebrow {
 .a11y-undo { margin-top: 4px; }
 .a11y-undo:disabled { opacity: .45; cursor: not-allowed; }
 .a11y-reset + .a11y-statement-link { margin-top: 8px; }
+
+/* ----- תפריט ראשי: צבע טקסט = צבע האות G בלוגו (נדגם מ-images/logo55.svg) ----- */
+:root { --logo-g: #0bb0ba; }
+
+.site-header .main-nav ul li a,
+.site-header .main-nav.is-open ul li a,
+.site-header .main-nav ul li a.is-current {
+  color: var(--logo-g);
+}
+
+/* hover/focus ממלא את הגלולה בירוק מלא — טורקיז עליו נמוך מדי (1.25:1), לכן לבן */
+.site-header .main-nav ul li a:hover,
+.site-header .main-nav ul li a:focus-visible {
+  color: #ffffff;
+}
