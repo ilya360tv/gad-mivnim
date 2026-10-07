@@ -3997,3 +3997,17 @@ body .contact-label {
   justify-content: center;
 }
 
+/* ----- דפי חטיבות: שני הכפתורים העליונים באותו גודל כמו גלולות התפריט (1024+) ----- */
+@media (min-width: 1024px) {
+  .division-page .division-top .division-actions .btn {
+    box-sizing: border-box;
+    height: 38px;
+    min-height: 38px;
+    padding: 0 clamp(4px, .8vw, 14px);
+    font-size: clamp(.7rem, .46rem + .38vw, .9rem);
+    font-weight: 500;
+    line-height: 1;
+    border-radius: 999px;
+  }
+}
+
