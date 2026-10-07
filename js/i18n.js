@@ -67,7 +67,7 @@
     hero_subtitle: { he: 'משנים את הדרך לבנייה נכונה !', ru: 'Меняем подход к правильному строительству!', en: 'Changing the way to build right!', fr: 'Nous changeons la voie vers une construction juste !' },
     hero_showroom: { he: 'לרשותכם אולם תצוגה לתצוגות בנייה ועיצובים', ru: 'К вашим услугам шоурум строительства и дизайна', en: 'A construction & design showroom at your service', fr: 'Un showroom de construction et de design à votre disposition' },
     hero_location: { he: 'הרצליה ישראל | HERZLIYA ISRAEL', ru: 'הרצליה ישראל | HERZLIYA ISRAEL', en: 'הרצליה ישראל | HERZLIYA ISRAEL', fr: 'הרצליה ישראל | HERZLIYA ISRAEL' },
-    hero_podcast:  { he: 'פודקאסט | קבלנים משתפים', ru: 'Подкаст | Подрядчики делятся', en: 'Podcast | Contractors Share', fr: 'Podcast | Les entrepreneurs partagent' },
+    hero_podcast:  { he: 'פודקאסט | אנשים משתפים', ru: 'Подкаст | Люди делятся', en: 'Podcast | People Share', fr: 'Podcast | Les gens partagent' },
 
     /* ----- אודות הקבוצה ----- */
     about_eyebrow: { he: 'אודות הקבוצה', ru: 'О группе', en: 'About the Group', fr: 'À propos du groupe' },
