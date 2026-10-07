@@ -3776,27 +3776,3 @@ body .contact-dear,
 body .contact-label {
   color: var(--logo-g) !important;
 }
-
-/* ----- תפריט: גלולת הפודקאסט "פודקאסט | אנשים משתפים" — מפריד קו דק ב-CSS ----- */
-.main-nav a.nav-podcast {
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-}
-.main-nav a.nav-podcast .nav-sep {
-  flex: none;
-  width: 1px;
-  height: .9em;                      /* ~60% מגובה שורת הטקסט */
-  margin-inline: 8px;
-  background: var(--logo-g);
-  opacity: .6;
-}
-@media (min-width: 1024px) {
-  /* התווית הארוכה חייבת להיכנס בעמודה אחת מתוך 6 — גופן מצומצם מעט */
-  .site-header .main-nav a.nav-podcast {
-    justify-content: center;
-    padding-inline: clamp(5px, .6vw, 10px);
-    font-size: clamp(.62rem, .8vw, .74rem);
-  }
-  .main-nav a.nav-podcast .nav-sep { margin-inline: clamp(4px, .4vw, 6px); }
-}

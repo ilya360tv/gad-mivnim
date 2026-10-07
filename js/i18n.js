@@ -33,8 +33,6 @@
     nav_info:     { he: 'מידע לאזרח ולבונה', ru: 'Инфо гражданам', en: 'Citizen & Builder Info', fr: 'Info citoyen' },
     nav_contact:  { he: 'צור קשר', ru: 'Связаться', en: 'Contact', fr: 'Contact' },
     nav_podcast:  { he: 'פודקאסט', ru: 'Подкаст', en: 'Podcast', fr: 'Podcast' },
-    nav_podcast_a: { he: 'פודקאסט', ru: 'Подкаст', en: 'Podcast', fr: 'Podcast' },
-    nav_podcast_b: { he: 'אנשים משתפים', ru: 'Люди делятся', en: 'People Share', fr: 'Les gens partagent' },
     nav_in_progress:   { he: 'פרויקטים בביצוע', ru: 'Текущие проекты', en: 'Projects in Progress', fr: 'Projets en cours' },
     nav_careers:       { he: 'דרושים', ru: 'Вакансии', en: 'Careers', fr: 'Recrutement' },
     /* ----- פרויקטים בביצוע ----- */
