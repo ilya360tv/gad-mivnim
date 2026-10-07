@@ -41,54 +41,57 @@ document.addEventListener('DOMContentLoaded', function () {
   var prevBtn       = document.getElementById('lightboxPrev');
   var nextBtn       = document.getElementById('lightboxNext');
 
-  var currentIndex  = 0;
+  // הגלריה והלייטבוקס קיימים רק בדף הבית — בדפי החטיבות מדלגים
+  if (lightbox && lightboxImg && closeBtn && prevBtn && nextBtn) {
+    var currentIndex  = 0;
 
-  function showImage(index) {
-    // מעבר מעגלי (מהסוף לתחילה ולהיפך)
-    if (index < 0) { index = galleryItems.length - 1; }
-    if (index >= galleryItems.length) { index = 0; }
-    currentIndex = index;
+    function showImage(index) {
+      // מעבר מעגלי (מהסוף לתחילה ולהיפך)
+      if (index < 0) { index = galleryItems.length - 1; }
+      if (index >= galleryItems.length) { index = 0; }
+      currentIndex = index;
 
-    var img = galleryItems[index].querySelector('img');
-    lightboxImg.src = img.getAttribute('src');
-    lightboxImg.alt = img.getAttribute('alt') || '';
+      var img = galleryItems[index].querySelector('img');
+      lightboxImg.src = img.getAttribute('src');
+      lightboxImg.alt = img.getAttribute('alt') || '';
+    }
+
+    function openLightbox(index) {
+      showImage(index);
+      lightbox.classList.add('is-open');
+      lightbox.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden'; // מונע גלילת רקע
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('is-open');
+      lightbox.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    // פתיחה בלחיצה על תמונה בגלריה
+    galleryItems.forEach(function (item, index) {
+      item.addEventListener('click', function () { openLightbox(index); });
+    });
+
+    // כפתורי ניווט וסגירה
+    closeBtn.addEventListener('click', closeLightbox);
+    prevBtn.addEventListener('click', function () { showImage(currentIndex - 1); });
+    nextBtn.addEventListener('click', function () { showImage(currentIndex + 1); });
+
+    // לחיצה על הרקע השחור סוגרת
+    lightbox.addEventListener('click', function (e) {
+      if (e.target === lightbox) { closeLightbox(); }
+    });
+
+    // ניווט במקלדת
+    document.addEventListener('keydown', function (e) {
+      if (!lightbox.classList.contains('is-open')) { return; }
+      if (e.key === 'Escape')     { closeLightbox(); }
+      if (e.key === 'ArrowLeft')  { showImage(currentIndex + 1); } // RTL: שמאל = הבא
+      if (e.key === 'ArrowRight') { showImage(currentIndex - 1); } // RTL: ימין = הקודם
+    });
   }
-
-  function openLightbox(index) {
-    showImage(index);
-    lightbox.classList.add('is-open');
-    lightbox.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden'; // מונע גלילת רקע
-  }
-
-  function closeLightbox() {
-    lightbox.classList.remove('is-open');
-    lightbox.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
-  }
-
-  // פתיחה בלחיצה על תמונה בגלריה
-  galleryItems.forEach(function (item, index) {
-    item.addEventListener('click', function () { openLightbox(index); });
-  });
-
-  // כפתורי ניווט וסגירה
-  closeBtn.addEventListener('click', closeLightbox);
-  prevBtn.addEventListener('click', function () { showImage(currentIndex - 1); });
-  nextBtn.addEventListener('click', function () { showImage(currentIndex + 1); });
-
-  // לחיצה על הרקע השחור סוגרת
-  lightbox.addEventListener('click', function (e) {
-    if (e.target === lightbox) { closeLightbox(); }
-  });
-
-  // ניווט במקלדת
-  document.addEventListener('keydown', function (e) {
-    if (!lightbox.classList.contains('is-open')) { return; }
-    if (e.key === 'Escape')     { closeLightbox(); }
-    if (e.key === 'ArrowLeft')  { showImage(currentIndex + 1); } // RTL: שמאל = הבא
-    if (e.key === 'ArrowRight') { showImage(currentIndex - 1); } // RTL: ימין = הקודם
-  });
 
   /* ---------------------------------------------------------------
      3) טופס צור קשר — הצגת הודעת הצלחה (בלי שרת)

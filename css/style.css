@@ -3786,3 +3786,110 @@ body .contact-label {
   font-family: 'Rubik', 'Segoe UI', Arial, sans-serif;
   font-weight: 700;
 }
+
+/* ==========================================================================
+   דפי חטיבות — כרטיסי חטיבה בדף הבית, שביל פירורים ודפי החטיבות
+   ========================================================================== */
+
+/* גריד 3 + 2 ממורכז בדסקטופ · 2 עמודות בטאבלט · עמודה אחת במובייל; כל הכרטיסים באותו גובה */
+.division-cards {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
+  gap: 28px;
+  margin-top: 48px;
+}
+.division-cards .division-card { grid-column: span 2; height: 100%; }
+.division-cards .division-card:nth-child(4) { grid-column: 2 / span 2; }
+.division-cards .division-card:nth-child(5) { grid-column: 4 / span 2; }
+
+@media (max-width: 1023.98px) {
+  .division-cards { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .division-cards .division-card:nth-child(4) { grid-column: span 2; }
+  .division-cards .division-card:nth-child(5) { grid-column: 2 / span 2; }
+}
+@media (max-width: 640px) {
+  .division-cards { grid-template-columns: 1fr; gap: 20px; }
+  .division-cards .division-card,
+  .division-cards .division-card:nth-child(4),
+  .division-cards .division-card:nth-child(5) { grid-column: auto; }
+}
+
+.division-card {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+.division-card .card-media { aspect-ratio: 16 / 10; }
+.division-card .card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 4px;
+}
+.division-card .card-title { font-size: 1.3rem; }
+.division-card .card-tagline { margin-bottom: 14px; }
+.division-card-btn {
+  margin-top: auto;
+  align-self: flex-start;
+  display: inline-block;
+  padding: 8px 20px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: .9rem;
+  color: #fff;
+  background: var(--green);
+  transition: background .2s ease, box-shadow .2s ease;
+}
+/* טבעת וזוהר ירוקים במעבר עכבר / פוקוס */
+.division-card:hover,
+.division-card:focus-visible {
+  border-color: var(--green);
+  box-shadow:
+    0 0 0 2px rgba(22, 163, 74, .9),
+    0 0 22px rgba(22, 163, 74, .45),
+    0 22px 44px rgba(0, 0, 0, .55);
+}
+.division-card:hover .division-card-btn,
+.division-card:focus-visible .division-card-btn { background: var(--green-dark); }
+.division-card:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+
+/* כפתור משני (קו מתאר) */
+.btn-outline {
+  background: transparent;
+  color: #fff;
+  border: 2px solid var(--green);
+}
+.btn-outline:hover {
+  background: var(--green);
+  transform: translateY(-2px);
+}
+
+/* שביל פירורים */
+.breadcrumb { margin-bottom: 18px; }
+.breadcrumb ol {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin: 0;
+  padding: 0;
+  font-size: .95rem;
+  color: var(--ink-soft);
+}
+.breadcrumb li + li::before { content: "›"; margin-inline-end: 10px; opacity: .6; }
+.breadcrumb a { color: var(--logo-g); text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb [aria-current="page"] { color: #fff; font-weight: 500; }
+
+/* דף חטיבה */
+.division-page { padding-top: 72px; }
+.division-page .division-head { margin-top: 6px; margin-bottom: 36px; }
+.division-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 56px;
+}

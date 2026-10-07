@@ -229,6 +229,15 @@
     f_submit: { he: 'שלח', ru: 'Отправить', en: 'Send', fr: 'Envoyer' },
     f_success:{ he: 'קוד המשתמש בדרך אליכם..     תודה שבחרתם לצפות באתר הבית שלנו', ru: 'Код пользователя уже в пути.. спасибо, что выбрали наш домашний сайт', en: 'Your user code is on its way.. thank you for choosing to view our home site', fr: 'Votre code utilisateur est en route.. merci d’avoir choisi de visiter notre site maison' },
 
+    /* ----- דפי חטיבות ----- */
+    svc_card_btn: { he: 'לכל השירותים', ru: 'Все услуги', en: 'All services', fr: 'Tous les services' },
+    svc_back:     { he: 'חזרה לכל השירותים', ru: 'Назад ко всем услугам', en: 'Back to all services', fr: 'Retour à tous les services' },
+    pg_d1: { he: 'חטיבת תכנון והנדסת בנייה | GAD MIVNIM', ru: 'Подразделение проектирования и строительной инженерии | GAD MIVNIM', en: 'Planning & Construction Engineering Division | GAD MIVNIM', fr: 'Division planification et ingénierie de construction | GAD MIVNIM' },
+    pg_d2: { he: 'חטיבת בינוי ותשתיות | GAD MIVNIM', ru: 'Подразделение строительства и инфраструктуры | GAD MIVNIM', en: 'Construction & Infrastructure Division | GAD MIVNIM', fr: 'Division construction et infrastructures | GAD MIVNIM' },
+    pg_d3: { he: 'חטיבת שותפויות נדל"ן | GAD MIVNIM', ru: 'Подразделение партнёрств в недвижимости | GAD MIVNIM', en: 'Real-Estate Partnerships Division | GAD MIVNIM', fr: 'Division partenariats immobiliers | GAD MIVNIM' },
+    pg_d4: { he: 'חטיבת השירותים שלנו | GAD MIVNIM', ru: 'Подразделение наших услуг | GAD MIVNIM', en: 'Our Services Division | GAD MIVNIM', fr: 'Division de nos services | GAD MIVNIM' },
+    pg_d5: { he: 'חטיבת המיוחדים שלנו | GAD MIVNIM', ru: 'Подразделение особых услуг | GAD MIVNIM', en: 'Our Specials Division | GAD MIVNIM', fr: 'Division de nos spécialités | GAD MIVNIM' },
+
     /* ----- Footer ----- */
     footer_l1:  { he: 'מקווים שהנהנתם לצפות באתר הבית שלנו', ru: 'Надеемся, вам понравился наш домашний сайт', en: 'We hope you enjoyed viewing our home site', fr: 'Nous espérons que vous avez apprécié la visite de notre site maison' },
     footer_l2:  { he: 'נשמח לראותם בין קהל לקוחותינו וממשפחת <bdi>G A D MIVNIM</bdi> בכל מקום במפה', ru: 'Будем рады видеть вас среди наших клиентов и семьи G A D MIVNIM — везде на карте', en: 'We would be glad to see you among our clients and the G A D MIVNIM family — everywhere on the map', fr: 'Nous serons ravis de vous compter parmi nos clients et la famille <bdi>G A D MIVNIM</bdi> — partout sur la carte' },
@@ -243,7 +252,8 @@
     var html = document.documentElement;
     html.setAttribute('lang', lang);
     html.setAttribute('dir', DIR[lang]);
-    document.title = DOC_TITLE[lang];
+    var titleKey = html.getAttribute('data-title-key');
+    document.title = (titleKey && T[titleKey] && T[titleKey][lang]) || DOC_TITLE[lang];
 
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
       var entry = T[el.getAttribute('data-i18n')];
