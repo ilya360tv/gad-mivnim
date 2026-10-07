@@ -85,7 +85,6 @@
     svc_eyebrow: { he: 'השירותים שלנו', ru: 'Наши услуги', en: 'Our Services', fr: 'Nos services' },
     svc_lead: { he: 'רמת תכנון תיאום ניהול פיקוח וביצוע מהגבוהות ביותר !', ru: 'Высочайший уровень проектирования, координации, управления, надзора и исполнения!', en: 'The highest level of planning, coordination, management, supervision and execution!', fr: 'Un niveau de planification, de coordination, de gestion, de supervision et d’exécution parmi les plus élevés !' },
     svc_b1: { he: 'אבטחה סגורה מעגל סגור 24/7', ru: 'Закрытая охрана, видеонаблюдение 24/7', en: 'Closed security, CCTV 24/7', fr: 'Sécurité fermée, circuit fermé 24/7' },
-    svc_b2: { he: 'סובב פרויקטים', ru: 'Вокруг проектов', en: 'Around projects', fr: 'Autour des projets' },
     svc_b3: { he: 'מתאמים לכם פרויקט מושלם', ru: 'Координируем для вас идеальный проект', en: 'Coordinating a perfect project for you', fr: 'Nous coordonnons pour vous un projet parfait' },
     svc_b4: { he: 'חשיבה מחוץ לקופסא', ru: 'Мышление вне рамок', en: 'Thinking outside the box', fr: 'Penser hors du cadre' },
 
