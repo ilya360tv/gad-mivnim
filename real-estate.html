@@ -91,21 +91,25 @@
           <a class="btn btn-outline" href="index.html#contact" data-i18n="nav_contact">צור קשר</a>
         </div>
       </div>
-      <div class="cards-grid cards-grid--2 reveal-group">
-            <article class="card">
-              <div class="card-media"><img src="images/image36.png" alt="" loading="lazy" decoding="async"></div>
-              <div class="card-body">
-                <h4 class="card-title" data-i18n="c31">תמ"א 38</h4>
-                <p class="card-tagline" data-i18n="c31s">נעשה את זה ביחד ובהצלחה גדולה</p>
-              </div>
-            </article>
-            <article class="card">
-              <div class="card-media"><img src="images/image38.png" alt="" loading="lazy" decoding="async"></div>
-              <div class="card-body">
-                <h4 class="card-title" data-i18n="c32">פינוי בינוי</h4>
-                <p class="card-tagline" data-i18n="c32s">תמיד כיף לקבל חדש !</p>
-              </div>
-            </article>
+      <div class="cards-carousel">
+        <button type="button" class="car-btn car-prev" hidden><span class="sr-only" data-i18n="car_prev">הקודם</span><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 6l6 6-6 6"/></svg></button>
+        <div class="cards-grid cards-track reveal-group" tabindex="0" role="group">
+              <article class="card">
+                <div class="card-media"><img src="images/image36.png" alt="" loading="lazy" decoding="async"></div>
+                <div class="card-body">
+                  <h4 class="card-title" data-i18n="c31">תמ"א 38</h4>
+                  <p class="card-tagline" data-i18n="c31s">נעשה את זה ביחד ובהצלחה גדולה</p>
+                </div>
+              </article>
+              <article class="card">
+                <div class="card-media"><img src="images/image38.png" alt="" loading="lazy" decoding="async"></div>
+                <div class="card-body">
+                  <h4 class="card-title" data-i18n="c32">פינוי בינוי</h4>
+                  <p class="card-tagline" data-i18n="c32s">תמיד כיף לקבל חדש !</p>
+                </div>
+              </article>
+        </div>
+        <button type="button" class="car-btn car-next" hidden><span class="sr-only" data-i18n="car_next">הבא</span><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
     </div>
   </section>
@@ -233,6 +237,7 @@
   <script src="js/i18n.js?v=20260806a11y"></script>
   <script src="js/premium.js?v=20260806a11y"></script>
   <script src="js/script.js?v=20260806a11y"></script>
+  <script src="js/carousel.js?v=1"></script>
   <script src="js/a11y.js?v=20260806a11y"></script>
 
 </body>
