@@ -4165,16 +4165,16 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 .marquee:focus-within .marquee-track,
 .marquee.is-paused .marquee-track { animation-play-state: paused; }
 
-/* כרטיס: ריבוע 320x320 קבוע */
+/* כרטיס: ריבוע קבוע בפיקסלים — 200x200 (150x150 במובייל) */
 .marquee .project-item {
   position: relative;
   display: flex;
   flex-direction: column;
-  flex: 0 0 320px;
-  width: 320px;
-  height: 320px;
-  aspect-ratio: 1 / 1;
-  margin-inline-end: 24px;
+  flex: 0 0 auto;
+  width: 200px;
+  height: 200px;
+  aspect-ratio: auto;
+  margin-inline-end: 20px;
   direction: rtl;
   background: var(--surface);
   border: 1px solid var(--line);
@@ -4206,7 +4206,9 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 
 @media (max-width: 767.98px) {
   .marquee-track { animation-duration: 30s; }
-  .marquee .project-item { flex-basis: 240px; width: 240px; height: 240px; margin-inline-end: 16px; }
+  .marquee .project-item { width: 150px; height: 150px; margin-inline-end: 14px; }
+  #projects .marquee .client-logo .project-media img { padding: 16px; }
+  .marquee .client-logo .project-media::after { inset: 16px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .marquee-track { animation: none; }
@@ -4233,16 +4235,17 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
   justify-content: center;
   overflow: visible;
 }
-.marquee .client-logo .project-media img {
-  width: 70%;
-  height: 70%;
+#projects .marquee .client-logo .project-media img {
+  width: 100%;
+  height: 100%;
+  padding: 20px;
   transition: opacity .25s ease-out;
 }
 /* גרסה ירוקה (מסכה מאותו לוגו) שנחשפת בריחוף */
 .marquee .client-logo .project-media::after {
   content: "";
   position: absolute;
-  inset: 15%;
+  inset: 20px;
   background-color: var(--green);
   -webkit-mask: var(--logo) center / contain no-repeat;
           mask: var(--logo) center / contain no-repeat;
@@ -4258,3 +4261,9 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 /* רשת סטטית (reduced-motion): לוגו לבן על כהה */
 #projects .projects-grid .client-logo { aspect-ratio: 1 / 1; display: flex; align-items: center; justify-content: center; }
 #projects .projects-grid .client-logo img { width: 70%; height: 70%; }
+
+/* מובייל: ריפוד 16px ללוגו וזוהר בהתאם */
+@media (max-width: 767.98px) {
+  #projects .marquee .client-logo .project-media img { padding: 16px; }
+  #projects .marquee .client-logo .project-media::after { inset: 16px; }
+}
