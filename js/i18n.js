@@ -158,7 +158,6 @@
     filter_private:  { he: 'מגזר פרטי', ru: 'Частный сектор', en: 'Private Sector', fr: 'Secteur privé' },
     filter_business: { he: 'מגזר עסקי', ru: 'Коммерческий сектор', en: 'Business Sector', fr: 'Secteur commercial' },
     p1: { he: 'יזמות ונדל"ן', ru: 'Девелопмент и недвижимость', en: 'Development & Real Estate', fr: 'Promotion et immobilier' },
-    p2: { he: 'שותפויות נדל"ן', ru: 'Партнёрства в недвижимости', en: 'Real-Estate Partnerships', fr: 'Partenariats immobiliers' },
     p3: { he: 'מבנים פרטיים', ru: 'Частные здания', en: 'Private Buildings', fr: 'Bâtiments privés' },
     p4: { he: 'מבנים ציבוריים', ru: 'Общественные здания', en: 'Public Buildings', fr: 'Bâtiments publics' },
     p5: { he: 'מבני מסחר וקניות', ru: 'Торговые здания', en: 'Commerce & Shopping Buildings', fr: 'Bâtiments de commerce et de shopping' },
