@@ -4274,27 +4274,6 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 .project-gallery { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
 .project-gallery[hidden] { display: none; }
 
-/* ----- תגית עיר על אריח לוגו (בראש האריח, חופפת מעט לקצה העליון) ----- */
-.marquee .project-item.client-logo { position: relative; overflow: visible; }
-.city-badge {
-  position: absolute;
-  top: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2;
-  padding: 3px 10px;
-  font-size: .75rem;
-  font-weight: 700;
-  line-height: 1.4;
-  white-space: nowrap;
-  color: #fff;
-  background: rgba(10, 12, 14, .85);
-  border-radius: 999px;
-  box-shadow: 0 0 0 1px rgba(22, 163, 74, .6);
-  pointer-events: none;
-}
-#projects .projects-grid .client-logo { position: relative; }
-
 /* ----- דף פרויקט: תגית עיר מתחת לכותרת ----- */
 .project-head-text { min-width: 0; }
 .project-city {
