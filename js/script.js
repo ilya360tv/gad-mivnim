@@ -158,6 +158,28 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ---------------------------------------------------------------
+     3) טופס צור קשר — הצגת הודעת הצלחה (בלי שרת)
+     --------------------------------------------------------------- */
+  var contactForm = document.getElementById('contactForm');
+  var formSuccess = document.getElementById('formSuccess');
+
+  if (contactForm) {
+    contactForm.addEventListener('submit', function (e) {
+      e.preventDefault(); // אין שרת — לא שולחים לשום מקום
+
+      // בדיקה בסיסית שהשדות מולאו
+      if (!contactForm.checkValidity()) {
+        contactForm.reportValidity();
+        return;
+      }
+
+      // הצגת הודעת ההצלחה וניקוי הטופס
+      formSuccess.hidden = false;
+      contactForm.reset();
+    });
+  }
+
+  /* ---------------------------------------------------------------
      4) תפריט המבורגר (מובייל)
      --------------------------------------------------------------- */
   var navToggle = document.getElementById('navToggle');

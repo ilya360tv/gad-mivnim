@@ -31,6 +31,7 @@
     nav_gallery:  { he: 'גלריה בנייה ועיצובים', ru: 'Галерея — строительство и дизайн', en: 'Gallery — Building & Design', fr: 'Galerie — construction & design' },
     nav_gallery_short: { he: 'גלריה', ru: 'Галерея', en: 'Gallery', fr: 'Galerie' },
     nav_info:     { he: 'מידע לאזרח ולבונה', ru: 'Инфо гражданам', en: 'Citizen & Builder Info', fr: 'Info citoyen' },
+    nav_contact:  { he: 'צור קשר', ru: 'Связаться', en: 'Contact', fr: 'Contact' },
     nav_podcast:  { he: 'פודקאסט', ru: 'Подкаст', en: 'Podcast', fr: 'Podcast' },
     nav_in_progress:   { he: 'פרויקטים בביצוע', ru: 'Текущие проекты', en: 'Projects in Progress', fr: 'Projets en cours' },
     nav_careers:       { he: 'דרושים', ru: 'Вакансии', en: 'Careers', fr: 'Recrutement' },
@@ -216,7 +217,15 @@
     media_3: { he: 'סרטונים של שלבי בניה', ru: 'Видео этапов строительства', en: 'Videos of construction stages', fr: 'Vidéos des étapes de construction' },
 
     /* ----- צור קשר / קוד משתמש ----- */
+    ct_t1:   { he: 'המבנה שלכם שווה הרבה !', ru: 'Ваше здание стоит многого!', en: 'Your building is worth a lot!', fr: 'Votre bâtiment vaut beaucoup !' },
+    ct_t2:   { he: 'והוא רק שלכם !', ru: 'И оно только ваше!', en: 'And it is only yours!', fr: 'Et il n’est qu’à vous !' },
+    ct_dear: { he: 'לקוחות יקרים', ru: 'Дорогие клиенты', en: 'Dear clients', fr: 'Chers clients' },
+    ct_lead: { he: 'לצורך הבטחה על האתר והמשתמשים בו עליכם להירשם באמצעות מספרכם ושמכם וישלח אליכם קוד משתמש', ru: 'Для защиты сайта и его пользователей вам необходимо зарегистрироваться, указав ваш номер и имя, и вам будет отправлен код пользователя', en: 'To secure the site and its users, you must register with your number and name, and a user code will be sent to you', fr: 'Afin de sécuriser le site et ses utilisateurs, vous devez vous inscrire avec votre numéro et votre nom, et un code utilisateur vous sera envoyé' },
+    f_first:  { he: 'שם', ru: 'Имя', en: 'First name', fr: 'Prénom' },
+    f_last:   { he: 'משפחה', ru: 'Фамилия', en: 'Last name', fr: 'Nom' },
     f_phone:  { he: 'טלפון', ru: 'Телефон', en: 'Phone', fr: 'Téléphone' },
+    f_submit: { he: 'שלח', ru: 'Отправить', en: 'Send', fr: 'Envoyer' },
+    f_success:{ he: 'קוד המשתמש בדרך אליכם..     תודה שבחרתם לצפות באתר הבית שלנו', ru: 'Код пользователя уже в пути.. спасибо, что выбрали наш домашний сайт', en: 'Your user code is on its way.. thank you for choosing to view our home site', fr: 'Votre code utilisateur est en route.. merci d’avoir choisi de visiter notre site maison' },
 
     /* ----- דפי חטיבות ----- */
     svc_back:     { he: 'חזרה לכל השירותים', ru: 'Назад ко всем услугам', en: 'Back to all services', fr: 'Retour à tous les services' },
