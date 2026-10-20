@@ -1,0 +1,23 @@
+/* ==========================================================================
+   GAD MIVNIM — תוכן חלונות הפרויקטים (projects-data.js)
+   כאן ממלאים את התוכן שנפתח בלחיצה על לוגו לקוח בפס #projects.
+   לכל לקוח (לפי ה-slug): { name, title, description, images }
+     name        — שם הלקוח (מוצג כשאין title)
+     title       — כותרת הפרויקט (מחרוזת ריקה = מוצג שם הלקוח)
+     description — תיאור הפרויקט (מחרוזת ריקה = "תיאור הפרויקט יתווסף בקרוב")
+     images      — מערך נתיבי תמונות, למשל ['images/project1.jpg'] (ריק = לא מוצג)
+   ========================================================================== */
+window.PROJECTS_DATA = {
+  'crowne-plaza':       { name: 'מלון קראון פלאזה',            title: '', description: '', images: [] },
+  'shalom-hotel':       { name: 'מלון שלום ירושלים',           title: '', description: '', images: [] },
+  'dana-david':         { name: 'דנה דוד',                      title: '', description: '', images: [] },
+  'nofei-yerushalayim': { name: 'נופי ירושלים',                 title: '', description: '', images: [] },
+  'agnon-house':        { name: 'בית עגנון בירושלים',           title: '', description: '', images: [] },
+  'yahad':              { name: 'יחד - מועדון צרכנות לרופאים', title: '', description: '', images: [] },
+  'africa-israel':      { name: 'אפריקה ישראל',                 title: '', description: '', images: [] },
+  'matnasim':           { name: 'החברה למתנ"סים',               title: '', description: '', images: [] },
+  'neve-ilan':          { name: 'נווה אילן',                    title: '', description: '', images: [] },
+  'justice-ministry':   { name: 'משרד המשפטים',                 title: '', description: '', images: [] },
+  'jerusalem':          { name: 'ירושלים',                      title: '', description: '', images: [] },
+  'sweet-home':         { name: 'Sweet Home',                   title: '', description: '', images: [] }
+};
