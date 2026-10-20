@@ -4205,3 +4205,19 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) {
   .marquee-track { animation: none; }
 }
+
+/* ----- פס הפרויקטים: כרטיס בגודל קבוע בפיקסלים = כרטיס חטיבה בדף הבית (214px רוחב, תמונה 119px) ----- */
+.marquee .project-item {
+  flex: 0 0 214px;
+  width: 214px;
+  height: 119px;
+  aspect-ratio: auto;
+  margin-inline-end: 24px;
+}
+.marquee .project-item img { width: 100%; height: 100%; object-fit: cover; }
+.marquee .project-info { padding: 28px 12px 10px; }
+.marquee .project-info h3 { font-size: 1.05rem; margin: 0; }
+@media (max-width: 767.98px) {
+  .marquee .project-item { flex-basis: 240px; width: 240px; height: 135px; margin-inline-end: 16px; }
+  .marquee-track { animation-duration: 25s; }
+}

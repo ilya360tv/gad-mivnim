@@ -49,8 +49,8 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!cards.length) { return; }
 
       var vw = marquee.clientWidth || window.innerWidth;
-      var cardW = window.innerWidth <= 640 ? window.innerWidth * 0.7 : 367;
-      var step  = cardW + (window.innerWidth <= 640 ? 16 : 24);
+      var cardW = window.innerWidth < 768 ? 240 : 214;
+      var step  = cardW + (window.innerWidth < 768 ? 16 : 24);
       var reps  = Math.max(1, Math.ceil((vw + step) / (step * cards.length)));
 
       function makeSet(hidden) {
