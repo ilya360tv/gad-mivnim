@@ -4018,17 +4018,57 @@ body .contact-label {
   font-weight: 700;
 }
 
-/* ----- כרטיס "תשתיות ופיתוח" ממוזג עם "אספלט וכבישים" ----- */
-.card-media-split {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2px;
+/* ----- כרטיס "תשתיות ופיתוח": "אספלט וכבישים" נחשף בפתיחת הכרטיס ----- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
-.card-media-split img { width: 100%; height: 100%; object-fit: cover; }
+.card-expandable { position: relative; }
+.card-more { margin-top: 10px; }
+.card-more summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  padding: 6px 0;
+}
+.card-more summary::-webkit-details-marker { display: none; }
+.card-more summary::after {          /* כל הכרטיס לחיץ */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.card-more summary:focus-visible { outline: 3px solid #fff; outline-offset: -3px; }
+.card-more-chev {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-inline-end: 2px solid var(--logo-g);
+  border-bottom: 2px solid var(--logo-g);
+  transform: rotate(45deg);
+  transition: transform .25s ease;
+}
+.card-more[open] .card-more-chev { transform: rotate(-135deg); }
 .card-sub {
-  margin-top: 14px;
+  margin-top: 8px;
   padding-top: 14px;
   border-top: 1px solid var(--line);
+}
+.card-sub-img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 12px;
 }
 .card-subtitle {
   margin: 0 0 6px;
@@ -4036,4 +4076,3 @@ body .contact-label {
   font-weight: 700;
   color: #fff;
 }
-

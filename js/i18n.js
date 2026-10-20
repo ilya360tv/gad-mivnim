@@ -238,6 +238,22 @@
     pg_d4: { he: 'חטיבת השירותים שלנו | GAD MIVNIM', ru: 'Подразделение наших услуг | GAD MIVNIM', en: 'Our Services Division | GAD MIVNIM', fr: 'Division de nos services | GAD MIVNIM' },
     pg_d5: { he: 'חטיבת המיוחדים שלנו | GAD MIVNIM', ru: 'Подразделение особых услуг | GAD MIVNIM', en: 'Our Specials Division | GAD MIVNIM', fr: 'Division de nos spécialités | GAD MIVNIM' },
 
+    /* ----- שותפים: קבוצות ודפים ----- */
+    pgrp_btn:  { he: 'לצפייה בשותפים', ru: 'Смотреть партнёров', en: 'View partners', fr: 'Voir les partenaires' },
+    pgrp_back: { he: 'חזרה לכל השותפים', ru: 'Назад ко всем партнёрам', en: 'Back to all partners', fr: 'Retour à tous les partenaires' },
+    pgrp1: { he: 'מטבחים, נגרות ורהיטים', ru: 'Кухни, столярные изделия и мебель', en: 'Kitchens, Carpentry & Furniture', fr: 'Cuisines, menuiserie et mobilier' },
+    pgrp2: { he: 'ריצוף, חיפויים וצבעים', ru: 'Полы, облицовка и краски', en: 'Flooring, Cladding & Paints', fr: 'Revêtements de sol, parements et peintures' },
+    pgrp3: { he: 'כלים סניטריים ותאורה', ru: 'Сантехника и освещение', en: 'Sanitary Ware & Lighting', fr: 'Sanitaires et éclairage' },
+    pgrp4: { he: 'דלתות פנים וכניסה', ru: 'Межкомнатные и входные двери', en: 'Interior & Entrance Doors', fr: 'Portes intérieures et d’entrée' },
+    pgrp5: { he: 'שערים, זגגות ומסגרות', ru: 'Ворота, остекление и рамы', en: 'Gates, Glazing & Frames', fr: 'Portails, vitrage et cadres' },
+    pg_pgrp1: { he: 'מטבחים, נגרות ורהיטים | GAD MIVNIM', ru: 'Кухни, столярные изделия и мебель | GAD MIVNIM', en: 'Kitchens, Carpentry & Furniture | GAD MIVNIM', fr: 'Cuisines, menuiserie et mobilier | GAD MIVNIM' },
+    pg_pgrp2: { he: 'ריצוף, חיפויים וצבעים | GAD MIVNIM', ru: 'Полы, облицовка и краски | GAD MIVNIM', en: 'Flooring, Cladding & Paints | GAD MIVNIM', fr: 'Revêtements de sol, parements et peintures | GAD MIVNIM' },
+    pg_pgrp3: { he: 'כלים סניטריים ותאורה | GAD MIVNIM', ru: 'Сантехника и освещение | GAD MIVNIM', en: 'Sanitary Ware & Lighting | GAD MIVNIM', fr: 'Sanitaires et éclairage | GAD MIVNIM' },
+    pg_pgrp4: { he: 'דלתות פנים וכניסה | GAD MIVNIM', ru: 'Межкомнатные и входные двери | GAD MIVNIM', en: 'Interior & Entrance Doors | GAD MIVNIM', fr: 'Portes intérieures et d’entrée | GAD MIVNIM' },
+    pg_pgrp5: { he: 'שערים, זגגות ומסגרות | GAD MIVNIM', ru: 'Ворота, остекление и рамы | GAD MIVNIM', en: 'Gates, Glazing & Frames | GAD MIVNIM', fr: 'Portails, vitrage et cadres | GAD MIVNIM' },
+
+    more_details: { he: 'פרטים נוספים', ru: 'Подробнее', en: 'More details', fr: 'Plus de détails' },
+
     /* ----- Footer ----- */
     footer_l1:  { he: 'מקווים שהנהנתם לצפות באתר הבית שלנו', ru: 'Надеемся, вам понравился наш домашний сайт', en: 'We hope you enjoyed viewing our home site', fr: 'Nous espérons que vous avez apprécié la visite de notre site maison' },
     footer_l2:  { he: 'נשמח לראותם בין קהל לקוחותינו וממשפחת <bdi>G A D MIVNIM</bdi> בכל מקום במפה', ru: 'Будем рады видеть вас среди наших клиентов и семьи G A D MIVNIM — везде на карте', en: 'We would be glad to see you among our clients and the G A D MIVNIM family — everywhere on the map', fr: 'Nous serons ravis de vous compter parmi nos clients et la famille <bdi>G A D MIVNIM</bdi> — partout sur la carte' },
