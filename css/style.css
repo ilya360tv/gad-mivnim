@@ -4165,14 +4165,14 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 .marquee:focus-within .marquee-track,
 .marquee.is-paused .marquee-track { animation-play-state: paused; }
 
-/* כרטיס: ריבוע קבוע בפיקסלים — 200x200 (150x150 במובייל) */
+/* כרטיס: אריח ריבועי קבוע בפיקסלים — 180x180 (140x140 במובייל) */
 .marquee .project-item {
   position: relative;
   display: flex;
   flex-direction: column;
   flex: 0 0 auto;
-  width: 200px;
-  height: 200px;
+  width: 180px;
+  height: 180px;
   aspect-ratio: auto;
   margin-inline-end: 20px;
   direction: rtl;
@@ -4206,54 +4206,44 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 
 @media (max-width: 767.98px) {
   .marquee-track { animation-duration: 30s; }
-  .marquee .project-item { width: 150px; height: 150px; margin-inline-end: 14px; }
-  #projects .marquee .client-logo .project-media img { padding: 16px; }
+  .marquee .project-item { width: 140px; height: 140px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .marquee-track { animation: none; }
 }
 
-/* ----- #projects: לוגואים של לקוחות — צבעי המקור על רקע שקוף, בלי מסגרת; ריחוף = הרמה + טבעת וזוהר ירוקים ----- */
+/* ----- #projects: לוגואים של לקוחות — כולם באריח אחיד: כרטיס בהיר (#f4f5f6) מעוגל, לוגו ב-80% ----- */
 #projects .client-logo,
 .marquee .project-item.client-logo {
-  background: transparent;
+  background: #f4f5f6;
   border: 0;
+  border-radius: 16px;
   box-shadow: none;
-}
-#projects .client-logo img,
-.marquee .client-logo img {
-  object-fit: contain;
-  background: transparent;
-  padding: 0;
-  box-sizing: border-box;
 }
 .marquee .client-logo .project-media {
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border-radius: 14px;
+  border-radius: 16px;
 }
 #projects .marquee .client-logo .project-media img {
-  width: 100%;
-  height: 100%;
-  padding: 20px;
+  width: 80%;
+  height: 80%;
+  max-width: 80%;
+  max-height: 80%;
+  padding: 0;
+  object-fit: contain;
+  background: transparent;
+  box-sizing: border-box;
 }
-/* לוגואים כהים — גב בהיר עדין כדי שיישארו קריאים על הרקע הכהה */
-.marquee .client-logo.logo-light .project-media { background: rgba(255, 255, 255, .92); }
-/* ריחוף: בלי שינוי צבע — הרמה קלה + טבעת וזוהר ירוקים */
+/* ריחוף: הרמה קלה + טבעת וזוהר ירוקים */
 .marquee .project-item.client-logo:hover {
   transform: translateY(-4px);
-  border-radius: 14px;
   box-shadow: 0 0 0 2px rgba(22, 163, 74, .9), 0 0 22px rgba(22, 163, 74, .5);
 }
 .marquee .client-logo:hover img { transform: none; }
 /* רשת סטטית (reduced-motion) */
 #projects .projects-grid .client-logo { aspect-ratio: 1 / 1; display: flex; align-items: center; justify-content: center; }
-#projects .projects-grid .client-logo img { width: 70%; height: 70%; }
-#projects .projects-grid .client-logo.logo-light { background: rgba(255, 255, 255, .92); border-radius: 14px; }
+#projects .projects-grid .client-logo img { width: 80%; height: 80%; object-fit: contain; }
 
-/* מובייל: ריפוד 16px ללוגו וזוהר בהתאם */
-@media (max-width: 767.98px) {
-  #projects .marquee .client-logo .project-media img { padding: 16px; }
-}
