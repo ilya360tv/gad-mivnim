@@ -33,10 +33,17 @@
     var gal  = document.getElementById('projGallery');
 
     if (logo) {
-      logo.setAttribute('src', 'images/clients/' + slug + '.png');
+      logo.setAttribute('src', 'images/clients/' + (d.logo || slug) + '.png');
       logo.setAttribute('alt', name);
     }
     if (h1) { h1.textContent = title; }
+    var cityEl = document.getElementById('projCity');
+    if (cityEl && d.city) {
+      document.getElementById('projCityText').textContent = d.city;
+      var key = { 'תל אביב': 'city_tlv', 'ירושלים': 'city_jlm' }[d.city];
+      if (key) { document.getElementById('projCityText').setAttribute('data-i18n', key); }
+      cityEl.hidden = false;
+    }
 
     if (desc) {
       if (d.description) {
