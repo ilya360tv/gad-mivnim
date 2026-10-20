@@ -4079,3 +4079,35 @@ body .contact-label {
   font-size: clamp(.72rem, .85vw, .95rem);
   line-height: 1.35;
 }
+
+/* ----- דפי חטיבות: כרטיסים גדולים יותר, עדיין שורה אחת בלי גלילה ----- */
+.division-page .cards-row {
+  gap: clamp(8px, .8vw, 14px);
+}
+@media (min-width: 1024px) {
+  .division-page .cards-row {
+    /* יוצאים מהקונטיינר הצר, ממורכזים בלי transform (שלא יתנגש באנימציית החשיפה) */
+    --row-w: min(1800px, 96vw);
+    width: var(--row-w);
+    max-width: none;
+    margin-inline: calc((100% - var(--row-w)) / 2);
+  }
+  /* מעט כרטיסים (עד 4): רוחב כרטיס מקסימלי 340px, השורה ממורכזת */
+  .division-page .cards-row[style*="--cards:1;"],
+  .division-page .cards-row[style*="--cards:2;"],
+  .division-page .cards-row[style*="--cards:3;"],
+  .division-page .cards-row[style*="--cards:4;"] {
+    --row-w: min(96vw, calc(var(--cards) * 340px + (var(--cards) - 1) * 14px));
+    grid-template-columns: repeat(var(--cards), minmax(0, 1fr));
+  }
+}
+.division-page .cards-row > .card .card-media { aspect-ratio: 1 / 1; }
+.division-page .cards-row > .card .card-body { padding: 14px 16px; }
+.division-page .cards-row > .card .card-title {
+  font-size: clamp(.95rem, 1.15vw, 1.25rem);
+  font-weight: 700;
+}
+.division-page .cards-row > .card .card-tagline {
+  font-size: clamp(.85rem, .95vw, 1.05rem);
+}
+
