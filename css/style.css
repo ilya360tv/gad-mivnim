@@ -3909,35 +3909,35 @@ body .contact-label {
 }
 
 /* ----- כרטיסי חטיבות: כותרות קטנות וממורכזות, יישור אחיד ----- */
-#services .division-cards .division-card {
+:is(#services, #partners) .division-cards .division-card {
   display: flex;
   flex-direction: column;
   text-align: center;
 }
-#services .division-cards .division-card .division-card-head {
+:is(#services, #partners) .division-cards .division-card .division-card-head {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 0;
   padding: 14px 10px 10px;
 }
-#services .division-cards .division-card .card-title {
+:is(#services, #partners) .division-cards .division-card .card-title {
   text-align: center;
   text-wrap: balance;
   margin: 0;
 }
-#services .division-cards .division-card .card-body {
+:is(#services, #partners) .division-cards .division-card .card-body {
   display: flex;
   flex-direction: column;
   flex: 1;
   text-align: center;
   padding: 12px 12px 16px;
 }
-#services .division-cards .division-card .card-tagline {
+:is(#services, #partners) .division-cards .division-card .card-tagline {
   flex: 1;
   text-align: center;
 }
-#services .division-cards .division-card .division-card-btn {
+:is(#services, #partners) .division-cards .division-card .division-card-btn {
   margin-top: auto;
   margin-inline: auto;
   align-self: center;
@@ -3945,16 +3945,16 @@ body .contact-label {
 
 /* טאבלט: ראש הכרטיס בגובה קבוע (עד 2 שורות) כדי שהתמונות יישארו על קו אחד */
 @media (min-width: 641px) and (max-width: 1023.98px) {
-  #services .division-cards .division-card .division-card-head { min-height: 76px; }
+  :is(#services, #partners) .division-cards .division-card .division-card-head { min-height: 76px; }
 }
 
 /* דסקטופ 1024+: כותרת בשורה אחת */
 @media (min-width: 1024px) {
-  #services .division-cards .division-card .card-title {
+  :is(#services, #partners) .division-cards .division-card .card-title {
     font-size: clamp(.74rem, 1.25vw, .95rem);
     white-space: nowrap;
   }
-  #services .division-cards .division-card .division-card-head { min-height: 0; padding-inline: 8px; }
+  :is(#services, #partners) .division-cards .division-card .division-card-head { min-height: 0; padding-inline: 8px; }
 }
 
 /* ----- דפי חטיבות: כותרת מימין, שני הכפתורים משמאל באותה שורה ----- */
@@ -4009,5 +4009,31 @@ body .contact-label {
     line-height: 1;
     border-radius: 999px;
   }
+}
+
+/* ----- #partners: כותרת בגודל זהה לכותרת #services ----- */
+#partners .section-title {
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
+  text-wrap: balance;
+  font-weight: 700;
+}
+
+/* ----- כרטיס "תשתיות ופיתוח" ממוזג עם "אספלט וכבישים" ----- */
+.card-media-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+}
+.card-media-split img { width: 100%; height: 100%; object-fit: cover; }
+.card-sub {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.card-subtitle {
+  margin: 0 0 6px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
 }
 
