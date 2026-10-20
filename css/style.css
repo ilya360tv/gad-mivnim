@@ -4119,3 +4119,15 @@ a.division-card:focus-visible,
 a.card-linkcard:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 /* תחתית הכרטיס אחרי הסרת הכפתור */
 a.division-card .card-body { padding-bottom: 16px; }
+
+/* ----- #projects: "הפרויקטים שלנו" היא הכותרת היחידה של הסקשן — בגודל כותרת רגילה (כמו .section-title) ----- */
+#projects .section-eyebrow {
+  font-size: clamp(1.9rem, 3.6vw, 2.7rem);
+  font-weight: 700;
+  line-height: 1.22;
+  letter-spacing: 0;
+  margin: 0 0 14px;
+  color: var(--logo-g);
+}
+
+@media (max-width: 560px) { #projects .section-eyebrow { font-size: 1.65rem; } }
