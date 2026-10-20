@@ -3800,13 +3800,13 @@ body .contact-label {
   margin-top: 48px;
 }
 .division-cards .division-card { grid-column: span 2; height: 100%; }
-.division-cards .division-card:nth-child(4) { grid-column: 2 / span 2; }
-.division-cards .division-card:nth-child(5) { grid-column: 4 / span 2; }
+.division-cards .division-card:nth-child(4),
+.division-cards .division-card:nth-child(5) { grid-column: span 2; }
 
 @media (max-width: 1023.98px) {
   .division-cards { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .division-cards .division-card:nth-child(4) { grid-column: span 2; }
-  .division-cards .division-card:nth-child(5) { grid-column: 2 / span 2; }
+  .division-cards .division-card:nth-child(4),
+  .division-cards .division-card:nth-child(5) { grid-column: span 2; }
 }
 @media (max-width: 640px) {
   .division-cards { grid-template-columns: 1fr; gap: 20px; }
@@ -4044,7 +4044,7 @@ body .contact-label {
 .division-page .cards-row {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: stretch;
   gap: 20px;
   margin-inline: 0;
@@ -4117,3 +4117,12 @@ body .contact-label {
 
 /* home-services: השורה השנייה מתחילה מהצד הימני (תחילת RTL), מתחת לכרטיסים שמעליה */
 .division-page .cards-row.cards-row--start { justify-content: flex-start; }
+
+/* ----- כל רשתות הכרטיסים מיושרות לימין (תחילת RTL) — בלי מרכוז שורות ----- */
+.division-cards,
+.projects-grid,
+.gallery-grid,
+.progress-grid,
+.careers-grid,
+.cards-grid { justify-content: start; }
+.division-page .cards-row { justify-content: flex-start; margin-inline: 0; }
