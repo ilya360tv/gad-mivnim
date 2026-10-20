@@ -4211,3 +4211,13 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) {
   .marquee-track { animation: none; }
 }
+
+/* ----- #projects: לוגואים של לקוחות — שלמים (בלי חיתוך), על רקע לבן אחיד ----- */
+#projects .client-logo { background: #fff; }
+#projects .client-logo img,
+.marquee .client-logo img {
+  object-fit: contain;
+  padding: 24px;
+  box-sizing: border-box;
+  background: #fff;
+}

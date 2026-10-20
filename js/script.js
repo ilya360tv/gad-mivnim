@@ -8,26 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
   /* ---------------------------------------------------------------
      1) סינון פרויקטים — מגזר פרטי / עסקי / הכל
      --------------------------------------------------------------- */
-  var filterButtons = document.querySelectorAll('.filter-btn');
   var projectItems  = document.querySelectorAll('.project-item');
-
-  filterButtons.forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      var filter = btn.getAttribute('data-filter');
-
-      // עדכון הכפתור הפעיל
-      filterButtons.forEach(function (b) { b.classList.remove('is-active'); });
-      btn.classList.add('is-active');
-
-      // הצגה/הסתרה של הפריטים
-      projectItems.forEach(function (item) {
-        var category = item.getAttribute('data-category');
-        var show = (filter === 'all' || category === filter);
-        item.classList.toggle('is-hidden', !show);
-      });
-      if (window.rebuildMarquee) { window.rebuildMarquee(filter); }
-    });
-  });
 
   /* ---------------------------------------------------------------
      1ב) פרויקטים — פס נע אינסופי (marquee). בונים אותו מהכרטיסים הקיימים;
