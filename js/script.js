@@ -25,8 +25,73 @@ document.addEventListener('DOMContentLoaded', function () {
         var show = (filter === 'all' || category === filter);
         item.classList.toggle('is-hidden', !show);
       });
+      if (window.rebuildMarquee) { window.rebuildMarquee(filter); }
     });
   });
+
+  /* ---------------------------------------------------------------
+     1ב) פרויקטים — פס נע אינסופי (marquee). בונים אותו מהכרטיסים הקיימים;
+         בסינון הפס נבנה מחדש. עם prefers-reduced-motion נשארת הרשת הסטטית.
+     --------------------------------------------------------------- */
+  var marquee = document.querySelector('#projects .marquee');
+  var mqTrack = marquee ? marquee.querySelector('.marquee-track') : null;
+  var reduceMq = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (marquee && mqTrack && !reduceMq && projectItems.length) {
+    var sources = Array.prototype.slice.call(projectItems);
+    var currentFilter = 'all';
+
+    window.rebuildMarquee = function (filter) {
+      if (filter) { currentFilter = filter; }
+      var cards = sources.filter(function (c) {
+        return currentFilter === 'all' || c.getAttribute('data-category') === currentFilter;
+      });
+      if (!cards.length) { return; }
+
+      var vw = marquee.clientWidth || window.innerWidth;
+      var cardW = window.innerWidth <= 640 ? window.innerWidth * 0.7 : 367;
+      var step  = cardW + (window.innerWidth <= 640 ? 16 : 24);
+      var reps  = Math.max(1, Math.ceil((vw + step) / (step * cards.length)));
+
+      function makeSet(hidden) {
+        var frag = document.createDocumentFragment();
+        for (var r = 0; r < reps; r++) {
+          cards.forEach(function (c) {
+            var n = c.cloneNode(true);
+            n.classList.remove('is-hidden', 'reveal');
+            if (hidden) {
+              n.setAttribute('aria-hidden', 'true');
+              if (n.tagName === 'A') { n.setAttribute('tabindex', '-1'); }
+            }
+            frag.appendChild(n);
+          });
+        }
+        return frag;
+      }
+
+      mqTrack.style.animation = 'none';
+      mqTrack.innerHTML = '';
+      mqTrack.appendChild(makeSet(false));
+      mqTrack.appendChild(makeSet(true));
+      void mqTrack.offsetWidth;              // מאפס את האנימציה
+      mqTrack.style.animation = '';
+    };
+
+    marquee.hidden = false;
+    marquee.classList.add('is-on');
+    window.rebuildMarquee('all');
+
+    var mqTimer;
+    window.addEventListener('resize', function () {
+      clearTimeout(mqTimer);
+      mqTimer = setTimeout(function () { window.rebuildMarquee(); }, 200);
+    });
+    // החזקה במגע = השהיה
+    marquee.addEventListener('touchstart', function () { marquee.classList.add('is-paused'); }, { passive: true });
+    ['touchend', 'touchcancel'].forEach(function (ev) {
+      marquee.addEventListener(ev, function () { marquee.classList.remove('is-paused'); }, { passive: true });
+    });
+  }
 
   /* ---------------------------------------------------------------
      2) גלריה + Lightbox

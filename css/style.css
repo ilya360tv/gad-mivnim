@@ -4152,3 +4152,56 @@ a.project-item:focus-visible {
 a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 /* דף מסחר: הרשת מיושרת לימין, מתחת לראש הדף */
 .commercial-page .projects-grid { margin-top: 8px; }
+
+/* ==========================================================================
+   #projects: פס נע אינסופי (marquee). בלי תנועה (reduced-motion / בלי JS) — רשת סטטית של 3 עמודות
+   ========================================================================== */
+.marquee { display: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .has-js #projects .projects-grid { display: none; }
+  .has-js #projects .marquee.is-on {
+    display: block;
+    direction: ltr;                       /* תנועה משמאל לימין, בלי תלות ב-RTL */
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+            mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+    padding-block: 14px;
+  }
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marqueeMove 35s linear infinite;
+  will-change: transform;
+}
+@keyframes marqueeMove {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track,
+.marquee.is-paused .marquee-track { animation-play-state: paused; }
+
+.marquee .project-item {
+  flex: 0 0 367px;
+  width: 367px;
+  margin-inline-end: 24px;
+  direction: rtl;
+  display: block;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.marquee .project-item:hover,
+.marquee a.project-item:focus-visible {
+  transform: translateY(-4px);
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, .9), 0 0 22px rgba(22, 163, 74, .45), 0 22px 44px rgba(0, 0, 0, .55);
+}
+.marquee .project-info h3 { font-size: clamp(1rem, 1.4vw, 1.35rem); }
+.marquee .project-info { padding: 32px 14px 12px; }
+
+@media (max-width: 640px) {
+  .marquee-track { animation-duration: 25s; }
+  .marquee .project-item { flex-basis: 70vw; width: 70vw; margin-inline-end: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; }
+}
