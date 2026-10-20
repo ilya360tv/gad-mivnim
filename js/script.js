@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!cards.length) { return; }
 
       var vw = marquee.clientWidth || window.innerWidth;
-      var cardW = window.innerWidth < 768 ? 240 : 214;
+      var cardW = window.innerWidth < 768 ? 240 : 320;
       var step  = cardW + (window.innerWidth < 768 ? 16 : 24);
       var reps  = Math.max(1, Math.ceil((vw + step) / (step * cards.length)));
 
@@ -59,6 +59,13 @@ document.addEventListener('DOMContentLoaded', function () {
           cards.forEach(function (c) {
             var n = c.cloneNode(true);
             n.classList.remove('is-hidden', 'reveal');
+            var im = n.querySelector('img');
+            if (im && !im.parentNode.classList.contains('project-media')) {
+              var wrap = document.createElement('div');
+              wrap.className = 'project-media';
+              im.parentNode.insertBefore(wrap, im);
+              wrap.appendChild(im);
+            }
             if (hidden) {
               n.setAttribute('aria-hidden', 'true');
               if (n.tagName === 'A') { n.setAttribute('tabindex', '-1'); }

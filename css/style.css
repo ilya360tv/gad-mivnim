@@ -536,17 +536,6 @@ a {
   background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.82) 100%);
 }
 
-.project-tag {
-  display: inline-block;
-  background: var(--green);
-  color: var(--white);
-  font-size: .78rem;
-  font-weight: 700;
-  padding: 3px 12px;
-  border-radius: 999px;
-  margin-bottom: 8px;
-}
-
 .project-info h3 {
   font-size: 1.2rem;
   font-weight: 700;
@@ -1918,12 +1907,6 @@ a, button, .filter-btn, .gallery-item { cursor: pointer; }
 /* ----- פרויקטים ----- */
 .project-item { border-radius: 14px; }
 
-.project-tag {
-  background: var(--green-deep);
-  letter-spacing: .06em;
-  font-size: .78rem;
-}
-
 .project-info h3 {
   font-family: 'Rubik', 'Segoe UI', Arial, sans-serif;
   font-size: 1.3rem;
@@ -2456,7 +2439,6 @@ a, button { transition: color .18s ease, background-color .18s ease, border-colo
 /* טקסטים קטנים מ-16px — מוגדלים בטלפונים ובטאבלטים */
 @media (max-width: 1024px) {
   .section-eyebrow { font-size: .9rem; }
-  .project-tag     { font-size: .9rem; }
   .footer-copy     { font-size: .9rem; }
 }
 
@@ -4154,7 +4136,8 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 .commercial-page .projects-grid { margin-top: 8px; }
 
 /* ==========================================================================
-   #projects: פס נע אינסופי (marquee). בלי תנועה (reduced-motion / בלי JS) — רשת סטטית של 3 עמודות
+   #projects: פס נע אינסופי — כרטיסים בעיצוב כרטיס חטיבה (תמונה למעלה, כותרת מתחת על גוף כהה)
+   בלי תנועה (reduced-motion / בלי JS) — רשת סטטית של 3 עמודות
    ========================================================================== */
 .marquee { display: none; }
 @media (prefers-reduced-motion: no-preference) {
@@ -4163,15 +4146,15 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
     display: block;
     direction: ltr;                       /* תנועה משמאל לימין, בלי תלות ב-RTL */
     overflow: hidden;
-    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
-            mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
-    padding-block: 14px;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%);
+            mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%);
+    padding-block: 18px 26px;             /* מקום להרמה ולזוהר בלי חיתוך */
   }
 }
 .marquee-track {
   display: flex;
   width: max-content;
-  animation: marqueeMove 35s linear infinite;
+  animation: marqueeMove 40s linear infinite;
   will-change: transform;
 }
 @keyframes marqueeMove {
@@ -4182,42 +4165,62 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 .marquee:focus-within .marquee-track,
 .marquee.is-paused .marquee-track { animation-play-state: paused; }
 
+/* כרטיס: 320px רוחב קבוע, תמונה 180px */
 .marquee .project-item {
-  flex: 0 0 367px;
-  width: 367px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 320px;
+  width: 320px;
+  height: auto;
+  aspect-ratio: auto;
   margin-inline-end: 24px;
   direction: rtl;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  color: inherit;
+  text-decoration: none;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, .35);
+  transition: transform .25s ease-out, box-shadow .25s ease-out, border-color .25s ease-out;
+}
+.marquee .project-media { height: 180px; overflow: hidden; flex: none; }
+.marquee .project-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   display: block;
-  transition: transform .2s ease, box-shadow .2s ease;
+  transition: transform .4s ease-out;
+}
+.marquee .project-item:hover img,
+.marquee a.project-item:focus-visible img { transform: scale(1.06); }
+#projects .marquee .project-info {
+  position: static;
+  background: none;
+  padding: 14px 12px 16px;
+  text-align: center;
+}
+#projects .marquee .project-info h3 {
+  margin: 0;
+  font-size: .95rem;                   /* כמו כותרת כרטיס חטיבה */
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--white);
 }
 .marquee .project-item:hover,
 .marquee a.project-item:focus-visible {
   transform: translateY(-4px);
+  border-color: var(--green);
   box-shadow: 0 0 0 2px rgba(22, 163, 74, .9), 0 0 22px rgba(22, 163, 74, .45), 0 22px 44px rgba(0, 0, 0, .55);
 }
-.marquee .project-info h3 { font-size: clamp(1rem, 1.4vw, 1.35rem); }
-.marquee .project-info { padding: 32px 14px 12px; }
+.marquee a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 
-@media (max-width: 640px) {
-  .marquee-track { animation-duration: 25s; }
-  .marquee .project-item { flex-basis: 70vw; width: 70vw; margin-inline-end: 16px; }
+@media (max-width: 767.98px) {
+  .marquee-track { animation-duration: 30s; }
+  .marquee .project-item { flex-basis: 240px; width: 240px; margin-inline-end: 16px; }
+  .marquee .project-media { height: 135px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .marquee-track { animation: none; }
-}
-
-/* ----- פס הפרויקטים: כרטיס בגודל קבוע בפיקסלים = כרטיס חטיבה בדף הבית (214px רוחב, תמונה 119px) ----- */
-.marquee .project-item {
-  flex: 0 0 214px;
-  width: 214px;
-  height: 119px;
-  aspect-ratio: auto;
-  margin-inline-end: 24px;
-}
-.marquee .project-item img { width: 100%; height: 100%; object-fit: cover; }
-.marquee .project-info { padding: 28px 12px 10px; }
-.marquee .project-info h3 { font-size: 1.05rem; margin: 0; }
-@media (max-width: 767.98px) {
-  .marquee .project-item { flex-basis: 240px; width: 240px; height: 135px; margin-inline-end: 16px; }
-  .marquee-track { animation-duration: 25s; }
 }
