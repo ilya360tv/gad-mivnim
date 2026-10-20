@@ -4018,61 +4018,23 @@ body .contact-label {
   font-weight: 700;
 }
 
-/* ----- כרטיס "תשתיות ופיתוח": "אספלט וכבישים" נחשף בפתיחת הכרטיס ----- */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-.card-expandable { position: relative; }
-.card-more { margin-top: 10px; }
-.card-more summary {
-  list-style: none;
+/* ----- כרטיס "תשתיות ופיתוח" מוביל לדף משלו (infrastructure.html) ----- */
+.card-linkcard {
+  text-decoration: none;
+  color: inherit;
   cursor: pointer;
-  display: flex;
-  justify-content: center;
-  padding: 6px 0;
 }
-.card-more summary::-webkit-details-marker { display: none; }
-.card-more summary::after {          /* כל הכרטיס לחיץ */
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 1;
+.card-linkcard .card-body { display: flex; flex-direction: column; flex: 1; gap: 4px; }
+.card-linkcard .division-card-btn { margin-top: auto; }
+.card-linkcard:hover,
+.card-linkcard:focus-visible {
+  border-color: var(--green);
+  box-shadow:
+    0 0 0 2px rgba(22, 163, 74, .9),
+    0 0 22px rgba(22, 163, 74, .45),
+    0 22px 44px rgba(0, 0, 0, .55);
 }
-.card-more summary:focus-visible { outline: 3px solid #fff; outline-offset: -3px; }
-.card-more-chev {
-  display: block;
-  width: 10px;
-  height: 10px;
-  border-inline-end: 2px solid var(--logo-g);
-  border-bottom: 2px solid var(--logo-g);
-  transform: rotate(45deg);
-  transition: transform .25s ease;
-}
-.card-more[open] .card-more-chev { transform: rotate(-135deg); }
-.card-sub {
-  margin-top: 8px;
-  padding-top: 14px;
-  border-top: 1px solid var(--line);
-}
-.card-sub-img {
-  display: block;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-  border-radius: 10px;
-  margin-bottom: 12px;
-}
-.card-subtitle {
-  margin: 0 0 6px;
-  font-size: 1rem;
-  font-weight: 700;
-  color: #fff;
-}
+.card-linkcard:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+
+.cards-grid-single { grid-template-columns: minmax(0, 360px); }
+@media (max-width: 640px) { .cards-grid-single { grid-template-columns: 1fr; } }

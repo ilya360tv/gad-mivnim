@@ -252,7 +252,7 @@
     pg_pgrp4: { he: 'דלתות פנים וכניסה | GAD MIVNIM', ru: 'Межкомнатные и входные двери | GAD MIVNIM', en: 'Interior & Entrance Doors | GAD MIVNIM', fr: 'Portes intérieures et d’entrée | GAD MIVNIM' },
     pg_pgrp5: { he: 'שערים, זגגות ומסגרות | GAD MIVNIM', ru: 'Ворота, остекление и рамы | GAD MIVNIM', en: 'Gates, Glazing & Frames | GAD MIVNIM', fr: 'Portails, vitrage et cadres | GAD MIVNIM' },
 
-    more_details: { he: 'פרטים נוספים', ru: 'Подробнее', en: 'More details', fr: 'Plus de détails' },
+    pg_infra: { he: 'תשתיות ופיתוח | GAD MIVNIM', ru: 'Инфраструктура и благоустройство | GAD MIVNIM', en: 'Infrastructure & Development | GAD MIVNIM', fr: 'Infrastructures et aménagement | GAD MIVNIM' },
 
     /* ----- Footer ----- */
     footer_l1:  { he: 'מקווים שהנהנתם לצפות באתר הבית שלנו', ru: 'Надеемся, вам понравился наш домашний сайт', en: 'We hope you enjoyed viewing our home site', fr: 'Nous espérons que vous avez apprécié la visite de notre site maison' },
