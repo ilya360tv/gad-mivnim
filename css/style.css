@@ -4037,77 +4037,80 @@ body .contact-label {
 .card-linkcard:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 
 /* ==========================================================================
-   דפי חטיבות: כל הכרטיסים בשורה אחת — בלי גלילה ובלי חיצים
+   דפי חטיבות: כרטיסי שירות בדיוק בגודל כרטיסי החטיבות בדף הבית
+   (נמדד ב-1440px: כרטיס 214x292, תמונה 16/9, רווח 16px, כותרת 15.2px, משפט 14.08px)
+   עד 5 בשורה; כרטיסים שלא נכנסים יורדים לשורה הבאה, והשורה ממורכזת.
    ========================================================================== */
 .division-page .cards-row {
-  display: grid;
-  gap: clamp(10px, 1.2vw, 20px);
-  grid-template-columns: repeat(var(--cols-m, 2), minmax(0, 1fr));   /* מובייל: 2 בשורה */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   align-items: stretch;
-}
-@media (min-width: 768px) {                                          /* טאבלט: 3 בשורה */
-  .division-page .cards-row { grid-template-columns: repeat(var(--cols-t, 3), minmax(0, 1fr)); }
-}
-@media (min-width: 1024px) {                                         /* דסקטופ: כל N הכרטיסים בשורה אחת */
-  .division-page .cards-row {
-    grid-template-columns: repeat(var(--cards, 3), minmax(0, 1fr));
-    /* מעט כרטיסים לא נמתחים לענק: רוחב מקסימלי לכרטיס ~380px */
-    max-width: calc(var(--cards, 3) * 380px + (var(--cards, 3) - 1) * 20px);
-    margin-inline: auto;
-  }
+  gap: 20px;
+  margin-inline: 0;
+  width: auto;
 }
 .division-page .cards-row > .card {
   display: flex;
   flex-direction: column;
   height: auto;
   min-width: 0;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, .35);
+  flex: 0 0 100%;                     /* מובייל: עמודה אחת (כמו בדף הבית) */
+  box-shadow: 0 10px 26px rgba(0, 0, 0, .07);
 }
-.division-page .cards-row > .card:hover { box-shadow: 0 6px 18px rgba(0, 0, 0, .45); }
-.division-page .cards-row > .card .card-media { aspect-ratio: 4 / 3; flex: none; }
-.division-page .cards-row > .card .card-media img { width: 100%; height: 100%; object-fit: cover; }
-.division-page .cards-row > .card .card-body { flex: 1; padding: 12px; }
+/* הכותרת בראש הכרטיס, מעל התמונה — כמו בכרטיס החטיבה */
+.division-page .cards-row > .card .card-body { display: contents; }
 .division-page .cards-row > .card .card-title {
-  font-size: clamp(.8rem, 1vw, 1.1rem);
-  line-height: 1.3;
-  min-height: 2.6em;               /* שתי שורות שמורות — כל הכותרות מיושרות */
-  white-space: normal;
-  text-wrap: balance;
-  overflow-wrap: anywhere;
-}
-.division-page .cards-row > .card .card-tagline {
-  font-size: clamp(.72rem, .85vw, .95rem);
-  line-height: 1.35;
-}
-
-/* ----- דפי חטיבות: כרטיסים גדולים יותר, עדיין שורה אחת בלי גלילה ----- */
-.division-page .cards-row {
-  gap: clamp(8px, .8vw, 14px);
-}
-@media (min-width: 1024px) {
-  .division-page .cards-row {
-    /* יוצאים מהקונטיינר הצר, ממורכזים בלי transform (שלא יתנגש באנימציית החשיפה) */
-    --row-w: min(1800px, 96vw);
-    width: var(--row-w);
-    max-width: none;
-    margin-inline: calc((100% - var(--row-w)) / 2);
-  }
-  /* מעט כרטיסים (עד 4): רוחב כרטיס מקסימלי 340px, השורה ממורכזת */
-  .division-page .cards-row[style*="--cards:1;"],
-  .division-page .cards-row[style*="--cards:2;"],
-  .division-page .cards-row[style*="--cards:3;"],
-  .division-page .cards-row[style*="--cards:4;"] {
-    --row-w: min(96vw, calc(var(--cards) * 340px + (var(--cards) - 1) * 14px));
-    grid-template-columns: repeat(var(--cards), minmax(0, 1fr));
-  }
-}
-.division-page .cards-row > .card .card-media { aspect-ratio: 1 / 1; }
-.division-page .cards-row > .card .card-body { padding: 14px 16px; }
-.division-page .cards-row > .card .card-title {
-  font-size: clamp(.95rem, 1.15vw, 1.25rem);
+  order: 1;
+  margin: 0;
+  padding: 14px 10px 10px;
+  text-align: center;
+  font-size: 1.15rem;
   font-weight: 700;
+  line-height: 1.3;
+  text-wrap: balance;
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+.division-page .cards-row > .card .card-media {
+  order: 2;
+  flex: none;
+  aspect-ratio: 21 / 9;
+}
+.division-page .cards-row > .card .card-media img { width: 100%; height: 100%; object-fit: cover; }
 .division-page .cards-row > .card .card-tagline {
-  font-size: clamp(.85rem, .95vw, 1.05rem);
+  order: 3;
+  margin: 0;
+  padding: 12px 12px 0;
+  text-align: center;
+  font-size: .95rem;
+}
+.division-page .cards-row > .card .card-tagline:last-child,
+.division-page .cards-row > .card:not(:has(.card-tagline)) .card-media { margin-bottom: 0; }
+.division-page .cards-row > .card::after { content: ""; order: 9; flex: 1; min-height: 16px; }
+
+@media (min-width: 641px) {           /* טאבלט: 2 בשורה, כמו בדף הבית */
+  .division-page .cards-row > .card { flex: 0 0 calc((100% - 20px) / 2); }
+  .division-page .cards-row > .card .card-media { aspect-ratio: 16 / 9; }
+}
+@media (min-width: 1024px) {          /* דסקטופ: 5 בשורה בדיוק בגודל כרטיס החטיבה */
+  .division-page .cards-row { gap: 16px; }
+  .division-page .cards-row > .card { flex: 0 0 calc((100% - 4 * 16px) / 5); }
+  .division-page .cards-row > .card .card-title {
+    font-size: clamp(.74rem, 1.25vw, .95rem);
+    padding-inline: 8px;
+    min-height: 48px;
+    white-space: nowrap;
+  }
+  .division-page .cards-row > .card .card-tagline { font-size: clamp(.84rem, 1.1vw, .88rem); }
 }
 
+/* כפתור "לכל השירותים" בכרטיס "תשתיות ופיתוח" — בתחתית, אחרי המשפט */
+.division-page .cards-row > .card .division-card-btn { order: 4; align-self: center; margin: 12px 0 0; }
+.division-page .cards-row > .card::after { min-height: 16px; }
+@media (min-width: 1024px) {
+  /* אותו גובה של כרטיס החטיבה בדף הבית (214x292) */
+  .division-page .cards-row > .card { aspect-ratio: 214 / 292; }
+}
