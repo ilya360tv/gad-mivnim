@@ -128,7 +128,7 @@
       // כל היעדים שקיימים בדף (גם סקשנים שאינם בתפריט — כדי לנקות סימון ישן)
       var spyIds = ['hero', 'about', 'services', 'projects', 'in-progress', 'teams',
                     'partners', 'gallery', 'info',
-                    'podcast', 'contact', 'careers'];
+                    'podcast', 'careers'];
       var spyTargets = spyIds.map(function (id) { return document.getElementById(id); })
                              .filter(Boolean);
       var currentLink = null;
@@ -156,7 +156,6 @@
           var top = el.getBoundingClientRect().top;
           if (top <= probe && top > bestTop) { best = el; bestTop = top; }
         });
-        if (atBottom && linkById.contact) { setCurrent(linkById.contact); return; }
         setCurrent(best ? (linkById[best.id] || null) : null);
       };
       var queueSpy = function () {

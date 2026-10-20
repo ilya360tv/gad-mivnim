@@ -245,14 +245,6 @@
       modal.addEventListener('click', function (e) {
         if (e.target === modal) { closeModal(); }
       });
-      // קישור "טופס יצירת הקשר" בתוך ההצהרה — סוגר את המודאל וגם את הפאנל
-      var toContact = modal.querySelector('.js-a11y-close-to-contact');
-      if (toContact) {
-        toContact.addEventListener('click', function () {
-          closeModal();
-          if (panel.classList.contains('is-open')) { closePanel(); }
-        });
-      }
     }
 
     // החלת המצב השמור
