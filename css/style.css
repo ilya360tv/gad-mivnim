@@ -4114,3 +4114,6 @@ body .contact-label {
   /* אותו גובה של כרטיס החטיבה בדף הבית (214x292) */
   .division-page .cards-row > .card { aspect-ratio: 214 / 292; }
 }
+
+/* home-services: השורה השנייה מתחילה מהצד הימני (תחילת RTL), מתחת לכרטיסים שמעליה */
+.division-page .cards-row.cards-row--start { justify-content: flex-start; }
