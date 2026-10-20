@@ -3829,18 +3829,6 @@ body .contact-label {
 }
 .division-card .card-title { font-size: 1.3rem; }
 .division-card .card-tagline { margin-bottom: 14px; }
-.division-card-btn {
-  margin-top: auto;
-  align-self: flex-start;
-  display: inline-block;
-  padding: 8px 20px;
-  border-radius: 999px;
-  font-weight: 700;
-  font-size: .9rem;
-  color: #fff;
-  background: var(--green);
-  transition: background .2s ease, box-shadow .2s ease;
-}
 /* טבעת וזוהר ירוקים במעבר עכבר / פוקוס */
 .division-card:hover,
 .division-card:focus-visible {
@@ -3850,8 +3838,6 @@ body .contact-label {
     0 0 22px rgba(22, 163, 74, .45),
     0 22px 44px rgba(0, 0, 0, .55);
 }
-.division-card:hover .division-card-btn,
-.division-card:focus-visible .division-card-btn { background: var(--green-dark); }
 .division-card:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 
 /* כפתור משני (קו מתאר) */
@@ -3887,7 +3873,6 @@ body .contact-label {
 .division-card-head .card-title { margin: 0; font-size: 1.15rem; }
 .division-card .card-body { padding: 14px 18px 18px; }
 .division-card .card-tagline { font-size: .95rem; margin-bottom: 12px; }
-.division-card-btn { padding: 6px 16px; font-size: .85rem; }
 @media (max-width: 640px) {
   .division-card .card-media { aspect-ratio: 21 / 9; }
 }
@@ -3936,11 +3921,6 @@ body .contact-label {
 :is(#services, #partners) .division-cards .division-card .card-tagline {
   flex: 1;
   text-align: center;
-}
-:is(#services, #partners) .division-cards .division-card .division-card-btn {
-  margin-top: auto;
-  margin-inline: auto;
-  align-self: center;
 }
 
 /* טאבלט: ראש הכרטיס בגובה קבוע (עד 2 שורות) כדי שהתמונות יישארו על קו אחד */
@@ -4025,7 +4005,6 @@ body .contact-label {
   cursor: pointer;
 }
 .card-linkcard .card-body { display: flex; flex-direction: column; flex: 1; }
-.card-linkcard .division-card-btn { margin-top: auto; }
 .card-linkcard:hover,
 .card-linkcard:focus-visible {
   border-color: var(--green);
@@ -4108,12 +4087,7 @@ body .contact-label {
 }
 
 /* כפתור "לכל השירותים" בכרטיס "תשתיות ופיתוח" — בתחתית, אחרי המשפט */
-.division-page .cards-row > .card .division-card-btn { order: 4; align-self: center; margin: 12px 0 0; }
 .division-page .cards-row > .card::after { min-height: 16px; }
-@media (min-width: 1024px) {
-  /* אותו גובה של כרטיס החטיבה בדף הבית (214x292) */
-  .division-page .cards-row > .card { aspect-ratio: 214 / 292; }
-}
 
 /* home-services: השורה השנייה מתחילה מהצד הימני (תחילת RTL), מתחת לכרטיסים שמעליה */
 .division-page .cards-row.cards-row--start { justify-content: flex-start; }
@@ -4126,3 +4100,22 @@ body .contact-label {
 .careers-grid,
 .cards-grid { justify-content: start; }
 .division-page .cards-row { justify-content: flex-start; margin-inline: 0; }
+
+/* ----- כרטיסים לחיצים בלי כפתור: כל הכרטיס הוא קישור, עם הרמה וזוהר ירוק במעבר/פוקוס ----- */
+a.division-card,
+a.card-linkcard { cursor: pointer; text-decoration: none; color: inherit; }
+a.division-card:hover,
+a.division-card:focus-visible,
+a.card-linkcard:hover,
+a.card-linkcard:focus-visible {
+  transform: translateY(-4px);
+  border-color: var(--green);
+  box-shadow:
+    0 0 0 2px rgba(22, 163, 74, .9),
+    0 0 22px rgba(22, 163, 74, .45),
+    0 22px 44px rgba(0, 0, 0, .55);
+}
+a.division-card:focus-visible,
+a.card-linkcard:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+/* תחתית הכרטיס אחרי הסרת הכפתור */
+a.division-card .card-body { padding-bottom: 16px; }

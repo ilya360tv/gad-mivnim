@@ -230,7 +230,6 @@
     f_success:{ he: 'קוד המשתמש בדרך אליכם..     תודה שבחרתם לצפות באתר הבית שלנו', ru: 'Код пользователя уже в пути.. спасибо, что выбрали наш домашний сайт', en: 'Your user code is on its way.. thank you for choosing to view our home site', fr: 'Votre code utilisateur est en route.. merci d’avoir choisi de visiter notre site maison' },
 
     /* ----- דפי חטיבות ----- */
-    svc_card_btn: { he: 'לכל השירותים', ru: 'Все услуги', en: 'All services', fr: 'Tous les services' },
     svc_back:     { he: 'חזרה לכל השירותים', ru: 'Назад ко всем услугам', en: 'Back to all services', fr: 'Retour à tous les services' },
     pg_d1: { he: 'חטיבת תכנון והנדסת בנייה | GAD MIVNIM', ru: 'Подразделение проектирования и строительной инженерии | GAD MIVNIM', en: 'Planning & Construction Engineering Division | GAD MIVNIM', fr: 'Division planification et ingénierie de construction | GAD MIVNIM' },
     pg_d2: { he: 'חטיבת בינוי ותשתיות | GAD MIVNIM', ru: 'Подразделение строительства и инфраструктуры | GAD MIVNIM', en: 'Construction & Infrastructure Division | GAD MIVNIM', fr: 'Division construction et infrastructures | GAD MIVNIM' },
@@ -239,7 +238,6 @@
     pg_d5: { he: 'חטיבת המיוחדים שלנו | GAD MIVNIM', ru: 'Подразделение особых услуг | GAD MIVNIM', en: 'Our Specials Division | GAD MIVNIM', fr: 'Division de nos spécialités | GAD MIVNIM' },
 
     /* ----- שותפים: קבוצות ודפים ----- */
-    pgrp_btn:  { he: 'לצפייה בשותפים', ru: 'Смотреть партнёров', en: 'View partners', fr: 'Voir les partenaires' },
     pgrp_back: { he: 'חזרה לכל השותפים', ru: 'Назад ко всем партнёрам', en: 'Back to all partners', fr: 'Retour à tous les partenaires' },
     pgrp1: { he: 'מטבחים, נגרות ורהיטים', ru: 'Кухни, столярные изделия и мебель', en: 'Kitchens, Carpentry & Furniture', fr: 'Cuisines, menuiserie et mobilier' },
     pgrp2: { he: 'ריצוף, חיפויים וצבעים', ru: 'Полы, облицовка и краски', en: 'Flooring, Cladding & Paints', fr: 'Revêtements de sol, parements et peintures' },
