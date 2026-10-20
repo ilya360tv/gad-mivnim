@@ -4024,7 +4024,7 @@ body .contact-label {
   color: inherit;
   cursor: pointer;
 }
-.card-linkcard .card-body { display: flex; flex-direction: column; flex: 1; gap: 4px; }
+.card-linkcard .card-body { display: flex; flex-direction: column; flex: 1; }
 .card-linkcard .division-card-btn { margin-top: auto; }
 .card-linkcard:hover,
 .card-linkcard:focus-visible {
@@ -4038,3 +4038,28 @@ body .contact-label {
 
 .cards-grid-single { grid-template-columns: minmax(0, 360px); }
 @media (max-width: 640px) { .cards-grid-single { grid-template-columns: 1fr; } }
+
+/* ----- דפי חטיבות: כרטיסי שירות אחידים בכל רוחב מסך ----- */
+.division-page .cards-grid .card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.division-page .cards-grid .card-media { aspect-ratio: 16 / 10; flex: none; }
+.division-page .cards-grid .card-body { flex: 1; }
+.division-page .cards-grid .card-title { text-wrap: balance; }
+
+@media (min-width: 1024px) {
+  /* אותו מבנה כמו במסך רחב: 3 כרטיסים בשורה בכל רוחב דסקטופ */
+  .division-page .cards-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .division-page .cards-grid.cards-grid-single { grid-template-columns: minmax(0, 360px); }
+  .division-page .cards-grid .card-title {
+    font-size: clamp(.9rem, 1.4vw, 1.12rem);
+    white-space: nowrap;
+    text-wrap: nowrap;
+  }
+  .division-page .cards-grid .card-tagline {
+    font-size: clamp(.84rem, 1.1vw, 1rem);
+  }
+}
+
