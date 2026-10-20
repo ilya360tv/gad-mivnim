@@ -4212,12 +4212,49 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
   .marquee-track { animation: none; }
 }
 
-/* ----- #projects: לוגואים של לקוחות — שלמים (בלי חיתוך), על רקע לבן אחיד ----- */
-#projects .client-logo { background: #fff; }
+/* ----- #projects: לוגואים של לקוחות — לבן מונוכרום על הרקע הכהה, בלי מסגרת; ריחוף = ירוק + זוהר ----- */
+#projects .client-logo,
+.marquee .project-item.client-logo {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
 #projects .client-logo img,
 .marquee .client-logo img {
   object-fit: contain;
-  padding: 24px;
+  background: transparent;
+  padding: 0;
   box-sizing: border-box;
-  background: #fff;
 }
+.marquee .client-logo .project-media {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+.marquee .client-logo .project-media img {
+  width: 70%;
+  height: 70%;
+  transition: opacity .25s ease-out;
+}
+/* גרסה ירוקה (מסכה מאותו לוגו) שנחשפת בריחוף */
+.marquee .client-logo .project-media::after {
+  content: "";
+  position: absolute;
+  inset: 15%;
+  background-color: var(--green);
+  -webkit-mask: var(--logo) center / contain no-repeat;
+          mask: var(--logo) center / contain no-repeat;
+  filter: drop-shadow(0 0 12px rgba(22, 163, 74, .65));
+  opacity: 0;
+  transition: opacity .25s ease-out;
+  pointer-events: none;
+}
+.marquee .client-logo:hover .project-media::after { opacity: 1; }
+.marquee .client-logo:hover .project-media img { opacity: 0; }
+.marquee .project-item.client-logo:hover { box-shadow: none; border-color: transparent; transform: translateY(-4px); }
+.marquee .client-logo:hover img { transform: none; }
+/* רשת סטטית (reduced-motion): לוגו לבן על כהה */
+#projects .projects-grid .client-logo { aspect-ratio: 1 / 1; display: flex; align-items: center; justify-content: center; }
+#projects .projects-grid .client-logo img { width: 70%; height: 70%; }

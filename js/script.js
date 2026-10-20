@@ -51,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
               wrap.className = 'project-media';
               im.parentNode.insertBefore(wrap, im);
               wrap.appendChild(im);
+              n.style.setProperty('--logo', 'url("' + new URL(im.getAttribute('src'), document.baseURI).href + '")');
             }
             if (hidden) {
               n.setAttribute('aria-hidden', 'true');
