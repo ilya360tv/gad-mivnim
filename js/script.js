@@ -60,6 +60,11 @@ document.addEventListener('DOMContentLoaded', function () {
             var n = c.cloneNode(true);
             n.classList.remove('is-hidden', 'reveal');
             var im = n.querySelector('img');
+            var info = n.querySelector('.project-info');
+            var ttl = info && info.querySelector('h3') ? info.querySelector('h3').textContent.trim() : '';
+            if (im && ttl) { im.setAttribute('alt', ttl); }
+            if (n.tagName === 'A' && ttl) { n.setAttribute('aria-label', ttl); }
+            if (info) { info.parentNode.removeChild(info); }   // תמונה בלבד — הכותרת עוברת ל-alt / aria-label
             if (im && !im.parentNode.classList.contains('project-media')) {
               var wrap = document.createElement('div');
               wrap.className = 'project-media';
@@ -83,6 +88,11 @@ document.addEventListener('DOMContentLoaded', function () {
       void mqTrack.offsetWidth;              // מאפס את האנימציה
       mqTrack.style.animation = '';
     };
+
+    if ('MutationObserver' in window) {
+      new MutationObserver(function () { window.rebuildMarquee(); })
+        .observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    }
 
     marquee.hidden = false;
     marquee.classList.add('is-on');
