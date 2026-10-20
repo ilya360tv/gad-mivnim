@@ -4291,3 +4291,6 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 }
 .project-city[hidden] { display: none; }
 .project-city svg { color: var(--green); flex: none; }
+
+/* ----- דף פרויקט: כותרת שם הלקוח קטנה ב-~25% ----- */
+.project-page .project-head .section-title { font-size: clamp(1.6rem, 2.6vw, 2.3rem); }
