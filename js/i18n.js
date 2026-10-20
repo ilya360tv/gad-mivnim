@@ -250,6 +250,9 @@
 
     pg_infra: { he: 'תשתיות ופיתוח | GAD MIVNIM', ru: 'Инфраструктура и благоустройство | GAD MIVNIM', en: 'Infrastructure & Development | GAD MIVNIM', fr: 'Infrastructures et aménagement | GAD MIVNIM' },
 
+    proj_back: { he: 'חזרה לכל הפרויקטים', ru: 'Назад ко всем проектам', en: 'Back to all projects', fr: 'Retour à tous les projets' },
+    pg_commercial: { he: 'מבני מסחר וקניות | GAD MIVNIM', ru: 'Торговые здания | GAD MIVNIM', en: 'Commerce & Shopping | GAD MIVNIM', fr: 'Commerce et centres commerciaux | GAD MIVNIM' },
+
     /* ----- Footer ----- */
     footer_l1:  { he: 'מקווים שהנהנתם לצפות באתר הבית שלנו', ru: 'Надеемся, вам понравился наш домашний сайт', en: 'We hope you enjoyed viewing our home site', fr: 'Nous espérons que vous avez apprécié la visite de notre site maison' },
     footer_l2:  { he: 'נשמח לראותם בין קהל לקוחותינו וממשפחת <bdi>G A D MIVNIM</bdi> בכל מקום במפה', ru: 'Будем рады видеть вас среди наших клиентов и семьи G A D MIVNIM — везде на карте', en: 'We would be glad to see you among our clients and the G A D MIVNIM family — everywhere on the map', fr: 'Nous serons ravis de vous compter parmi nos clients et la famille <bdi>G A D MIVNIM</bdi> — partout sur la carte' },
