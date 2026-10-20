@@ -37,6 +37,8 @@
       logo.setAttribute('alt', name);
     }
     if (h1) { h1.textContent = title; }
+    var subEl = document.getElementById('projSubtitle');
+    if (subEl && d.subtitle) { subEl.textContent = d.subtitle; subEl.hidden = false; }
     var cityEl = document.getElementById('projCity');
     if (cityEl && d.city) {
       document.getElementById('projCityText').textContent = d.city;

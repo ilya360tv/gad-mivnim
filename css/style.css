@@ -4294,3 +4294,15 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 
 /* ----- דף פרויקט: כותרת שם הלקוח קטנה ב-~25% ----- */
 .project-page .project-head .section-title { font-size: clamp(1.6rem, 2.6vw, 2.3rem); }
+
+/* ----- דף פרויקט: כותרת משנה (סלוגן המותג) מתחת לשם ----- */
+.project-subtitle {
+  margin: 6px 0 0;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--logo-g);
+  text-align: start;
+}
+.project-subtitle[hidden] { display: none; }
