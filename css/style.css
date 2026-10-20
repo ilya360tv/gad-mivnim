@@ -4036,8 +4036,6 @@ body .contact-label {
 }
 .card-linkcard:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 
-.cards-grid-single { grid-template-columns: minmax(0, 360px); }
-@media (max-width: 640px) { .cards-grid-single { grid-template-columns: 1fr; } }
 
 /* ----- דפי חטיבות: כרטיסי שירות אחידים בכל רוחב מסך ----- */
 .division-page .cards-grid .card {
@@ -4052,7 +4050,6 @@ body .contact-label {
 @media (min-width: 1024px) {
   /* אותו מבנה כמו במסך רחב: 3 כרטיסים בשורה בכל רוחב דסקטופ */
   .division-page .cards-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .division-page .cards-grid.cards-grid-single { grid-template-columns: minmax(0, 360px); }
   .division-page .cards-grid .card-title {
     font-size: clamp(.9rem, 1.4vw, 1.12rem);
     white-space: nowrap;
@@ -4063,3 +4060,41 @@ body .contact-label {
   }
 }
 
+/* ----- דפי חטיבות: רשת כרטיסים מאוזנת לפי מספר הכרטיסים (בלי כרטיס בודד בשורה) ----- */
+.division-page .cards-grid[class*="cards-grid--"] {
+  display: grid;
+  grid-auto-rows: 1fr;
+  gap: 28px;
+}
+.division-page .cards-grid[class*="cards-grid--"] > .card { height: auto; min-width: 0; }
+.division-page .cards-grid[class*="cards-grid--"] > .card .card-media { aspect-ratio: 16 / 10; }
+.division-page .cards-grid[class*="cards-grid--"] > .card .card-media img { width: 100%; height: 100%; object-fit: cover; }
+
+/* דסקטופ: 3 בשורה (6 עמודות, כל כרטיס 2) · 4 בשורה לעמוד של 4 כרטיסים */
+@media (min-width: 1024px) {
+  .division-page .cards-grid[class*="cards-grid--"] { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .division-page .cards-grid[class*="cards-grid--"] > .card { grid-column: span 2; }
+  .division-page .cards-grid[class*="cards-grid--"].cards-grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .division-page .cards-grid[class*="cards-grid--"].cards-grid--4 > .card { grid-column: auto; }
+  .division-page .cards-grid[class*="cards-grid--"].cards-grid--5 > .card:nth-child(4),
+  .division-page .cards-grid[class*="cards-grid--"].cards-grid--2 > .card:nth-child(1) { grid-column: 2 / span 2; }
+  .division-page .cards-grid[class*="cards-grid--"].cards-grid--5 > .card:nth-child(5),
+  .division-page .cards-grid[class*="cards-grid--"].cards-grid--2 > .card:nth-child(2) { grid-column: 4 / span 2; }
+  .division-page .cards-grid[class*="cards-grid--"].cards-grid--1 > .card { grid-column: 3 / span 2; }
+}
+
+/* טאבלט: 2 בשורה; כרטיס אחרון בודד — ממורכז */
+@media (min-width: 641px) and (max-width: 1023.98px) {
+  .division-page .cards-grid[class*="cards-grid--"] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .division-page .cards-grid[class*="cards-grid--"] > .card { grid-column: span 2; }
+  .division-page .cards-grid[class*="cards-grid--"].cards-grid--1 > .card,
+  .division-page .cards-grid[class*="cards-grid--"].cards-grid--3 > .card:last-child,
+  .division-page .cards-grid[class*="cards-grid--"].cards-grid--5 > .card:last-child,
+  .division-page .cards-grid[class*="cards-grid--"].cards-grid--9 > .card:last-child { grid-column: 2 / span 2; }
+}
+
+/* מובייל: עמודה אחת */
+@media (max-width: 640px) {
+  .division-page .cards-grid[class*="cards-grid--"] { grid-template-columns: 1fr; gap: 20px; }
+  .division-page .cards-grid[class*="cards-grid--"] > .card { grid-column: auto; }
+}
