@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!cards.length) { return; }
 
       var vw = marquee.clientWidth || window.innerWidth;
-      var cardW = window.innerWidth < 768 ? 270 : 370;
+      var cardW = window.innerWidth < 768 ? 240 : 320;
       var step  = cardW + (window.innerWidth < 768 ? 16 : 24);
       var reps  = Math.max(1, Math.ceil((vw + step) / (step * cards.length)));
 

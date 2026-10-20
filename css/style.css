@@ -4165,15 +4165,15 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 .marquee:focus-within .marquee-track,
 .marquee.is-paused .marquee-track { animation-play-state: paused; }
 
-/* כרטיס: 370px רוחב קבוע, תמונה 210px */
+/* כרטיס: ריבוע 320x320 קבוע */
 .marquee .project-item {
   position: relative;
   display: flex;
   flex-direction: column;
-  flex: 0 0 370px;
-  width: 370px;
-  height: auto;
-  aspect-ratio: auto;
+  flex: 0 0 320px;
+  width: 320px;
+  height: 320px;
+  aspect-ratio: 1 / 1;
   margin-inline-end: 24px;
   direction: rtl;
   background: var(--surface);
@@ -4185,11 +4185,12 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
   box-shadow: 0 10px 26px rgba(0, 0, 0, .35);
   transition: transform .25s ease-out, box-shadow .25s ease-out, border-color .25s ease-out;
 }
-.marquee .project-media { height: 210px; overflow: hidden; flex: none; }
+.marquee .project-media { height: 100%; overflow: hidden; flex: none; }
 .marquee .project-item img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   display: block;
   transition: transform .4s ease-out;
 }
@@ -4205,8 +4206,7 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 
 @media (max-width: 767.98px) {
   .marquee-track { animation-duration: 30s; }
-  .marquee .project-item { flex-basis: 270px; width: 270px; margin-inline-end: 16px; }
-  .marquee .project-media { height: 152px; }
+  .marquee .project-item { flex-basis: 240px; width: 240px; height: 240px; margin-inline-end: 16px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .marquee-track { animation: none; }
