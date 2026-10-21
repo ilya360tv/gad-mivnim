@@ -262,6 +262,8 @@
 
     proj_private_soon: { he: 'פרויקטים במגזר הפרטי יתווספו בקרוב', ru: 'Проекты в частном секторе скоро появятся', en: 'Private sector projects coming soon', fr: 'Les projets du secteur privé seront bientôt ajoutés' },
 
+    pm_gallery: { he: 'גלריית הפרויקט', ru: 'Галерея проекта', en: 'Project gallery', fr: 'Galerie du projet' },
+
     /* ----- Footer ----- */
     footer_l1:  { he: 'מקווים שהנהנתם לצפות באתר הבית שלנו', ru: 'Надеемся, вам понравился наш домашний сайт', en: 'We hope you enjoyed viewing our home site', fr: 'Nous espérons que vous avez apprécié la visite de notre site maison' },
     footer_l2:  { he: 'נשמח לראותם בין קהל לקוחותינו וממשפחת <bdi>G A D MIVNIM</bdi> בכל מקום במפה', ru: 'Будем рады видеть вас среди наших клиентов и семьи G A D MIVNIM — везде на карте', en: 'We would be glad to see you among our clients and the G A D MIVNIM family — everywhere on the map', fr: 'Nous serons ravis de vous compter parmi nos clients et la famille <bdi>G A D MIVNIM</bdi> — partout sur la carte' },
