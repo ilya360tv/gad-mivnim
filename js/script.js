@@ -368,9 +368,11 @@ document.addEventListener('DOMContentLoaded', function () {
           '</div>' +
         '</div>' +
         '<div class="proj-modal__body">' +
-          '<p class="proj-modal__title" hidden></p>' +
-          '<ul class="proj-modal__items" hidden></ul>' +
-          '<p class="proj-modal__soon" hidden></p>' +
+          '<div class="proj-modal__details">' +
+            '<p class="proj-modal__title" hidden></p>' +
+            '<ul class="proj-modal__items" hidden></ul>' +
+            '<p class="proj-modal__soon" hidden></p>' +
+          '</div>' +
           '<div class="proj-modal__thumbs" hidden></div>' +
         '</div>' +
       '</div>';
@@ -504,6 +506,8 @@ document.addEventListener('DOMContentLoaded', function () {
         pmThumbs.appendChild(b);
       });
       pmThumbs.hidden = !imgs.length;
+      pmThumbs.classList.toggle('is-grid', imgs.length >= 3);
+      pm.querySelector('.proj-modal__body').classList.toggle('has-photos', imgs.length > 0);
     }
 
     function pmSetPaused(on) {
