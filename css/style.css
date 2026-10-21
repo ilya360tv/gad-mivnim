@@ -4551,3 +4551,8 @@ html.modal-open body { overflow: hidden; }
 .marquee.is-dragging { cursor: grabbing; }
 #projects .marquee button.project-item { cursor: inherit; }
 .marquee img { -webkit-user-drag: none; user-drag: none; pointer-events: none; }
+
+/* ----- חלון פרויקט: כותרת העבודה ממורכזת בתוך עמודת הפרטים, מעל הרשימה שלה ----- */
+.proj-modal__title { text-align: center; width: 100%; margin: 0 0 14px; }
+.proj-modal__items { width: fit-content; max-width: 100%; margin-inline: auto; text-align: start; }
+
