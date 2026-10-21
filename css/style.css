@@ -4132,16 +4132,16 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 .marquee:hover .marquee-track,
 .marquee.is-paused .marquee-track { animation-play-state: paused; }
 
-/* כרטיס: אריח ריבועי קבוע בפיקסלים — 180x180 (140x140 במובייל) */
+/* כרטיס: אריח ריבועי קבוע בפיקסלים — 145x145 (115x115 במובייל) */
 .marquee .project-item {
   position: relative;
   display: flex;
   flex-direction: column;
   flex: 0 0 auto;
-  width: 180px;
-  height: 180px;
+  width: 145px;
+  height: 145px;
   aspect-ratio: auto;
-  margin-inline-end: 20px;
+  margin-inline-end: 16px;
   direction: rtl;
   background: var(--surface);
   border: 1px solid var(--line);
@@ -4173,7 +4173,7 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 
 @media (max-width: 767.98px) {
   .marquee-track { animation-duration: 30s; }
-  .marquee .project-item { width: 140px; height: 140px; }
+  .marquee .project-item { width: 115px; height: 115px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .marquee-track { animation: none; }
@@ -4298,14 +4298,14 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 }
 
 /* ----- #projects: לשוניות מגזר (עסקי / פרטי) — גלולות בסגנון תפריט הראשי ----- */
-.sector-tabs { display: flex; flex-wrap: wrap; gap: 12px; margin: 6px 0 22px; }
+.sector-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin: 6px 0 16px; }
 .sector-tab {
   font-family: inherit;
-  font-size: .95rem;
+  font-size: .9rem;
   font-weight: 500;
-  line-height: 1;
-  min-height: 44px;
-  padding: 0 26px;
+  line-height: 1.4;
+  min-height: 36px;
+  padding: 7px 18px;
   color: var(--logo-g);
   background: transparent;
   border: 0;
@@ -4318,13 +4318,13 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 .sector-tab.is-active { background: var(--green); color: #fff; box-shadow: 0 0 0 2px rgba(22, 163, 74, .9), 0 0 18px rgba(22, 163, 74, .45); }
 .sector-tab:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 
-.projects-stage { min-height: 240px; transition: opacity .18s ease; }
+.projects-stage { min-height: 200px; transition: opacity .18s ease; }
 .projects-stage.is-fading { opacity: 0; }
 .projects-empty {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 240px;
+  min-height: 200px;
   margin: 0;
   text-align: center;
   font-size: 1.1rem;
@@ -4334,7 +4334,7 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 .projects-stage.is-empty .marquee,
 .projects-stage.is-empty .projects-grid { display: none !important; }
 @media (max-width: 767.98px) {
-  .projects-stage, .projects-empty { min-height: 190px; }
+  .projects-stage, .projects-empty { min-height: 170px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .projects-stage { transition: none; }

@@ -41,8 +41,8 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!marquee || !mqTrack || !cards.length) { return; }
 
     var vw = marquee.clientWidth || window.innerWidth;
-    var cardW = window.innerWidth < 768 ? 140 : 180;
-    var step  = cardW + 20;
+    var cardW = window.innerWidth < 768 ? 115 : 145;
+    var step  = cardW + 16;
     var reps  = Math.max(1, Math.ceil((vw + step) / (step * cards.length)));
 
     function makeSet(hidden) {
