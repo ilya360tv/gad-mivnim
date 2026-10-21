@@ -174,11 +174,12 @@
     <div class="container">
       <h2 class="section-eyebrow reveal" data-i18n="proj_eyebrow">הפרויקטים שלנו</h2>
       <div class="sector-tabs" role="tablist" aria-label="הפרויקטים שלנו">
-        <button type="button" class="sector-tab is-active" role="tab" id="tabBusiness" data-sector="business" aria-selected="true" tabindex="0" data-i18n="filter_business">מגזר עסקי</button>
+        <button type="button" class="sector-tab is-active" role="tab" id="tabAll" data-sector="all" aria-selected="true" tabindex="0" data-i18n="sector_all">כל המגזרים</button>
+        <button type="button" class="sector-tab" role="tab" id="tabBusiness" data-sector="business" aria-selected="false" tabindex="-1" data-i18n="filter_business">מגזר עסקי</button>
         <button type="button" class="sector-tab" role="tab" id="tabPrivate" data-sector="private" aria-selected="false" tabindex="-1" data-i18n="filter_private">מגזר פרטי</button>
       </div>
 
-      <div class="projects-stage" role="tabpanel" aria-labelledby="tabBusiness">
+      <div class="projects-stage" role="tabpanel" aria-labelledby="tabAll">
       <div class="marquee" role="region" aria-label="הפרויקטים שלנו" hidden>
         <div class="marquee-track"></div>
       </div>

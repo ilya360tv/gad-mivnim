@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var projectItems  = document.querySelectorAll('#projects .projects-grid .project-item');
 
   /* ---------------------------------------------------------------
-     1ב) פרויקטים — לשוניות מגזר (עסקי / פרטי) + פס נע אינסופי (marquee).
+     1ב) פרויקטים — לשוניות מגזר (הכל / עסקי / פרטי) + פס נע אינסופי (marquee) הנגרר בעכבר ובמגע.
          הפס נבנה מהכרטיסים הקיימים לפי שדה sector ב-js/projects-data.js;
          בהחלפת לשונית או שפה הוא נבנה מחדש. עם prefers-reduced-motion נשארת רשת סטטית.
      --------------------------------------------------------------- */
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var tabs    = projSection ? Array.prototype.slice.call(projSection.querySelectorAll('.sector-tab')) : [];
   var reduceMq = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var PDATA = window.PROJECTS_DATA || {};
-  var currentSector = 'business';
+  var currentSector = 'all';
 
   function sectorOf(el) {
     var slug = el.getAttribute('data-client') || '';
@@ -33,7 +33,51 @@ document.addEventListener('DOMContentLoaded', function () {
   var sources = Array.prototype.slice.call(projectItems);
 
   function matching() {
-    return sources.filter(function (c) { return sectorOf(c) === currentSector; });
+    return sources.filter(function (c) { return currentSector === 'all' || sectorOf(c) === currentSector; });
+  }
+
+  /* ----- מנוע הפס: התנועה ב-JS. offset בפיקסלים, בטווח [-W, 0) כש-W = רוחב עותק אחד;
+         גרירה, גלגלת ותנופה משנים את אותו offset, והלולאה נשארת אינסופית וחלקה לשני הכיוונים ----- */
+  var mq = { offset: 0, W: 0, speed: 0, vel: 0, dragging: false, hover: false, resumeAt: 0, raf: 0, last: 0 };
+
+  function mqWrap() {
+    if (!mq.W) { return; }
+    while (mq.offset >= 0) { mq.offset -= mq.W; }
+    while (mq.offset < -mq.W) { mq.offset += mq.W; }
+  }
+  function mqApply() {
+    if (mqTrack) { mqTrack.style.transform = 'translate3d(' + mq.offset.toFixed(2) + 'px,0,0)'; }
+  }
+  function mqMeasure() {
+    // רוחב עותק אחד = המרחק בין האריח הראשון לאריח הראשון של העותק השני (כולל הרווחים)
+    var kids = mqTrack.children, per = mqTrack.__perSet || 0;
+    if (!per || kids.length < per + 1) { mq.W = 0; return; }
+    mq.W = kids[per].offsetLeft - kids[0].offsetLeft;
+    mq.speed = mq.W / ((window.innerWidth < 768 ? 30 : 40) * 1000);   // פיקסלים למילישנייה — סיבוב מלא ב-40 שנ' (30 במובייל)
+  }
+  function mqPaused() {
+    if (reduceMq) { return true; }                                    // בלי תנועת-יתר: אין גלילה אוטומטית
+    if (mq.dragging || mq.hover) { return true; }
+    if (marquee.classList.contains('is-modal-paused')) { return true; }
+    try { if (marquee.querySelector(':focus-visible')) { return true; } } catch (err) {}   // פוקוס מקלדת מעצור את הפס (לא פוקוס שחזר אחרי סגירת חלון בעכבר)
+    return performance.now() < mq.resumeAt;
+  }
+  function mqTick(now) {
+    var dt = Math.min(now - (mq.last || now), 50);
+    mq.last = now;
+    if (mq.W && !document.hidden) {
+      if (!mq.dragging && Math.abs(mq.vel) > 0.02) {                  // תנופה אחרי שחרור
+        mq.offset += mq.vel * dt;
+        mq.vel *= Math.pow(0.94, dt / 16);
+        mq.resumeAt = Math.max(mq.resumeAt, now + 1500);
+      } else if (!mq.dragging) {
+        mq.vel = 0;
+        if (!mqPaused()) { mq.offset += mq.speed * dt; }              // כיוון הגלילה המקורי: ימינה
+      }
+      mqWrap();
+      mqApply();
+    }
+    mq.raf = requestAnimationFrame(mqTick);
   }
 
   function buildMarquee() {
@@ -54,6 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
           var im = n.querySelector('img');
           var ttl = im ? (im.getAttribute('alt') || '') : '';
           if ((n.tagName === 'A' || n.tagName === 'BUTTON') && ttl) { n.setAttribute('aria-label', ttl); }
+          if (im) { im.setAttribute('draggable', 'false'); }
           if (im && !im.parentNode.classList.contains('project-media')) {
             var wrap = document.createElement('div');
             wrap.className = 'project-media';
@@ -70,12 +115,14 @@ document.addEventListener('DOMContentLoaded', function () {
       return frag;
     }
 
-    mqTrack.style.animation = 'none';
     mqTrack.innerHTML = '';
     mqTrack.appendChild(makeSet(false));
     mqTrack.appendChild(makeSet(true));
-    void mqTrack.offsetWidth;              // מאפס את האנימציה
-    mqTrack.style.animation = '';
+    mqTrack.__perSet = reps * cards.length;
+    mq.offset = 0; mq.vel = 0;
+    mqMeasure();
+    mqWrap();
+    mqApply();
   }
 
   // מציג את התוכן של הלשונית הנוכחית: פס/רשת, או הודעת "בקרוב" כשאין לקוחות במגזר
@@ -84,10 +131,10 @@ document.addEventListener('DOMContentLoaded', function () {
     var empty = !cards.length;
     if (stage) { stage.classList.toggle('is-empty', empty); }
     if (emptyMsg) { emptyMsg.hidden = !empty; }
-    sources.forEach(function (c) { c.classList.toggle('is-hidden', sectorOf(c) !== currentSector); });
-    if (!empty && !reduceMq) { buildMarquee(); }
+    sources.forEach(function (c) { c.classList.toggle('is-hidden', !(currentSector === 'all' || sectorOf(c) === currentSector)); });
+    if (!empty && marquee && mqTrack) { buildMarquee(); }
   }
-  window.rebuildMarquee = function () { if (!reduceMq) { renderSector(); } };
+  window.rebuildMarquee = function () { renderSector(); };
 
   function selectTab(tab, focus) {
     var sector = tab.getAttribute('data-sector');
@@ -127,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  if (marquee && mqTrack && !reduceMq && projectItems.length) {
+  if (marquee && mqTrack && projectItems.length) {
     if ('MutationObserver' in window) {
       new MutationObserver(function () { window.rebuildMarquee(); })
         .observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
@@ -136,17 +183,77 @@ document.addEventListener('DOMContentLoaded', function () {
     marquee.hidden = false;
     marquee.classList.add('is-on');
     renderSector();
+    mq.raf = requestAnimationFrame(mqTick);
 
     var mqTimer;
     window.addEventListener('resize', function () {
       clearTimeout(mqTimer);
       mqTimer = setTimeout(function () { window.rebuildMarquee(); }, 200);
     });
-    // החזקה במגע = השהיה
-    marquee.addEventListener('touchstart', function () { marquee.classList.add('is-paused'); }, { passive: true });
-    ['touchend', 'touchcancel'].forEach(function (ev) {
-      marquee.addEventListener(ev, function () { marquee.classList.remove('is-paused'); }, { passive: true });
+
+    // ----- גרירה (עכבר / מגע / עט) -----
+    var DRAG_PX = 6;                         // תנועה קטנה מזה = לחיצה (פותחת חלון); גדולה = גרירה
+    var pid = null, startX = 0, lastX = 0, lastT = 0, moved = 0, captured = false, swallow = false;
+
+    marquee.addEventListener('pointerdown', function (e) {
+      if (e.pointerType === 'mouse' && e.button !== 0) { return; }
+      pid = e.pointerId; startX = lastX = e.clientX; lastT = performance.now(); moved = 0; captured = false;
+      mq.vel = 0;
+      mq.dragging = false;
     });
+    marquee.addEventListener('pointermove', function (e) {
+      if (e.pointerId !== pid) { return; }
+      var dx = e.clientX - lastX;
+      moved = Math.max(moved, Math.abs(e.clientX - startX));
+      if (!mq.dragging) {
+        if (moved <= DRAG_PX) { return; }
+        mq.dragging = true;                  // מרגע זה זו גרירה
+        marquee.classList.add('is-dragging');
+        try { marquee.setPointerCapture(pid); captured = true; } catch (err) {}
+        lastX = e.clientX; lastT = performance.now();
+        return;
+      }
+      var now = performance.now(), dtm = Math.max(now - lastT, 1);
+      mq.offset += dx;
+      mq.vel = 0.7 * mq.vel + 0.3 * (dx / dtm);   // מהירות מוחלקת לתנופה
+      lastX = e.clientX; lastT = now;
+      mqWrap(); mqApply();
+    });
+    function endDrag(e) {
+      if (e.pointerId !== pid) { return; }
+      var wasDragging = mq.dragging;
+      pid = null;
+      if (captured) { try { marquee.releasePointerCapture(e.pointerId); } catch (err) {} }
+      captured = false;
+      mq.dragging = false;
+      marquee.classList.remove('is-dragging');
+      if (wasDragging) {
+        swallow = true;                      // הלחיצה שמגיעה אחרי גרירה לא פותחת חלון
+        setTimeout(function () { swallow = false; }, 50);
+        if (Math.abs(mq.vel) > 0.6) { mq.vel = mq.vel > 0 ? 0.6 : -0.6; }
+        mq.resumeAt = performance.now() + 1500;
+      }
+    }
+    marquee.addEventListener('pointerup', endDrag);
+    marquee.addEventListener('pointercancel', endDrag);
+    marquee.addEventListener('click', function (e) {
+      if (swallow || moved > DRAG_PX) { e.stopPropagation(); e.preventDefault(); }
+    }, true);
+
+    // ריחוף = השהיה (עכבר בלבד)
+    marquee.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') { mq.hover = true; } });
+    marquee.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') { mq.hover = false; } });
+
+    // גלגלת אופקית / החלקת משטח מגע
+    marquee.addEventListener('wheel', function (e) {
+      var dx = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : (e.shiftKey ? e.deltaY : 0);
+      if (!dx) { return; }                   // גלילה אנכית רגילה — עוברת לדף
+      e.preventDefault();
+      mq.offset -= dx;
+      mq.vel = 0;
+      mq.resumeAt = performance.now() + 1500;
+      mqWrap(); mqApply();
+    }, { passive: false });
   } else {
     renderSector();
   }

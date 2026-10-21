@@ -4108,7 +4108,6 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
    בלי תנועה (reduced-motion / בלי JS) — רשת סטטית של 3 עמודות
    ========================================================================== */
 .marquee { display: none; }
-@media (prefers-reduced-motion: no-preference) {
   .has-js #projects .projects-grid { display: none; }
   .has-js #projects .marquee.is-on {
     display: block;
@@ -4118,19 +4117,11 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
             mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%);
     padding-block: 18px 26px;             /* מקום להרמה ולזוהר בלי חיתוך */
   }
-}
 .marquee-track {
   display: flex;
   width: max-content;
-  animation: marqueeMove 40s linear infinite;
-  will-change: transform;
+  will-change: transform;        /* התנועה מנוהלת ב-JS (requestAnimationFrame) כדי שגרירה תשנה את אותו מיקום */
 }
-@keyframes marqueeMove {
-  from { transform: translateX(-50%); }
-  to   { transform: translateX(0); }
-}
-.marquee:hover .marquee-track,
-.marquee.is-paused .marquee-track { animation-play-state: paused; }
 
 /* כרטיס: אריח ריבועי קבוע בפיקסלים — 145x145 (115x115 במובייל) */
 .marquee .project-item {
@@ -4172,11 +4163,7 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 .marquee a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 
 @media (max-width: 767.98px) {
-  .marquee-track { animation-duration: 30s; }
   .marquee .project-item { width: 115px; height: 115px; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .marquee-track { animation: none; }
 }
 
 /* ----- #projects: לוגואים של לקוחות — כולם באריח אחיד: כרטיס בהיר (#f4f5f6) מעוגל, לוגו ב-80% ----- */
@@ -4442,7 +4429,6 @@ html.pj-lb-open, html.pj-lb-open body { overflow: hidden; }
           appearance: none;
 }
 #projects button.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
-.marquee.is-modal-paused .marquee-track { animation-play-state: paused; }
 html.modal-open,
 html.modal-open body { overflow: hidden; }
 
@@ -4554,3 +4540,14 @@ html.modal-open body { overflow: hidden; }
   .proj-modal__box { transition: none; transform: none; }
   .pm-thumb img { transition: none; }
 }
+
+/* ----- פס הלוגואים: גרירה בעכבר / החלקה במגע ----- */
+.marquee {
+  cursor: grab;
+  touch-action: pan-y;           /* גלילה אנכית של הדף נשארת; אופקית — שלנו */
+  -webkit-user-select: none;
+          user-select: none;
+}
+.marquee.is-dragging { cursor: grabbing; }
+#projects .marquee button.project-item { cursor: inherit; }
+.marquee img { -webkit-user-drag: none; user-drag: none; pointer-events: none; }
