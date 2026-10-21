@@ -4587,3 +4587,17 @@ html.modal-open body { overflow: hidden; }
 .about-text .about-quote { margin-top: 28px; font-size: 1.15rem; font-weight: 700; color: var(--white) !important; }
 .about-text .about-quote bdi { color: var(--logo-g); }
 @media (max-width: 1023.98px) { .about-media { position: static; } }
+
+/* ----- #about: טקסט מיושר לשני הצדדים (justify) — כותרות ושורת הסיום נשארות כמו שהן ----- */
+#about .about-text { max-width: 70ch; }
+#about .about-text > p:not(.about-quote),
+#about .about-text .about-list li {
+  text-align: justify;
+  text-justify: inter-word;
+  text-align-last: right;       /* השורה האחרונה בפסקה נשארת מיושרת לימין (RTL), לא נמתחת */
+  hyphens: auto;
+  word-spacing: normal;
+}
+#about .about-text .about-sub,
+#about .about-text .about-quote { text-align: start; text-align-last: auto; hyphens: manual; }
+
