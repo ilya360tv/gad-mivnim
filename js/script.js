@@ -410,9 +410,9 @@ document.addEventListener('DOMContentLoaded', function () {
       '<button type="button" class="pj-lb__x" data-close>&times;</button>' +
       '<button type="button" class="pj-lb__nav pj-lb__prev"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>' +
       '<button type="button" class="pj-lb__nav pj-lb__next"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>' +
-      '<figure class="pj-lb__fig"><img alt=""><figcaption></figcaption><div class="pj-lb__count" dir="ltr"></div></figure>';
+      '<figure class="pj-lb__fig"><img alt=""><figcaption></figcaption></figure>';
     document.body.appendChild(lb);
-    var lbImg = lb.querySelector('img'), lbCap = lb.querySelector('figcaption'), lbCnt = lb.querySelector('.pj-lb__count');
+    var lbImg = lb.querySelector('img'), lbCap = lb.querySelector('figcaption');
     var lbPrev = lb.querySelector('.pj-lb__prev'), lbNext = lb.querySelector('.pj-lb__next'), lbX = lb.querySelector('.pj-lb__x');
     var lbList = [], lbCur = 0, lbFrom = null;
 
@@ -422,7 +422,6 @@ document.addEventListener('DOMContentLoaded', function () {
       lbImg.src = lbList[lbCur].src;
       lbImg.alt = lbList[lbCur].alt;
       lbCap.textContent = lbList[lbCur].alt;
-      lbCnt.textContent = (lbCur + 1) + ' / ' + n;
     }
     function lbOpen(list, i, trigger) {
       lbList = list; lbFrom = trigger;
