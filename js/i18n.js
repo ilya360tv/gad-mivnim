@@ -264,11 +264,15 @@
 
     pm_gallery: { he: 'גלריית הפרויקט', ru: 'Галерея проекта', en: 'Project gallery', fr: 'Galerie du projet' },
 
+    pm_close: { he: 'סגירה', ru: 'Закрыть', en: 'Close', fr: 'Fermer' },
+
     /* ----- Footer ----- */
     footer_l1:  { he: 'מקווים שהנהנתם לצפות באתר הבית שלנו', ru: 'Надеемся, вам понравился наш домашний сайт', en: 'We hope you enjoyed viewing our home site', fr: 'Nous espérons que vous avez apprécié la visite de notre site maison' },
     footer_l2:  { he: 'נשמח לראותם בין קהל לקוחותינו וממשפחת <bdi>G A D MIVNIM</bdi> בכל מקום במפה', ru: 'Будем рады видеть вас среди наших клиентов и семьи G A D MIVNIM — везде на карте', en: 'We would be glad to see you among our clients and the G A D MIVNIM family — everywhere on the map', fr: 'Nous serons ravis de vous compter parmi nos clients et la famille <bdi>G A D MIVNIM</bdi> — partout sur la carte' },
     footer_copy:{ he: '*** כל הזכויות שמורת לחברת גד מבנים בע"מ ואין לאף אדם או גוף כלשהו לעשות שום שימוש במוצג באתר לשום עניין ודבר.', ru: '*** Все права принадлежат компании «Гад Мивним» Лтд. Никто не вправе использовать представленное на сайте в каких-либо целях.', en: '*** All rights reserved to Gad Mivnim Ltd. No person or entity may make any use of what is presented on this site for any matter.', fr: '*** Tous droits réservés à la société Gad Mivnim Ltd. Aucune personne ni entité n’est autorisée à faire quelque usage que ce soit de ce qui est présenté sur le site, à quelque fin que ce soit.' }
   };
+
+  window.GAD_T = T;   // לשימוש חלון הפרויקט (script.js)
 
   var STORAGE_KEY = 'gad_lang';
 

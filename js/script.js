@@ -336,4 +336,247 @@ document.addEventListener('DOMContentLoaded', function () {
   if ('ResizeObserver' in window && siteHeader) {
     new ResizeObserver(updateAnchorOffsets).observe(siteHeader);   // גם אם ההדר מתכווץ בגלילה
   }
+
+  /* ---------------------------------------------------------------
+     7) חלון פרויקט (modal) — נפתח בלחיצה על לוגו לקוח בפס #projects.
+        התוכן מגיע מ-js/projects-data.js (window.PROJECTS_DATA); עברית = המקור,
+        en / ru / fr מתוך d.i18n. תמונות נפתחות בלייטבוקס עם כיתוב, מונה וחיצים.
+     --------------------------------------------------------------- */
+  if (projSection && Object.keys(PDATA).length) {
+    var GT = function (key, fallback) {
+      var lang = document.documentElement.getAttribute('lang') || 'he';
+      var e = window.GAD_T && window.GAD_T[key];
+      return (e && e[lang]) || fallback;
+    };
+    var CITY_KEY = { 'תל אביב': 'city_tlv', 'ירושלים': 'city_jlm' };
+    var PIN = '<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>';
+
+    var pm = document.createElement('div');
+    pm.className = 'proj-modal';
+    pm.id = 'projModal';
+    pm.hidden = true;
+    pm.innerHTML =
+      '<div class="proj-modal__backdrop" data-pm-close></div>' +
+      '<div class="proj-modal__box" role="dialog" aria-modal="true" aria-labelledby="projModalTitle" tabindex="-1">' +
+        '<button type="button" class="proj-modal__x" data-pm-close>&times;</button>' +
+        '<div class="proj-modal__head">' +
+          '<div class="proj-modal__logo"><img src="" alt=""></div>' +
+          '<div class="proj-modal__headtext">' +
+            '<h2 class="proj-modal__name" id="projModalTitle"></h2>' +
+            '<p class="proj-modal__sub" dir="ltr" hidden></p>' +
+            '<span class="proj-modal__city" hidden></span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="proj-modal__body">' +
+          '<p class="proj-modal__title" hidden></p>' +
+          '<ul class="proj-modal__items" hidden></ul>' +
+          '<p class="proj-modal__soon" hidden></p>' +
+          '<div class="proj-modal__thumbs" hidden></div>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(pm);
+
+    var pmBox   = pm.querySelector('.proj-modal__box');
+    var pmX     = pm.querySelector('.proj-modal__x');
+    var pmLogo  = pm.querySelector('.proj-modal__logo img');
+    var pmName  = pm.querySelector('.proj-modal__name');
+    var pmSub   = pm.querySelector('.proj-modal__sub');
+    var pmCity  = pm.querySelector('.proj-modal__city');
+    var pmTitle = pm.querySelector('.proj-modal__title');
+    var pmItems = pm.querySelector('.proj-modal__items');
+    var pmSoon  = pm.querySelector('.proj-modal__soon');
+    var pmThumbs = pm.querySelector('.proj-modal__thumbs');
+    var pmFrom = null, pmSlug = null;
+
+    function pmPick(d, lang) {
+      var tr = d.i18n && d.i18n[lang];
+      return {
+        name:  (tr && tr.name) || d.name || '',
+        title: (tr && tr.title != null) ? tr.title : (d.title || ''),
+        items: (tr && tr.items) ? tr.items : (d.items || [])
+      };
+    }
+
+    // ----- לייטבוקס לתמונות (מעל החלון) -----
+    var lb = document.createElement('div');
+    lb.className = 'pj-lb';
+    lb.hidden = true;
+    lb.setAttribute('role', 'dialog');
+    lb.setAttribute('aria-modal', 'true');
+    lb.innerHTML =
+      '<div class="pj-lb__backdrop" data-close></div>' +
+      '<button type="button" class="pj-lb__x" data-close>&times;</button>' +
+      '<button type="button" class="pj-lb__nav pj-lb__prev"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>' +
+      '<button type="button" class="pj-lb__nav pj-lb__next"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>' +
+      '<figure class="pj-lb__fig"><img alt=""><figcaption></figcaption><div class="pj-lb__count" dir="ltr"></div></figure>';
+    document.body.appendChild(lb);
+    var lbImg = lb.querySelector('img'), lbCap = lb.querySelector('figcaption'), lbCnt = lb.querySelector('.pj-lb__count');
+    var lbPrev = lb.querySelector('.pj-lb__prev'), lbNext = lb.querySelector('.pj-lb__next'), lbX = lb.querySelector('.pj-lb__x');
+    var lbList = [], lbCur = 0, lbFrom = null;
+
+    function lbShow(i) {
+      var n = lbList.length;
+      lbCur = (i + n) % n;
+      lbImg.src = lbList[lbCur].src;
+      lbImg.alt = lbList[lbCur].alt;
+      lbCap.textContent = lbList[lbCur].alt;
+      lbCnt.textContent = (lbCur + 1) + ' / ' + n;
+    }
+    function lbOpen(list, i, trigger) {
+      lbList = list; lbFrom = trigger;
+      lbPrev.hidden = lbNext.hidden = list.length < 2;
+      lbX.setAttribute('aria-label', GT('pm_close', 'סגירה'));
+      lbShow(i);
+      lb.hidden = false;
+      document.documentElement.classList.add('pj-lb-open');
+      lbX.focus();
+    }
+    function lbClose() {
+      if (lb.hidden) { return; }
+      lb.hidden = true;
+      document.documentElement.classList.remove('pj-lb-open');
+      if (lbFrom) { lbFrom.focus(); }
+    }
+    lb.addEventListener('click', function (e) {
+      if (e.target.closest('[data-close]')) { lbClose(); }
+      else if (e.target.closest('.pj-lb__prev')) { lbShow(lbCur - 1); }
+      else if (e.target.closest('.pj-lb__next')) { lbShow(lbCur + 1); }
+    });
+    var lbSx = null;
+    lb.addEventListener('touchstart', function (e) { lbSx = e.changedTouches[0].clientX; }, { passive: true });
+    lb.addEventListener('touchend', function (e) {
+      if (lbSx === null) { return; }
+      var dx = e.changedTouches[0].clientX - lbSx; lbSx = null;
+      if (Math.abs(dx) > 50 && lbList.length > 1) { lbShow(dx < 0 ? lbCur + 1 : lbCur - 1); }
+    }, { passive: true });
+
+    // ----- תוכן החלון -----
+    function renderModal() {
+      var d = PDATA[pmSlug];
+      if (!d) { return; }
+      var lang = document.documentElement.getAttribute('lang') || 'he';
+      var t = pmPick(d, lang);
+
+      pmLogo.src = 'images/clients/' + (d.logo || pmSlug) + '.png';
+      pmLogo.alt = t.name;
+      pmName.textContent = t.name;
+      pmX.setAttribute('aria-label', GT('pm_close', 'סגירה'));
+
+      pmSub.hidden = !d.subtitle;
+      if (d.subtitle) { pmSub.textContent = d.subtitle; }
+
+      pmCity.hidden = !d.city;
+      if (d.city) {
+        var ck = CITY_KEY[d.city];
+        pmCity.innerHTML = PIN + '<span></span>';
+        pmCity.lastChild.textContent = ck ? GT(ck, d.city) : d.city;
+      }
+
+      if (t.title) {
+        pmTitle.textContent = t.title; pmTitle.hidden = false;
+        pmItems.innerHTML = '';
+        t.items.forEach(function (it) {
+          var li = document.createElement('li'); li.textContent = it; pmItems.appendChild(li);
+        });
+        pmItems.hidden = !t.items.length;
+        pmSoon.hidden = true;
+      } else {
+        pmTitle.hidden = true; pmItems.hidden = true;
+        pmSoon.textContent = GT('pm_soon', 'תיאור הפרויקט יתווסף בקרוב');
+        pmSoon.hidden = false;
+      }
+
+      // תמונות: שורת תמונות ממוזערות במסגרת רכה
+      pmThumbs.innerHTML = '';
+      var imgs = (d.images || []).map(function (it) {
+        var o = typeof it === 'string' ? { src: it } : it;
+        return { src: o.src, alt: o.alt || t.name };
+      });
+      imgs.forEach(function (o, i) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'pm-thumb';
+        b.setAttribute('aria-label', 'הגדלת תמונה: ' + o.alt);
+        var im = document.createElement('img');
+        im.src = o.src; im.alt = o.alt; im.loading = 'lazy'; im.decoding = 'async';
+        b.appendChild(im);
+        b.addEventListener('click', function () { lbOpen(imgs, i, b); });
+        pmThumbs.appendChild(b);
+      });
+      pmThumbs.hidden = !imgs.length;
+    }
+
+    function pmSetPaused(on) {
+      if (marquee) { marquee.classList.toggle('is-modal-paused', on); }
+    }
+
+    function openProject(btn) {
+      pmSlug = btn.getAttribute('data-client') || '';
+      if (!PDATA[pmSlug]) { return; }
+      pmFrom = btn;
+      renderModal();
+      pmBox.scrollTop = 0;
+      pm.hidden = false;
+      void pm.offsetWidth;
+      pm.classList.add('is-open');
+      document.documentElement.classList.add('modal-open');
+      pmSetPaused(true);
+      pmBox.focus();
+    }
+
+    function closeProject() {
+      if (pm.hidden) { return; }
+      pm.classList.remove('is-open');
+      pm.hidden = true;
+      document.documentElement.classList.remove('modal-open');
+      pmSetPaused(false);
+      if (pmFrom && document.body.contains(pmFrom)) { pmFrom.focus(); }
+      else if (pmFrom) {
+        var again = projSection.querySelector('.project-item[data-client="' + pmFrom.getAttribute('data-client') + '"]:not([aria-hidden="true"])');
+        if (again) { again.focus(); }
+      }
+      pmFrom = null; pmSlug = null;
+    }
+
+    projSection.addEventListener('click', function (e) {
+      var b = e.target.closest ? e.target.closest('.project-item[data-client]') : null;
+      if (b && projSection.contains(b)) { openProject(b); }
+    });
+    pm.addEventListener('click', function (e) {
+      if (e.target.closest && e.target.closest('[data-pm-close]')) { closeProject(); }
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (!lb.hidden) {                                   // הלייטבוקס מעל החלון — הוא מטפל במקשים
+        if (e.key === 'Escape') { e.stopPropagation(); lbClose(); }
+        else if (e.key === 'ArrowLeft')  { e.preventDefault(); lbShow(lbCur + 1); }   // RTL: שמאל = הבאה
+        else if (e.key === 'ArrowRight') { e.preventDefault(); lbShow(lbCur - 1); }
+        else if (e.key === 'Tab') {
+          var f = lb.querySelectorAll('button:not([hidden])');
+          if (f.length) {
+            var first = f[0], last = f[f.length - 1];
+            if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+            else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+          }
+        }
+        return;
+      }
+      if (pm.hidden) { return; }
+      if (e.key === 'Escape') { e.stopPropagation(); closeProject(); return; }
+      if (e.key === 'Tab') {                             // מלכודת פוקוס בתוך החלון
+        var g = pm.querySelectorAll('button:not([hidden]):not([disabled])');
+        if (!g.length) { return; }
+        var gf = g[0], gl = g[g.length - 1];
+        if (e.shiftKey && (document.activeElement === gf || document.activeElement === pmBox)) { e.preventDefault(); gl.focus(); }
+        else if (!e.shiftKey && document.activeElement === gl) { e.preventDefault(); gf.focus(); }
+      }
+    }, true);
+
+    // החלפת שפה בזמן שהחלון פתוח
+    if ('MutationObserver' in window) {
+      new MutationObserver(function () { if (!pm.hidden) { renderModal(); } })
+        .observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    }
+  }
+
 });
