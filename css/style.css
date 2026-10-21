@@ -4573,3 +4573,17 @@ html.modal-open body { overflow: hidden; }
 }
 .pm-thumb__inner svg { flex: none; }
 @media (max-width: 767.98px) { .pm-thumb--empty { width: 100%; height: 180px; } }
+
+/* ----- #about: טקסט חדש ארוך — תמונה דביקה בראש העמודה, טיפוגרפיה קריאה ----- */
+.about-grid { align-items: start; }
+.about-media { position: sticky; top: calc(var(--header-h, 112px) + 24px); }
+.about-text { max-width: 70ch; }
+.about-text p { font-size: 1.05rem; line-height: 1.75; }
+.about-text h3.about-sub { margin: 26px 0 8px; font-size: 1.25rem; font-weight: 700; letter-spacing: .02em; line-height: 1.4; color: var(--logo-g); }
+.about-text > p:first-child { margin-top: 0; }
+.about-list { list-style: none; margin: 0 0 18px; padding: 0; }
+.about-list li { position: relative; padding-inline-start: 22px; margin-bottom: 10px; font-size: 1.05rem; line-height: 1.75; color: var(--ink-soft); }
+.about-list li::before { content: ""; position: absolute; inset-inline-start: 0; top: .78em; width: 6px; height: 6px; border-radius: 50%; background: var(--logo-g); }
+.about-text .about-quote { margin-top: 28px; font-size: 1.15rem; font-weight: 700; color: var(--white) !important; }
+.about-text .about-quote bdi { color: var(--logo-g); }
+@media (max-width: 1023.98px) { .about-media { position: static; } }
