@@ -4493,9 +4493,7 @@ html.modal-open body { overflow: hidden; }
 .proj-modal__city svg { color: var(--green); }
 
 /* גוף: עמודות קבועות — פרטים 340px מימין (ראשונה ב-RTL), תמונות 280px משמאל */
-.proj-modal__body { display: grid; grid-template-columns: 340px; justify-content: center; gap: 24px; align-items: start; }
-.proj-modal__body.has-photos { grid-template-columns: 340px 280px; }
-.proj-modal__body:not(.has-photos) { grid-template-columns: 460px; }
+.proj-modal__body { display: grid; grid-template-columns: 340px 280px; justify-content: center; gap: 24px; align-items: start; }   /* תבנית נעולה: פרטים 340 | תמונות 280, לכל לקוח */
 .proj-modal__details { text-align: start; }
 .proj-modal__title { margin: 0 0 12px; font-size: 1.05rem; font-weight: 700; line-height: 1.5; color: #fff; }
 .proj-modal__items { list-style: none; margin: 0 0 6px; padding: 0; }
@@ -4530,9 +4528,7 @@ html.modal-open body { overflow: hidden; }
   .proj-modal__box { width: calc(100vw - 24px); margin-bottom: 12px; padding: 26px 20px 22px; }
   .proj-modal__logo { width: 84px; height: 84px; }
   .proj-modal__head { padding-top: 22px; }
-  .proj-modal__body,
-  .proj-modal__body.has-photos,
-  .proj-modal__body:not(.has-photos) { grid-template-columns: 1fr; justify-content: stretch; }
+  .proj-modal__body { grid-template-columns: 1fr; justify-content: stretch; }
   .pm-thumb { width: 100%; height: 180px; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -4556,3 +4552,24 @@ html.modal-open body { overflow: hidden; }
 .proj-modal__title { text-align: center; width: 100%; margin: 0 0 14px; }
 .proj-modal__items { width: fit-content; max-width: 100%; margin-inline: auto; text-align: start; }
 
+/* מציין-מקום לתמונות (לקוח בלי תמונות): אותה מסגרת ואותו רוחב כמו תמונה אמיתית, גובה 180px */
+.pm-thumb--empty { height: 180px; cursor: default; }
+.pm-thumb__inner {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 14px;
+  background: #1a1f26;
+  border-radius: 2px;
+  text-align: center;
+  line-height: 1.4;
+  font-size: .85rem;
+  color: #8a949e;
+}
+.pm-thumb__inner svg { flex: none; }
+@media (max-width: 767.98px) { .pm-thumb--empty { width: 100%; height: 180px; } }

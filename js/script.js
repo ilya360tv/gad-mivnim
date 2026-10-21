@@ -611,8 +611,16 @@ document.addEventListener('DOMContentLoaded', function () {
         b.addEventListener('click', function () { lbOpen(imgs, i, b); });
         pmThumbs.appendChild(b);
       });
-      pmThumbs.hidden = !imgs.length;
-      pm.querySelector('.proj-modal__body').classList.toggle('has-photos', imgs.length > 0);
+      if (!imgs.length) {                       // בלי תמונות: מסגרת מציין-מקום אחת — אותה תבנית בדיוק לכל לקוח
+        var ph = document.createElement('div');
+        ph.className = 'pm-thumb pm-thumb--empty';
+        ph.innerHTML = '<div class="pm-thumb__inner">' +
+          '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.2l1.1-1.6A1.5 1.5 0 0 1 10.05 4.7h3.9a1.5 1.5 0 0 1 1.25.7L16.3 7h2.2A1.5 1.5 0 0 1 20 8.5v9A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5v-9z"/><circle cx="12" cy="12.6" r="3.2"/></svg>' +
+          '<span></span></div>';
+        ph.querySelector('span').textContent = GT('pm_photos_soon', 'תמונות הפרויקט יתווספו בקרוב');
+        pmThumbs.appendChild(ph);
+      }
+      pmThumbs.hidden = false;
     }
 
     function pmSetPaused(on) {
