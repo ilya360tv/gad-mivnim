@@ -506,7 +506,6 @@ document.addEventListener('DOMContentLoaded', function () {
         pmThumbs.appendChild(b);
       });
       pmThumbs.hidden = !imgs.length;
-      pmThumbs.classList.toggle('is-grid', imgs.length >= 3);
       pm.querySelector('.proj-modal__body').classList.toggle('has-photos', imgs.length > 0);
     }
 
