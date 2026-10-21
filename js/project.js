@@ -98,18 +98,22 @@
 
     render();
 
-    // גלריה — אותם אריחים כמו בגלריה הראשית (נפתחים בלייטבוקס של script.js)
+    // גלריה — תמונה אחת: גדולה ברוחב מלא; כמה תמונות: רשת. נפתחות בלייטבוקס של script.js
     var gal  = document.getElementById('projGallery');
     var list = d.images || [];
     if (gal && list.length) {
-      list.forEach(function (src) {
+      gal.classList.toggle('project-gallery--single', list.length === 1);
+      list.forEach(function (it) {
+        var o = typeof it === 'string' ? { src: it } : it;
         var b = document.createElement('button');
         b.className = 'gallery-item';
         b.type = 'button';
         b.setAttribute('aria-label', 'הגדלת תמונה');
         var im = document.createElement('img');
-        im.src = src;
-        im.alt = pick('he').name;
+        im.src = o.src;
+        im.alt = o.alt || pick('he').name;
+        if (o.width)  { im.width  = o.width; }
+        if (o.height) { im.height = o.height; }
         im.loading = 'lazy';
         im.decoding = 'async';
         b.appendChild(im);
