@@ -4702,3 +4702,17 @@ html.modal-open body { overflow: hidden; }
   }
   .ip-track { will-change: auto; }
 }
+
+/* ==========================================================================
+   מובייל — רשת ביטחון: בלי אנימציית "הופעה בגלילה" (reveal) ובלי שכבות will-change.
+   מונע תוכן שקוף/ריק וגלילה "תקועה" אחרי #partners בטלפון.
+   ========================================================================== */
+@media (max-width: 1023.98px) {
+  .has-js .reveal,
+  .has-js .reveal-group > * {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .card, .project-item, .tilt { will-change: auto !important; }
+}

@@ -275,7 +275,10 @@ document.addEventListener('DOMContentLoaded', function () {
     renderSector();
 
     var mqTimer;
+    var mqW = window.innerWidth;   // במובייל גלילה משנה רק את הגובה (שורת כתובת) — לא בונים מחדש
     window.addEventListener('resize', function () {
+      if (window.innerWidth === mqW) { return; }
+      mqW = window.innerWidth;
       clearTimeout(mqTimer);
       mqTimer = setTimeout(function () { window.rebuildMarquee(); }, 200);
     });
@@ -463,7 +466,12 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   updateAnchorOffsets();
-  window.addEventListener('resize', updateAnchorOffsets);
+  var aoW = window.innerWidth;
+  window.addEventListener('resize', function () {
+    if (window.innerWidth === aoW) { return; }
+    aoW = window.innerWidth;
+    updateAnchorOffsets();
+  });
   window.addEventListener('load', updateAnchorOffsets);
   if ('ResizeObserver' in window && siteHeader) {
     new ResizeObserver(updateAnchorOffsets).observe(siteHeader);   // גם אם ההדר מתכווץ בגלילה
@@ -804,7 +812,13 @@ document.addEventListener('DOMContentLoaded', function () {
     ipBuild();
 
     var ipTimer;
-    window.addEventListener('resize', function () { clearTimeout(ipTimer); ipTimer = setTimeout(ipBuild, 200); });
+    var ipW = window.innerWidth;   // רק שינוי רוחב אמיתי (לא שורת כתובת בגלילה)
+    window.addEventListener('resize', function () {
+      if (window.innerWidth === ipW) { return; }
+      ipW = window.innerWidth;
+      clearTimeout(ipTimer);
+      ipTimer = setTimeout(ipBuild, 200);
+    });
 
     // התקדמות מתמלאת בכניסה ראשונה לתצוגה (גם בעותק המשוכפל)
     if ('IntersectionObserver' in window) {
