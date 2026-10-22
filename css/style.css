@@ -4806,3 +4806,28 @@ html.modal-open body { overflow: hidden; }
 /* תגית כותרת העבודה: בלי אייקון (V של ה-badge-chip) ובצבע תכלת — רק בחלון הפרויקט */
 .proj-modal .pm-pill::before { content: none; display: none; }
 .proj-modal .pm-pill { border-color: #38bdf8; color: #38bdf8; background: rgba(56, 189, 248, .08); }
+
+/* ==========================================================================
+   קטגוריות ההדר (גלולות הניווט, דסקטופ) — באותו קוד צבע כמו באדג' כותרת העבודה בחלון:
+   מסגרת וטקסט #38bdf8, רקע rgba(56,189,248,.08)
+   ========================================================================== */
+@keyframes navRingIn {
+  from { box-shadow: 0 0 0 1px rgba(56, 189, 248, 0); }
+}
+@media (min-width: 1024px) {
+  .main-nav a {
+    color: #38bdf8;
+    background: rgba(56, 189, 248, .08);
+    box-shadow: 0 0 0 1px #38bdf8;
+  }
+  .main-nav a:hover {
+    color: #ffffff;
+    background: rgba(56, 189, 248, .22);
+    box-shadow: 0 0 0 1px #38bdf8, 0 0 14px rgba(56, 189, 248, .35);
+  }
+  .main-nav a.is-current {
+    color: #ffffff;
+    background: rgba(56, 189, 248, .18);
+    box-shadow: 0 0 0 2px #38bdf8;
+  }
+}
