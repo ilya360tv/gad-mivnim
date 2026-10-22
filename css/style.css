@@ -3616,11 +3616,9 @@ html[dir="ltr"] .form-field select {
 
 /* ----- רספונסיבי ----- */
 @media (max-width: 1023.98px) {
-  .progress-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .careers-grid  { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 640px) {
-  .progress-grid,
   .careers-grid { grid-template-columns: 1fr; }
   .careers-form-card { padding: 26px 20px; margin-top: 32px; }
   .careers-form-card .form-submit { align-self: stretch; }
@@ -4042,7 +4040,6 @@ body .contact-label {
 .division-cards,
 .projects-grid,
 .gallery-grid,
-.progress-grid,
 .careers-grid,
 .cards-grid { justify-content: start; }
 .division-page .cards-row { justify-content: flex-start; margin-inline: 0; }
@@ -4601,3 +4598,38 @@ html.modal-open body { overflow: hidden; }
 #about .about-text .about-sub,
 #about .about-text .about-quote { text-align: start; text-align-last: auto; hyphens: manual; }
 
+
+/* ==========================================================================
+   #in-progress: פס נע של כרטיסים (גרירה, גלגלת, מגע) — כרטיס 300px קבוע (240px במובייל)
+   ========================================================================== */
+.ip-marquee { display: none; }
+.has-js .in-progress .ip-marquee.is-on {
+  display: block;
+  direction: ltr;
+  overflow: hidden;
+  margin-top: 34px;
+  padding: 16px 0 22px;
+  cursor: grab;
+  touch-action: pan-y;
+  -webkit-user-select: none;
+          user-select: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%);
+}
+.ip-marquee.is-dragging { cursor: grabbing; }
+.has-js .in-progress .progress-grid.is-replaced { display: none; }
+.ip-track { display: flex; width: max-content; will-change: transform; }
+.ip-marquee .progress-card {
+  direction: rtl;
+  flex: 0 0 auto;
+  width: 300px;
+  margin-inline-end: 20px;
+}
+.ip-marquee .progress-media { aspect-ratio: auto; height: 170px; }
+.ip-marquee .progress-media img { pointer-events: none; -webkit-user-drag: none; }
+.ip-marquee .progress-body { padding: 16px; }
+.ip-marquee .progress-name { font-size: 1.1rem; }
+.ip-marquee .progress-meta { margin-top: 14px; }
+@media (max-width: 767.98px) { .ip-marquee .progress-card { width: 240px; margin-inline-end: 16px; } }
+/* פס ההתקדמות מתמלא כשהסקשן נכנס למסך (גם בעותק המשוכפל) */
+.has-js .in-progress.ip-in .ip-marquee .progress-fill { width: var(--p); }

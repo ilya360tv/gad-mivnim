@@ -696,4 +696,144 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  /* ---------------------------------------------------------------
+     8) פרויקטים בביצוע — פס נע אינסופי הנגרר בעכבר/מגע (אותו מנוע כמו פס הלוגואים).
+        הכרטיסים המקוריים נשארים כרשת סטטית (גיבוי); הפס נבנה מהם במשוכפל.
+     --------------------------------------------------------------- */
+  var ipSec  = document.getElementById('in-progress');
+  var ipGrid = ipSec ? ipSec.querySelector('.progress-grid') : null;
+  var ipBox  = ipSec ? ipSec.querySelector('.ip-marquee') : null;
+  var ipTrack = ipBox ? ipBox.querySelector('.ip-track') : null;
+
+  if (ipSec && ipGrid && ipBox && ipTrack) {
+    var ipReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var ip = { offset: 0, W: 0, speed: 0, vel: 0, dragging: false, hover: false, resumeAt: 0, last: 0, per: 0 };
+    var ipSrc = Array.prototype.slice.call(ipGrid.querySelectorAll('.progress-card'));
+
+    var ipWrap = function () {
+      if (!ip.W) { return; }
+      while (ip.offset >= 0) { ip.offset -= ip.W; }
+      while (ip.offset < -ip.W) { ip.offset += ip.W; }
+    };
+    var ipApply = function () { ipTrack.style.transform = 'translate3d(' + ip.offset.toFixed(2) + 'px,0,0)'; };
+
+    var ipBuild = function () {
+      var narrow = window.innerWidth < 768;
+      var step = (narrow ? 240 : 300) + (narrow ? 16 : 20);
+      var vw = ipBox.clientWidth || window.innerWidth;
+      var reps = Math.max(1, Math.ceil((vw + step) / (step * ipSrc.length)));
+      function set(hidden) {
+        var f = document.createDocumentFragment();
+        for (var r = 0; r < reps; r++) {
+          ipSrc.forEach(function (c) {
+            var n = c.cloneNode(true);
+            if (hidden) { n.setAttribute('aria-hidden', 'true'); }
+            f.appendChild(n);
+          });
+        }
+        return f;
+      }
+      ipTrack.innerHTML = '';
+      ipTrack.appendChild(set(false));
+      ipTrack.appendChild(set(true));
+      ip.per = reps * ipSrc.length;
+      var kids = ipTrack.children;
+      ip.W = kids[ip.per].offsetLeft - kids[0].offsetLeft;
+      ip.speed = ip.W / ((narrow ? 45 : 60) * 1000);      // סיבוב מלא ב-60 שנ' (45 במובייל)
+      ip.offset = 0; ip.vel = 0;
+      ipWrap(); ipApply();
+      if (window.setLanguage) { window.setLanguage(document.documentElement.getAttribute('lang') || 'he'); }
+    };
+
+    var ipPaused = function () {
+      if (ipReduce || ip.dragging || ip.hover) { return true; }
+      return performance.now() < ip.resumeAt;
+    };
+    var ipTick = function (now) {
+      var dt = Math.min(now - (ip.last || now), 50);
+      ip.last = now;
+      if (ip.W && !document.hidden) {
+        if (!ip.dragging && Math.abs(ip.vel) > 0.02) {
+          ip.offset += ip.vel * dt;
+          ip.vel *= Math.pow(0.94, dt / 16);
+          ip.resumeAt = Math.max(ip.resumeAt, now + 1500);
+        } else if (!ip.dragging) {
+          ip.vel = 0;
+          if (!ipPaused()) { ip.offset += ip.speed * dt; }
+        }
+        ipWrap(); ipApply();
+      }
+      requestAnimationFrame(ipTick);
+    };
+
+    ipBox.hidden = false;
+    ipBox.classList.add('is-on');
+    ipGrid.classList.add('is-replaced');
+    ipBuild();
+    requestAnimationFrame(ipTick);
+
+    var ipTimer;
+    window.addEventListener('resize', function () { clearTimeout(ipTimer); ipTimer = setTimeout(ipBuild, 200); });
+
+    // התקדמות מתמלאת בכניסה ראשונה לתצוגה
+    if ('IntersectionObserver' in window) {
+      var ipIo = new IntersectionObserver(function (es) {
+        es.forEach(function (e) { if (e.isIntersecting) { ipSec.classList.add('ip-in'); ipIo.disconnect(); } });
+      }, { threshold: 0.15 });
+      ipIo.observe(ipSec);
+    } else { ipSec.classList.add('ip-in'); }
+
+    // גרירה (עכבר / מגע)
+    var ipPid = null, ipLastX = 0, ipLastT = 0, ipStartX = 0, ipMoved = 0, ipCap = false;
+    ipBox.addEventListener('pointerdown', function (e) {
+      if (e.pointerType === 'mouse' && e.button !== 0) { return; }
+      ipPid = e.pointerId; ipStartX = ipLastX = e.clientX; ipLastT = performance.now(); ipMoved = 0; ip.vel = 0; ip.dragging = false;
+    });
+    ipBox.addEventListener('pointermove', function (e) {
+      if (e.pointerId !== ipPid) { return; }
+      var dx = e.clientX - ipLastX;
+      ipMoved = Math.max(ipMoved, Math.abs(e.clientX - ipStartX));
+      if (!ip.dragging) {
+        if (ipMoved <= 6) { return; }
+        ip.dragging = true;
+        ipBox.classList.add('is-dragging');
+        try { ipBox.setPointerCapture(ipPid); ipCap = true; } catch (err) {}
+        ipLastX = e.clientX; ipLastT = performance.now();
+        return;
+      }
+      var now = performance.now(), d = Math.max(now - ipLastT, 1);
+      ip.offset += dx;
+      ip.vel = 0.7 * ip.vel + 0.3 * (dx / d);
+      ipLastX = e.clientX; ipLastT = now;
+      ipWrap(); ipApply();
+    });
+    var ipEnd = function (e) {
+      if (e.pointerId !== ipPid) { return; }
+      var was = ip.dragging;
+      ipPid = null;
+      if (ipCap) { try { ipBox.releasePointerCapture(e.pointerId); } catch (err) {} }
+      ipCap = false; ip.dragging = false;
+      ipBox.classList.remove('is-dragging');
+      if (was) {
+        if (Math.abs(ip.vel) > 0.6) { ip.vel = ip.vel > 0 ? 0.6 : -0.6; }
+        ip.resumeAt = performance.now() + 1500;
+      }
+    };
+    ipBox.addEventListener('pointerup', ipEnd);
+    ipBox.addEventListener('pointercancel', ipEnd);
+    ipBox.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') { ip.hover = true; } });
+    ipBox.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') { ip.hover = false; } });
+    ipBox.addEventListener('wheel', function (e) {
+      var dx = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : (e.shiftKey ? e.deltaY : 0);
+      if (!dx) { return; }
+      e.preventDefault();
+      ip.offset -= dx; ip.vel = 0; ip.resumeAt = performance.now() + 1500;
+      ipWrap(); ipApply();
+    }, { passive: false });
+    if ('MutationObserver' in window) {
+      new MutationObserver(function () { if (window.setLanguage) { window.setLanguage(document.documentElement.getAttribute('lang') || 'he'); } })
+        .observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    }
+  }
+
 });
