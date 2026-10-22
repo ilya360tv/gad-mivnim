@@ -658,12 +658,12 @@ document.addEventListener('DOMContentLoaded', function () {
       pmThumbs.innerHTML = '';
       var imgs = (d.images || []).map(function (it) {
         var o = typeof it === 'string' ? { src: it } : it;
-        return { src: o.src, alt: o.alt || t.name };
+        return { src: o.src, alt: o.alt || t.name, portrait: !!(o.width && o.height && o.height > o.width * 1.15) };
       });
       imgs.forEach(function (o, i) {
         var b = document.createElement('button');
         b.type = 'button';
-        b.className = 'pm-thumb';
+        b.className = 'pm-thumb' + (o.portrait ? ' pm-thumb--tall' : '');   // תמונה לאורך — מסגרת גבוהה, בלי חיתוך
         b.setAttribute('aria-label', 'הגדלת תמונה: ' + o.alt);
         var im = document.createElement('img');
         im.src = o.src; im.alt = o.alt; im.loading = 'lazy'; im.decoding = 'async';
