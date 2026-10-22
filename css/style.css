@@ -4500,38 +4500,16 @@ html.modal-open body { overflow: hidden; }
 .proj-modal__title[hidden], .proj-modal__items[hidden], .proj-modal__soon[hidden],
 .proj-modal__thumbs[hidden], .proj-modal__sub[hidden], .proj-modal__city[hidden] { display: none; }
 
-/* תמונות: עמודה אחת, כל תמונה (כולל המסגרת) בדיוק 280x160 */
-.proj-modal__thumbs { display: flex; flex-direction: column; gap: 12px; }
-.pm-thumb {
-  box-sizing: border-box;
-  display: block;
-  width: 280px;
-  height: 160px;
-  padding: 6px;
-  background: #f4f3ef;
-  border: 1px solid rgba(255, 255, 255, .08);
-  border-radius: 4px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, .25);
-  cursor: zoom-in;
-  overflow: hidden;
-  line-height: 0;
-}
-.pm-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease, filter .6s ease; }
-.pm-thumb:hover img, .pm-thumb:focus-visible img { transform: scale(1.03); filter: brightness(1.05); }
-.pm-thumb:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
-
 @media (max-width: 767.98px) {            /* מובייל: עמודה אחת, גיליון תחתון */
   .proj-modal { align-items: flex-end; }
   .proj-modal__box { width: calc(100vw - 24px); margin-bottom: 12px; padding: 26px 20px 22px; }
   .proj-modal__logo { width: 84px; height: 84px; }
   .proj-modal__head { padding-top: 22px; }
   .proj-modal__body { grid-template-columns: 1fr; justify-content: stretch; }
-  .pm-thumb { width: 100%; height: 180px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .proj-modal__backdrop,
   .proj-modal__box { transition: none; transform: none; }
-  .pm-thumb img { transition: none; }
 }
 
 /* ----- פס הלוגואים: גרירה בעכבר / החלקה במגע ----- */
@@ -4550,8 +4528,7 @@ html.modal-open body { overflow: hidden; }
 .proj-modal__items { width: fit-content; max-width: 100%; margin-inline: auto; text-align: start; }
 
 /* מציין-מקום לתמונות (לקוח בלי תמונות): אותה מסגרת ואותו רוחב כמו תמונה אמיתית, גובה 180px */
-.pm-thumb--empty { cursor: default; }
-.pm-thumb__inner {
+.pm-main__empty {
   box-sizing: border-box;
   width: 100%;
   height: 100%;
@@ -4568,7 +4545,7 @@ html.modal-open body { overflow: hidden; }
   font-size: .85rem;
   color: #8a949e;
 }
-.pm-thumb__inner svg { flex: none; }
+.pm-main__empty svg { flex: none; }
 
 /* ----- #about: טקסט חדש ארוך — תמונה דביקה בראש העמודה, טיפוגרפיה קריאה ----- */
 .about-grid { align-items: start; }
@@ -4759,10 +4736,35 @@ html.modal-open body { overflow: hidden; }
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
 
-/* ----- תבנית חלון אחידה (ייחוס: Sweet Home): כל המסגרות באותו גודל; תמונה לאורך = contain באותה מסגרת ----- */
-.pm-thumb { position: relative; }
-.pm-thumb__blur { position: absolute; inset: 6px; overflow: hidden; border-radius: 2px; pointer-events: none; }
-.pm-thumb__blur::before {
+/* ----- תבנית חלון אחידה ----- */
+.proj-modal__headtext { min-height: 1.625rem; }
+.proj-modal__soon { width: 100%; text-align: center; font-size: 1.05rem; font-weight: 700; line-height: 1.5; margin: 0 0 14px; }
+
+/* ==========================================================================
+   גלריית החלון (אחידה לכל הלקוחות): מסגרת ראשית קבועה + פס ממוזערות. מידות בפיקסלים.
+   ========================================================================== */
+.proj-modal__thumbs { display: flex; flex-direction: column; gap: 10px; }
+.pm-gallery { display: flex; flex-direction: column; gap: 10px; }
+.pm-main {
+  position: relative;
+  box-sizing: border-box;
+  display: block;
+  width: 280px;
+  height: 210px;
+  padding: 6px;
+  background: #f4f3ef;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 4px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .25);
+  cursor: zoom-in;
+  overflow: hidden;
+  line-height: 0;
+}
+.pm-main--empty { cursor: default; }
+.pm-main:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.pm-main img { position: relative; z-index: 1; display: block; width: 100%; height: 100%; object-fit: cover; transition: opacity .25s ease; }
+.pm-main__blur { position: absolute; inset: 6px; overflow: hidden; border-radius: 2px; pointer-events: none; display: none; transition: opacity .25s ease; }
+.pm-main__blur::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -4770,7 +4772,32 @@ html.modal-open body { overflow: hidden; }
   filter: blur(16px) brightness(.75);
   transform: scale(1.15);
 }
-.pm-thumb.is-portrait img { position: relative; z-index: 1; object-fit: contain; filter: drop-shadow(0 2px 8px rgba(0, 0, 0, .35)); }
-.pm-thumb.is-portrait:hover img, .pm-thumb.is-portrait:focus-visible img { filter: drop-shadow(0 2px 8px rgba(0, 0, 0, .35)) brightness(1.05); }
-.proj-modal__headtext { min-height: 1.625rem; }
-.proj-modal__soon { width: 100%; text-align: center; font-size: 1.05rem; font-weight: 700; line-height: 1.5; margin: 0 0 14px; }
+.pm-main.is-portrait .pm-main__blur { display: block; }
+.pm-main.is-portrait img { object-fit: contain; filter: drop-shadow(0 2px 8px rgba(0, 0, 0, .35)); }
+.pm-strip { display: flex; flex-wrap: wrap; gap: 8px; width: 280px; }
+.pm-tn {
+  box-sizing: border-box;
+  flex: none;
+  width: 62px;
+  height: 46px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 3px;
+  background: #0e1216;
+  opacity: .65;
+  cursor: pointer;
+  overflow: hidden;
+  line-height: 0;
+  transition: opacity .2s ease, border-color .2s ease;
+}
+.pm-tn img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.pm-tn:hover, .pm-tn:focus-visible { opacity: 1; }
+.pm-tn:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+.pm-tn.is-active { opacity: 1; border-color: var(--logo-g); }
+@media (max-width: 767.98px) {
+  .pm-main { width: 100%; height: 220px; }
+  .pm-strip { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pm-main img, .pm-main__blur, .pm-tn { transition: none; }
+}

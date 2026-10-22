@@ -655,32 +655,18 @@ document.addEventListener('DOMContentLoaded', function () {
         pmSoon.hidden = false;
       }
 
-      // תמונות: שורת תמונות ממוזערות במסגרת רכה
+      // תמונות: גלריה — תמונה ראשית + פס ממוזערות (אותו קוד ואותן מידות לכל הלקוחות)
       pmThumbs.innerHTML = '';
       var imgs = (d.images || []).map(function (it) {
         var o = typeof it === 'string' ? { src: it } : it;
         return { src: o.src, alt: o.alt || t.name, portrait: !!(o.width && o.height && o.height > o.width * 1.15), known: !!(o.width && o.height) };
       });
-      imgs.forEach(function (o, i) {
-        var b = document.createElement('button');
-        b.type = 'button';
-        b.className = 'pm-thumb';
-        b.setAttribute('aria-label', 'הגדלת תמונה: ' + o.alt);
-        var im = document.createElement('img');
-        im.src = o.src; im.alt = o.alt; im.loading = 'lazy'; im.decoding = 'async';
-        // תמונה לאורך: אותה מסגרת, רקע מטושטש של אותה תמונה + התמונה החדה במלואה (contain) מעליו
-        if (o.portrait) { pmBlur(b, o.src); }
-        else if (!o.known) {
-          im.addEventListener('load', function () { if (im.naturalHeight > im.naturalWidth * 1.15) { pmBlur(b, o.src); } });
-        }
-        b.appendChild(im);
-        b.addEventListener('click', function () { lbOpen(imgs, i, b); });
-        pmThumbs.appendChild(b);
-      });
-      if (!imgs.length) {                       // בלי תמונות: מסגרת מציין-מקום אחת — אותה תבנית בדיוק לכל לקוח
+      if (imgs.length) {
+        pmThumbs.appendChild(pmGallery(imgs));
+      } else {                                  // בלי תמונות: מסגרת מציין-מקום, באותו גודל כמו המסגרת הראשית
         var ph = document.createElement('div');
-        ph.className = 'pm-thumb pm-thumb--empty';
-        ph.innerHTML = '<div class="pm-thumb__inner">' +
+        ph.className = 'pm-main pm-main--empty';
+        ph.innerHTML = '<div class="pm-main__empty">' +
           '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.2l1.1-1.6A1.5 1.5 0 0 1 10.05 4.7h3.9a1.5 1.5 0 0 1 1.25.7L16.3 7h2.2A1.5 1.5 0 0 1 20 8.5v9A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5v-9z"/><circle cx="12" cy="12.6" r="3.2"/></svg>' +
           '<span></span></div>';
         ph.querySelector('span').textContent = GT('pm_photos_soon', 'תמונות הפרויקט יתווספו בקרוב');
@@ -689,14 +675,75 @@ document.addEventListener('DOMContentLoaded', function () {
       pmThumbs.hidden = false;
     }
 
-    function pmBlur(btn, src) {
-      if (btn.classList.contains('is-portrait')) { return; }
-      var bg = document.createElement('span');
-      bg.className = 'pm-thumb__blur';
-      bg.setAttribute('aria-hidden', 'true');
-      bg.style.setProperty('--pm-bg', 'url("' + new URL(src, document.baseURI).href.replace(/"/g, '%22') + '")');   // מוחלט: משתנה CSS נפתר יחסית לקובץ ה-CSS
-      btn.insertBefore(bg, btn.firstChild);
-      btn.classList.add('is-portrait');
+    // גלריית החלון: מסגרת ראשית קבועה + פס ממוזערות. לחיצה על ממוזערת מחליפה את הראשית; לחיצה על הראשית פותחת לייטבוקס.
+    function pmGallery(imgs) {
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var cur = 0, token = 0;
+      var wrap = document.createElement('div');
+      wrap.className = 'pm-gallery';
+
+      var main = document.createElement('button');
+      main.type = 'button';
+      main.className = 'pm-main';
+      main.setAttribute('aria-label', 'הגדלת תמונה');
+      var blur = document.createElement('span');
+      blur.className = 'pm-main__blur';
+      blur.setAttribute('aria-hidden', 'true');
+      var big = document.createElement('img');
+      big.decoding = 'async';
+      main.appendChild(blur);
+      main.appendChild(big);
+      main.addEventListener('click', function () { lbOpen(imgs, cur, main); });
+      wrap.appendChild(main);
+
+      function absUrl(src) { return new URL(src, document.baseURI).href.replace(/"/g, '%22'); }   // משתנה CSS נפתר יחסית לקובץ ה-CSS — לכן כתובת מוחלטת
+      function setPortrait(on) { main.classList.toggle('is-portrait', on); }
+      function fade(v) { big.style.opacity = v; blur.style.opacity = v; }
+
+      var thumbs = [];
+      function show(i, instant) {
+        cur = i;
+        var my = ++token, o = imgs[i];
+        thumbs.forEach(function (tb, k) {
+          tb.classList.toggle('is-active', k === i);
+          if (k === i) { tb.setAttribute('aria-current', 'true'); } else { tb.removeAttribute('aria-current'); }
+        });
+        function apply() {
+          if (my !== token) { return; }
+          setPortrait(o.portrait);
+          blur.style.setProperty('--pm-bg', 'url("' + absUrl(o.src) + '")');
+          big.onload = function () {
+            if (my !== token) { return; }
+            if (!o.known) { setPortrait(big.naturalHeight > big.naturalWidth * 1.15); }   // בלי מידות בנתונים: זיהוי לפי התמונה עצמה
+            fade(1);
+          };
+          big.onerror = function () { if (my === token) { fade(1); } };
+          big.alt = o.alt;
+          big.src = o.src;
+          if (big.complete && big.naturalWidth) { big.onload(); }
+        }
+        if (instant || reduce) { apply(); } else { fade(0); setTimeout(apply, 130); }
+      }
+
+      if (imgs.length > 1) {
+        var strip = document.createElement('div');
+        strip.className = 'pm-strip';
+        imgs.forEach(function (o, i) {
+          var tb = document.createElement('button');
+          tb.type = 'button';
+          tb.className = 'pm-tn';
+          tb.setAttribute('aria-label', 'תמונה ' + (i + 1) + ' מתוך ' + imgs.length);
+          var im = document.createElement('img');
+          im.src = o.src; im.alt = ''; im.loading = 'lazy'; im.decoding = 'async';
+          tb.appendChild(im);
+          tb.addEventListener('click', function () { if (i !== cur) { show(i); } });
+          thumbs.push(tb);
+          strip.appendChild(tb);
+        });
+        wrap.appendChild(strip);
+      }
+      show(0, true);
+      return wrap;
     }
 
     function pmSetPaused(on) {
