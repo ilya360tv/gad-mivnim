@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var tabs    = projSection ? Array.prototype.slice.call(projSection.querySelectorAll('.sector-tab')) : [];
   var reduceMq = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var PDATA = window.PROJECTS_DATA || {};
+  var IPDATA = window.IN_PROGRESS_DATA || {};     // כרטיסי #in-progress — אותו חלון (#projModal)
   var currentSector = 'all';
 
   function sectorOf(el) {
@@ -477,6 +478,10 @@ document.addEventListener('DOMContentLoaded', function () {
             '<h2 class="proj-modal__name" id="projModalTitle"></h2>' +
             '<p class="proj-modal__sub" dir="ltr" hidden></p>' +
             '<span class="proj-modal__city" hidden></span>' +
+            '<div class="proj-modal__prog" hidden>' +
+              '<span class="proj-modal__badge"></span>' +
+              '<div class="proj-modal__meter"><strong></strong><span class="proj-modal__bar"><i></i></span></div>' +
+            '</div>' +
           '</div>' +
         '</div>' +
         '<div class="proj-modal__body">' +
@@ -500,6 +505,8 @@ document.addEventListener('DOMContentLoaded', function () {
     var pmItems = pm.querySelector('.proj-modal__items');
     var pmSoon  = pm.querySelector('.proj-modal__soon');
     var pmThumbs = pm.querySelector('.proj-modal__thumbs');
+    var pmProg  = pm.querySelector('.proj-modal__prog');
+    var pmLogoBox = pm.querySelector('.proj-modal__logo');
     var pmFrom = null, pmSlug = null;
 
     function pmPick(d, lang) {
@@ -565,12 +572,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ----- תוכן החלון -----
     function renderModal() {
-      var d = PDATA[pmSlug];
+      var d = PDATA[pmSlug] || IPDATA[pmSlug];
       if (!d) { return; }
       var lang = document.documentElement.getAttribute('lang') || 'he';
       var t = pmPick(d, lang);
+      if (d.inProgress) { t.name = GT('ip_name', t.name); }
 
-      pmLogo.src = 'images/clients/' + (d.logo || pmSlug) + '.png';
+      pmLogoBox.classList.toggle('is-photo', !!d.inProgress);      // כרטיס בביצוע: התמונה במקום הלוגו
+      pmLogo.src = d.inProgress ? d.photo : 'images/clients/' + (d.logo || pmSlug) + '.png';
       pmLogo.alt = t.name;
       pmName.textContent = t.name;
       pmX.setAttribute('aria-label', GT('pm_close', 'סגירה'));
@@ -582,7 +591,14 @@ document.addEventListener('DOMContentLoaded', function () {
       if (d.city) {
         var ck = CITY_KEY[d.city];
         pmCity.innerHTML = PIN + '<span></span>';
-        pmCity.lastChild.textContent = ck ? GT(ck, d.city) : d.city;
+        pmCity.lastChild.textContent = d.inProgress ? GT('ip_loc', d.city) : (ck ? GT(ck, d.city) : d.city);
+      }
+
+      pmProg.hidden = !d.inProgress;
+      if (d.inProgress) {
+        pmProg.querySelector('.proj-modal__badge').textContent = GT('ip_status', 'בביצוע');
+        pmProg.querySelector('strong').textContent = d.progress + '%';
+        pmProg.querySelector('.proj-modal__bar i').style.width = d.progress + '%';
       }
 
       if (t.title) {
@@ -630,11 +646,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function pmSetPaused(on) {
       if (marquee) { marquee.classList.toggle('is-modal-paused', on); }
+      var ipb = document.querySelector('#in-progress .ip-marquee');
+      if (ipb) { ipb.classList.toggle('is-modal-paused', on); }
     }
 
     function openProject(btn) {
       pmSlug = btn.getAttribute('data-client') || '';
-      if (!PDATA[pmSlug]) { return; }
+      if (!PDATA[pmSlug] && !IPDATA[pmSlug]) { return; }
       pmFrom = btn;
       renderModal();
       pmBox.scrollTop = 0;
@@ -654,7 +672,7 @@ document.addEventListener('DOMContentLoaded', function () {
       pmSetPaused(false);
       if (pmFrom && document.body.contains(pmFrom)) { pmFrom.focus(); }
       else if (pmFrom) {
-        var again = projSection.querySelector('.project-item[data-client="' + pmFrom.getAttribute('data-client') + '"]:not([aria-hidden="true"])');
+        var again = document.querySelector('.project-item[data-client="' + pmFrom.getAttribute('data-client') + '"]:not([aria-hidden="true"]), .progress-card[data-client="' + pmFrom.getAttribute('data-client') + '"]:not([aria-hidden="true"])');
         if (again) { again.focus(); }
       }
       pmFrom = null; pmSlug = null;
@@ -664,6 +682,18 @@ document.addEventListener('DOMContentLoaded', function () {
       var b = e.target.closest ? e.target.closest('.project-item[data-client]') : null;
       if (b && projSection.contains(b)) { openProject(b); }
     });
+    var ipSecEl = document.getElementById('in-progress');
+    if (ipSecEl) {                                       // כרטיסי #in-progress: לחיצה אמיתית בלבד (גרירה נבלעת במנוע הפס)
+      ipSecEl.addEventListener('click', function (e) {
+        var c = e.target.closest ? e.target.closest('.progress-card[data-client]') : null;
+        if (c && ipSecEl.contains(c)) { openProject(c); }
+      });
+      ipSecEl.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter' && e.key !== ' ') { return; }
+        var c = e.target.closest ? e.target.closest('.progress-card[data-client]') : null;
+        if (c && e.target === c) { e.preventDefault(); openProject(c); }
+      });
+    }
     pm.addEventListener('click', function (e) {
       if (e.target.closest && e.target.closest('[data-pm-close]')) { closeProject(); }
     });
@@ -712,7 +742,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (ipSec && ipGrid && ipBox && ipTrack) {
     var ipSrc = Array.prototype.slice.call(ipGrid.querySelectorAll('.progress-card'));
-    var ipE = initMarquee(ipBox, ipTrack);
+    var ipE = initMarquee(ipBox, ipTrack, {
+      isPaused: function () {
+        if (ipBox.classList.contains('is-modal-paused')) { return true; }
+        try { if (ipBox.querySelector(':focus-visible')) { return true; } } catch (err) {}   // כמו #projects
+        return false;
+      }
+    });
 
     var ipBuild = function () {
       var narrow = window.innerWidth < 768;
@@ -724,7 +760,7 @@ document.addEventListener('DOMContentLoaded', function () {
         for (var r = 0; r < reps; r++) {
           ipSrc.forEach(function (c) {
             var n = c.cloneNode(true);
-            if (hidden) { n.setAttribute('aria-hidden', 'true'); }
+            if (hidden) { n.setAttribute('aria-hidden', 'true'); n.setAttribute('tabindex', '-1'); }
             f.appendChild(n);
           });
         }
