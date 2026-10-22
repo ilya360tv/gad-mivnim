@@ -36,49 +36,123 @@ document.addEventListener('DOMContentLoaded', function () {
     return sources.filter(function (c) { return currentSector === 'all' || sectorOf(c) === currentSector; });
   }
 
-  /* ----- מנוע הפס: התנועה ב-JS. offset בפיקסלים, בטווח [-W, 0) כש-W = רוחב עותק אחד;
-         גרירה, גלגלת ותנופה משנים את אותו offset, והלולאה נשארת אינסופית וחלקה לשני הכיוונים ----- */
-  var mq = { offset: 0, W: 0, speed: 0, vel: 0, dragging: false, hover: false, resumeAt: 0, raf: 0, last: 0 };
+  /* ----- מנוע פס נע משותף (פס לוגואי #projects ופס הכרטיסים של #in-progress) -----
+         התנועה ב-JS: offset בפיקסלים בטווח [-W, 0), כש-W = רוחב עותק אחד. גרירה, גלגלת ותנופה
+         משנים את אותו offset, והלולאה אינסופית וחלקה לשני הכיוונים.
+         box = המכל (overflow hidden), track = הרצועה, opts.isPaused() = תנאי השהיה נוספים.
+         מחזיר: state, measure(per) — מודד W לפי מספר הפריטים בעותק אחד, wrap(), apply(). ----- */
+  var MQ_SPEED = { desktop: 58, mobile: 65 };      // פיקסלים לשנייה — זהה לשני הפסים
+  function initMarquee(box, track, opts) {
+    opts = opts || {};
+    var s = { offset: 0, W: 0, speed: 0, vel: 0, dragging: false, hover: false, resumeAt: 0, last: 0 };
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  function mqWrap() {
-    if (!mq.W) { return; }
-    while (mq.offset >= 0) { mq.offset -= mq.W; }
-    while (mq.offset < -mq.W) { mq.offset += mq.W; }
-  }
-  function mqApply() {
-    if (mqTrack) { mqTrack.style.transform = 'translate3d(' + mq.offset.toFixed(2) + 'px,0,0)'; }
-  }
-  function mqMeasure() {
-    // רוחב עותק אחד = המרחק בין האריח הראשון לאריח הראשון של העותק השני (כולל הרווחים)
-    var kids = mqTrack.children, per = mqTrack.__perSet || 0;
-    if (!per || kids.length < per + 1) { mq.W = 0; return; }
-    mq.W = kids[per].offsetLeft - kids[0].offsetLeft;
-    mq.speed = mq.W / ((window.innerWidth < 768 ? 30 : 40) * 1000);   // פיקסלים למילישנייה — סיבוב מלא ב-40 שנ' (30 במובייל)
-  }
-  function mqPaused() {
-    if (reduceMq) { return true; }                                    // בלי תנועת-יתר: אין גלילה אוטומטית
-    if (mq.dragging || mq.hover) { return true; }
-    if (marquee.classList.contains('is-modal-paused')) { return true; }
-    try { if (marquee.querySelector(':focus-visible')) { return true; } } catch (err) {}   // פוקוס מקלדת מעצור את הפס (לא פוקוס שחזר אחרי סגירת חלון בעכבר)
-    return performance.now() < mq.resumeAt;
-  }
-  function mqTick(now) {
-    var dt = Math.min(now - (mq.last || now), 50);
-    mq.last = now;
-    if (mq.W && !document.hidden) {
-      if (!mq.dragging && Math.abs(mq.vel) > 0.02) {                  // תנופה אחרי שחרור
-        mq.offset += mq.vel * dt;
-        mq.vel *= Math.pow(0.94, dt / 16);
-        mq.resumeAt = Math.max(mq.resumeAt, now + 1500);
-      } else if (!mq.dragging) {
-        mq.vel = 0;
-        if (!mqPaused()) { mq.offset += mq.speed * dt; }              // כיוון הגלילה המקורי: ימינה
-      }
-      mqWrap();
-      mqApply();
+    function wrap() {
+      if (!s.W) { return; }
+      while (s.offset >= 0) { s.offset -= s.W; }
+      while (s.offset < -s.W) { s.offset += s.W; }
     }
-    mq.raf = requestAnimationFrame(mqTick);
+    function apply() { track.style.transform = 'translate3d(' + s.offset.toFixed(2) + 'px,0,0)'; }
+    function measure(per) {
+      // רוחב עותק אחד = המרחק בין הפריט הראשון לפריט הראשון של העותק השני (כולל הרווחים)
+      var kids = track.children;
+      if (!per || kids.length < per + 1) { s.W = 0; return; }
+      s.W = kids[per].offsetLeft - kids[0].offsetLeft;
+      s.speed = (window.innerWidth < 768 ? MQ_SPEED.mobile : MQ_SPEED.desktop) / 1000;
+      s.offset = 0; s.vel = 0;
+      wrap(); apply();
+    }
+    function paused() {
+      if (reduce) { return true; }                                   // בלי תנועת-יתר: אין גלילה אוטומטית
+      if (s.dragging || s.hover) { return true; }
+      if (opts.isPaused && opts.isPaused()) { return true; }
+      return performance.now() < s.resumeAt;
+    }
+    function tick(now) {
+      var dt = Math.min(now - (s.last || now), 50);
+      s.last = now;
+      if (s.W && !document.hidden) {
+        if (!s.dragging && Math.abs(s.vel) > 0.02) {                 // תנופה אחרי שחרור
+          s.offset += s.vel * dt;
+          s.vel *= Math.pow(0.94, dt / 16);
+          s.resumeAt = Math.max(s.resumeAt, now + 1500);
+        } else if (!s.dragging) {
+          s.vel = 0;
+          if (!paused()) { s.offset += s.speed * dt; }               // כיוון הגלילה: ימינה
+        }
+        wrap();
+        apply();
+      }
+      requestAnimationFrame(tick);
+    }
+
+    // ----- גרירה (עכבר / מגע / עט) -----
+    var DRAG_PX = 6;                         // תנועה קטנה מזה = לחיצה; גדולה = גרירה (ולא מפעילה לחיצות)
+    var pid = null, startX = 0, lastX = 0, lastT = 0, moved = 0, captured = false, swallow = false;
+    box.addEventListener('pointerdown', function (e) {
+      if (e.pointerType === 'mouse' && e.button !== 0) { return; }
+      pid = e.pointerId; startX = lastX = e.clientX; lastT = performance.now(); moved = 0; captured = false;
+      s.vel = 0; s.dragging = false;
+    });
+    box.addEventListener('pointermove', function (e) {
+      if (e.pointerId !== pid) { return; }
+      var dx = e.clientX - lastX;
+      moved = Math.max(moved, Math.abs(e.clientX - startX));
+      if (!s.dragging) {
+        if (moved <= DRAG_PX) { return; }
+        s.dragging = true;
+        box.classList.add('is-dragging');
+        try { box.setPointerCapture(pid); captured = true; } catch (err) {}
+        lastX = e.clientX; lastT = performance.now();
+        return;
+      }
+      var now = performance.now(), dtm = Math.max(now - lastT, 1);
+      s.offset += dx;
+      s.vel = 0.7 * s.vel + 0.3 * (dx / dtm);        // מהירות מוחלקת לתנופה
+      lastX = e.clientX; lastT = now;
+      wrap(); apply();
+    });
+    function endDrag(e) {
+      if (e.pointerId !== pid) { return; }
+      var was = s.dragging;
+      pid = null;
+      if (captured) { try { box.releasePointerCapture(e.pointerId); } catch (err) {} }
+      captured = false; s.dragging = false;
+      box.classList.remove('is-dragging');
+      if (was) {
+        swallow = true;
+        setTimeout(function () { swallow = false; }, 50);
+        if (Math.abs(s.vel) > 0.6) { s.vel = s.vel > 0 ? 0.6 : -0.6; }
+        s.resumeAt = performance.now() + 1500;
+      }
+    }
+    box.addEventListener('pointerup', endDrag);
+    box.addEventListener('pointercancel', endDrag);
+    box.addEventListener('click', function (e) {
+      if (swallow || moved > DRAG_PX) { e.stopPropagation(); e.preventDefault(); }
+    }, true);
+    box.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') { s.hover = true; } });   // ריחוף = השהיה
+    box.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') { s.hover = false; } });
+    box.addEventListener('wheel', function (e) {                    // גלגלת אופקית / משטח מגע
+      var dx = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : (e.shiftKey ? e.deltaY : 0);
+      if (!dx) { return; }                   // גלילה אנכית רגילה — עוברת לדף
+      e.preventDefault();
+      s.offset -= dx; s.vel = 0; s.resumeAt = performance.now() + 1500;
+      wrap(); apply();
+    }, { passive: false });
+
+    requestAnimationFrame(tick);
+    return { state: s, measure: measure, wrap: wrap, apply: apply };
   }
+
+  var mqE = (marquee && mqTrack) ? initMarquee(marquee, mqTrack, {
+    isPaused: function () {
+      if (marquee.classList.contains('is-modal-paused')) { return true; }
+      try { if (marquee.querySelector(':focus-visible')) { return true; } } catch (err) {}   // פוקוס מקלדת עוצר את הפס
+      return false;
+    }
+  }) : null;
+  var mq = mqE ? mqE.state : {};
 
   function buildMarquee() {
     var cards = matching();
@@ -118,11 +192,7 @@ document.addEventListener('DOMContentLoaded', function () {
     mqTrack.innerHTML = '';
     mqTrack.appendChild(makeSet(false));
     mqTrack.appendChild(makeSet(true));
-    mqTrack.__perSet = reps * cards.length;
-    mq.offset = 0; mq.vel = 0;
-    mqMeasure();
-    mqWrap();
-    mqApply();
+    mqE.measure(reps * cards.length);
   }
 
   // מציג את התוכן של הלשונית הנוכחית: פס/רשת, או הודעת "בקרוב" כשאין לקוחות במגזר
@@ -183,77 +253,12 @@ document.addEventListener('DOMContentLoaded', function () {
     marquee.hidden = false;
     marquee.classList.add('is-on');
     renderSector();
-    mq.raf = requestAnimationFrame(mqTick);
 
     var mqTimer;
     window.addEventListener('resize', function () {
       clearTimeout(mqTimer);
       mqTimer = setTimeout(function () { window.rebuildMarquee(); }, 200);
     });
-
-    // ----- גרירה (עכבר / מגע / עט) -----
-    var DRAG_PX = 6;                         // תנועה קטנה מזה = לחיצה (פותחת חלון); גדולה = גרירה
-    var pid = null, startX = 0, lastX = 0, lastT = 0, moved = 0, captured = false, swallow = false;
-
-    marquee.addEventListener('pointerdown', function (e) {
-      if (e.pointerType === 'mouse' && e.button !== 0) { return; }
-      pid = e.pointerId; startX = lastX = e.clientX; lastT = performance.now(); moved = 0; captured = false;
-      mq.vel = 0;
-      mq.dragging = false;
-    });
-    marquee.addEventListener('pointermove', function (e) {
-      if (e.pointerId !== pid) { return; }
-      var dx = e.clientX - lastX;
-      moved = Math.max(moved, Math.abs(e.clientX - startX));
-      if (!mq.dragging) {
-        if (moved <= DRAG_PX) { return; }
-        mq.dragging = true;                  // מרגע זה זו גרירה
-        marquee.classList.add('is-dragging');
-        try { marquee.setPointerCapture(pid); captured = true; } catch (err) {}
-        lastX = e.clientX; lastT = performance.now();
-        return;
-      }
-      var now = performance.now(), dtm = Math.max(now - lastT, 1);
-      mq.offset += dx;
-      mq.vel = 0.7 * mq.vel + 0.3 * (dx / dtm);   // מהירות מוחלקת לתנופה
-      lastX = e.clientX; lastT = now;
-      mqWrap(); mqApply();
-    });
-    function endDrag(e) {
-      if (e.pointerId !== pid) { return; }
-      var wasDragging = mq.dragging;
-      pid = null;
-      if (captured) { try { marquee.releasePointerCapture(e.pointerId); } catch (err) {} }
-      captured = false;
-      mq.dragging = false;
-      marquee.classList.remove('is-dragging');
-      if (wasDragging) {
-        swallow = true;                      // הלחיצה שמגיעה אחרי גרירה לא פותחת חלון
-        setTimeout(function () { swallow = false; }, 50);
-        if (Math.abs(mq.vel) > 0.6) { mq.vel = mq.vel > 0 ? 0.6 : -0.6; }
-        mq.resumeAt = performance.now() + 1500;
-      }
-    }
-    marquee.addEventListener('pointerup', endDrag);
-    marquee.addEventListener('pointercancel', endDrag);
-    marquee.addEventListener('click', function (e) {
-      if (swallow || moved > DRAG_PX) { e.stopPropagation(); e.preventDefault(); }
-    }, true);
-
-    // ריחוף = השהיה (עכבר בלבד)
-    marquee.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') { mq.hover = true; } });
-    marquee.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') { mq.hover = false; } });
-
-    // גלגלת אופקית / החלקת משטח מגע
-    marquee.addEventListener('wheel', function (e) {
-      var dx = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : (e.shiftKey ? e.deltaY : 0);
-      if (!dx) { return; }                   // גלילה אנכית רגילה — עוברת לדף
-      e.preventDefault();
-      mq.offset -= dx;
-      mq.vel = 0;
-      mq.resumeAt = performance.now() + 1500;
-      mqWrap(); mqApply();
-    }, { passive: false });
   } else {
     renderSector();
   }
@@ -697,7 +702,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ---------------------------------------------------------------
-     8) פרויקטים בביצוע — פס נע אינסופי הנגרר בעכבר/מגע (אותו מנוע כמו פס הלוגואים).
+     8) פרויקטים בביצוע — אותו פס נע כמו #projects (initMarquee המשותף).
         הכרטיסים המקוריים נשארים כרשת סטטית (גיבוי); הפס נבנה מהם במשוכפל.
      --------------------------------------------------------------- */
   var ipSec  = document.getElementById('in-progress');
@@ -706,16 +711,8 @@ document.addEventListener('DOMContentLoaded', function () {
   var ipTrack = ipBox ? ipBox.querySelector('.ip-track') : null;
 
   if (ipSec && ipGrid && ipBox && ipTrack) {
-    var ipReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var ip = { offset: 0, W: 0, speed: 0, vel: 0, dragging: false, hover: false, resumeAt: 0, last: 0, per: 0 };
     var ipSrc = Array.prototype.slice.call(ipGrid.querySelectorAll('.progress-card'));
-
-    var ipWrap = function () {
-      if (!ip.W) { return; }
-      while (ip.offset >= 0) { ip.offset -= ip.W; }
-      while (ip.offset < -ip.W) { ip.offset += ip.W; }
-    };
-    var ipApply = function () { ipTrack.style.transform = 'translate3d(' + ip.offset.toFixed(2) + 'px,0,0)'; };
+    var ipE = initMarquee(ipBox, ipTrack);
 
     var ipBuild = function () {
       var narrow = window.innerWidth < 768;
@@ -736,46 +733,19 @@ document.addEventListener('DOMContentLoaded', function () {
       ipTrack.innerHTML = '';
       ipTrack.appendChild(set(false));
       ipTrack.appendChild(set(true));
-      ip.per = reps * ipSrc.length;
-      var kids = ipTrack.children;
-      ip.W = kids[ip.per].offsetLeft - kids[0].offsetLeft;
-      ip.speed = ip.W / ((narrow ? 45 : 60) * 1000);      // סיבוב מלא ב-60 שנ' (45 במובייל)
-      ip.offset = 0; ip.vel = 0;
-      ipWrap(); ipApply();
+      ipE.measure(reps * ipSrc.length);
       if (window.setLanguage) { window.setLanguage(document.documentElement.getAttribute('lang') || 'he'); }
-    };
-
-    var ipPaused = function () {
-      if (ipReduce || ip.dragging || ip.hover) { return true; }
-      return performance.now() < ip.resumeAt;
-    };
-    var ipTick = function (now) {
-      var dt = Math.min(now - (ip.last || now), 50);
-      ip.last = now;
-      if (ip.W && !document.hidden) {
-        if (!ip.dragging && Math.abs(ip.vel) > 0.02) {
-          ip.offset += ip.vel * dt;
-          ip.vel *= Math.pow(0.94, dt / 16);
-          ip.resumeAt = Math.max(ip.resumeAt, now + 1500);
-        } else if (!ip.dragging) {
-          ip.vel = 0;
-          if (!ipPaused()) { ip.offset += ip.speed * dt; }
-        }
-        ipWrap(); ipApply();
-      }
-      requestAnimationFrame(ipTick);
     };
 
     ipBox.hidden = false;
     ipBox.classList.add('is-on');
     ipGrid.classList.add('is-replaced');
     ipBuild();
-    requestAnimationFrame(ipTick);
 
     var ipTimer;
     window.addEventListener('resize', function () { clearTimeout(ipTimer); ipTimer = setTimeout(ipBuild, 200); });
 
-    // התקדמות מתמלאת בכניסה ראשונה לתצוגה
+    // התקדמות מתמלאת בכניסה ראשונה לתצוגה (גם בעותק המשוכפל)
     if ('IntersectionObserver' in window) {
       var ipIo = new IntersectionObserver(function (es) {
         es.forEach(function (e) { if (e.isIntersecting) { ipSec.classList.add('ip-in'); ipIo.disconnect(); } });
@@ -783,53 +753,6 @@ document.addEventListener('DOMContentLoaded', function () {
       ipIo.observe(ipSec);
     } else { ipSec.classList.add('ip-in'); }
 
-    // גרירה (עכבר / מגע)
-    var ipPid = null, ipLastX = 0, ipLastT = 0, ipStartX = 0, ipMoved = 0, ipCap = false;
-    ipBox.addEventListener('pointerdown', function (e) {
-      if (e.pointerType === 'mouse' && e.button !== 0) { return; }
-      ipPid = e.pointerId; ipStartX = ipLastX = e.clientX; ipLastT = performance.now(); ipMoved = 0; ip.vel = 0; ip.dragging = false;
-    });
-    ipBox.addEventListener('pointermove', function (e) {
-      if (e.pointerId !== ipPid) { return; }
-      var dx = e.clientX - ipLastX;
-      ipMoved = Math.max(ipMoved, Math.abs(e.clientX - ipStartX));
-      if (!ip.dragging) {
-        if (ipMoved <= 6) { return; }
-        ip.dragging = true;
-        ipBox.classList.add('is-dragging');
-        try { ipBox.setPointerCapture(ipPid); ipCap = true; } catch (err) {}
-        ipLastX = e.clientX; ipLastT = performance.now();
-        return;
-      }
-      var now = performance.now(), d = Math.max(now - ipLastT, 1);
-      ip.offset += dx;
-      ip.vel = 0.7 * ip.vel + 0.3 * (dx / d);
-      ipLastX = e.clientX; ipLastT = now;
-      ipWrap(); ipApply();
-    });
-    var ipEnd = function (e) {
-      if (e.pointerId !== ipPid) { return; }
-      var was = ip.dragging;
-      ipPid = null;
-      if (ipCap) { try { ipBox.releasePointerCapture(e.pointerId); } catch (err) {} }
-      ipCap = false; ip.dragging = false;
-      ipBox.classList.remove('is-dragging');
-      if (was) {
-        if (Math.abs(ip.vel) > 0.6) { ip.vel = ip.vel > 0 ? 0.6 : -0.6; }
-        ip.resumeAt = performance.now() + 1500;
-      }
-    };
-    ipBox.addEventListener('pointerup', ipEnd);
-    ipBox.addEventListener('pointercancel', ipEnd);
-    ipBox.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') { ip.hover = true; } });
-    ipBox.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') { ip.hover = false; } });
-    ipBox.addEventListener('wheel', function (e) {
-      var dx = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : (e.shiftKey ? e.deltaY : 0);
-      if (!dx) { return; }
-      e.preventDefault();
-      ip.offset -= dx; ip.vel = 0; ip.resumeAt = performance.now() + 1500;
-      ipWrap(); ipApply();
-    }, { passive: false });
     if ('MutationObserver' in window) {
       new MutationObserver(function () { if (window.setLanguage) { window.setLanguage(document.documentElement.getAttribute('lang') || 'he'); } })
         .observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
