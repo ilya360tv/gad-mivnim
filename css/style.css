@@ -27,6 +27,7 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: clip; /* רשת ביטחון מפני גלישה אופקית — clip לא יוצר מיכל גלילה (שלא כמו hidden) */
 }
 
 body {
@@ -34,7 +35,6 @@ body {
   color: var(--dark);
   background: var(--white);
   line-height: 1.6;
-  overflow-x: hidden; /* רשת ביטחון מפני גלישה אופקית */
   /* הכיוון (RTL/LTR) נקבע לפי תכונת dir על <html> ומתחלף לפי השפה */
 }
 
@@ -4432,6 +4432,7 @@ html.modal-open body { overflow: hidden; }
 .proj-modal[hidden] { display: none; }
 .proj-modal__backdrop { position: absolute; inset: 0; background: rgba(0, 0, 0, .65); opacity: 0; transition: opacity .2s ease-out; }
 .proj-modal__box {
+  overscroll-behavior: contain;
   position: relative;
   box-sizing: border-box;
   width: 700px;
@@ -4663,3 +4664,41 @@ html.modal-open body { overflow: hidden; }
 .proj-modal__meter strong { color: #4ade80; font-size: .95rem; min-width: 2.6em; text-align: start; }
 .proj-modal__bar { flex: 1; height: 8px; border-radius: 999px; background: #0e1216; border: 1px solid var(--line); overflow: hidden; }
 .proj-modal__bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--green-deep), #22c55e); box-shadow: 0 0 12px rgba(34, 197, 94, .5); }
+
+
+/* ==========================================================================
+   מובייל: תיקון גלילה תקועה — מפה מכוסה עד הקשה, בלי mask/will-change בפס בביצוע
+   ========================================================================== */
+.map-activate { display: none; }
+@media (max-width: 767.98px) {
+  .contact-map { position: relative; }
+  .contact-map:not(.is-active) iframe { pointer-events: none; }
+  .map-activate {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    width: 100%;
+    padding: 0 0 14px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .map-activate span {
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, .72);
+    color: #fff;
+    font-size: .9rem;
+  }
+  .contact-map.is-active .map-activate { display: none; }
+  .has-js .in-progress .ip-marquee.is-on {
+    -webkit-mask-image: none;
+            mask-image: none;
+  }
+  .ip-track { will-change: auto; }
+}

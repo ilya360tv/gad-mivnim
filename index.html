@@ -81,6 +81,7 @@
            poster="images/hero-poster.jpg" aria-hidden="true">
       <source src="images/hero.mp4" type="video/mp4">
     </video>
+    <script>if (window.matchMedia('(max-width: 767px)').matches) { var hv = document.querySelector('.hero-video'); if (hv) { hv.pause(); hv.removeAttribute('autoplay'); hv.removeAttribute('preload'); while (hv.firstChild) { hv.removeChild(hv.firstChild); } hv.load(); hv.parentNode.removeChild(hv); } }</script>
     <div class="hero-overlay"></div>
     <div class="container hero-content">
       <h1 class="hero-title reveal" data-i18n="hero_title"><span class="hero-title__latin">GAD MIVNIM</span> בכל מקום במפה</h1>
@@ -571,6 +572,7 @@
               style="border:0;"
               loading="lazy"
               referrerpolicy="no-referrer-when-downgrade"></iframe>
+            <button type="button" class="map-activate" id="mapActivate"><span data-i18n="map_tap">הקישו להפעלת המפה</span></button>
           </div>
         </div>
       </div>

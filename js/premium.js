@@ -28,6 +28,17 @@
         heroVideo.addEventListener('playing', showVideo, { once: true });
         heroVideo.addEventListener('canplay', showVideo, { once: true });
       }
+
+      // דסקטופ: משהים את הסרטון כשה-Hero מחוץ למסך (חוסך מעבד)
+      if ('IntersectionObserver' in window) {
+        var heroSec = document.getElementById('hero');
+        new IntersectionObserver(function (entries) {
+          if (document.documentElement.classList.contains('a11y-no-motion')) { return; }
+          var on = entries[entries.length - 1].isIntersecting;
+          if (on) { var pr = heroVideo.play(); if (pr && pr.catch) { pr.catch(function () {}); } }
+          else { heroVideo.pause(); }
+        }).observe(heroSec || heroVideo);
+      }
     }
 
     /* ---------------------------------------------------------------

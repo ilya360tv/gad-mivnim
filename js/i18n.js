@@ -273,6 +273,7 @@
 
     pm_gallery: { he: 'גלריית הפרויקט', ru: 'Галерея проекта', en: 'Project gallery', fr: 'Galerie du projet' },
 
+    map_tap: { he: 'הקישו להפעלת המפה', ru: 'Нажмите, чтобы включить карту', en: 'Tap to activate the map', fr: 'Touchez pour activer la carte' },
     pm_close: { he: 'סגירה', ru: 'Закрыть', en: 'Close', fr: 'Fermer' },
 
     sector_all: { he: 'כל המגזרים', ru: 'Все секторы', en: 'All Sectors', fr: 'Tous les secteurs' },

@@ -46,6 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function initMarquee(box, track, opts) {
     opts = opts || {};
     var s = { offset: 0, W: 0, speed: 0, vel: 0, dragging: false, hover: false, resumeAt: 0, last: 0 };
+    var visible = true, looping = false;      // הלולאה רצה רק כשהפס בתוך המסך
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     function wrap() {
@@ -84,20 +85,38 @@ document.addEventListener('DOMContentLoaded', function () {
         wrap();
         apply();
       }
+      if (visible) { requestAnimationFrame(tick); } else { looping = false; }
+    }
+    function startLoop() {
+      if (looping) { return; }
+      looping = true; s.last = 0;
       requestAnimationFrame(tick);
+    }
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        visible = entries[entries.length - 1].isIntersecting;
+        if (visible) { startLoop(); }
+      }).observe(box);
     }
 
     // ----- גרירה (עכבר / מגע / עט) -----
     var DRAG_PX = 6;                         // תנועה קטנה מזה = לחיצה; גדולה = גרירה (ולא מפעילה לחיצות)
-    var pid = null, startX = 0, lastX = 0, lastT = 0, moved = 0, captured = false, swallow = false;
+    var pid = null, startX = 0, startY = 0, lastX = 0, lastT = 0, moved = 0, captured = false, swallow = false, vertical = false;
     box.addEventListener('pointerdown', function (e) {
       if (e.pointerType === 'mouse' && e.button !== 0) { return; }
-      pid = e.pointerId; startX = lastX = e.clientX; lastT = performance.now(); moved = 0; captured = false;
+      pid = e.pointerId; startX = lastX = e.clientX; startY = e.clientY; lastT = performance.now(); moved = 0; captured = false;
+      vertical = false;
       s.vel = 0; s.dragging = false;
     });
     box.addEventListener('pointermove', function (e) {
-      if (e.pointerId !== pid) { return; }
+      if (e.pointerId !== pid || vertical) { return; }
       var dx = e.clientX - lastX;
+      if (!s.dragging && e.pointerType !== 'mouse') {
+        // מגע: תנועה ראשונה בעיקר אנכית = גלילת הדף, לא גרירת הפס (ובלי setPointerCapture)
+        var adx = Math.abs(e.clientX - startX), ady = Math.abs(e.clientY - startY);
+        if (ady > DRAG_PX && ady * 1.5 > adx) { vertical = true; pid = null; moved = 0; return; }
+        if (adx <= DRAG_PX) { return; }
+      }
       moved = Math.max(moved, Math.abs(e.clientX - startX));
       if (!s.dragging) {
         if (moved <= DRAG_PX) { return; }
@@ -142,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function () {
       wrap(); apply();
     }, { passive: false });
 
-    requestAnimationFrame(tick);
+    startLoop();
     return { state: s, measure: measure, wrap: wrap, apply: apply };
   }
 
@@ -729,6 +748,12 @@ document.addEventListener('DOMContentLoaded', function () {
       new MutationObserver(function () { if (!pm.hidden) { renderModal(); } })
         .observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
     }
+  }
+
+  /* מפה במובייל: מכוסה עד הקשה, כדי שהחלקה עליה תגלול את הדף */
+  var mapBtn = document.getElementById('mapActivate');
+  if (mapBtn) {
+    mapBtn.addEventListener('click', function () { mapBtn.parentNode.classList.add('is-active'); });
   }
 
   /* ---------------------------------------------------------------
