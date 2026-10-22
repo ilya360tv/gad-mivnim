@@ -659,7 +659,7 @@ document.addEventListener('DOMContentLoaded', function () {
       pmThumbs.innerHTML = '';
       var imgs = (d.images || []).map(function (it) {
         var o = typeof it === 'string' ? { src: it } : it;
-        return { src: o.src, alt: o.alt || t.name, portrait: !!(o.width && o.height && o.height > o.width) };
+        return { src: o.src, alt: o.alt || t.name, portrait: !!(o.width && o.height && o.height > o.width * 1.15), known: !!(o.width && o.height) };
       });
       imgs.forEach(function (o, i) {
         var b = document.createElement('button');
@@ -668,7 +668,11 @@ document.addEventListener('DOMContentLoaded', function () {
         b.setAttribute('aria-label', 'הגדלת תמונה: ' + o.alt);
         var im = document.createElement('img');
         im.src = o.src; im.alt = o.alt; im.loading = 'lazy'; im.decoding = 'async';
-        if (o.portrait) { im.className = 'is-portrait'; }                 // תמונה לאורך: contain באותה מסגרת (כל התמונה נראית)
+        // תמונה לאורך: אותה מסגרת, רקע מטושטש של אותה תמונה + התמונה החדה במלואה (contain) מעליו
+        if (o.portrait) { pmBlur(b, o.src); }
+        else if (!o.known) {
+          im.addEventListener('load', function () { if (im.naturalHeight > im.naturalWidth * 1.15) { pmBlur(b, o.src); } });
+        }
         b.appendChild(im);
         b.addEventListener('click', function () { lbOpen(imgs, i, b); });
         pmThumbs.appendChild(b);
@@ -683,6 +687,16 @@ document.addEventListener('DOMContentLoaded', function () {
         pmThumbs.appendChild(ph);
       }
       pmThumbs.hidden = false;
+    }
+
+    function pmBlur(btn, src) {
+      if (btn.classList.contains('is-portrait')) { return; }
+      var bg = document.createElement('span');
+      bg.className = 'pm-thumb__blur';
+      bg.setAttribute('aria-hidden', 'true');
+      bg.style.setProperty('--pm-bg', 'url("' + new URL(src, document.baseURI).href.replace(/"/g, '%22') + '")');   // מוחלט: משתנה CSS נפתר יחסית לקובץ ה-CSS
+      btn.insertBefore(bg, btn.firstChild);
+      btn.classList.add('is-portrait');
     }
 
     function pmSetPaused(on) {

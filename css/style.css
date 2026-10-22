@@ -4760,6 +4760,17 @@ html.modal-open body { overflow: hidden; }
 }
 
 /* ----- תבנית חלון אחידה (ייחוס: Sweet Home): כל המסגרות באותו גודל; תמונה לאורך = contain באותה מסגרת ----- */
-.pm-thumb img.is-portrait { object-fit: contain; }
+.pm-thumb { position: relative; }
+.pm-thumb__blur { position: absolute; inset: 6px; overflow: hidden; border-radius: 2px; pointer-events: none; }
+.pm-thumb__blur::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--pm-bg) center / cover no-repeat;
+  filter: blur(16px) brightness(.75);
+  transform: scale(1.15);
+}
+.pm-thumb.is-portrait img { position: relative; z-index: 1; object-fit: contain; filter: drop-shadow(0 2px 8px rgba(0, 0, 0, .35)); }
+.pm-thumb.is-portrait:hover img, .pm-thumb.is-portrait:focus-visible img { filter: drop-shadow(0 2px 8px rgba(0, 0, 0, .35)) brightness(1.05); }
 .proj-modal__headtext { min-height: 1.625rem; }
 .proj-modal__soon { width: 100%; text-align: center; font-size: 1.05rem; font-weight: 700; line-height: 1.5; margin: 0 0 14px; }
