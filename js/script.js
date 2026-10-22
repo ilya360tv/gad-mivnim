@@ -519,15 +519,7 @@ document.addEventListener('DOMContentLoaded', function () {
             '</div>' +
           '</div>' +
         '</div>' +
-        '<div class="pm-flow" hidden></div>' +
-        '<div class="proj-modal__body">' +
-          '<div class="proj-modal__details">' +
-            '<p class="proj-modal__title" hidden></p>' +
-            '<ul class="proj-modal__items" hidden></ul>' +
-            '<p class="proj-modal__soon" hidden></p>' +
-          '</div>' +
-          '<div class="proj-modal__thumbs" hidden></div>' +
-        '</div>' +
+        '<div class="pm-flow"></div>' +
       '</div>';
     document.body.appendChild(pm);
 
@@ -537,10 +529,6 @@ document.addEventListener('DOMContentLoaded', function () {
     var pmName  = pm.querySelector('.proj-modal__name');
     var pmSub   = pm.querySelector('.proj-modal__sub');
     var pmCity  = pm.querySelector('.proj-modal__city');
-    var pmTitle = pm.querySelector('.proj-modal__title');
-    var pmItems = pm.querySelector('.proj-modal__items');
-    var pmSoon  = pm.querySelector('.proj-modal__soon');
-    var pmThumbs = pm.querySelector('.proj-modal__thumbs');
     var pmProg  = pm.querySelector('.proj-modal__prog');
     var pmLogoBox = pm.querySelector('.proj-modal__logo');
     var pmLogoText = pm.querySelector('.proj-modal__logotext');
@@ -645,122 +633,18 @@ document.addEventListener('DOMContentLoaded', function () {
         pmProg.querySelector('.proj-modal__bar i').style.width = d.progress + '%';
       }
 
-      if (t.title) {
-        pmTitle.textContent = t.title; pmTitle.hidden = false;
-        pmItems.innerHTML = '';
-        t.items.forEach(function (it) {
-          var li = document.createElement('li'); li.textContent = it; pmItems.appendChild(li);
-        });
-        pmItems.hidden = !t.items.length;
-        pmSoon.hidden = true;
-      } else {
-        pmTitle.hidden = true; pmItems.hidden = true;
-        pmSoon.textContent = GT('pm_soon', 'תיאור הפרויקט יתווסף בקרוב');
-        pmSoon.hidden = false;
-      }
-
-      // תמונות: גלריה — תמונה ראשית + פס ממוזערות (אותו קוד ואותן מידות לכל הלקוחות)
-      pmThumbs.innerHTML = '';
+      // כותרת (תגית), תיאור (ticker) ותמונות (רצועה) — תבנית אחת לכל הלקוחות
       var imgs = (d.images || []).map(function (it) {
         var o = typeof it === 'string' ? { src: it } : it;
         return { src: o.src, alt: o.alt || t.name, portrait: !!(o.width && o.height && o.height > o.width * 1.15), known: !!(o.width && o.height) };
       });
-      var flowOn = d.layout === 'ticker';       // וריאנט ניסיוני (data-driven): תיאור ותמונות כפסים נעים
-      if (flowOn) {
-        pmThumbs.hidden = true;
-      } else if (imgs.length) {
-        pmThumbs.appendChild(pmGallery(imgs));
-      } else {                                  // בלי תמונות: מסגרת מציין-מקום, באותו גודל כמו המסגרת הראשית
-        var ph = document.createElement('div');
-        ph.className = 'pm-main pm-main--empty';
-        ph.innerHTML = '<div class="pm-main__empty">' +
-          '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.2l1.1-1.6A1.5 1.5 0 0 1 10.05 4.7h3.9a1.5 1.5 0 0 1 1.25.7L16.3 7h2.2A1.5 1.5 0 0 1 20 8.5v9A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5v-9z"/><circle cx="12" cy="12.6" r="3.2"/></svg>' +
-          '<span></span></div>';
-        ph.querySelector('span').textContent = GT('pm_photos_soon', 'תמונות הפרויקט יתווספו בקרוב');
-        pmThumbs.appendChild(ph);
-      }
-      if (!flowOn) { pmThumbs.hidden = false; }
-
-      pm.classList.toggle('is-ticker', flowOn);
-      pmFlow.hidden = !flowOn;
       pmFlow.innerHTML = '';
       pmStrips = [];
-      if (flowOn) { pmBuildFlow(t, imgs); }
+      pmBuildFlow(t, imgs);
       if (!pm.hidden) { pmMeasure(); }
     }
 
-    // גלריית החלון: מסגרת ראשית קבועה + פס ממוזערות. לחיצה על ממוזערת מחליפה את הראשית; לחיצה על הראשית פותחת לייטבוקס.
-    function pmGallery(imgs) {
-      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      var cur = 0, token = 0;
-      var wrap = document.createElement('div');
-      wrap.className = 'pm-gallery';
-
-      var main = document.createElement('button');
-      main.type = 'button';
-      main.className = 'pm-main';
-      main.setAttribute('aria-label', 'הגדלת תמונה');
-      var blur = document.createElement('span');
-      blur.className = 'pm-main__blur';
-      blur.setAttribute('aria-hidden', 'true');
-      var big = document.createElement('img');
-      big.decoding = 'async';
-      main.appendChild(blur);
-      main.appendChild(big);
-      main.addEventListener('click', function () { lbOpen(imgs, cur, main); });
-      wrap.appendChild(main);
-
-      function absUrl(src) { return new URL(src, document.baseURI).href.replace(/"/g, '%22'); }   // משתנה CSS נפתר יחסית לקובץ ה-CSS — לכן כתובת מוחלטת
-      function setPortrait(on) { main.classList.toggle('is-portrait', on); }
-      function fade(v) { big.style.opacity = v; blur.style.opacity = v; }
-
-      var thumbs = [];
-      function show(i, instant) {
-        cur = i;
-        var my = ++token, o = imgs[i];
-        thumbs.forEach(function (tb, k) {
-          tb.classList.toggle('is-active', k === i);
-          if (k === i) { tb.setAttribute('aria-current', 'true'); } else { tb.removeAttribute('aria-current'); }
-        });
-        function apply() {
-          if (my !== token) { return; }
-          setPortrait(o.portrait);
-          blur.style.setProperty('--pm-bg', 'url("' + absUrl(o.src) + '")');
-          big.onload = function () {
-            if (my !== token) { return; }
-            if (!o.known) { setPortrait(big.naturalHeight > big.naturalWidth * 1.15); }   // בלי מידות בנתונים: זיהוי לפי התמונה עצמה
-            fade(1);
-          };
-          big.onerror = function () { if (my === token) { fade(1); } };
-          big.alt = o.alt;
-          big.src = o.src;
-          if (big.complete && big.naturalWidth) { big.onload(); }
-        }
-        if (instant || reduce) { apply(); } else { fade(0); setTimeout(apply, 130); }
-      }
-
-      if (imgs.length > 1) {
-        var strip = document.createElement('div');
-        strip.className = 'pm-strip';
-        imgs.forEach(function (o, i) {
-          var tb = document.createElement('button');
-          tb.type = 'button';
-          tb.className = 'pm-tn';
-          tb.setAttribute('aria-label', 'תמונה ' + (i + 1) + ' מתוך ' + imgs.length);
-          var im = document.createElement('img');
-          im.src = o.src; im.alt = ''; im.loading = 'lazy'; im.decoding = 'async';
-          tb.appendChild(im);
-          tb.addEventListener('click', function () { if (i !== cur) { show(i); } });
-          thumbs.push(tb);
-          strip.appendChild(tb);
-        });
-        wrap.appendChild(strip);
-      }
-      show(0, true);
-      return wrap;
-    }
-
-    // ----- וריאנט "ticker": תיאור העבודה ורצועת תמונות כפסים נעים (initMarquee המשותף) -----
+    // ----- תבנית החלון: תיאור העבודה ורצועת תמונות כפסים נעים (initMarquee המשותף) -----
     function pmStrip(cls) {
       var box = document.createElement('div');
       box.className = 'pm-sbox ' + cls;
@@ -836,8 +720,8 @@ document.addEventListener('DOMContentLoaded', function () {
       // 2) התמונות
       if (!imgs.length) {
         var ph = document.createElement('div');
-        ph.className = 'pm-main pm-main--empty';
-        ph.innerHTML = '<div class="pm-main__empty"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.2l1.1-1.6A1.5 1.5 0 0 1 10.05 4.7h3.9a1.5 1.5 0 0 1 1.25.7L16.3 7h2.2A1.5 1.5 0 0 1 20 8.5v9A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5v-9z"/><circle cx="12" cy="12.6" r="3.2"/></svg><span></span></div>';
+        ph.className = 'pm-ptile pm-ptile--empty';
+        ph.innerHTML = '<div class="pm-ptile__empty"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.2l1.1-1.6A1.5 1.5 0 0 1 10.05 4.7h3.9a1.5 1.5 0 0 1 1.25.7L16.3 7h2.2A1.5 1.5 0 0 1 20 8.5v9A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5v-9z"/><circle cx="12" cy="12.6" r="3.2"/></svg><span></span></div>';
         ph.querySelector('span').textContent = GT('pm_photos_soon', 'תמונות הפרויקט יתווספו בקרוב');
         pmFlow.appendChild(ph);
         return;
@@ -851,7 +735,7 @@ document.addEventListener('DOMContentLoaded', function () {
           b.className = 'pm-ptile';
           b.setAttribute('aria-label', 'הגדלת תמונה ' + (i + 1) + ' מתוך ' + imgs.length);
           var bl = document.createElement('span');
-          bl.className = 'pm-main__blur';
+          bl.className = 'pm-ptile__blur';
           bl.setAttribute('aria-hidden', 'true');
           bl.style.setProperty('--pm-bg', 'url("' + new URL(o.src, document.baseURI).href.replace(/"/g, '%22') + '")');
           var im = document.createElement('img');

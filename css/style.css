@@ -4476,7 +4476,7 @@ html.modal-open body { overflow: hidden; }
 .proj-modal__x:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 
 /* ראש: לוגו 90x90 וכותרת ממורכזים */
-.proj-modal__head { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 18px; text-align: center; }
+.proj-modal__head { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 14px; text-align: center; }
 .proj-modal__logo { flex: none; width: 90px; height: 90px; display: flex; align-items: center; justify-content: center; background: #f4f5f6; border-radius: 16px; }
 .proj-modal__logo img { width: 80%; height: 80%; object-fit: contain; }
 .proj-modal__headtext { display: flex; flex-direction: column; align-items: center; min-width: 0; }
@@ -4490,22 +4490,14 @@ html.modal-open body { overflow: hidden; }
 .proj-modal__city svg { color: var(--green); }
 
 /* גוף: עמודות קבועות — פרטים 340px מימין (ראשונה ב-RTL), תמונות 280px משמאל */
-.proj-modal__body { display: grid; grid-template-columns: 340px 280px; justify-content: center; gap: 24px; align-items: start; }   /* תבנית נעולה: פרטים 340 | תמונות 280, לכל לקוח */
-.proj-modal__details { text-align: start; }
-.proj-modal__title { margin: 0 0 12px; font-size: 1.05rem; font-weight: 700; line-height: 1.5; color: #fff; }
-.proj-modal__items { list-style: none; margin: 0 0 6px; padding: 0; }
-.proj-modal__items li { position: relative; padding-inline-start: 18px; margin-bottom: 7px; font-size: .95rem; line-height: 1.6; color: #c9d1d8; }
-.proj-modal__items li::before { content: ""; position: absolute; inset-inline-start: 0; top: .66em; width: 5px; height: 5px; border-radius: 50%; background: var(--logo-g); }
 .proj-modal__soon { margin: 0; font-size: 1rem; font-style: italic; color: #8a949e; }
-.proj-modal__title[hidden], .proj-modal__items[hidden], .proj-modal__soon[hidden],
-.proj-modal__thumbs[hidden], .proj-modal__sub[hidden], .proj-modal__city[hidden] { display: none; }
+.proj-modal__soon[hidden], .proj-modal__sub[hidden], .proj-modal__city[hidden] { display: none; }
 
 @media (max-width: 767.98px) {            /* מובייל: עמודה אחת, גיליון תחתון */
   .proj-modal { align-items: flex-end; }
   .proj-modal__box { width: calc(100vw - 24px); margin-bottom: 12px; padding: 26px 20px 22px; }
   .proj-modal__logo { width: 84px; height: 84px; }
   .proj-modal__head { padding-top: 22px; }
-  .proj-modal__body { grid-template-columns: 1fr; justify-content: stretch; }
 }
 @media (prefers-reduced-motion: reduce) {
   .proj-modal__backdrop,
@@ -4523,12 +4515,9 @@ html.modal-open body { overflow: hidden; }
 #projects .marquee button.project-item { cursor: inherit; }
 .marquee img { -webkit-user-drag: none; user-drag: none; pointer-events: none; }
 
-/* ----- חלון פרויקט: כותרת העבודה ממורכזת בתוך עמודת הפרטים, מעל הרשימה שלה ----- */
-.proj-modal__title { text-align: center; width: 100%; margin: 0 0 14px; }
-.proj-modal__items { width: fit-content; max-width: 100%; margin-inline: auto; text-align: start; }
 
 /* מציין-מקום לתמונות (לקוח בלי תמונות): אותה מסגרת ואותו רוחב כמו תמונה אמיתית, גובה 180px */
-.pm-main__empty {
+.pm-ptile__empty {
   box-sizing: border-box;
   width: 100%;
   height: 100%;
@@ -4545,7 +4534,7 @@ html.modal-open body { overflow: hidden; }
   font-size: .85rem;
   color: #8a949e;
 }
-.pm-main__empty svg { flex: none; }
+.pm-ptile__empty svg { flex: none; }
 
 /* ----- #about: טקסט חדש ארוך — תמונה דביקה בראש העמודה, טיפוגרפיה קריאה ----- */
 .about-grid { align-items: start; }
@@ -4741,30 +4730,12 @@ html.modal-open body { overflow: hidden; }
 .proj-modal__soon { width: 100%; text-align: center; font-size: 1.05rem; font-weight: 700; line-height: 1.5; margin: 0 0 14px; }
 
 /* ==========================================================================
-   גלריית החלון (אחידה לכל הלקוחות): מסגרת ראשית קבועה + פס ממוזערות. מידות בפיקסלים.
+   חלון הפרויקט — תבנית אחת לכל הלקוחות: אריח לוגו → שם → תגית כותרת → ticker של הפריטים → רצועת תמונות.
+   אותו מנוע (initMarquee) ואותו כיוון/מהירות/גרירה כמו פס הלוגואים. מידות בפיקסלים.
    ========================================================================== */
-.proj-modal__thumbs { display: flex; flex-direction: column; gap: 10px; }
-.pm-gallery { display: flex; flex-direction: column; gap: 10px; }
-.pm-main {
-  position: relative;
-  box-sizing: border-box;
-  display: block;
-  width: 280px;
-  height: 210px;
-  padding: 6px;
-  background: #f4f3ef;
-  border: 1px solid rgba(255, 255, 255, .08);
-  border-radius: 4px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, .25);
-  cursor: zoom-in;
-  overflow: hidden;
-  line-height: 0;
-}
-.pm-main--empty { cursor: default; }
-.pm-main:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
-.pm-main img, .pm-ptile img { position: relative; z-index: 1; display: block; width: 100%; height: 100%; object-fit: cover; transition: opacity .25s ease; }
-.pm-main__blur { position: absolute; inset: 6px; overflow: hidden; border-radius: 2px; pointer-events: none; display: none; transition: opacity .25s ease; }
-.pm-main__blur::before {
+.pm-ptile img { position: relative; z-index: 1; display: block; width: 100%; height: 100%; object-fit: cover; }
+.pm-ptile__blur { position: absolute; inset: 6px; overflow: hidden; border-radius: 2px; pointer-events: none; display: none; }
+.pm-ptile__blur::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -4772,43 +4743,14 @@ html.modal-open body { overflow: hidden; }
   filter: blur(16px) brightness(.75);
   transform: scale(1.15);
 }
-.pm-main.is-portrait .pm-main__blur, .pm-ptile.is-portrait .pm-main__blur { display: block; }
-.pm-main.is-portrait img, .pm-ptile.is-portrait img { object-fit: contain; filter: drop-shadow(0 2px 8px rgba(0, 0, 0, .35)); }
-.pm-strip { display: flex; flex-wrap: wrap; gap: 8px; width: 280px; }
-.pm-tn {
-  box-sizing: border-box;
-  flex: none;
-  width: 62px;
-  height: 46px;
-  padding: 0;
-  border: 2px solid transparent;
-  border-radius: 3px;
-  background: #0e1216;
-  opacity: .65;
-  cursor: pointer;
-  overflow: hidden;
-  line-height: 0;
-  transition: opacity .2s ease, border-color .2s ease;
-}
-.pm-tn img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.pm-tn:hover, .pm-tn:focus-visible { opacity: 1; }
-.pm-tn:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
-.pm-tn.is-active { opacity: 1; border-color: var(--logo-g); }
-@media (max-width: 767.98px) {
-  .pm-main { width: 100%; height: 220px; }
-  .pm-strip { width: 100%; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .pm-main img, .pm-ptile img, .pm-main__blur, .pm-tn { transition: none; }
-}
+.pm-ptile.is-portrait .pm-ptile__blur { display: block; }
+.pm-ptile.is-portrait img { object-fit: contain; filter: drop-shadow(0 2px 8px rgba(0, 0, 0, .35)); }
 
 /* ==========================================================================
-   וריאנט ניסיוני (layout: "ticker" ב-projects-data.js): תיאור כפס רץ + רצועת תמונות רצה.
+   רצועות התיאור והתמונות: ticker + פס תמונות (ללא גלריה/עמודות ישנות).
    אותו מנוע (initMarquee) ואותו כיוון/מהירות/גרירה כמו פס הלוגואים.
    ========================================================================== */
 .pm-flow { display: flex; flex-direction: column; align-items: center; gap: 18px; margin-top: 4px; }
-.pm-flow[hidden] { display: none; }
-.proj-modal.is-ticker .proj-modal__body { display: none; }
 .pm-sbox {
   align-self: stretch;
   direction: ltr;
@@ -4849,15 +4791,18 @@ html.modal-open body { overflow: hidden; }
 }
 .pm-ptile:focus-visible { outline: 3px solid #fff; outline-offset: -3px; }
 .pm-ptile img { pointer-events: none; }
-.pm-flow .pm-main--empty { width: 200px; height: 140px; }
+.pm-flow .pm-ptile--empty { width: 200px; height: 140px; margin: 0; cursor: default; }
 .pm-flow .proj-modal__soon { margin: 0; }
 @media (max-width: 767.98px) {
   .pm-ticker { height: 44px; }
   .pm-ptile { width: 150px; height: 105px; }
-  .pm-flow .pm-main--empty { width: 150px; height: 105px; }
+  .pm-flow .pm-ptile--empty { width: 150px; height: 105px; }
 }
 
 /* כותרת העבודה בווריאנט ה-ticker: תגית badge-chip (הסגנון מה-class עצמו) ממורכזת מתחת לשם */
-.proj-modal.is-ticker .proj-modal__head { margin-bottom: 14px; }
 .pm-pill { align-self: center; max-width: 100%; text-align: center; white-space: nowrap; }
 @media (max-width: 767.98px) { .pm-pill { white-space: normal; } }
+
+/* תגית כותרת העבודה: בלי אייקון (V של ה-badge-chip) ובצבע תכלת — רק בחלון הפרויקט */
+.proj-modal .pm-pill::before { content: none; display: none; }
+.proj-modal .pm-pill { border-color: #38bdf8; color: #38bdf8; background: rgba(56, 189, 248, .08); }
