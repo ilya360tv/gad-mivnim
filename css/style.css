@@ -4126,10 +4126,10 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
   display: flex;
   flex-direction: column;
   flex: 0 0 auto;
-  width: 145px;
-  height: 145px;
+  width: var(--strip-tile);
+  height: var(--strip-tile);
   aspect-ratio: auto;
-  margin-inline-end: 16px;
+  margin-inline-end: var(--strip-gap);
   direction: rtl;
   background: var(--surface);
   border: 1px solid var(--line);
@@ -4160,7 +4160,6 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 .marquee a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 
 @media (max-width: 767.98px) {
-  .marquee .project-item { width: 115px; height: 115px; }
 }
 
 /* ----- #projects: לוגואים של לקוחות — כולם באריח אחיד: כרטיס בהיר (#f4f5f6) מעוגל, לוגו ב-80% ----- */
@@ -4168,7 +4167,7 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 .marquee .project-item.client-logo {
   background: #f4f5f6;
   border: 0;
-  border-radius: 16px;
+  border-radius: var(--strip-radius);
   box-shadow: none;
 }
 .marquee .client-logo .project-media {
@@ -4176,7 +4175,7 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border-radius: 16px;
+  border-radius: var(--strip-radius);
 }
 #projects .marquee .client-logo .project-media img {
   width: 80%;
@@ -4211,7 +4210,7 @@ a.project-item:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
   align-items: center;
   justify-content: center;
   background: #f4f5f6;
-  border-radius: 16px;
+  border-radius: var(--strip-radius);
 }
 .project-logo img { width: 80%; height: 80%; object-fit: contain; }
 .project-head .section-title { margin: 0; }
@@ -4600,7 +4599,7 @@ html.modal-open body { overflow: hidden; }
 
 
 /* ==========================================================================
-   #in-progress: פס נע של כרטיסים (גרירה, גלגלת, מגע) — כרטיס 300px קבוע (240px במובייל)
+   #in-progress: פס נע של כרטיסים (גרירה, גלגלת, מגע) — אריח בגודל זהה לפס הלוגואים (משתני --strip-*)
    ========================================================================== */
 .ip-marquee { display: none; }
 .has-js .in-progress .ip-marquee.is-on {
@@ -4621,15 +4620,28 @@ html.modal-open body { overflow: hidden; }
 .ip-track { display: flex; width: max-content; will-change: transform; }
 .ip-marquee .progress-card {
   direction: rtl;
+  display: flex;
+  flex-direction: column;
   flex: 0 0 auto;
-  width: 300px;
-  margin-inline-end: 20px;
+  width: var(--strip-tile);
+  height: var(--strip-tile);
+  margin-inline-end: var(--strip-gap);
+  border-radius: var(--strip-radius);
 }
-.ip-marquee .progress-media { aspect-ratio: auto; height: 170px; }
+.ip-marquee .progress-media { aspect-ratio: auto; height: 52%; flex: none; }
 .ip-marquee .progress-media img { pointer-events: none; -webkit-user-drag: none; }
-.ip-marquee .progress-body { padding: 16px; }
-.ip-marquee .progress-name { font-size: 1.1rem; }
-.ip-marquee .progress-meta { margin-top: 14px; }
-@media (max-width: 767.98px) { .ip-marquee .progress-card { width: 240px; margin-inline-end: 16px; } }
+.ip-marquee .status-badge { top: 5px; inset-inline-start: 5px; padding: 2px 7px; gap: 4px; font-size: .7rem; line-height: 1.2; box-shadow: none; }
+.ip-marquee .status-badge::before { width: 5px; height: 5px; box-shadow: none; }
+.ip-marquee .progress-body { flex: 1; min-height: 0; padding: 6px 10px 6px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
+.ip-marquee .progress-name { margin: 0; font-size: .9rem; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ip-marquee .progress-loc { margin: 0; gap: 4px; font-size: .75rem; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ip-marquee .progress-loc svg { width: 12px; height: 12px; }
+.ip-marquee .progress-meta { margin: 0; font-size: .7rem; line-height: 1.2; }
+.ip-marquee .progress-meta strong { font-size: .75rem; }
+.ip-marquee .progress-bar { height: 4px; margin: 3px 0 0; border: 0; }
 /* פס ההתקדמות מתמלא כשהסקשן נכנס למסך (גם בעותק המשוכפל) */
 .has-js .in-progress.ip-in .ip-marquee .progress-fill { width: var(--p); }
+
+/* ----- מידות אריח משותפות לפס הלוגואים (#projects) ולפס הכרטיסים (#in-progress) ----- */
+:root { --strip-tile: 145px; --strip-gap: 16px; --strip-radius: 16px; }
+@media (max-width: 767.98px) { :root { --strip-tile: 115px; } }

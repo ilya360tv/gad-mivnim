@@ -716,7 +716,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var ipBuild = function () {
       var narrow = window.innerWidth < 768;
-      var step = (narrow ? 240 : 300) + (narrow ? 16 : 20);
+      var step = (narrow ? 115 : 145) + 16;   // אותו אריח כמו פס הלוגואים
       var vw = ipBox.clientWidth || window.innerWidth;
       var reps = Math.max(1, Math.ceil((vw + step) / (step * ipSrc.length)));
       function set(hidden) {
