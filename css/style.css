@@ -4898,3 +4898,27 @@ body .site-header .main-nav.is-open ul li a { color: var(--lb); }
   border-color: var(--lb, #38bdf8) !important;
   background: var(--lb-bg, rgba(56, 189, 248, .08)) !important;
 }
+
+/* ==========================================================================
+   #gallery: אריחים בגודל זהה בדיוק לאריחי "הפרויקטים שלנו"
+   (--strip-tile: 145px דסקטופ / 115px מובייל, רווח --strip-gap, פינות --strip-radius)
+   ========================================================================== */
+.gallery .gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, var(--strip-tile));
+  grid-auto-rows: var(--strip-tile);
+  gap: var(--strip-gap);
+  justify-content: center;
+  max-width: 100%;
+}
+.gallery .gallery-item {
+  width: var(--strip-tile);
+  height: var(--strip-tile);
+  aspect-ratio: auto;
+  border-radius: var(--strip-radius);
+  overflow: hidden;
+}
+.gallery .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
+@media (max-width: 767.98px) {
+  .gallery .gallery-grid { gap: 10px; }
+}
