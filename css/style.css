@@ -4890,3 +4890,11 @@ body .site-header .main-nav.is-open ul li a { color: var(--lb); }
   body .site-header .main-nav ul li a:focus-visible { color: var(--lb); background: var(--lb-bg-strong); }
   body .site-header .main-nav ul li a.is-current { color: var(--lb); background: var(--lb-bg); border: 1px solid var(--lb); box-shadow: none; }
 }
+
+/* תווית "מסך פרסום" (#info) — תכלת כמו הבאדג'ים */
+.media-tile .media-label,
+.media-label {
+  color: var(--lb, #38bdf8) !important;
+  border-color: var(--lb, #38bdf8) !important;
+  background: var(--lb-bg, rgba(56, 189, 248, .08)) !important;
+}
