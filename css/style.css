@@ -4639,6 +4639,10 @@ html.modal-open body { overflow: hidden; }
 .ip-marquee .progress-meta { margin: 0; font-size: .7rem; line-height: 1.2; }
 .ip-marquee .progress-meta strong { font-size: .75rem; }
 .ip-marquee .progress-bar { height: 4px; margin: 3px 0 0; border: 0; }
+.ip-marquee .progress-name { text-align: center; }
+.ip-marquee .progress-loc { display: flex; justify-content: center; align-items: center; gap: 4px; }
+.ip-marquee .progress-meta { display: flex; justify-content: center; align-items: baseline; gap: 6px; }
+.ip-marquee .progress-bar { width: 100%; align-self: stretch; }
 /* פס ההתקדמות מתמלא כשהסקשן נכנס למסך (גם בעותק המשוכפל) */
 .has-js .in-progress.ip-in .ip-marquee .progress-fill { width: var(--p); }
 
