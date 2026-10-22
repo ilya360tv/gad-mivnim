@@ -4831,3 +4831,62 @@ html.modal-open body { overflow: hidden; }
     box-shadow: 0 0 0 2px #38bdf8;
   }
 }
+
+/* ==========================================================================
+   ריקולור לתכלת (#38bdf8) — רק: באדג'ים, לשוניות מגזר, דרושים, צור קשר, ניווט בהדר.
+   בלוק דריסה אחרון; קוד הצבע זהה לתגית כותרת העבודה בחלון הפרויקט.
+   ========================================================================== */
+:root {
+  --lb: #38bdf8;
+  --lb-bg: rgba(56, 189, 248, .08);
+  --lb-glow: rgba(56, 189, 248, .35);
+  --lb-bg-strong: rgba(56, 189, 248, .18);
+  --lb-hover: #7dd3fc;
+}
+
+/* 1. כל ה-badge-chip (האייקון ✓ נשאר; בתגית החלון אין אייקון — כלל נפרד) */
+body .badge-chip { border-color: var(--lb); color: var(--lb); background: var(--lb-bg); }
+body .badge-chip::before { background-color: var(--lb); }
+
+/* 2. לשוניות מגזר ב-#projects */
+body .sector-tab { color: var(--lb); box-shadow: 0 0 0 2px var(--lb), 0 0 16px var(--lb-glow); }
+body .sector-tab:hover { box-shadow: 0 0 0 2px var(--lb), 0 0 22px var(--lb-glow); }
+body .sector-tab.is-active { background: var(--lb); color: #0a0c0e; box-shadow: 0 0 0 2px var(--lb), 0 0 18px var(--lb-glow); }
+
+/* 3. דרושים: כרטיסים, עיגול אייקון, כפתורי "שלחו קורות חיים" */
+body .role-card { box-shadow: 0 0 0 1px rgba(56, 189, 248, .35), 0 0 22px rgba(56, 189, 248, .12), 0 14px 34px rgba(0, 0, 0, .45); }
+body .role-card:hover { box-shadow: 0 0 0 1px rgba(56, 189, 248, .8), 0 0 26px var(--lb-glow), 0 18px 40px rgba(0, 0, 0, .5); }
+body .role-icon { color: var(--lb); box-shadow: 0 0 0 2px rgba(56, 189, 248, .55), 0 0 16px var(--lb-glow); }
+body .role-btn { border-color: var(--lb); color: var(--lb); }
+body .role-btn:hover { background: var(--lb); color: #0a0c0e; box-shadow: 0 0 18px var(--lb-glow); }
+
+/* 4+5. טפסים: פס עליון, טבעת פוקוס, כפתורי שליחה ממולאים, באנר הטלפון */
+body .careers-form-card { border-top-color: var(--lb); }
+body .form-field input:focus,
+body .form-field select:focus,
+body .form-field textarea:focus { border-color: var(--lb); }
+body .contact-form input:focus-visible,
+body .contact-form select:focus-visible,
+body .contact-form textarea:focus-visible { outline: 2px solid var(--lb); outline-offset: 3px; }
+body .btn-primary.form-submit { background: var(--lb); color: #0a0c0e; box-shadow: 0 8px 22px var(--lb-glow); }
+body .btn-primary.form-submit:hover { background: var(--lb-hover); color: #0a0c0e; box-shadow: 0 10px 26px var(--lb-glow); }
+body .phone-big { background: var(--lb); background-image: none; color: #0a0c0e; box-shadow: 0 10px 28px var(--lb-glow); }
+body .phone-big:hover { background: var(--lb-hover); background-image: none; }
+body .phone-big .phone-big-icon,
+body .phone-big .phone-big-num { color: #0a0c0e; }
+
+/* 6. ניווט בהדר — דסקטופ: גלולות; מגירת המובייל: קישורים */
+@keyframes navRingIn { from { box-shadow: 0 0 0 2px rgba(56, 189, 248, 0), 0 0 0 rgba(56, 189, 248, 0); } }
+body .site-header .main-nav ul li a,
+body .site-header .main-nav.is-open ul li a { color: var(--lb); }
+@media (min-width: 1024px) {
+  body .site-header .main-nav ul li a { background: var(--lb-bg); box-shadow: 0 0 0 2px rgba(56, 189, 248, .55), 0 0 16px var(--lb-glow); }
+  body .site-header .main-nav ul li a:hover,
+  body .site-header .main-nav ul li a:focus-visible { color: #ffffff; background: var(--lb-bg-strong); box-shadow: 0 0 0 2px var(--lb), 0 0 22px var(--lb-glow); }
+  body .site-header .main-nav ul li a.is-current { color: #ffffff; background: var(--lb-bg-strong); box-shadow: 0 0 0 2px var(--lb), 0 0 18px var(--lb-glow); }
+}
+@media (max-width: 1023.98px) {
+  body .site-header .main-nav ul li a:hover,
+  body .site-header .main-nav ul li a:focus-visible { color: var(--lb); background: var(--lb-bg-strong); }
+  body .site-header .main-nav ul li a.is-current { color: var(--lb); background: var(--lb-bg); border: 1px solid var(--lb); box-shadow: none; }
+}
