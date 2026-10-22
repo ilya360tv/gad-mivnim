@@ -614,24 +614,25 @@ document.addEventListener('DOMContentLoaded', function () {
       if (d.inProgress) { t.name = GT('ip_name', t.name); }
 
       pmLogoBox.classList.toggle('is-photo', !!d.inProgress);      // כרטיס בביצוע: התמונה במקום הלוגו
+      var cityTxt = '';                                                // העיר נשארת בשורת השם: "שם, עיר" (כמו Sweet Home)
+      if (d.city) {
+        var ck = CITY_KEY[d.city];
+        cityTxt = d.inProgress ? GT('ip_loc', d.city) : (ck ? GT(ck, d.city) : d.city);
+      }
+      var fullName = t.name + (cityTxt ? ', ' + cityTxt : '');
       var textLogo = !d.inProgress && ('logo' in d) && !d.logo;       // לקוח בלי לוגו: השם כטקסט בתוך האריח
       pm.classList.toggle('is-textlogo', textLogo);
-      pmLogoText.textContent = textLogo ? t.name : '';
+      pmLogoText.textContent = textLogo ? fullName : '';
       if (textLogo) { pmLogo.removeAttribute('src'); }
       else { pmLogo.src = d.inProgress ? d.photo : 'images/clients/' + (d.logo || pmSlug) + '.png'; }
       pmLogo.alt = textLogo ? '' : t.name;
-      pmName.textContent = t.name;
+      pmName.textContent = fullName;
       pmX.setAttribute('aria-label', GT('pm_close', 'סגירה'));
 
       pmSub.hidden = !d.subtitle;
       if (d.subtitle) { pmSub.textContent = d.subtitle; }
 
-      pmCity.hidden = !d.city;
-      if (d.city) {
-        var ck = CITY_KEY[d.city];
-        pmCity.innerHTML = PIN + '<span></span>';
-        pmCity.lastChild.textContent = d.inProgress ? GT('ip_loc', d.city) : (ck ? GT(ck, d.city) : d.city);
-      }
+      pmCity.hidden = true;                                            // תגית העיר בוטלה — העיר בשורת השם
 
       pmProg.hidden = !d.inProgress;
       if (d.inProgress) {
@@ -658,15 +659,16 @@ document.addEventListener('DOMContentLoaded', function () {
       pmThumbs.innerHTML = '';
       var imgs = (d.images || []).map(function (it) {
         var o = typeof it === 'string' ? { src: it } : it;
-        return { src: o.src, alt: o.alt || t.name, portrait: !!(o.width && o.height && o.height > o.width * 1.15) };
+        return { src: o.src, alt: o.alt || t.name, portrait: !!(o.width && o.height && o.height > o.width) };
       });
       imgs.forEach(function (o, i) {
         var b = document.createElement('button');
         b.type = 'button';
-        b.className = 'pm-thumb' + (o.portrait ? ' pm-thumb--tall' : '');   // תמונה לאורך — מסגרת גבוהה, בלי חיתוך
+        b.className = 'pm-thumb';
         b.setAttribute('aria-label', 'הגדלת תמונה: ' + o.alt);
         var im = document.createElement('img');
         im.src = o.src; im.alt = o.alt; im.loading = 'lazy'; im.decoding = 'async';
+        if (o.portrait) { im.className = 'is-portrait'; }                 // תמונה לאורך: contain באותה מסגרת (כל התמונה נראית)
         b.appendChild(im);
         b.addEventListener('click', function () { lbOpen(imgs, i, b); });
         pmThumbs.appendChild(b);
