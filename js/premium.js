@@ -57,7 +57,8 @@
             obs.unobserve(entry.target);
           }
         });
-      }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+      // threshold 0: קבוצות גבוהות (שותפים/גלריה במובייל, עמודה אחת ארוכה) לעולם לא מגיעות ל-15% נראות → נשארו שקופות
+      }, { threshold: 0, rootMargin: '0px 0px -6% 0px' });
 
       revealTargets.forEach(function (el) { io.observe(el); });
     }
