@@ -73,6 +73,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function tick(now) {
       var dt = Math.min(now - (s.last || now), 50);
       s.last = now;
+      if (!box.isConnected) { looping = false; return; }
       if (s.W && !document.hidden) {
         if (!s.dragging && Math.abs(s.vel) > 0.02) {                 // תנופה אחרי שחרור
           s.offset += s.vel * dt;
@@ -518,6 +519,7 @@ document.addEventListener('DOMContentLoaded', function () {
             '</div>' +
           '</div>' +
         '</div>' +
+        '<div class="pm-flow" hidden></div>' +
         '<div class="proj-modal__body">' +
           '<div class="proj-modal__details">' +
             '<p class="proj-modal__title" hidden></p>' +
@@ -542,6 +544,8 @@ document.addEventListener('DOMContentLoaded', function () {
     var pmProg  = pm.querySelector('.proj-modal__prog');
     var pmLogoBox = pm.querySelector('.proj-modal__logo');
     var pmLogoText = pm.querySelector('.proj-modal__logotext');
+    var pmFlow = pm.querySelector('.pm-flow');
+    var pmStrips = [];
     var pmFrom = null, pmSlug = null;
 
     function pmPick(d, lang) {
@@ -661,7 +665,10 @@ document.addEventListener('DOMContentLoaded', function () {
         var o = typeof it === 'string' ? { src: it } : it;
         return { src: o.src, alt: o.alt || t.name, portrait: !!(o.width && o.height && o.height > o.width * 1.15), known: !!(o.width && o.height) };
       });
-      if (imgs.length) {
+      var flowOn = d.layout === 'ticker';       // וריאנט ניסיוני (data-driven): תיאור ותמונות כפסים נעים
+      if (flowOn) {
+        pmThumbs.hidden = true;
+      } else if (imgs.length) {
         pmThumbs.appendChild(pmGallery(imgs));
       } else {                                  // בלי תמונות: מסגרת מציין-מקום, באותו גודל כמו המסגרת הראשית
         var ph = document.createElement('div');
@@ -672,7 +679,14 @@ document.addEventListener('DOMContentLoaded', function () {
         ph.querySelector('span').textContent = GT('pm_photos_soon', 'תמונות הפרויקט יתווספו בקרוב');
         pmThumbs.appendChild(ph);
       }
-      pmThumbs.hidden = false;
+      if (!flowOn) { pmThumbs.hidden = false; }
+
+      pm.classList.toggle('is-ticker', flowOn);
+      pmFlow.hidden = !flowOn;
+      pmFlow.innerHTML = '';
+      pmStrips = [];
+      if (flowOn) { pmBuildFlow(t, imgs); }
+      if (!pm.hidden) { pmMeasure(); }
     }
 
     // גלריית החלון: מסגרת ראשית קבועה + פס ממוזערות. לחיצה על ממוזערת מחליפה את הראשית; לחיצה על הראשית פותחת לייטבוקס.
@@ -746,6 +760,107 @@ document.addEventListener('DOMContentLoaded', function () {
       return wrap;
     }
 
+    // ----- וריאנט "ticker": תיאור העבודה ורצועת תמונות כפסים נעים (initMarquee המשותף) -----
+    function pmStrip(cls) {
+      var box = document.createElement('div');
+      box.className = 'pm-sbox ' + cls;
+      var track = document.createElement('div');
+      track.className = 'pm-strack';
+      box.appendChild(track);
+      return { box: box, track: track };
+    }
+    // ממלא את הרצועה: עותק אחד נמדד, ואז reps עותקים + reps עותקים כפולים (חבויים) — לולאה חלקה
+    function pmFill(st, makeSet) {
+      var track = st.track, box = st.box;
+      track.innerHTML = '';
+      makeSet(false).forEach(function (n) { track.appendChild(n); });
+      var setW = track.getBoundingClientRect().width;
+      var count = track.children.length;
+      if (!setW || !count) { return; }
+      var reps = Math.max(1, Math.ceil(box.clientWidth / setW));
+      track.innerHTML = '';
+      [false, true].forEach(function (hidden) {
+        for (var r = 0; r < reps; r++) { makeSet(hidden).forEach(function (n) { track.appendChild(n); }); }
+      });
+      st.eng.measure(reps * count);
+    }
+    function pmMeasure() { pmStrips.forEach(function (st) { pmFill(st, st.makeSet); }); }
+
+    function pmBuildFlow(t, imgs) {
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      // 1) התיאור
+      if (!t.items.length) {
+        var soon = document.createElement('p');
+        soon.className = 'proj-modal__soon';
+        soon.textContent = GT('pm_soon', 'תיאור הפרויקט יתווסף בקרוב');
+        pmFlow.appendChild(soon);
+      } else {
+        var seq = (t.title ? [t.title] : []).concat(t.items);
+        if (reduce) {                                   // בלי תנועה: רשימה ממורכזת עוטפת שורות
+          var list = document.createElement('p');
+          list.className = 'pm-tk-static';
+          seq.forEach(function (txt, i) {
+            if (i) { var dd = document.createElement('span'); dd.className = 'pm-dot'; dd.setAttribute('aria-hidden', 'true'); list.appendChild(dd); }
+            var sp = document.createElement('span'); sp.textContent = txt; if (t.title && i === 0) { sp.className = 'pm-tk-title'; } list.appendChild(sp);
+          });
+          pmFlow.appendChild(list);
+        } else {
+          var tk = pmStrip('pm-ticker');
+          tk.eng = initMarquee(tk.box, tk.track, {});
+          tk.makeSet = function (hidden) {
+            var out = [];
+            seq.slice().reverse().forEach(function (txt) {          // סדר קריאה ימין→שמאל בתוך העותק (הכותרת בימין)
+              var sp = document.createElement('span');
+              sp.className = 'pm-tk' + (t.title && txt === t.title ? ' pm-tk-title' : '');
+              sp.textContent = txt;
+              var dd = document.createElement('span'); dd.className = 'pm-dot';
+              if (hidden) { sp.setAttribute('aria-hidden', 'true'); }
+              dd.setAttribute('aria-hidden', 'true');
+              out.push(sp, dd);
+            });
+            return out;
+          };
+          tk.box.setAttribute('role', 'group');
+          tk.box.setAttribute('aria-label', (t.title ? t.title + ': ' : '') + t.items.join(', '));
+          pmFlow.appendChild(tk.box);
+          pmStrips.push(tk);
+        }
+      }
+      // 2) התמונות
+      if (!imgs.length) {
+        var ph = document.createElement('div');
+        ph.className = 'pm-main pm-main--empty';
+        ph.innerHTML = '<div class="pm-main__empty"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.2l1.1-1.6A1.5 1.5 0 0 1 10.05 4.7h3.9a1.5 1.5 0 0 1 1.25.7L16.3 7h2.2A1.5 1.5 0 0 1 20 8.5v9A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5v-9z"/><circle cx="12" cy="12.6" r="3.2"/></svg><span></span></div>';
+        ph.querySelector('span').textContent = GT('pm_photos_soon', 'תמונות הפרויקט יתווספו בקרוב');
+        pmFlow.appendChild(ph);
+        return;
+      }
+      var ps = pmStrip('pm-photos');
+      ps.eng = initMarquee(ps.box, ps.track, {});
+      ps.makeSet = function (hidden) {
+        return imgs.map(function (o, i) {
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'pm-ptile';
+          b.setAttribute('aria-label', 'הגדלת תמונה ' + (i + 1) + ' מתוך ' + imgs.length);
+          var bl = document.createElement('span');
+          bl.className = 'pm-main__blur';
+          bl.setAttribute('aria-hidden', 'true');
+          bl.style.setProperty('--pm-bg', 'url("' + new URL(o.src, document.baseURI).href.replace(/"/g, '%22') + '")');
+          var im = document.createElement('img');
+          im.src = o.src; im.alt = hidden ? '' : o.alt; im.decoding = 'async'; im.draggable = false;
+          if (o.portrait) { b.classList.add('is-portrait'); }
+          else if (!o.known) { im.addEventListener('load', function () { if (im.naturalHeight > im.naturalWidth * 1.15) { b.classList.add('is-portrait'); } }); }
+          b.appendChild(bl); b.appendChild(im);
+          if (hidden) { b.setAttribute('aria-hidden', 'true'); b.tabIndex = -1; }
+          b.addEventListener('click', function () { lbOpen(imgs, i, b); });
+          return b;
+        });
+      };
+      pmFlow.appendChild(ps.box);
+      pmStrips.push(ps);
+    }
+
     function pmSetPaused(on) {
       if (marquee) { marquee.classList.toggle('is-modal-paused', on); }
       var ipb = document.querySelector('#in-progress .ip-marquee');
@@ -761,6 +876,7 @@ document.addEventListener('DOMContentLoaded', function () {
       pm.hidden = false;
       void pm.offsetWidth;
       pm.classList.add('is-open');
+      pmMeasure();                                       // רצועות ה-ticker נמדדות רק כשהחלון גלוי
       document.documentElement.classList.add('modal-open');
       pmSetPaused(true);
       pmBox.focus();

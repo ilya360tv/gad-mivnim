@@ -4762,7 +4762,7 @@ html.modal-open body { overflow: hidden; }
 }
 .pm-main--empty { cursor: default; }
 .pm-main:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
-.pm-main img { position: relative; z-index: 1; display: block; width: 100%; height: 100%; object-fit: cover; transition: opacity .25s ease; }
+.pm-main img, .pm-ptile img { position: relative; z-index: 1; display: block; width: 100%; height: 100%; object-fit: cover; transition: opacity .25s ease; }
 .pm-main__blur { position: absolute; inset: 6px; overflow: hidden; border-radius: 2px; pointer-events: none; display: none; transition: opacity .25s ease; }
 .pm-main__blur::before {
   content: "";
@@ -4772,8 +4772,8 @@ html.modal-open body { overflow: hidden; }
   filter: blur(16px) brightness(.75);
   transform: scale(1.15);
 }
-.pm-main.is-portrait .pm-main__blur { display: block; }
-.pm-main.is-portrait img { object-fit: contain; filter: drop-shadow(0 2px 8px rgba(0, 0, 0, .35)); }
+.pm-main.is-portrait .pm-main__blur, .pm-ptile.is-portrait .pm-main__blur { display: block; }
+.pm-main.is-portrait img, .pm-ptile.is-portrait img { object-fit: contain; filter: drop-shadow(0 2px 8px rgba(0, 0, 0, .35)); }
 .pm-strip { display: flex; flex-wrap: wrap; gap: 8px; width: 280px; }
 .pm-tn {
   box-sizing: border-box;
@@ -4799,5 +4799,60 @@ html.modal-open body { overflow: hidden; }
   .pm-strip { width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .pm-main img, .pm-main__blur, .pm-tn { transition: none; }
+  .pm-main img, .pm-ptile img, .pm-main__blur, .pm-tn { transition: none; }
+}
+
+/* ==========================================================================
+   וריאנט ניסיוני (layout: "ticker" ב-projects-data.js): תיאור כפס רץ + רצועת תמונות רצה.
+   אותו מנוע (initMarquee) ואותו כיוון/מהירות/גרירה כמו פס הלוגואים.
+   ========================================================================== */
+.pm-flow { display: flex; flex-direction: column; align-items: center; gap: 18px; margin-top: 4px; }
+.pm-flow[hidden] { display: none; }
+.proj-modal.is-ticker .proj-modal__body { display: none; }
+.pm-sbox {
+  align-self: stretch;
+  direction: ltr;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: pan-y;
+  -webkit-user-select: none;
+          user-select: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%);
+}
+.pm-sbox.is-dragging { cursor: grabbing; }
+.pm-strack { display: flex; align-items: center; width: max-content; will-change: transform; }
+.pm-ticker { height: 48px; }
+.pm-ticker .pm-strack { height: 100%; }
+.pm-tk { flex: none; direction: rtl; white-space: nowrap; font-size: 1.05rem; line-height: 1.5; color: #e6ebf0; }
+.pm-tk-title { font-weight: 700; color: #fff; }
+.pm-dot { flex: none; width: 6px; height: 6px; margin-inline: 16px; border-radius: 50%; background: var(--logo-g); }
+.pm-tk-static { margin: 0; text-align: center; font-size: 1.05rem; line-height: 1.8; color: #e6ebf0; }
+.pm-tk-static .pm-dot { display: inline-block; vertical-align: middle; margin-inline: 12px; }
+.pm-photos { padding-block: 4px; }
+.pm-ptile {
+  position: relative;
+  box-sizing: border-box;
+  flex: none;
+  display: block;
+  width: 200px;
+  height: 140px;
+  margin-inline-end: 12px;
+  padding: 6px;
+  background: #f4f3ef;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 4px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .25);
+  cursor: inherit;
+  overflow: hidden;
+  line-height: 0;
+}
+.pm-ptile:focus-visible { outline: 3px solid #fff; outline-offset: -3px; }
+.pm-ptile img { pointer-events: none; }
+.pm-flow .pm-main--empty { width: 200px; height: 140px; }
+.pm-flow .proj-modal__soon { margin: 0; }
+@media (max-width: 767.98px) {
+  .pm-ticker { height: 44px; }
+  .pm-ptile { width: 150px; height: 105px; }
+  .pm-flow .pm-main--empty { width: 150px; height: 105px; }
 }
