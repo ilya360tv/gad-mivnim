@@ -4716,3 +4716,46 @@ html.modal-open body { overflow: hidden; }
   }
   .card, .project-item, .tilt { will-change: auto !important; }
 }
+
+
+/* ==========================================================================
+   לקוח בלי לוגו: השם כטקסט באריח (פס #projects) ובאריח החלון — אותם מידות ורקע בהיר כמו שאר הלוגואים
+   ========================================================================== */
+.marquee .client-logo--text .project-media { width: 100%; padding: 8px; box-sizing: border-box; }
+.logo-name {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  max-width: 100%;
+  font-family: 'Rubik', 'Segoe UI', Arial, sans-serif;
+  font-weight: 700;
+  font-size: .95rem;
+  line-height: 1.25;
+  text-align: center;
+  color: #1b1f24;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 767.98px) { .logo-name { font-size: .82rem; } }
+.proj-modal__logotext { display: none; }
+.proj-modal.is-textlogo .proj-modal__logo { padding: 8px; box-sizing: border-box; }
+.proj-modal.is-textlogo .proj-modal__logo img { display: none; }
+.proj-modal.is-textlogo .proj-modal__logotext {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  overflow: hidden;
+  font-weight: 700;
+  font-size: .85rem;
+  line-height: 1.25;
+  text-align: center;
+  color: #1b1f24;
+  overflow-wrap: anywhere;
+}
+/* השם מופיע פעם אחת (באריח) — הכותרת נשארת לקוראי מסך בלבד */
+.proj-modal.is-textlogo .proj-modal__name {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}

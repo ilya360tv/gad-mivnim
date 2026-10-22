@@ -83,7 +83,8 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     var logo = document.getElementById('projLogo');
-    if (logo) { logo.setAttribute('src', 'images/clients/' + (d.logo || slug) + '.png'); }
+    if (logo && ('logo' in d) && !d.logo) { logo.hidden = true; }
+    else if (logo) { logo.setAttribute('src', 'images/clients/' + (d.logo || slug) + '.png'); }
 
     var subEl = document.getElementById('projSubtitle');
     if (subEl && d.subtitle) { subEl.textContent = d.subtitle; subEl.hidden = false; }

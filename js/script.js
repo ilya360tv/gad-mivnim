@@ -217,6 +217,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // מציג את התוכן של הלשונית הנוכחית: פס/רשת, או הודעת "בקרוב" כשאין לקוחות במגזר
   function renderSector() {
+    sources.forEach(function (c) {                                // אריחי טקסט (לקוח בלי לוגו): שם לפי השפה
+      var tn = c.querySelector('.logo-name'), dd = PDATA[c.getAttribute('data-client')];
+      if (!tn || !dd) { return; }
+      var lg = document.documentElement.getAttribute('lang') || 'he';
+      var nm = (lg !== 'he' && dd.i18n && dd.i18n[lg] && dd.i18n[lg].name) || dd.name;
+      tn.textContent = nm; c.setAttribute('aria-label', nm);
+    });
     var cards = matching();
     var empty = !cards.length;
     if (stage) { stage.classList.toggle('is-empty', empty); }
@@ -500,7 +507,7 @@ document.addEventListener('DOMContentLoaded', function () {
       '<div class="proj-modal__box" role="dialog" aria-modal="true" aria-labelledby="projModalTitle" tabindex="-1">' +
         '<button type="button" class="proj-modal__x" data-pm-close>&times;</button>' +
         '<div class="proj-modal__head">' +
-          '<div class="proj-modal__logo"><img src="" alt=""></div>' +
+          '<div class="proj-modal__logo"><img src="" alt=""><span class="proj-modal__logotext" aria-hidden="true"></span></div>' +
           '<div class="proj-modal__headtext">' +
             '<h2 class="proj-modal__name" id="projModalTitle"></h2>' +
             '<p class="proj-modal__sub" dir="ltr" hidden></p>' +
@@ -534,6 +541,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var pmThumbs = pm.querySelector('.proj-modal__thumbs');
     var pmProg  = pm.querySelector('.proj-modal__prog');
     var pmLogoBox = pm.querySelector('.proj-modal__logo');
+    var pmLogoText = pm.querySelector('.proj-modal__logotext');
     var pmFrom = null, pmSlug = null;
 
     function pmPick(d, lang) {
@@ -606,8 +614,12 @@ document.addEventListener('DOMContentLoaded', function () {
       if (d.inProgress) { t.name = GT('ip_name', t.name); }
 
       pmLogoBox.classList.toggle('is-photo', !!d.inProgress);      // כרטיס בביצוע: התמונה במקום הלוגו
-      pmLogo.src = d.inProgress ? d.photo : 'images/clients/' + (d.logo || pmSlug) + '.png';
-      pmLogo.alt = t.name;
+      var textLogo = !d.inProgress && ('logo' in d) && !d.logo;       // לקוח בלי לוגו: השם כטקסט בתוך האריח
+      pm.classList.toggle('is-textlogo', textLogo);
+      pmLogoText.textContent = textLogo ? t.name : '';
+      if (textLogo) { pmLogo.removeAttribute('src'); }
+      else { pmLogo.src = d.inProgress ? d.photo : 'images/clients/' + (d.logo || pmSlug) + '.png'; }
+      pmLogo.alt = textLogo ? '' : t.name;
       pmName.textContent = t.name;
       pmX.setAttribute('aria-label', GT('pm_close', 'סגירה'));
 
