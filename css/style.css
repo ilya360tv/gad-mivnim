@@ -4856,3 +4856,8 @@ html.modal-open body { overflow: hidden; }
   .pm-ptile { width: 150px; height: 105px; }
   .pm-flow .pm-main--empty { width: 150px; height: 105px; }
 }
+
+/* כותרת העבודה בווריאנט ה-ticker: תגית badge-chip (הסגנון מה-class עצמו) ממורכזת מתחת לשם */
+.proj-modal.is-ticker .proj-modal__head { margin-bottom: 14px; }
+.pm-pill { align-self: center; max-width: 100%; text-align: center; white-space: nowrap; }
+@media (max-width: 767.98px) { .pm-pill { white-space: normal; } }

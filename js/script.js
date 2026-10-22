@@ -788,14 +788,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function pmBuildFlow(t, imgs) {
       var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      // 1) התיאור
+      // 0) כותרת העבודה: תגית (badge-chip של האתר) מתחת לשם החברה
+      if (t.title) {
+        var pill = document.createElement('span');
+        pill.className = 'badge-chip pm-pill';
+        pill.textContent = t.title;
+        pmFlow.appendChild(pill);
+      }
+      // 1) התיאור (הפריטים בלבד)
       if (!t.items.length) {
         var soon = document.createElement('p');
         soon.className = 'proj-modal__soon';
         soon.textContent = GT('pm_soon', 'תיאור הפרויקט יתווסף בקרוב');
         pmFlow.appendChild(soon);
       } else {
-        var seq = (t.title ? [t.title] : []).concat(t.items);
+        var seq = t.items.slice();
         if (reduce) {                                   // בלי תנועה: רשימה ממורכזת עוטפת שורות
           var list = document.createElement('p');
           list.className = 'pm-tk-static';
@@ -821,7 +828,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return out;
           };
           tk.box.setAttribute('role', 'group');
-          tk.box.setAttribute('aria-label', (t.title ? t.title + ': ' : '') + t.items.join(', '));
+          tk.box.setAttribute('aria-label', t.items.join(', '));
           pmFlow.appendChild(tk.box);
           pmStrips.push(tk);
         }
@@ -1020,7 +1027,13 @@ document.addEventListener('DOMContentLoaded', function () {
     } else { ipSec.classList.add('ip-in'); }
 
     if ('MutationObserver' in window) {
-      new MutationObserver(function () { if (window.setLanguage) { window.setLanguage(document.documentElement.getAttribute('lang') || 'he'); } })
+      var ipLang = document.documentElement.getAttribute('lang');   // מגן מלולאה אינסופית: setLanguage כותב שוב את lang ומפעיל את המשקיף
+      new MutationObserver(function () {
+        var cur = document.documentElement.getAttribute('lang') || 'he';
+        if (cur === ipLang) { return; }
+        ipLang = cur;
+        if (window.setLanguage) { window.setLanguage(cur); }
+      })
         .observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
     }
   }
