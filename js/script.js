@@ -65,7 +65,9 @@ document.addEventListener('DOMContentLoaded', function () {
       wrap(); apply();
     }
     function paused() {
-      if (reduce) { return true; }                                   // בלי תנועת-יתר: אין גלילה אוטומטית
+      // עוצרים רק לפי כפתור "עצירת אנימציות" בתפריט הנגישות של האתר — לא לפי הגדרת חיסכון/הפחתת תנועה של הטלפון
+      // (הגדרה זו פעילה בהרבה טלפונים בלי שהמשתמש יודע, והפס לא זז בכלל במובייל)
+      if (document.documentElement.classList.contains('a11y-no-motion')) { return true; }
       if (s.dragging || s.hover) { return true; }
       if (opts.isPaused && opts.isPaused()) { return true; }
       return performance.now() < s.resumeAt;
@@ -671,7 +673,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function pmMeasure() { pmStrips.forEach(function (st) { pmFill(st, st.makeSet); }); }
 
     function pmBuildFlow(t, imgs) {
-      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var reduce = document.documentElement.classList.contains('a11y-no-motion');   // רק כפתור הנגישות של האתר
       // 0) כותרת העבודה: תגית (badge-chip של האתר) מתחת לשם החברה
       if (t.title) {
         var pill = document.createElement('span');
