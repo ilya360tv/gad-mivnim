@@ -936,7 +936,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (hmBox && hmTrack && hmSrc) {
     var hmE = initMarquee(hmBox, hmTrack, {});
     var hmBuild = function () {
-      var html = hmSrc.innerHTML;
+      var html = hmSrc.innerHTML.trim().replace(/(<img[^>]*>)\s+/i, '$1');   // בלי רווח/טקסט תועה בין הלוגו לטקסט
       var one = document.createElement('span');
       one.className = 'hero-mq__item'; one.innerHTML = html;
       hmTrack.innerHTML = ''; hmTrack.appendChild(one);

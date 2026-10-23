@@ -4997,23 +4997,25 @@ body .site-header .main-nav.is-open ul li a { color: var(--lb); }
 }
 .hero-mq.is-dragging { cursor: grabbing; }
 .hero-mq__track { display: flex; align-items: center; width: max-content; will-change: transform; }
+.hero-mq { --hero-mq-gap: 48px; }       /* אותו רווח בין לוגו לטקסט ובין חזרות */
 .hero-mq__item {
   flex: none;
   display: inline-flex;
   align-items: center;
-  gap: 26px;
+  gap: var(--hero-mq-gap);
   direction: rtl;
   white-space: nowrap;
-  padding-inline-end: 90px;           /* רווח בין חזרה לחזרה */
+  padding-inline-end: var(--hero-mq-gap);
 }
 .hero-mq__item .hero-title__logo { pointer-events: none; -webkit-user-drag: none; }
 @media (max-width: 1023.98px) {
-  .hero-mq__item { gap: 18px; padding-inline-end: 60px; }
+  .hero-mq { --hero-mq-gap: 36px; }
 }
 @media (max-width: 767.98px) {
   .hero .hero-title.hero-title--mq { top: 0; }
-  .hero-mq__item { flex-direction: row; gap: 14px; padding-inline-end: 44px; }
-  .hero-mq__item .hero-title__logo { display: inline-block; width: 72px; height: 72px; }
+  .hero-mq { --hero-mq-gap: 24px; }
+  .hero-mq__item { flex-direction: row; }
+  .hero-mq__item .hero-title__logo { display: inline-block; width: 80px; height: 80px; }
 }
 
 /* תיקון: הלוגו (PNG עם רקע לבן אטום) — חיתוך לתוך הדיסק הכהה כדי שלא יישאר שוליים/טבעת לבנים, והגדלה לגודל המקורי */
@@ -5023,5 +5025,10 @@ body .site-header .main-nav.is-open ul li a { color: var(--lb); }
   filter: none;
 }
 /* תג "בקרוב" ושורת "לרשותכם" מורמים ב-44px (עיצוב קודם) — הפס הנע גבוה מהכותרת הישנה, לכן מרווח תחתון גדול יותר כדי שלא יחפפו את הלוגו */
-.hero .hero-title.hero-title--mq { margin-bottom: 70px; }
-@media (max-width: 767.98px) { .hero .hero-title.hero-title--mq { margin-bottom: 104px; } }
+.hero .hero-title.hero-title--mq { margin-bottom: 94px; }
+.hero-mq__item .hero-title__logo { width: 130px; height: 130px; }
+@media (max-width: 1023.98px) { .hero-mq__item .hero-title__logo { width: 110px; height: 110px; } }
+@media (max-width: 767.98px) {
+  .hero .hero-title.hero-title--mq { margin-bottom: 128px; }
+  .hero-mq__item .hero-title__logo { width: 80px; height: 80px; }
+}
