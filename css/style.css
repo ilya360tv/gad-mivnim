@@ -5035,3 +5035,7 @@ body .site-header .main-nav.is-open ul li a { color: var(--lb); }
 
 /* ----- Hero: באדג' "בקרוב" צמוד לשורת "לרשותכם אולם תצוגה..." (רק הבאדג' זז; שאר השורות במקומן המקורי) ----- */
 .hero .hero-badge { bottom: -6px; }
+
+/* ----- Hero: שורת "לרשותכם אולם תצוגה..." מוגדלת ב-15% (1.41rem → 1.62rem) ----- */
+.hero .hero-showroom { font-size: 1.62rem; }
+@media (max-width: 767.98px) { .hero .hero-showroom { font-size: 1.25rem; } }
