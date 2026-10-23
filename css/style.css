@@ -5039,3 +5039,9 @@ body .site-header .main-nav.is-open ul li a { color: var(--lb); }
 /* ----- Hero: שורת "לרשותכם אולם תצוגה..." מוגדלת ב-15% (1.41rem → 1.62rem) ----- */
 .hero .hero-showroom { font-size: 1.62rem; }
 @media (max-width: 767.98px) { .hero .hero-showroom { font-size: 1.25rem; } }
+
+/* ----- Hero (מחשב/טאבלט): שורת "לרשותכם..." + באדג' "בקרוב" יורדים 44px — לאמצע בין הסרט ל-HERZLIYA; HERZLIYA במקומה ----- */
+@media (min-width: 768px) {
+  .hero .hero-showroom,
+  .hero .hero-badge-row { top: 0; }
+}
