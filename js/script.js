@@ -924,4 +924,45 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+
+  /* ---------------------------------------------------------------
+     9) Hero H1 — הלוגו + "בכל מקום במפה" כפס נע אינסופי (אותו מנוע initMarquee כמו #projects).
+        הכותרת האמיתית (ל-SEO ולקוראי מסך) נשארת ב-.hero-mq__src (מוסתרת ויזואלית);
+        הפס עצמו aria-hidden ונבנה ממנה מחדש בכל החלפת שפה.
+     --------------------------------------------------------------- */
+  var hmBox = document.querySelector('.hero-mq');
+  var hmTrack = hmBox ? hmBox.querySelector('.hero-mq__track') : null;
+  var hmSrc = document.querySelector('.hero-mq__src');
+  if (hmBox && hmTrack && hmSrc) {
+    var hmE = initMarquee(hmBox, hmTrack, {});
+    var hmBuild = function () {
+      var html = hmSrc.innerHTML;
+      var one = document.createElement('span');
+      one.className = 'hero-mq__item'; one.innerHTML = html;
+      hmTrack.innerHTML = ''; hmTrack.appendChild(one);
+      var w = one.getBoundingClientRect().width || 600;
+      var vw = hmBox.clientWidth || window.innerWidth;
+      var reps = Math.max(1, Math.ceil((vw + w) / w));
+      hmTrack.innerHTML = '';
+      for (var k = 0; k < reps * 2; k++) {
+        var it = document.createElement('span');
+        it.className = 'hero-mq__item'; it.innerHTML = html;
+        it.querySelectorAll('img').forEach(function (im) { im.setAttribute('alt', ''); im.setAttribute('draggable', 'false'); });
+        hmTrack.appendChild(it);
+      }
+      hmE.measure(reps);
+    };
+    hmBuild();
+    window.addEventListener('load', hmBuild);                          // אחרי טעינת הפונט/הלוגו — מדידה מדויקת
+    var hmW = window.innerWidth, hmT;
+    window.addEventListener('resize', function () {
+      if (window.innerWidth === hmW) { return; }
+      hmW = window.innerWidth; clearTimeout(hmT); hmT = setTimeout(hmBuild, 200);
+    });
+    if ('MutationObserver' in window) {                               // החלפת שפה כותבת מחדש את המקור
+      new MutationObserver(function () { clearTimeout(hmT); hmT = setTimeout(hmBuild, 50); })
+        .observe(hmSrc, { childList: true, subtree: true, characterData: true });
+    }
+  }
+
 });

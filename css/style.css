@@ -4962,3 +4962,66 @@ body .site-header .main-nav.is-open ul li a { color: var(--lb); }
   .hero .hero-title { top: 0; flex-direction: column; gap: 12px; }
   .hero-title__logo { display: block; width: 92px; height: 92px; margin: 0; }
 }
+
+/* ==========================================================================
+   Hero H1 כפס נע: לוגו + "בכל מקום במפה", רוחב מלא, אותו מנוע כמו פס הפרויקטים
+   ========================================================================== */
+.hero-mq__src {                        /* הכותרת האמיתית — לקוראי מסך ולגוגל בלבד */
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.hero .hero-title.hero-title--mq {
+  display: block;
+  position: relative;
+  top: -40px;
+  width: 100vw;
+  max-width: none;
+  margin-inline: calc(50% - 50vw);
+  margin-bottom: 36px;
+}
+.hero-mq {
+  display: block;
+  direction: ltr;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: pan-y;
+  -webkit-user-select: none;
+          user-select: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+  padding-block: 10px;
+}
+.hero-mq.is-dragging { cursor: grabbing; }
+.hero-mq__track { display: flex; align-items: center; width: max-content; will-change: transform; }
+.hero-mq__item {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 26px;
+  direction: rtl;
+  white-space: nowrap;
+  padding-inline-end: 90px;           /* רווח בין חזרה לחזרה */
+}
+.hero-mq__item .hero-title__logo { pointer-events: none; -webkit-user-drag: none; }
+@media (max-width: 1023.98px) {
+  .hero-mq__item { gap: 18px; padding-inline-end: 60px; }
+}
+@media (max-width: 767.98px) {
+  .hero .hero-title.hero-title--mq { top: 0; }
+  .hero-mq__item { flex-direction: row; gap: 14px; padding-inline-end: 44px; }
+  .hero-mq__item .hero-title__logo { display: inline-block; width: 72px; height: 72px; }
+}
+
+/* תיקון: הלוגו (PNG עם רקע לבן אטום) — חיתוך לתוך הדיסק הכהה כדי שלא יישאר שוליים/טבעת לבנים, והגדלה לגודל המקורי */
+.hero-mq__item .hero-title__logo {
+  clip-path: circle(44% at 49.5% 49%);
+  transform: scale(1.13);
+  filter: none;
+}
+/* תג "בקרוב" ושורת "לרשותכם" מורמים ב-44px (עיצוב קודם) — הפס הנע גבוה מהכותרת הישנה, לכן מרווח תחתון גדול יותר כדי שלא יחפפו את הלוגו */
+.hero .hero-title.hero-title--mq { margin-bottom: 70px; }
+@media (max-width: 767.98px) { .hero .hero-title.hero-title--mq { margin-bottom: 104px; } }
