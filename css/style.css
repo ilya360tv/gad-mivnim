@@ -5033,10 +5033,5 @@ body .site-header .main-nav.is-open ul li a { color: var(--lb); }
   .hero-mq__item .hero-title__logo { width: 80px; height: 80px; }
 }
 
-/* ----- Hero: מורידים את הבלוק שמתחת לסרט (באדג' "בקרוב" + שורת האולם + הרצליה) — הרווחים ביניהם נשמרים ----- */
-.hero .hero-sub-block,
-.hero .hero-location { transform: translateY(40px); }
-@media (max-width: 767.98px) {
-  .hero .hero-sub-block,
-  .hero .hero-location { transform: translateY(28px); }
-}
+/* ----- Hero: באדג' "בקרוב" צמוד לשורת "לרשותכם אולם תצוגה..." (רק הבאדג' זז; שאר השורות במקומן המקורי) ----- */
+.hero .hero-badge { bottom: -6px; }
