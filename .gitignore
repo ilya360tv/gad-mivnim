@@ -15,3 +15,9 @@ _hostshot.html
 /בית פרטי מלחה ירושלים/
 /לפני-אחרי/
 /qa-screenshots/
+
+# קבצים שאינם חלק מהאתר
+/TASK-*.md
+/*.pdf
+/*.docx
+/WhatsApp Image*.jpeg
