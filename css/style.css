@@ -5064,3 +5064,7 @@ body .site-header .main-nav.is-open ul li a { color: var(--lb); }
   .sector-tabs { justify-content: center; }
   .sector-tab { flex: 0 0 calc(50% - 5px); padding-inline: 8px; text-align: center; }
 }
+
+/* ----- #about: כותרת "מדוע נולד הרעיון..." יורדת מעט (יותר אוויר מתחת לתווית "אודות הקבוצה") ----- */
+#about .about-title { margin-top: 24px; }
+@media (max-width: 767.98px) { #about .about-title { margin-top: 16px; } }
