@@ -5068,3 +5068,13 @@ body .site-header .main-nav.is-open ul li a { color: var(--lb); }
 /* ----- #about: כותרת "מדוע נולד הרעיון..." יורדת מעט (יותר אוויר מתחת לתווית "אודות הקבוצה") ----- */
 #about .about-title { margin-top: 24px; }
 @media (max-width: 767.98px) { #about .about-title { margin-top: 16px; } }
+
+/* ----- #about: שורת הסיום — GAD MIVNIM למעלה, "משנים את הדרך לבניה נכונה !" מתחת, הכל ממורכז ----- */
+#about .about-text .about-quote {
+  text-align: center !important;
+  text-align-last: center !important;
+}
+#about .about-text .about-quote bdi {
+  display: block;
+  margin-bottom: 4px;
+}
