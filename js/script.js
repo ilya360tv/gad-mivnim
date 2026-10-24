@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function sectorOf(el) {
     var slug = el.getAttribute('data-client') || '';
-    return (PDATA[slug] && PDATA[slug].sector) || 'business';
+    return (PDATA[slug] && PDATA[slug].sector) || 'business-private';
   }
 
   var sources = Array.prototype.slice.call(projectItems);

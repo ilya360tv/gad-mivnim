@@ -166,8 +166,6 @@
     ip_title2:    { he: 'מה אנחנו בונים עכשיו', ru: 'Что мы строим сейчас', en: 'What We Are Building Now', fr: 'Ce que nous construisons maintenant' },
     partners_eyebrow: { he: 'השותפים שלנו', ru: 'Наши партнёры', en: 'Our Partners', fr: 'Nos partenaires' },
     filter_all:      { he: 'הכל', ru: 'Все', en: 'All', fr: 'Tout' },
-    filter_private:  { he: 'מגזר פרטי', ru: 'Частный сектор', en: 'Private Sector', fr: 'Secteur privé' },
-    filter_business: { he: 'מגזר עסקי', ru: 'Коммерческий сектор', en: 'Business Sector', fr: 'Secteur commercial' },
     p1: { he: 'יזמות ונדל"ן', ru: 'Девелопмент и недвижимость', en: 'Development & Real Estate', fr: 'Promotion et immobilier' },
     p3: { he: 'מבנים פרטיים', ru: 'Частные здания', en: 'Private Buildings', fr: 'Bâtiments privés' },
     p4: { he: 'מבנים ציבוריים', ru: 'Общественные здания', en: 'Public Buildings', fr: 'Bâtiments publics' },
@@ -271,14 +269,17 @@
 
     pm_heading: { he: 'תיאור הפרויקט', ru: 'Описание проекта', en: 'Project description', fr: 'Description du projet' },
 
-    proj_private_soon: { he: 'פרויקטים במגזר הפרטי יתווספו בקרוב', ru: 'Проекты в частном секторе скоро появятся', en: 'Private sector projects coming soon', fr: 'Les projets du secteur privé seront bientôt ajoutés' },
+    proj_sector_soon: { he: 'פרויקטים במגזר זה יתווספו בקרוב', ru: 'Проекты в этом секторе скоро появятся', en: 'Projects in this sector coming soon', fr: 'Les projets de ce secteur seront bientôt ajoutés' },
 
     pm_gallery: { he: 'גלריית הפרויקט', ru: 'Галерея проекта', en: 'Project gallery', fr: 'Galerie du projet' },
 
     map_tap: { he: 'הקישו להפעלת המפה', ru: 'Нажмите, чтобы включить карту', en: 'Tap to activate the map', fr: 'Touchez pour activer la carte' },
     pm_close: { he: 'סגירה', ru: 'Закрыть', en: 'Close', fr: 'Fermer' },
 
-    sector_all: { he: 'כל המגזרים', ru: 'Все секторы', en: 'All Sectors', fr: 'Tous les secteurs' },
+    sector_all: { he: 'כל המגזרים', ru: 'Все секторы', en: 'All sectors', fr: 'Tous les secteurs' },
+    sector_private: { he: 'מגזר פרטי', ru: 'Частный сектор', en: 'Private sector', fr: 'Secteur privé' },
+    sector_biz_private: { he: 'מגזר עסקי פרטי', ru: 'Частный бизнес', en: 'Private business sector', fr: 'Secteur commercial privé' },
+    sector_biz_public: { he: 'מגזר עסקי ציבורי', ru: 'Государственный сектор', en: 'Public business sector', fr: 'Secteur public' },
 
     pm_photos_soon: { he: 'תמונות הפרויקט יתווספו בקרוב', ru: 'Фотографии проекта скоро появятся', en: 'Project photos coming soon', fr: 'Les photos du projet seront bientôt ajoutées' },
 
