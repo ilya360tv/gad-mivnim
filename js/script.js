@@ -965,4 +965,35 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+
+  /* ---------------------------------------------------------------
+     10) #about — הכותרת "מדוע נולד הרעיון..." בשורה אחת, ברוחב עמודת הטקסט בדיוק
+         (מחשב ≥1024). גודל הכתב מחושב כך שהשורה נגמרת בקצה הפסקאות. במובייל — שבירה רגילה.
+     --------------------------------------------------------------- */
+  var abTitle = document.querySelector('#about .about-title');
+  var abCol = document.querySelector('#about .about-text');
+  if (abTitle && abCol) {
+    var fitAbout = function () {
+      abTitle.style.fontSize = '';
+      if (window.innerWidth < 1024) { abTitle.style.whiteSpace = ''; return; }
+      abTitle.style.whiteSpace = 'nowrap';
+      var target = abCol.getBoundingClientRect().width;
+      var r = document.createRange(); r.selectNodeContents(abTitle);
+      var w = r.getBoundingClientRect().width;
+      if (target && w > target) {
+        var fs = parseFloat(getComputedStyle(abTitle).fontSize);
+        abTitle.style.fontSize = (fs * target / w * 0.995).toFixed(2) + 'px';
+      }
+    };
+    fitAbout();
+    window.addEventListener('load', fitAbout);
+    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(fitAbout); }
+    var abW = window.innerWidth;
+    window.addEventListener('resize', function () { if (window.innerWidth !== abW) { abW = window.innerWidth; fitAbout(); } });
+    if ('MutationObserver' in window) {
+      new MutationObserver(function () { setTimeout(fitAbout, 30); })
+        .observe(abTitle, { childList: true, characterData: true, subtree: true });
+    }
+  }
+
 });
