@@ -5257,8 +5257,8 @@ html[dir="rtl"] #about .about-text h3.about-sub { margin-inline-start: -.14em !i
 }
 .about-mq.is-dragging { cursor: grabbing; }
 .about-mq__track { display: flex; align-items: center; width: max-content; will-change: transform; }
-.about-mq__item { flex: none; display: inline-flex; align-items: center; direction: rtl; white-space: nowrap; }
-.about-mq__dot { flex: none; width: 6px; height: 6px; margin-inline: 18px; border-radius: 50%; background: #38bdf8; }
+.about-mq { --aq-gap: 32px; }                /* רווח זהה בין החלקים ובין החזרות */
+.about-mq__item { flex: none; display: inline-flex; align-items: center; gap: var(--aq-gap); padding-inline-end: var(--aq-gap); direction: rtl; white-space: nowrap; }
 
 /* כפתור הנגישות "עצירת אנימציות": שורה סטטית וממורכזת (שבירת שורה מותרת) */
 html.a11y-no-motion .about-mq { display: none; }
@@ -5272,15 +5272,7 @@ html.a11y-no-motion .about-mq__src {
   display: block;
   text-align: center;
 }
-html.a11y-no-motion .about-mq__src .aq-l::before {
-  content: "";
-  display: inline-block;
-  width: 6px; height: 6px;
-  margin-inline: 12px;
-  border-radius: 50%;
-  background: #38bdf8;
-  vertical-align: middle;
-}
+html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 16px; }
 /* הפס הנע (max-content) לא מורשה להרחיב את עמודת הגריד — העמודה נשארת ברוחב הרגיל */
 #about .about-grid > * { min-width: 0; }
 #about .about-text .about-quote { min-width: 0; max-width: 100%; overflow: hidden; }
@@ -5290,6 +5282,6 @@ html.a11y-no-motion .about-mq__src .aq-l::before {
 #about .about-text .about-quote .aq-brush {
   font-family: "Guttman Yad-Brush", "Gveret Levin", "Rubik", sans-serif;
   font-weight: 400 !important;
-  font-size: 1.3em;
+  font-size: 9pt;                              /* בדיוק 9pt כמו במסמך ה-Word (12px) */
   line-height: 1;
 }

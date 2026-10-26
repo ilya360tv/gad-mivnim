@@ -984,8 +984,6 @@ document.addEventListener('DOMContentLoaded', function () {
         var p = parts[i].cloneNode(true);
         if (i === parts.length - 1) { p.classList.add('is-reg'); }          // "משנים את הדרך..." — לא מודגש
         one.appendChild(p);
-        var dot = document.createElement('span'); dot.className = 'about-mq__dot';
-        one.appendChild(dot);                                               // נקודה אחרי כל חלק — גם בין חזרות
       }
       return one;
     };
