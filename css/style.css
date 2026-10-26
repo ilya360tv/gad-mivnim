@@ -5207,3 +5207,10 @@ body .site-header .main-nav.is-open ul li a { color: var(--lb); }
 /* שורת הסיום: ממורכזת; "משנים את הדרך לבניה נכונה !" לא מודגש (כמו ב-Word) */
 #about .about-text .about-quote { text-align: center !important; text-align-last: center !important; }
 #about .about-text .about-quote .aq-l:last-child { font-weight: 400 !important; }
+
+/* ----- #about כותרות: צבע תכלת כמו הקטגוריות בהדר (#38bdf8) + רווח קטן יותר בין המילים ----- */
+#about .section-eyebrow,
+#about .about-text h3.about-sub {
+  color: #38bdf8 !important;
+  word-spacing: -.3em;
+}
