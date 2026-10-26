@@ -5356,3 +5356,10 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
     0 0 0 2px rgba(56, 189, 248, .75),
     0 0 16px rgba(56, 189, 248, .35) !important;
 }
+
+/* ----- לוגו SVG חדש (images/gad_mivnim_logo.svg): דיסק כהה = 90.6% מהריבוע, שוליים שקופים —
+         בלי חיתוך/הגדלה של הלוגו הישן; בהדר מגדילים ב-1.1 כך שהדיסק ממלא את הטבעת ----- */
+.hero-mq__item .hero-title__logo { clip-path: none; transform: none; width: 143px; height: 143px; }
+@media (max-width: 1023.98px) { .hero-mq__item .hero-title__logo { width: 121px; height: 121px; } }
+@media (max-width: 767.98px)  { .hero-mq__item .hero-title__logo { width: 88px; height: 88px; } }
+.site-header .logo-img { transform: scale(1.104); }
