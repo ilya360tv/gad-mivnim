@@ -5233,3 +5233,18 @@ body .site-header .main-nav.is-open ul li a { color: var(--lb); }
    מקזזים בשוליים שליליים באותו גודל, כך שהאות הראשונה עומדת בדיוק על קצה הפסקאות (בלי JS/transform) */
 html[dir="rtl"] #about .section-eyebrow,
 html[dir="rtl"] #about .about-text h3.about-sub { margin-inline-start: -.35em !important; }
+
+/* ----- #about: החלק מ"מחלקה משפטית" ועד הסוף — לבן במקום ירוק כהה (נשאר מודגש) ----- */
+#about .about-text [data-i18n="ab2_p19"],
+#about .about-text [data-i18n="ab2_s1"],
+#about .about-text [data-i18n="ab2_p20"],
+#about .about-text [data-i18n="ab2_p21"],
+#about .about-text [data-i18n="ab2_s2"],
+#about .about-text [data-i18n="ab2_p22"],
+#about .about-text [data-i18n="ab2_p23"],
+#about .about-text [data-i18n="ab2_s3"],
+#about .about-text [data-i18n="ab2_p24"],
+#about .about-text [data-i18n="ab2_p25"],
+#about .about-text .about-quote {
+  color: #f2f5f7 !important;
+}
