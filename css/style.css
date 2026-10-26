@@ -5301,3 +5301,10 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
     box-shadow: 0 0 0 1.5px var(--lb), 0 0 8px rgba(56, 189, 248, .2);
   }
 }
+
+/* ----- בורר השפה: גלולה עגולה (כמו הקטגוריות) ----- */
+.lang-btn {
+  border-radius: 999px !important;
+  padding-inline: 14px !important;
+}
+.lang-menu { border-radius: 16px !important; overflow: hidden; }
