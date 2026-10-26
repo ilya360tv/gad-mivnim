@@ -1046,4 +1046,38 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+
+  /* ---------------------------------------------------------------
+     12) בורר השפה — שם השפה מעוקל לאורך החלק העליון של העיגול (SVG textPath), הדגל העגול מתחת.
+         הטקסט נלקח מ-#langLabel ומתעדכן בכל החלפת שפה.
+     --------------------------------------------------------------- */
+  var lgBtn = document.getElementById('langBtn');
+  var lgLabel = document.getElementById('langLabel');
+  if (lgBtn && lgLabel) {
+    var NS = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('class', 'lang-arc');
+    svg.setAttribute('viewBox', '0 0 100 100');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.setAttribute('focusable', 'false');
+    var path = document.createElementNS(NS, 'path');
+    path.setAttribute('id', 'langArcPath');
+    path.setAttribute('d', 'M 18,52 A 32,32 0 0 1 82,52');      /* קשת עליונה, משמאל לימין */
+    path.setAttribute('fill', 'none');
+    var txt = document.createElementNS(NS, 'text');
+    var tp = document.createElementNS(NS, 'textPath');
+    tp.setAttribute('href', '#langArcPath');
+    tp.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '#langArcPath');
+    tp.setAttribute('startOffset', '50%');
+    tp.setAttribute('text-anchor', 'middle');
+    txt.appendChild(tp);
+    svg.appendChild(path); svg.appendChild(txt);
+    lgBtn.appendChild(svg);
+    var syncArc = function () { tp.textContent = (lgLabel.textContent || '').trim(); };
+    syncArc();
+    if ('MutationObserver' in window) {
+      new MutationObserver(syncArc).observe(lgLabel, { childList: true, characterData: true, subtree: true });
+    }
+  }
+
 });

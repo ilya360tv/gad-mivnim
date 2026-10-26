@@ -5387,3 +5387,37 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
   .lang-btn #langLabel { font-size: .56rem; }
   .lang-btn .flag { width: 24px; height: 24px; }
 }
+
+/* ----- בורר השפה: שם השפה מעוקל לאורך הקשת העליונה (SVG), הדגל העגול במרכז-תחתון ----- */
+.lang-btn { position: relative !important; flex-direction: column !important; justify-content: center !important; }
+.lang-btn #langLabel {                      /* הטקסט הרגיל — לקוראי מסך בלבד; המעוקל מוצג ב-SVG */
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.lang-arc {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+.lang-arc text {
+  fill: #38bdf8;
+  font-family: 'Rubik', 'Segoe UI', Arial, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: .5px;
+}
+.lang-btn .flag {
+  width: 30px;
+  height: 30px;
+  margin-top: 16px;                         /* מתחת לקשת */
+}
+@media (max-width: 1023.98px) {
+  .lang-btn .flag { width: 24px; height: 24px; margin-top: 12px; }
+}
