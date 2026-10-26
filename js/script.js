@@ -1002,6 +1002,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
     aqBuild();
     window.addEventListener('load', aqBuild);
+    if (document.fonts && document.fonts.load) { document.fonts.load('1em "Gveret Levin"', 'משנים').then(aqBuild, function () {}); }   // גופן המכחול — מדידה מחדש אחרי הטעינה
     if (document.fonts && document.fonts.ready) { document.fonts.ready.then(aqBuild); }
     var aqW = window.innerWidth, aqT;
     window.addEventListener('resize', function () {

@@ -5284,3 +5284,12 @@ html.a11y-no-motion .about-mq__src .aq-l::before {
 /* הפס הנע (max-content) לא מורשה להרחיב את עמודת הגריד — העמודה נשארת ברוחב הרגיל */
 #about .about-grid > * { min-width: 0; }
 #about .about-text .about-quote { min-width: 0; max-width: 100%; overflow: hidden; }
+
+/* ----- #about: הביטוי "משנים את הדרך לבניה נכונה !" בפס הנע — גופן מכחול. Guttman Yad-Brush (מותקן אצל המבקר, לא נטען מהאתר — רישיון),
+         גיבוי חופשי (OFL) Gveret Levin מ-Google Fonts. שפות אחרות — בלי span, גופן רגיל ----- */
+#about .about-text .about-quote .aq-brush {
+  font-family: "Guttman Yad-Brush", "Gveret Levin", "Rubik", sans-serif;
+  font-weight: 400 !important;
+  font-size: 1.3em;
+  line-height: 1;
+}
