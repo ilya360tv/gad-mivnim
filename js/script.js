@@ -1023,6 +1023,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (abTitle && abCol) {
     var fitAbout = function () {
       abTitle.style.fontSize = '';
+      abTitle.style.maxWidth = '';
       if (window.innerWidth < 1024) { abTitle.style.whiteSpace = ''; return; }
       abTitle.style.whiteSpace = 'nowrap';
       var target = abCol.getBoundingClientRect().width;
@@ -1031,9 +1032,19 @@ document.addEventListener('DOMContentLoaded', function () {
       if (target && w) {
         // מגדילים או מכווצים כך שהשורה תמלא בדיוק את רוחב עמודת הטקסט (עד 40px)
         var fs = parseFloat(getComputedStyle(abTitle).fontSize);
-        var next = Math.max(12, Math.min(40, fs * target / w * 0.998));
+        var raw = fs * target / w * 0.998;
+        var next = Math.max(12, Math.min(40, raw));
         abTitle.style.fontSize = next.toFixed(2) + 'px';
+        // הכותרת לעולם לא יוצאת מעמודת הטקסט (גם ב-LTR, שם עמודת התמונה בצד השני): אם אפילו ב-12px היא רחבה מהעמודה — שבירת שורות בתוך העמודה
+        var isLtr = (document.documentElement.getAttribute('dir') || 'rtl') === 'ltr';
+        if (raw < 12 || isLtr) { abTitle.style.maxWidth = target.toFixed(1) + 'px'; }
+        if (raw < 12) {
+          var p0 = abCol.querySelector('p');
+          abTitle.style.whiteSpace = 'normal';
+          abTitle.style.fontSize = (p0 ? parseFloat(getComputedStyle(p0).fontSize) * 1.1 : 16).toFixed(2) + 'px';
+        }
       }
+      if (typeof liftMedia === 'function') { liftMedia(); }          // הכותרת השתנתה — מיישרים מחדש את כותרת התמונות
     };
     fitAbout();
     window.addEventListener('load', fitAbout);
@@ -1123,7 +1134,13 @@ document.addEventListener('DOMContentLoaded', function () {
     var liftMedia = function () {
       mdCol.style.marginTop = '';
       if (window.innerWidth < 1024) { return; }
-      var a = mdRef.getBoundingClientRect(), b = mdHead.getBoundingClientRect();
+      // מגביהים רק אם הכותרת לא חופפת אופקית את עמודת התמונה (בשתי הכיוונים הכותרת יושבת מעל עמודת הטקסט בלבד)
+      var rg = document.createRange(); rg.selectNodeContents(mdRef);
+      var lines = rg.getClientRects();
+      var t = rg.getBoundingClientRect(), m = mdCol.getBoundingClientRect();
+      if (!(t.right <= m.left + 0.5 || t.left >= m.right - 0.5)) { return; }
+      var a = (lines.length > 1 || document.documentElement.getAttribute('dir') === 'ltr') ? lines[0] : mdRef.getBoundingClientRect();   // כותרת בשורות מרובות — יישור לשורה הראשונה
+      var b = mdHead.getBoundingClientRect();
       var d = (a.top + a.height / 2) - (b.top + b.height / 2);
       if (Math.abs(d) > 0.5) { mdCol.style.marginTop = d.toFixed(1) + 'px'; }
     };

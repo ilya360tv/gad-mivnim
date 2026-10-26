@@ -4556,7 +4556,7 @@ html.modal-open body { overflow: hidden; }
 #about .about-text .about-list li {
   text-align: justify;
   text-justify: inter-word;
-  text-align-last: right;       /* השורה האחרונה בפסקה נשארת מיושרת לימין (RTL), לא נמתחת */
+  text-align-last: start;       /* השורה האחרונה בפסקה נשארת מיושרת להתחלה (ימין ב-RTL, שמאל ב-LTR), לא נמתחת */
   hyphens: auto;
   word-spacing: normal;
 }
@@ -5168,7 +5168,7 @@ body .site-header .main-nav.is-open ul li a { color: var(--lb); }
 #about .about-text h3.about-sub,
 #about .about-text h4.about-sub--sm {
   text-align: justify !important;
-  text-align-last: right !important;
+  text-align-last: start !important;     /* לוגי: ימין ב-RTL, שמאל ב-LTR */
 }
 
 /* הדגשות בתוך הטקסט */
@@ -5591,3 +5591,7 @@ html.a11y-no-motion .about-media-title .about-hmq__src {
   display: block;
   text-align: center;
 }
+
+/* ----- #about ב-LTR (אנגלית/רוסית/צרפתית): הפריטים בפסים הנעים בכיוון השפה (לא RTL קבוע) ----- */
+html[dir="ltr"] .about-hmq__item,
+html[dir="ltr"] .about-mq__item { direction: ltr; }
