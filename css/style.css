@@ -5078,3 +5078,17 @@ body .site-header .main-nav.is-open ul li a { color: var(--lb); }
   display: block;
   margin-bottom: 4px;
 }
+
+/* ----- #about v2: מראה כמו קובץ ה-Word — ריווח אותיות בתוויות/כותרות, GAD, 1995; כותרות קטנות (h4) ושורת סיום בשלוש שורות ----- */
+#about .section-eyebrow,
+#about .about-text h3.about-sub { letter-spacing: .35em; }
+#about .gad-sp,
+#about .yr-sp { letter-spacing: .3em; }
+#about .about-text h4.about-sub--sm {
+  margin: 18px 0 6px;
+  font-size: 1.05rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--logo-g);
+}
+#about .about-text .about-quote .aq-l { display: block; }
