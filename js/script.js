@@ -980,9 +980,11 @@ document.addEventListener('DOMContentLoaded', function () {
       var target = abCol.getBoundingClientRect().width;
       var r = document.createRange(); r.selectNodeContents(abTitle);
       var w = r.getBoundingClientRect().width;
-      if (target && w > target) {
+      if (target && w) {
+        // מגדילים או מכווצים כך שהשורה תמלא בדיוק את רוחב עמודת הטקסט (עד 40px)
         var fs = parseFloat(getComputedStyle(abTitle).fontSize);
-        abTitle.style.fontSize = (fs * target / w * 0.995).toFixed(2) + 'px';
+        var next = Math.max(12, Math.min(40, fs * target / w * 0.998));
+        abTitle.style.fontSize = next.toFixed(2) + 'px';
       }
     };
     fitAbout();
@@ -993,44 +995,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if ('MutationObserver' in window) {
       new MutationObserver(function () { setTimeout(fitAbout, 30); })
         .observe(abTitle, { childList: true, characterData: true, subtree: true });
-    }
-  }
-
-
-  /* ---------------------------------------------------------------
-     11) #about — כותרות בקו אחד בדיוק עם הטקסט: מודדים את קצה האות הראשונה (ימין)
-         של כל כותרת מול קצה הטקסט של הפסקה שאחריה, ומיישרים בפיקסלים (ריווח האותיות דוחף שמאלה).
-     --------------------------------------------------------------- */
-  var abHeads = document.querySelectorAll('#about .section-eyebrow, #about .about-title, #about .about-text h3, #about .about-text h4');
-  var abRef = document.querySelector('#about .about-text > p');
-  if (abHeads.length && abRef) {
-    var textRight = function (el) {
-      var r = document.createRange(); r.selectNodeContents(el);
-      var rs = r.getClientRects(); if (!rs.length) { return null; }
-      var m = -Infinity; for (var q = 0; q < rs.length; q++) { if (rs[q].width && rs[q].right > m) { m = rs[q].right; } }
-      return m === -Infinity ? null : m;
-    };
-    var alignHeads = function () {
-      abHeads.forEach(function (h) { h.style.transform = ''; });
-      var rtl = (document.documentElement.getAttribute('dir') || 'rtl') === 'rtl';
-      if (!rtl) { return; }
-      var ref = textRight(abRef); if (ref === null) { return; }
-      abHeads.forEach(function (h) {
-        var hr = textRight(h); if (hr === null) { return; }
-        // בעברית ריווח האותיות נוסף גם מימין לאות הראשונה — מורידים אותו כדי שהאות עצמה תעמוד על הקו
-        var ls = parseFloat(getComputedStyle(h).letterSpacing) || 0;
-        var d = ref - (hr - ls);
-        if (Math.abs(d) > 0.5 && Math.abs(d) < 40) { h.style.transform = 'translateX(' + d.toFixed(1) + 'px)'; }
-      });
-    };
-    alignHeads();
-    window.addEventListener('load', alignHeads);
-    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(alignHeads); }
-    var ahW = window.innerWidth;
-    window.addEventListener('resize', function () { if (window.innerWidth !== ahW) { ahW = window.innerWidth; alignHeads(); } });
-    if ('MutationObserver' in window) {
-      new MutationObserver(function () { setTimeout(alignHeads, 60); })
-        .observe(document.documentElement, { attributes: true, attributeFilter: ['lang', 'dir'] });
     }
   }
 

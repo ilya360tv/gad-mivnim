@@ -5141,7 +5141,6 @@ body .site-header .main-nav.is-open ul li a { color: var(--lb); }
    שורת הסיום ממורכזת. (טקסט "אוטומטי"/שחור ב-Word = טקסט בהיר על הרקע הכהה של האתר.)
    ========================================================================== */
 #about .section-eyebrow,
-#about .about-title,
 #about .about-text > p,
 #about .about-text h3.about-sub,
 #about .about-text h4.about-sub--sm,
@@ -5151,7 +5150,6 @@ body .site-header .main-nav.is-open ul li a { color: var(--lb); }
 }
 @media (min-width: 1024px) {
   #about .section-eyebrow,
-  #about .about-title,
   #about .about-text > p,
   #about .about-text h3.about-sub,
   #about .about-text h4.about-sub--sm,
@@ -5159,17 +5157,20 @@ body .site-header .main-nav.is-open ul li a { color: var(--lb); }
 }
 @media (max-width: 767.98px) {
   #about .section-eyebrow,
-  #about .about-title,
   #about .about-text > p,
   #about .about-text h3.about-sub,
   #about .about-text h4.about-sub--sm,
   #about .about-text .about-quote { font-size: .92rem !important; }
 }
+/* כותרת "מדוע נולד הרעיון..." — מתחת ל-1024 גודל קבוע (שבירה רגילה); ב-1024+ הגודל נקבע ע"י fitAbout (js/script.js) */
+@media (max-width: 1023.98px) { #about .about-title { font-size: .95rem !important; line-height: 1.8 !important; } }
+@media (max-width: 767.98px) { #about .about-title { font-size: .92rem !important; } }
+@media (min-width: 1024px) { #about .about-title { line-height: 1.8; } }
 
 /* כותרות: מודגש + ירוק Word */
 #about .section-eyebrow,
 #about .about-text h3.about-sub { font-weight: 700 !important; color: #00B050 !important; }
-#about .about-title { font-weight: 700 !important; color: #f2f5f7 !important; white-space: normal !important; }
+#about .about-title { font-weight: 700 !important; color: #f2f5f7 !important; }
 
 /* יישור לשני הצדדים כמו ב-Word (שורה אחרונה לימין) */
 #about .about-title,
@@ -5214,3 +5215,21 @@ body .site-header .main-nav.is-open ul li a { color: var(--lb); }
   color: #38bdf8 !important;
   word-spacing: -.3em;
 }
+
+/* ----- #about: התווית "אודות הקבוצה" — בלי קו/ריפוד/שוליים; האות הראשונה על אותו קצה ימין כמו הכותרת והפסקאות ----- */
+#about .section-eyebrow {
+  display: block;
+  width: auto;
+  margin-inline: 0;
+  padding: 0;
+  gap: 0;
+  text-align: start !important;
+  text-indent: 0;
+}
+#about .section-eyebrow::before,
+#about .section-eyebrow::after { content: none !important; display: none !important; }
+
+/* ריווח האותיות (.35em) נוסף מימין לאות הראשונה בעברית (RTL) ודוחף אותה שמאלה —
+   מקזזים בשוליים שליליים באותו גודל, כך שהאות הראשונה עומדת בדיוק על קצה הפסקאות (בלי JS/transform) */
+html[dir="rtl"] #about .section-eyebrow,
+html[dir="rtl"] #about .about-text h3.about-sub { margin-inline-start: -.35em !important; }
