@@ -1048,8 +1048,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
   /* ---------------------------------------------------------------
-     12) בורר השפה — שם השפה מעוקל לאורך החלק העליון של העיגול (SVG textPath), הדגל העגול מתחת.
-         הטקסט נלקח מ-#langLabel ומתעדכן בכל החלפת שפה.
+     12) בורר השפה — תג עגול: הדגל במרכז המדויק, שם השפה מעוקל לאורך הקשת העליונה באמצע הטבעת החופשית
+         (בין הדגל לקצה העיגול), כוכב קטן בקשת התחתונה. הטקסט נלקח מ-#langLabel ומתאים את עצמו לכל שפה.
+         viewBox 0 0 100 100: עיגול r=50, דגל r=22 (44%), אמצע הטבעת r=36.
      --------------------------------------------------------------- */
   var lgBtn = document.getElementById('langBtn');
   var lgLabel = document.getElementById('langLabel');
@@ -1062,7 +1063,6 @@ document.addEventListener('DOMContentLoaded', function () {
     svg.setAttribute('focusable', 'false');
     var path = document.createElementNS(NS, 'path');
     path.setAttribute('id', 'langArcPath');
-    path.setAttribute('d', 'M 18,52 A 32,32 0 0 1 82,52');      /* קשת עליונה, משמאל לימין */
     path.setAttribute('fill', 'none');
     var txt = document.createElementNS(NS, 'text');
     var tp = document.createElementNS(NS, 'textPath');
@@ -1071,12 +1071,44 @@ document.addEventListener('DOMContentLoaded', function () {
     tp.setAttribute('startOffset', '50%');
     tp.setAttribute('text-anchor', 'middle');
     txt.appendChild(tp);
-    svg.appendChild(path); svg.appendChild(txt);
+    var star = document.createElementNS(NS, 'path');        // ✦ עדין בקשת התחתונה (r=36)
+    star.setAttribute('class', 'lang-star');
+    star.setAttribute('d', 'M50,82.5 Q50.9,85.1 53.5,86 Q50.9,86.9 50,89.5 Q49.1,86.9 46.5,86 Q49.1,85.1 50,82.5Z');
+    svg.appendChild(path); svg.appendChild(txt); svg.appendChild(star);
     lgBtn.appendChild(svg);
-    var syncArc = function () { tp.textContent = (lgLabel.textContent || '').trim(); };
-    syncArc();
+
+    var RING_MID = 36, CAP = 0.7, SPAN = 125 * Math.PI / 180;   // אמצע הטבעת, גובה אות/גודל, פרישה רצויה (125°)
+    var FS_MIN = 12.5, FS_MAX = 14, LS_MAX = 0.45;               // 12.5 יחידות = 7px בעיגול 56px
+    var fitArc = function () {
+      var t = (lgLabel.textContent || '').trim();
+      tp.textContent = t;
+      if (!t) { return; }
+      var n = Math.max(t.length - 1, 1);
+      var fs = 13, ls = 0, rb = RING_MID - CAP * fs / 2;
+      txt.style.letterSpacing = '0px';
+      for (var i = 0; i < 3; i++) {
+        txt.style.fontSize = fs + 'px';
+        rb = RING_MID - CAP * fs / 2;                              // אמצע גובה האותיות על r=36
+        path.setAttribute('d', 'M ' + (50 - rb).toFixed(2) + ',50 A ' + rb.toFixed(2) + ',' + rb.toFixed(2) + ' 0 0 1 ' + (50 + rb).toFixed(2) + ',50');
+        var L = tp.getComputedTextLength();
+        if (!L) { return; }
+        var T = rb * SPAN;
+        fs = Math.max(FS_MIN, Math.min(FS_MAX, fs * T / L));        // קודם גודל, בין המינימום למקסימום
+      }
+      txt.style.fontSize = fs + 'px';
+      rb = RING_MID - CAP * fs / 2;
+      path.setAttribute('d', 'M ' + (50 - rb).toFixed(2) + ',50 A ' + rb.toFixed(2) + ',' + rb.toFixed(2) + ' 0 0 1 ' + (50 + rb).toFixed(2) + ',50');
+      var L2 = tp.getComputedTextLength(), T2 = rb * SPAN;
+      ls = Math.max(-0.1 * fs, Math.min(LS_MAX * fs, (T2 - L2) / n));   // אחר כך ריווח אותיות (לא מקצרים את המילה)
+      txt.style.letterSpacing = ls.toFixed(2) + 'px';
+      var pl = path.getTotalLength();                              // ריווח נוסף גם אחרי האות האחרונה — מקזזים כדי שהמילה תהיה סימטרית
+      tp.setAttribute('startOffset', (50 + (ls / 2) / pl * 100).toFixed(2) + '%');
+    };
+    fitArc();
+    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(fitArc); }
+    window.addEventListener('load', fitArc);
     if ('MutationObserver' in window) {
-      new MutationObserver(syncArc).observe(lgLabel, { childList: true, characterData: true, subtree: true });
+      new MutationObserver(fitArc).observe(lgLabel, { childList: true, characterData: true, subtree: true });
     }
   }
 
