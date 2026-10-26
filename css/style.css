@@ -5488,3 +5488,59 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
   .site-header .header-side .logo-text { display: none !important; }   /* לא תופס מקום ליד העיגול */
   .site-header .main-nav ul { max-width: none !important; width: 100% !important; }
 }
+
+/* ----- #about: עמודת התמונה — כותרת "מאז ועד היום" + שני אריחים שווים (מאז / היום). אריח "היום" = placeholder עד שתתווסף תמונה ----- */
+.about-media .about-media-title {
+  margin: 0 0 12px;
+  font-size: .95rem;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: .14em;
+  word-spacing: .2em;
+  color: #38bdf8;
+  text-align: start;
+}
+html[dir="rtl"] .about-media .about-media-title { margin-inline-start: -.14em; }
+.about-tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;      /* RTL: ימין = מאז, שמאל = היום */
+  gap: 14px;
+  aspect-ratio: 16 / 11;               /* אותו גובה כמו תיבת התמונה הקודמת */
+}
+.about-media .about-tile {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .15);
+}
+.about-media .about-tile img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  aspect-ratio: auto;
+  object-fit: cover;
+  border-radius: 0;
+  box-shadow: none;
+}
+.about-tile--soon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px;
+  text-align: center;
+  background: #12151a;
+  border: 1px solid rgba(56, 189, 248, .35);
+  color: rgba(56, 189, 248, .8);
+  font-size: .85rem;
+  line-height: 1.4;
+}
+.about-tile--soon svg { width: 34px; height: 34px; flex: none; }
+@media (min-width: 1024px) { .about-media .about-media-title { font-size: 1.343cqi; } }
+@media (max-width: 767.98px) {
+  .about-media .about-media-title { font-size: .92rem; }
+  .about-tiles { aspect-ratio: auto; height: 160px; }
+}
