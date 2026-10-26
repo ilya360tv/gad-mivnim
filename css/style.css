@@ -5074,10 +5074,6 @@ body .site-header .main-nav.is-open ul li a { color: var(--lb); }
   text-align: center !important;
   text-align-last: center !important;
 }
-#about .about-text .about-quote bdi {
-  display: block;
-  margin-bottom: 4px;
-}
 
 /* ----- #about v2: מראה כמו קובץ ה-Word — ריווח אותיות בתוויות/כותרות, GAD, 1995; כותרות קטנות (h4) ושורת סיום בשלוש שורות ----- */
 #about .about-text h3.about-sub { letter-spacing: .14em; }
@@ -5090,7 +5086,6 @@ body .site-header .main-nav.is-open ul li a { color: var(--lb); }
   line-height: 1.4;
   color: var(--logo-g);
 }
-#about .about-text .about-quote .aq-l { display: block; }
 
 /* ==========================================================================
    #about — מראה זהה בכל מחשב (≥1024): גודל הכתב יחסי לרוחב הקונטיינר (cqi),
@@ -5202,7 +5197,7 @@ body .site-header .main-nav.is-open ul li a { color: var(--lb); }
 
 /* שורת הסיום: ממורכזת; "משנים את הדרך לבניה נכונה !" לא מודגש (כמו ב-Word) */
 #about .about-text .about-quote { text-align: center !important; text-align-last: center !important; }
-#about .about-text .about-quote .aq-l:last-child { font-weight: 400 !important; }
+#about .about-text .about-quote .is-reg { font-weight: 400 !important; }
 
 /* ----- #about כותרות: צבע תכלת כמו הקטגוריות בהדר (#38bdf8) + רווח קטן יותר בין המילים ----- */
 #about .about-text h3.about-sub {
@@ -5237,3 +5232,55 @@ html[dir="rtl"] #about .about-text h3.about-sub { margin-inline-start: -.14em !i
 #about .about-text .about-quote {
   color: #f2f5f7 !important;
 }
+
+/* ----- #about: שורת הסיום כפס נע אינסופי (אותו מנוע initMarquee כמו פס ה-Hero). הטקסט האמיתי פעם אחת ב-.about-mq__src (מוסתר ויזואלית),
+         העותקים הנעים aria-hidden. פריט = GAD MIVNIM · בכל מקום במפה · משנים את הדרך לבניה נכונה ! · (נקודה תכלת בין כל חלק ובין חזרות) ----- */
+.about-mq__src {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+#about .about-text .about-quote { position: relative; }
+.about-mq {
+  display: block;
+  direction: ltr;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: pan-y;
+  -webkit-user-select: none;
+          user-select: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+}
+.about-mq.is-dragging { cursor: grabbing; }
+.about-mq__track { display: flex; align-items: center; width: max-content; will-change: transform; }
+.about-mq__item { flex: none; display: inline-flex; align-items: center; direction: rtl; white-space: nowrap; }
+.about-mq__dot { flex: none; width: 6px; height: 6px; margin-inline: 18px; border-radius: 50%; background: #38bdf8; }
+
+/* כפתור הנגישות "עצירת אנימציות": שורה סטטית וממורכזת (שבירת שורה מותרת) */
+html.a11y-no-motion .about-mq { display: none; }
+html.a11y-no-motion .about-mq__src {
+  position: static !important;
+  width: auto; height: auto;
+  overflow: visible;
+  clip: auto;
+  clip-path: none;
+  white-space: normal;
+  display: block;
+  text-align: center;
+}
+html.a11y-no-motion .about-mq__src .aq-l::before {
+  content: "";
+  display: inline-block;
+  width: 6px; height: 6px;
+  margin-inline: 12px;
+  border-radius: 50%;
+  background: #38bdf8;
+  vertical-align: middle;
+}
+/* הפס הנע (max-content) לא מורשה להרחיב את עמודת הגריד — העמודה נשארת ברוחב הרגיל */
+#about .about-grid > * { min-width: 0; }
+#about .about-text .about-quote { min-width: 0; max-width: 100%; overflow: hidden; }

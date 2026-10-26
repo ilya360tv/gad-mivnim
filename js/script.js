@@ -967,6 +967,55 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
   /* ---------------------------------------------------------------
+     9ב) #about — שורת הסיום כפס נע אינסופי (אותו מנוע initMarquee כמו ה-Hero).
+         הטקסט האמיתי נשאר פעם אחת ב-.about-mq__src (מוסתר ויזואלית); העותקים הנעים aria-hidden
+         ונבנים מחדש בהחלפת שפה ורק בשינוי רוחב אמיתי.
+     --------------------------------------------------------------- */
+  var aqBox = document.querySelector('.about-mq');
+  var aqTrack = aqBox ? aqBox.querySelector('.about-mq__track') : null;
+  var aqSrc = document.querySelector('.about-mq__src');
+  if (aqBox && aqTrack && aqSrc) {
+    var aqE = initMarquee(aqBox, aqTrack, {});
+    var aqItem = function () {
+      var one = document.createElement('span');
+      one.className = 'about-mq__item';
+      var parts = aqSrc.children;
+      for (var i = 0; i < parts.length; i++) {
+        var p = parts[i].cloneNode(true);
+        if (i === parts.length - 1) { p.classList.add('is-reg'); }          // "משנים את הדרך..." — לא מודגש
+        one.appendChild(p);
+        var dot = document.createElement('span'); dot.className = 'about-mq__dot';
+        one.appendChild(dot);                                               // נקודה אחרי כל חלק — גם בין חזרות
+      }
+      return one;
+    };
+    var aqBuild = function () {
+      if (!aqSrc.children.length) { return; }
+      aqTrack.innerHTML = '';
+      var first = aqItem(); aqTrack.appendChild(first);
+      var w = first.getBoundingClientRect().width || 600;
+      var vw = aqBox.clientWidth || window.innerWidth;
+      var reps = Math.max(1, Math.ceil((vw + w) / w));
+      aqTrack.innerHTML = '';
+      for (var k = 0; k < reps * 2; k++) { aqTrack.appendChild(aqItem()); }
+      aqE.measure(reps);
+    };
+    aqBuild();
+    window.addEventListener('load', aqBuild);
+    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(aqBuild); }
+    var aqW = window.innerWidth, aqT;
+    window.addEventListener('resize', function () {
+      if (window.innerWidth === aqW) { return; }
+      aqW = window.innerWidth; clearTimeout(aqT); aqT = setTimeout(aqBuild, 200);
+    });
+    if ('MutationObserver' in window) {
+      new MutationObserver(function () { clearTimeout(aqT); aqT = setTimeout(aqBuild, 50); })
+        .observe(aqSrc, { childList: true, subtree: true, characterData: true });
+    }
+  }
+
+
+  /* ---------------------------------------------------------------
      10) #about — הכותרת "מדוע נולד הרעיון..." בשורה אחת, ברוחב עמודת הטקסט בדיוק
          (מחשב ≥1024). גודל הכתב מחושב כך שהשורה נגמרת בקצה הפסקאות. במובייל — שבירה רגילה.
      --------------------------------------------------------------- */
