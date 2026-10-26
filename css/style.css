@@ -5349,3 +5349,10 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
   .lang-btn { width: 56px !important; height: 56px !important; }
   .lang-btn .flag { width: 28px; height: 28px; }
 }
+
+/* ----- לוגו בהדר: המסגרת הירוקה → תכלת כמו הקטגוריות ----- */
+.logo-img {
+  box-shadow:
+    0 0 0 2px rgba(56, 189, 248, .75),
+    0 0 16px rgba(56, 189, 248, .35) !important;
+}
