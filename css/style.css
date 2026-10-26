@@ -5289,8 +5289,8 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
 /* ----- ניווט בהדר (דסקטופ): טבעת עדינה יותר (1px, בלי זוהר חזק) + גלולות קטנות יותר ----- */
 @media (min-width: 1024px) {
   body .site-header .main-nav ul li a {
-    height: 32px;
-    font-size: clamp(.66rem, .42rem + .34vw, .82rem);
+    height: 29px;
+    font-size: clamp(.62rem, .4rem + .31vw, .76rem);
     box-shadow: 0 0 0 1px rgba(56, 189, 248, .45);
   }
   body .site-header .main-nav ul li a:hover,
