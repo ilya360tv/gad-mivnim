@@ -5285,3 +5285,19 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
   font-size: 9pt;                              /* בדיוק 9pt כמו במסמך ה-Word (12px) */
   line-height: 1;
 }
+
+/* ----- ניווט בהדר (דסקטופ): טבעת עדינה יותר (1px, בלי זוהר חזק) + גלולות קטנות יותר ----- */
+@media (min-width: 1024px) {
+  body .site-header .main-nav ul li a {
+    height: 32px;
+    font-size: clamp(.66rem, .42rem + .34vw, .82rem);
+    box-shadow: 0 0 0 1px rgba(56, 189, 248, .45);
+  }
+  body .site-header .main-nav ul li a:hover,
+  body .site-header .main-nav ul li a:focus-visible {
+    box-shadow: 0 0 0 1px var(--lb), 0 0 10px rgba(56, 189, 248, .25);
+  }
+  body .site-header .main-nav ul li a.is-current {
+    box-shadow: 0 0 0 1.5px var(--lb), 0 0 8px rgba(56, 189, 248, .2);
+  }
+}
