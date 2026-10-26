@@ -1017,7 +1017,9 @@ document.addEventListener('DOMContentLoaded', function () {
       var ref = textRight(abRef); if (ref === null) { return; }
       abHeads.forEach(function (h) {
         var hr = textRight(h); if (hr === null) { return; }
-        var d = ref - hr;
+        // בעברית ריווח האותיות נוסף גם מימין לאות הראשונה — מורידים אותו כדי שהאות עצמה תעמוד על הקו
+        var ls = parseFloat(getComputedStyle(h).letterSpacing) || 0;
+        var d = ref - (hr - ls);
         if (Math.abs(d) > 0.5 && Math.abs(d) < 40) { h.style.transform = 'translateX(' + d.toFixed(1) + 'px)'; }
       });
     };
