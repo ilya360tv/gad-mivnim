@@ -52,17 +52,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function wrap() {
       if (!s.W) { return; }
+      // opts.wrap — לולאה מותאמת (רצועת התמונות ב-#about ממחזרת 3 פריימים). בלי זה: שני עותקים זהים.
+      if (opts.wrap) { opts.wrap(s); return; }
       while (s.offset >= 0) { s.offset -= s.W; }
       while (s.offset < -s.W) { s.offset += s.W; }
     }
     function apply() { track.style.transform = Y ? 'translate3d(0,' + s.offset.toFixed(2) + 'px,0)' : 'translate3d(' + s.offset.toFixed(2) + 'px,0,0)'; }
-    function measure(per) {
-      // רוחב עותק אחד = המרחק בין הפריט הראשון לפריט הראשון של העותק השני (כולל הרווחים)
+    function measure(per, fixed) {
+      // רוחב עותק אחד = המרחק בין הפריט הראשון לפריט הראשון של העותק השני (כולל הרווחים).
+      // fixed > 0 — גובה/רוחב ידוע מראש (כשהרצועה עדיין מוסתרת ו-offsetTop לא אמין).
       var kids = track.children;
       if (!per || kids.length < per + 1) { s.W = 0; return; }
-      s.W = Y ? kids[per].offsetTop - kids[0].offsetTop : kids[per].offsetLeft - kids[0].offsetLeft;
+      var prevW = s.W, prevOff = s.offset;
+      s.W = (fixed > 0) ? fixed : (Y ? kids[per].offsetTop - kids[0].offsetTop : kids[per].offsetLeft - kids[0].offsetLeft);
       s.speed = (opts.speed || (window.innerWidth < 768 ? MQ_SPEED.mobile : MQ_SPEED.desktop)) / 1000;
-      s.offset = 0; s.vel = 0;
+      s.vel = 0;
+      if (opts.place) { opts.place(s, prevW, prevOff); }
+      else { s.offset = 0; }
       wrap(); apply();
     }
     function paused() {
@@ -1211,51 +1217,194 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
   /* ---------------------------------------------------------------
-     15) #about — אריח "היום": תמונות רצות כלפי מעלה בלולאה אנכית (אותו מנוע initMarquee עם axis:'y').
-         התמונות ב-.about-reel__src הן המקור (נשארות ב-DOM עם alt, מוסתרות ויזואלית); העותקים הנעים aria-hidden.
-         לחיצה על תמונה פותחת את הלייטבוקס עם ניווט על כל התמונות (גרירה לא נחשבת ללחיצה).
-         הבנייה אחרי load — כדי שהתמונות לא יתחרו בטעינה הראשונית של הדף.
+     15) #about — אריחי "מאז" ו"היום": כל תמונה ממלאת את האריח ורצה כלפי מעלה.
+         כל .about-tile--reel משתמש באותו מנוע (initMarquee, axis:'y', אותה מהירות).
+         ב-DOM רק 3 פריימים (קודם / נוכחי / הבא) שממוחזרים — רצועה של מאות תמונות
+         לא בונה שכבת ענק ולא חוסמת את טעינת הדף. התמונות עולות רק כשהאריח קרוב למסך.
+         המקור ב-.about-reel__src (התמונה הראשונה סטטית לפני המוכנות וב"עצירת אנימציות").
+         רשימה ארוכה: data-src-base + data-count (בלי <img> לכל קובץ). data-reel-phase (0–1)
+         מזיז אריח אחד ביחס לשני כדי שלא יתחלפו יחד.
+         לחיצה פותחת לייטבוקס על כל התמונות; גרירה לא נחשבת ללחיצה.
      --------------------------------------------------------------- */
-  var rlTile = document.getElementById('todayReel');
-  var rlBox = rlTile ? rlTile.querySelector('.about-reel') : null;
-  var rlTrack = rlBox ? rlBox.querySelector('.about-reel__track') : null;
-  var rlSrc = rlTile ? rlTile.querySelector('.about-reel__src') : null;
-  if (rlTile && rlBox && rlTrack && rlSrc) {
-    var rlE = initMarquee(rlTile, rlTrack, { axis: 'y', speed: 40 });
-    var rlT;
-    var rlCount = function () { return rlSrc.querySelectorAll('img').length; };
-    var rlList = function () {
-      return Array.prototype.map.call(rlSrc.querySelectorAll('img'), function (im) {
-        return { src: im.getAttribute('src'), alt: im.getAttribute('alt') || '' };
-      });
-    };
-    var rlBuild = function () {
-      var imgs = rlSrc.querySelectorAll('img');
-      if (!imgs.length) { return; }
-      rlTrack.innerHTML = '';
-      for (var c = 0; c < 2; c++) {                                  // שני עותקים — גובה עותק אחד (14 ריבועים) גדול בהרבה מהחלון, לכן הלולאה חלקה
-        Array.prototype.forEach.call(imgs, function (im) {
-          var it = document.createElement('span'); it.className = 'about-reel__item';
-          var cl = document.createElement('img');
-          cl.src = im.getAttribute('src'); cl.alt = ''; cl.decoding = 'async'; cl.draggable = false;
-          it.appendChild(cl); rlTrack.appendChild(it);
-        });
+  Array.prototype.forEach.call(document.querySelectorAll('.about-tile--reel'), function (rlTile) {
+    var rlTrack = rlTile.querySelector('.about-reel__track');
+    var rlSrc = rlTile.querySelector('.about-reel__src');
+    if (!rlTrack || !rlSrc || !rlTile.querySelector('.about-reel')) { return; }
+
+    var rlList = [];
+    Array.prototype.forEach.call(rlSrc.querySelectorAll('img'), function (im) {
+      var u = im.getAttribute('src') || im.getAttribute('data-src');
+      if (u) { rlList.push({ src: u, alt: im.getAttribute('alt') || '' }); }
+    });
+    var rlBase = rlSrc.getAttribute('data-src-base');
+    var rlTotal = parseInt(rlSrc.getAttribute('data-count') || '0', 10);
+    var rlExt = rlSrc.getAttribute('data-ext') || '.jpg';
+    if (rlBase && rlTotal > rlList.length) {
+      var rlAlt = (rlList[0] && rlList[0].alt) || 'GAD MIVNIM';
+      for (var n = rlList.length + 1; n <= rlTotal; n++) {
+        rlList.push({ src: rlBase + n + rlExt, alt: rlAlt });
       }
+    }
+    if (!rlList.length) { return; }
+
+    var rlPhase = parseFloat(rlTile.getAttribute('data-reel-phase') || '0');
+    if (!isFinite(rlPhase)) { rlPhase = 0; }
+    rlPhase = ((rlPhase % 1) + 1) % 1;
+
+    var rlIndex = 0;
+    function rlMod(i) {
+      var len = rlList.length;
+      return ((i % len) + len) % len;
+    }
+    var rlPre = {}, rlPreQ = [];
+    function rlPreload(i) {
+      var u = rlList[rlMod(i)].src;
+      if (rlPre[u]) { return; }
+      var im = new Image();
+      im.decoding = 'async';
+      im.src = u;
+      rlPre[u] = im;
+      rlPreQ.push(u);
+      while (rlPreQ.length > 8) { delete rlPre[rlPreQ.shift()]; }
+    }
+    function rlWarm(idxs, done) {
+      var left = idxs.length;
+      if (!left) { done(); return; }
+      idxs.forEach(function (i) {
+        var im = new Image();
+        var fin = function () {
+          if (fin.did) { return; }
+          fin.did = true;
+          if (--left === 0) { done(); }
+        };
+        im.decoding = 'async';
+        im.onload = im.onerror = fin;
+        im.src = rlList[rlMod(i)].src;
+        if (im.complete) { fin(); }
+      });
+    }
+    function rlAssign(el, i) {
+      if (!el) { return; }
+      var rec = rlList[rlMod(i)];
+      var im = el.querySelector('img');
+      if (!im || im.getAttribute('src') === rec.src) { return; }
+      im.alt = '';
+      im.decoding = 'async';
+      im.src = rec.src;
+    }
+    // סיבוב ה-DOM (לא החלפת src של הפריים שנראה) — הלולאה נשארת בלי קפיצה
+    function rlStep(dir) {
+      if (dir > 0) {
+        rlTrack.appendChild(rlTrack.firstElementChild);
+        rlIndex = rlMod(rlIndex + 1);
+        rlAssign(rlTrack.children[2], rlIndex + 1);
+      } else {
+        rlTrack.insertBefore(rlTrack.lastElementChild, rlTrack.firstElementChild);
+        rlIndex = rlMod(rlIndex - 1);
+        rlAssign(rlTrack.children[0], rlIndex - 1);
+      }
+      rlPreload(rlIndex + 2);
+      rlPreload(rlIndex - 2);
+    }
+
+    rlTrack.innerHTML = '';
+    for (var s = 0; s < 3; s++) {
+      var it = document.createElement('span');
+      it.className = 'about-reel__item';
+      var cl = document.createElement('img');
+      cl.alt = '';
+      cl.decoding = 'async';
+      cl.draggable = false;
+      it.appendChild(cl);
+      rlTrack.appendChild(it);
+    }
+
+    var rlE = initMarquee(rlTile, rlTrack, {
+      axis: 'y',
+      speed: 40,
+      place: function (st, prevW, prevOff) {
+        var f = rlPhase;
+        if (prevW) {
+          f = (-prevOff / prevW) - 1;
+          f = ((f % 1) + 1) % 1;
+          if (f > 0.999) { f = 0; }
+        }
+        st.offset = -st.W * (1 + f);          // -W = תמונה מלאה; עד -2W = המעבר לתמונה הבאה
+      },
+      wrap: function (st) {
+        if (!st.W) { return; }
+        var guard = 0;
+        while (st.offset <= -2 * st.W && guard++ < 40) {
+          st.offset += st.W;
+          rlStep(1);
+        }
+        while (st.offset > -st.W && guard++ < 80) {
+          st.offset -= st.W;
+          rlStep(-1);
+        }
+      }
+    });
+
+    function rlLayout() {
+      var h = rlTile.clientHeight;
+      if (!h) { return false; }
+      Array.prototype.forEach.call(rlTrack.children, function (el) { el.style.height = h + 'px'; });
+      rlE.measure(1, h);
+      return true;
+    }
+
+    var rlArmed = false, rlTries = 0;
+    function rlReveal() {
+      var kids = rlTrack.children;
+      rlAssign(kids[0], rlIndex - 1);
+      rlAssign(kids[1], rlIndex);
+      rlAssign(kids[2], rlIndex + 1);
+      rlPreload(rlIndex + 2);
+      var h = rlTile.clientHeight;
+      if (!h) {
+        if (rlTries++ < 90) { requestAnimationFrame(rlReveal); }
+        return;
+      }
+      Array.prototype.forEach.call(kids, function (el) { el.style.height = h + 'px'; });
       rlTile.classList.add('is-ready');
-      rlE.measure(imgs.length);
-    };
+      rlE.measure(1, h);
+    }
+    function rlArm() {
+      if (rlArmed) { return; }
+      rlArmed = true;
+      rlWarm([0, 1, 2, rlList.length - 1], rlReveal);
+    }
+
+    var rlT;
     var rlStart = function () {
-      rlBuild();
-      window.addEventListener('resize', function () { clearTimeout(rlT); rlT = setTimeout(function () { rlE.measure(rlCount()); }, 200); });
+      window.addEventListener('resize', function () {
+        clearTimeout(rlT);
+        rlT = setTimeout(function () { if (rlArmed) { rlLayout(); } }, 200);
+      });
+      if ('IntersectionObserver' in window) {
+        var io = new IntersectionObserver(function (ents) {
+          if (ents.some(function (e) { return e.isIntersecting; })) {
+            io.disconnect();
+            rlArm();
+          }
+        }, { rootMargin: '600px 0px' });
+        io.observe(rlTile);
+      } else {
+        rlArm();
+      }
     };
-    if (document.readyState === 'complete') { rlStart(); } else { window.addEventListener('load', rlStart); }
+    if (document.readyState === 'complete') { rlStart(); }
+    else { window.addEventListener('load', rlStart); }
+
     rlTile.addEventListener('click', function (e) {
       var it = e.target.closest ? e.target.closest('.about-reel__item') : null;
       if (!it || !window.openImageLightbox) { return; }
-      var all = Array.prototype.slice.call(rlTrack.children);
-      window.openImageLightbox(rlList(), all.indexOf(it) % rlCount());
+      var kids = Array.prototype.slice.call(rlTrack.children);
+      var slot = kids.indexOf(it);
+      if (slot < 0) { return; }
+      window.openImageLightbox(rlList, rlMod(rlIndex + (slot - 1)));
     });
-  }
+  });
 
 
 });
