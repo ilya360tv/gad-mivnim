@@ -996,4 +996,40 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+
+  /* ---------------------------------------------------------------
+     11) #about — כותרות בקו אחד בדיוק עם הטקסט: מודדים את קצה האות הראשונה (ימין)
+         של כל כותרת מול קצה הטקסט של הפסקה שאחריה, ומיישרים בפיקסלים (ריווח האותיות דוחף שמאלה).
+     --------------------------------------------------------------- */
+  var abHeads = document.querySelectorAll('#about .section-eyebrow, #about .about-title, #about .about-text h3, #about .about-text h4');
+  var abRef = document.querySelector('#about .about-text > p');
+  if (abHeads.length && abRef) {
+    var textRight = function (el) {
+      var r = document.createRange(); r.selectNodeContents(el);
+      var rs = r.getClientRects(); if (!rs.length) { return null; }
+      var m = -Infinity; for (var q = 0; q < rs.length; q++) { if (rs[q].width && rs[q].right > m) { m = rs[q].right; } }
+      return m === -Infinity ? null : m;
+    };
+    var alignHeads = function () {
+      abHeads.forEach(function (h) { h.style.transform = ''; });
+      var rtl = (document.documentElement.getAttribute('dir') || 'rtl') === 'rtl';
+      if (!rtl) { return; }
+      var ref = textRight(abRef); if (ref === null) { return; }
+      abHeads.forEach(function (h) {
+        var hr = textRight(h); if (hr === null) { return; }
+        var d = ref - hr;
+        if (Math.abs(d) > 0.5 && Math.abs(d) < 40) { h.style.transform = 'translateX(' + d.toFixed(1) + 'px)'; }
+      });
+    };
+    alignHeads();
+    window.addEventListener('load', alignHeads);
+    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(alignHeads); }
+    var ahW = window.innerWidth;
+    window.addEventListener('resize', function () { if (window.innerWidth !== ahW) { ahW = window.innerWidth; alignHeads(); } });
+    if ('MutationObserver' in window) {
+      new MutationObserver(function () { setTimeout(alignHeads, 60); })
+        .observe(document.documentElement, { attributes: true, attributeFilter: ['lang', 'dir'] });
+    }
+  }
+
 });
