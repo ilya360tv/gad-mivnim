@@ -5363,3 +5363,27 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
 @media (max-width: 1023.98px) { .hero-mq__item .hero-title__logo { width: 121px; height: 121px; } }
 @media (max-width: 767.98px)  { .hero-mq__item .hero-title__logo { width: 88px; height: 88px; } }
 .site-header .logo-img { transform: scale(1.104); }
+
+/* ----- בורר השפה: שם השפה ("עברית") למעלה, הדגל העגול מתחת — בתוך העיגול ----- */
+.lang-btn {
+  flex-direction: column !important;
+  gap: 3px;
+}
+.lang-btn #langLabel {
+  position: static !important;
+  width: auto; height: auto;
+  overflow: visible;
+  clip: auto;
+  clip-path: none;
+  order: -1;                          /* למעלה */
+  font-size: .66rem;
+  font-weight: 600;
+  line-height: 1;
+  color: #38bdf8;
+  white-space: nowrap;
+}
+.lang-btn .flag { width: 30px; height: 30px; }
+@media (max-width: 1023.98px) {
+  .lang-btn #langLabel { font-size: .56rem; }
+  .lang-btn .flag { width: 24px; height: 24px; }
+}
