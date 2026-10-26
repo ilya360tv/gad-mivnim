@@ -21,3 +21,6 @@ _hostshot.html
 /*.pdf
 /*.docx
 /WhatsApp Image*.jpeg
+
+# תמונות "היום" — קבצי מקור; האתר משתמש רק ב-images/today
+/תמונות חדשות/

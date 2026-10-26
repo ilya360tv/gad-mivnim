@@ -46,6 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function initMarquee(box, track, opts) {
     opts = opts || {};
     var s = { offset: 0, W: 0, speed: 0, vel: 0, dragging: false, hover: false, resumeAt: 0, last: 0 };
+    var Y = opts.axis === 'y';                 // פס אנכי: translateY, מדידת גבהים, גרירה אנכית בעכבר, תנועה כלפי מעלה
     var visible = true, looping = false;      // הלולאה רצה רק כשהפס בתוך המסך
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -54,13 +55,13 @@ document.addEventListener('DOMContentLoaded', function () {
       while (s.offset >= 0) { s.offset -= s.W; }
       while (s.offset < -s.W) { s.offset += s.W; }
     }
-    function apply() { track.style.transform = 'translate3d(' + s.offset.toFixed(2) + 'px,0,0)'; }
+    function apply() { track.style.transform = Y ? 'translate3d(0,' + s.offset.toFixed(2) + 'px,0)' : 'translate3d(' + s.offset.toFixed(2) + 'px,0,0)'; }
     function measure(per) {
       // רוחב עותק אחד = המרחק בין הפריט הראשון לפריט הראשון של העותק השני (כולל הרווחים)
       var kids = track.children;
       if (!per || kids.length < per + 1) { s.W = 0; return; }
-      s.W = kids[per].offsetLeft - kids[0].offsetLeft;
-      s.speed = (window.innerWidth < 768 ? MQ_SPEED.mobile : MQ_SPEED.desktop) / 1000;
+      s.W = Y ? kids[per].offsetTop - kids[0].offsetTop : kids[per].offsetLeft - kids[0].offsetLeft;
+      s.speed = (opts.speed || (window.innerWidth < 768 ? MQ_SPEED.mobile : MQ_SPEED.desktop)) / 1000;
       s.offset = 0; s.vel = 0;
       wrap(); apply();
     }
@@ -83,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
           s.resumeAt = Math.max(s.resumeAt, now + 1500);
         } else if (!s.dragging) {
           s.vel = 0;
-          if (!paused()) { s.offset += s.speed * dt; }               // כיוון הגלילה: ימינה
+          if (!paused()) { s.offset += (Y ? -s.speed : s.speed) * dt; }   // כיוון הגלילה: ימינה (אנכי: למעלה)
         }
         wrap();
         apply();
@@ -107,32 +108,33 @@ document.addEventListener('DOMContentLoaded', function () {
     var pid = null, startX = 0, startY = 0, lastX = 0, lastT = 0, moved = 0, captured = false, swallow = false, vertical = false;
     box.addEventListener('pointerdown', function (e) {
       if (e.pointerType === 'mouse' && e.button !== 0) { return; }
-      pid = e.pointerId; startX = lastX = e.clientX; startY = e.clientY; lastT = performance.now(); moved = 0; captured = false;
+      if (Y && e.pointerType !== 'mouse') { return; }                  // מגע בפס אנכי: לא לוכדים — הדף ממשיך לגלול
+      pid = e.pointerId; startX = lastX = Y ? e.clientY : e.clientX; startY = Y ? e.clientX : e.clientY; lastT = performance.now(); moved = 0; captured = false;
       vertical = false;
       s.vel = 0; s.dragging = false;
     });
     box.addEventListener('pointermove', function (e) {
       if (e.pointerId !== pid || vertical) { return; }
-      var dx = e.clientX - lastX;
+      var dx = (Y ? e.clientY : e.clientX) - lastX;
       if (!s.dragging && e.pointerType !== 'mouse') {
         // מגע: תנועה ראשונה בעיקר אנכית = גלילת הדף, לא גרירת הפס (ובלי setPointerCapture)
-        var adx = Math.abs(e.clientX - startX), ady = Math.abs(e.clientY - startY);
+        var adx = Math.abs((Y ? e.clientY : e.clientX) - startX), ady = Math.abs((Y ? e.clientX : e.clientY) - startY);
         if (ady > DRAG_PX && ady * 1.5 > adx) { vertical = true; pid = null; moved = 0; return; }
         if (adx <= DRAG_PX) { return; }
       }
-      moved = Math.max(moved, Math.abs(e.clientX - startX));
+      moved = Math.max(moved, Math.abs((Y ? e.clientY : e.clientX) - startX));
       if (!s.dragging) {
         if (moved <= DRAG_PX) { return; }
         s.dragging = true;
         box.classList.add('is-dragging');
         try { box.setPointerCapture(pid); captured = true; } catch (err) {}
-        lastX = e.clientX; lastT = performance.now();
+        lastX = Y ? e.clientY : e.clientX; lastT = performance.now();
         return;
       }
       var now = performance.now(), dtm = Math.max(now - lastT, 1);
       s.offset += dx;
       s.vel = 0.7 * s.vel + 0.3 * (dx / dtm);        // מהירות מוחלקת לתנופה
-      lastX = e.clientX; lastT = now;
+      lastX = Y ? e.clientY : e.clientX; lastT = now;
       wrap(); apply();
     });
     function endDrag(e) {
@@ -157,6 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
     box.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') { s.hover = true; } });   // ריחוף = השהיה
     box.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') { s.hover = false; } });
     box.addEventListener('wheel', function (e) {                    // גלגלת אופקית / משטח מגע
+      if (Y) { return; }                     // פס אנכי: הגלגלת גוללת את הדף
       var dx = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : (e.shiftKey ? e.deltaY : 0);
       if (!dx) { return; }                   // גלילה אנכית רגילה — עוברת לדף
       e.preventDefault();
@@ -313,12 +316,20 @@ document.addEventListener('DOMContentLoaded', function () {
   if (lightbox && lightboxImg && closeBtn && prevBtn && nextBtn) {
     var currentIndex  = 0;
 
+    var lbList = null;      // רשימה מותאמת (למשל תמונות "היום" ב-#about); null = הגלריה
+
     function showImage(index) {
+      var n = lbList ? lbList.length : galleryItems.length;
       // מעבר מעגלי (מהסוף לתחילה ולהיפך)
-      if (index < 0) { index = galleryItems.length - 1; }
-      if (index >= galleryItems.length) { index = 0; }
+      if (index < 0) { index = n - 1; }
+      if (index >= n) { index = 0; }
       currentIndex = index;
 
+      if (lbList) {
+        lightboxImg.src = lbList[index].src;
+        lightboxImg.alt = lbList[index].alt || '';
+        return;
+      }
       var img = galleryItems[index].querySelector('img');
       lightboxImg.src = img.getAttribute('src');
       lightboxImg.alt = img.getAttribute('alt') || '';
@@ -331,6 +342,9 @@ document.addEventListener('DOMContentLoaded', function () {
       document.body.style.overflow = 'hidden'; // מונע גלילת רקע
     }
 
+    // פתיחת רשימת תמונות מותאמת: list = [{src, alt}], index = התמונה הראשונה
+    window.openImageLightbox = function (list, index) { lbList = list; openLightbox(index); };
+
     function closeLightbox() {
       lightbox.classList.remove('is-open');
       lightbox.setAttribute('aria-hidden', 'true');
@@ -339,7 +353,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // פתיחה בלחיצה על תמונה בגלריה
     galleryItems.forEach(function (item, index) {
-      item.addEventListener('click', function () { openLightbox(index); });
+      item.addEventListener('click', function () { lbList = null; openLightbox(index); });
     });
 
     // כפתורי ניווט וסגירה
@@ -1193,6 +1207,54 @@ document.addEventListener('DOMContentLoaded', function () {
       new MutationObserver(function () { clearTimeout(hmqT); hmqT = setTimeout(hmqBuild, 50); })
         .observe(hmqSrc, { childList: true, subtree: true, characterData: true });
     }
+  }
+
+
+  /* ---------------------------------------------------------------
+     15) #about — אריח "היום": תמונות רצות כלפי מעלה בלולאה אנכית (אותו מנוע initMarquee עם axis:'y').
+         התמונות ב-.about-reel__src הן המקור (נשארות ב-DOM עם alt, מוסתרות ויזואלית); העותקים הנעים aria-hidden.
+         לחיצה על תמונה פותחת את הלייטבוקס עם ניווט על כל התמונות (גרירה לא נחשבת ללחיצה).
+         הבנייה אחרי load — כדי שהתמונות לא יתחרו בטעינה הראשונית של הדף.
+     --------------------------------------------------------------- */
+  var rlTile = document.getElementById('todayReel');
+  var rlBox = rlTile ? rlTile.querySelector('.about-reel') : null;
+  var rlTrack = rlBox ? rlBox.querySelector('.about-reel__track') : null;
+  var rlSrc = rlTile ? rlTile.querySelector('.about-reel__src') : null;
+  if (rlTile && rlBox && rlTrack && rlSrc) {
+    var rlE = initMarquee(rlTile, rlTrack, { axis: 'y', speed: 40 });
+    var rlT;
+    var rlCount = function () { return rlSrc.querySelectorAll('img').length; };
+    var rlList = function () {
+      return Array.prototype.map.call(rlSrc.querySelectorAll('img'), function (im) {
+        return { src: im.getAttribute('src'), alt: im.getAttribute('alt') || '' };
+      });
+    };
+    var rlBuild = function () {
+      var imgs = rlSrc.querySelectorAll('img');
+      if (!imgs.length) { return; }
+      rlTrack.innerHTML = '';
+      for (var c = 0; c < 2; c++) {                                  // שני עותקים — גובה עותק אחד (14 ריבועים) גדול בהרבה מהחלון, לכן הלולאה חלקה
+        Array.prototype.forEach.call(imgs, function (im) {
+          var it = document.createElement('span'); it.className = 'about-reel__item';
+          var cl = document.createElement('img');
+          cl.src = im.getAttribute('src'); cl.alt = ''; cl.decoding = 'async'; cl.draggable = false;
+          it.appendChild(cl); rlTrack.appendChild(it);
+        });
+      }
+      rlTile.classList.add('is-ready');
+      rlE.measure(imgs.length);
+    };
+    var rlStart = function () {
+      rlBuild();
+      window.addEventListener('resize', function () { clearTimeout(rlT); rlT = setTimeout(function () { rlE.measure(rlCount()); }, 200); });
+    };
+    if (document.readyState === 'complete') { rlStart(); } else { window.addEventListener('load', rlStart); }
+    rlTile.addEventListener('click', function (e) {
+      var it = e.target.closest ? e.target.closest('.about-reel__item') : null;
+      if (!it || !window.openImageLightbox) { return; }
+      var all = Array.prototype.slice.call(rlTrack.children);
+      window.openImageLightbox(rlList(), all.indexOf(it) % rlCount());
+    });
   }
 
 
