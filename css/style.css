@@ -5105,3 +5105,105 @@ body .site-header .main-nav.is-open ul li a { color: var(--lb); }
   #about .about-text h4.about-sub--sm { font-size: 1.484cqi; }
   #about .about-text .about-quote   { font-size: 1.625cqi; }
 }
+
+/* ==========================================================================
+   #about — כמו ב-Word אחד לאחד: בקובץ כל הטקסט באותו גודל (9pt), כולל הכותרות.
+   כותרות (h3/h4) = אותו גודל כמו הפסקאות, צמודות לימין בדיוק כמו הפסקאות (בלי הזחה/בריחה שמאלה).
+   ========================================================================== */
+#about .about-text h3.about-sub,
+#about .about-text h4.about-sub--sm {
+  font-size: .95rem;
+  line-height: 1.8;
+  text-align: start !important;
+  text-align-last: auto !important;
+  margin-inline: 0 !important;
+  padding-inline: 0 !important;
+  text-indent: 0 !important;
+  width: auto;
+  max-width: none;
+}
+#about .about-text h3.about-sub { margin-block: 22px 6px; font-weight: 700; }
+#about .about-text h4.about-sub--sm { margin-block: 14px 4px; letter-spacing: normal; }
+@media (min-width: 1024px) {
+  #about .about-text h3.about-sub,
+  #about .about-text h4.about-sub--sm { font-size: 1.343cqi; }
+}
+@media (max-width: 767.98px) {
+  #about .about-text h3.about-sub,
+  #about .about-text h4.about-sub--sm { font-size: .92rem; }
+}
+
+/* ==========================================================================
+   #about — אחד לאחד כמו קובץ ה-Word "אודות הקבוצה - טקסט סופי (2)":
+   כל הטקסט באותו גודל (9pt בקובץ), הכל מיושר לשני הצדדים (justify),
+   כותרות: מודגשות + ירוק #00B050; "כך נולד הרעיון..." מודגש;
+   GAD MIVNIM ו"קבוצת בנהר..." מודגשים; מ"מחלקה משפטית" ועד הסוף: מודגש + ירוק כהה #0F7A37;
+   שורת הסיום ממורכזת. (טקסט "אוטומטי"/שחור ב-Word = טקסט בהיר על הרקע הכהה של האתר.)
+   ========================================================================== */
+#about .section-eyebrow,
+#about .about-title,
+#about .about-text > p,
+#about .about-text h3.about-sub,
+#about .about-text h4.about-sub--sm,
+#about .about-text .about-quote {
+  font-size: .95rem !important;
+  line-height: 1.8 !important;
+}
+@media (min-width: 1024px) {
+  #about .section-eyebrow,
+  #about .about-title,
+  #about .about-text > p,
+  #about .about-text h3.about-sub,
+  #about .about-text h4.about-sub--sm,
+  #about .about-text .about-quote { font-size: 1.343cqi !important; }
+}
+@media (max-width: 767.98px) {
+  #about .section-eyebrow,
+  #about .about-title,
+  #about .about-text > p,
+  #about .about-text h3.about-sub,
+  #about .about-text h4.about-sub--sm,
+  #about .about-text .about-quote { font-size: .92rem !important; }
+}
+
+/* כותרות: מודגש + ירוק Word */
+#about .section-eyebrow,
+#about .about-text h3.about-sub { font-weight: 700 !important; color: #00B050 !important; }
+#about .about-title { font-weight: 700 !important; color: #f2f5f7 !important; white-space: normal !important; }
+
+/* יישור לשני הצדדים כמו ב-Word (שורה אחרונה לימין) */
+#about .about-title,
+#about .about-text > p:not(.about-quote),
+#about .about-text h3.about-sub,
+#about .about-text h4.about-sub--sm {
+  text-align: justify !important;
+  text-align-last: right !important;
+}
+
+/* הדגשות בתוך הטקסט */
+#about .about-text bdi,
+#about .about-text b.w-b,
+#about .about-text [data-i18n="ab2_p3"] { font-weight: 700 !important; }
+#about .about-text b.w-b { color: inherit !important; }
+#about .about-text bdi { color: inherit !important; }
+
+/* מ"מחלקה משפטית" ועד הסוף — מודגש + ירוק כהה #0F7A37 (כמו ב-Word) */
+#about .about-text [data-i18n="ab2_p19"],
+#about .about-text [data-i18n="ab2_s1"],
+#about .about-text [data-i18n="ab2_p20"],
+#about .about-text [data-i18n="ab2_p21"],
+#about .about-text [data-i18n="ab2_s2"],
+#about .about-text [data-i18n="ab2_p22"],
+#about .about-text [data-i18n="ab2_p23"],
+#about .about-text [data-i18n="ab2_s3"],
+#about .about-text [data-i18n="ab2_p24"],
+#about .about-text [data-i18n="ab2_p25"],
+#about .about-text .about-quote {
+  font-weight: 700 !important;
+  color: #0F7A37 !important;
+}
+#about .about-text h4.about-sub--sm { margin-block: 14px 0 !important; }
+
+/* שורת הסיום: ממורכזת; "משנים את הדרך לבניה נכונה !" לא מודגש (כמו ב-Word) */
+#about .about-text .about-quote { text-align: center !important; text-align-last: center !important; }
+#about .about-text .about-quote .aq-l:last-child { font-weight: 400 !important; }
