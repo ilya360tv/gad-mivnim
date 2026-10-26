@@ -5554,46 +5554,40 @@ html[dir="ltr"] .about-media .about-media-title {
   width: 100%;
 }
 
-/* ----- #about "מאז ועד היום": הרצועה הנעה (js/script.js סעיף 14). .about-tiles = המקור — מוסתר ויזואלית כשהפס פעיל, מוצג סטטי ב"עצירת אנימציות" ----- */
-.about-media { position: relative; }
-.about-tmq { display: none; }
-.about-media.has-tmq .about-tmq {
+/* ----- #about: הכותרת "מאז ועד היום..." כשורה נעה (js/script.js סעיף 14). הטקסט האמיתי ב-.about-hmq__src (מוסתר ויזואלית); הפס aria-hidden.
+         ב"עצירת אנימציות": כותרת סטטית וממורכזת ----- */
+.about-hmq__src {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.about-hmq { display: none; }
+.about-media-title.has-hmq .about-hmq,
+.about-media.has-hmq .about-hmq {
   display: block;
   direction: ltr;
   overflow: hidden;
-  aspect-ratio: 16 / 11;                /* אותו גובה כמו האריחים היום */
   cursor: grab;
   touch-action: pan-y;
   -webkit-user-select: none;
           user-select: none;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
-          mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 10%, #000 90%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 10%, #000 90%, transparent 100%);
 }
-.about-tmq.is-dragging { cursor: grabbing; }
-.about-tmq__track { display: flex; align-items: stretch; gap: 14px; width: max-content; height: 100%; will-change: transform; }
-.about-media .about-tmq .about-tile { flex: none; height: 100%; aspect-ratio: 1.3; width: auto; }
-.about-media .about-tmq .about-tile:not(.about-tile--soon) { cursor: zoom-in; }
-.about-media .about-tmq .about-tile--soon { cursor: grab; }
-.about-media.has-tmq .about-tiles {
-  position: absolute;
-  width: 1px; height: 1px;
-  aspect-ratio: auto;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  gap: 0;
-}
-html.a11y-no-motion .about-media.has-tmq .about-tmq { display: none; }
-html.a11y-no-motion .about-media.has-tmq .about-tiles {
-  position: static;
+.about-hmq.is-dragging { cursor: grabbing; }
+.about-hmq__track { display: flex; align-items: center; width: max-content; will-change: transform; }
+.about-hmq__item { flex: none; display: inline-block; direction: rtl; white-space: nowrap; padding-inline-end: 48px; }
+html.a11y-no-motion .about-hmq { display: none !important; }
+html.a11y-no-motion .about-media-title .about-hmq__src {
+  position: static !important;
   width: auto; height: auto;
-  aspect-ratio: 16 / 11;
   overflow: visible;
   clip: auto;
   clip-path: none;
-  gap: 14px;
-}
-@media (max-width: 767.98px) {
-  .about-media.has-tmq .about-tmq { aspect-ratio: auto; height: 150px; }
-  html.a11y-no-motion .about-media.has-tmq .about-tiles { aspect-ratio: auto; height: 160px; }
+  white-space: normal;
+  display: block;
+  text-align: center;
 }

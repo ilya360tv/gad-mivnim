@@ -331,15 +331,6 @@ document.addEventListener('DOMContentLoaded', function () {
       document.body.style.overflow = 'hidden'; // מונע גלילת רקע
     }
 
-    // פתיחת תמונה בודדת (למשל מרצועת "מאז ועד היום" ב-#about)
-    window.openImageLightbox = function (src, alt) {
-      lightboxImg.src = src;
-      lightboxImg.alt = alt || '';
-      lightbox.classList.add('is-open');
-      lightbox.setAttribute('aria-hidden', 'false');
-      document.body.style.overflow = 'hidden';
-    };
-
     function closeLightbox() {
       lightbox.classList.remove('is-open');
       lightbox.setAttribute('aria-hidden', 'true');
@@ -1148,60 +1139,43 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ---------------------------------------------------------------
-     14) #about — "מאז ועד היום": האריחים כפס נע אינסופי (אותו מנוע initMarquee כמו שאר הפסים).
-         האריחים ב-.about-tiles הם המקור (נשארים ב-DOM, מוסתרים ויזואלית; תמונה נוספת שתתווסף שם מצטרפת לפס אוטומטית);
-         העותקים הנעים aria-hidden. תמונה אמיתית נפתחת בלייטבוקס בלחיצה (גרירה לא נחשבת ללחיצה); ה-placeholder לא לחיץ.
+     14) #about — הכותרת "מאז ועד היום..." כשורה נעה אינסופית (אותו מנוע initMarquee כמו שאר הפסים); התמונות סטטיות.
+         הכותרת האמיתית נשארת פעם אחת ב-.about-hmq__src (מוסתרת ויזואלית); העותקים הנעים aria-hidden ונבנים מחדש
+         בהחלפת שפה ורק בשינוי רוחב אמיתי. אחרי הבנייה מריצים מחדש את liftMedia (סעיף 13).
      --------------------------------------------------------------- */
-  var tmBox = document.querySelector('.about-tmq');
-  var tmTrack = tmBox ? tmBox.querySelector('.about-tmq__track') : null;
-  var tmSrc = document.querySelector('.about-tiles');
-  if (tmBox && tmTrack && tmSrc) {
-    var tmMedia = tmBox.closest('.about-media');
-    var tmE = initMarquee(tmBox, tmTrack, {});
-    var tmSet = function () {
-      // סדר חזותי מימין לשמאל: "מאז" ואחריו "היום" — הפס ltr, לכן הסדר ההפוך
-      var out = [], src = tmSrc.querySelectorAll('.about-tile');
-      for (var i = src.length - 1; i >= 0; i--) {
-        var c = src[i].cloneNode(true);
-        c.querySelectorAll('[data-i18n]').forEach(function (n) { n.removeAttribute('data-i18n'); });
-        c.querySelectorAll('img').forEach(function (im) { im.setAttribute('draggable', 'false'); im.setAttribute('loading', 'eager'); });
-        out.push(c);
-      }
-      return out;
-    };
-    var tmBuild = function () {
-      var first = tmSet(); if (!first.length) { return; }
-      tmTrack.innerHTML = '';
-      first.forEach(function (n) { tmTrack.appendChild(n); });
-      var kids = tmTrack.children;
-      var wSet = kids[kids.length - 1].offsetLeft + kids[kids.length - 1].offsetWidth - kids[0].offsetLeft + 14;   // כולל הרווח עד החזרה הבאה
-      var vw = tmBox.clientWidth || window.innerWidth;
-      var reps = Math.max(1, Math.ceil((vw * 2) / (wSet || 300)));
-      tmTrack.innerHTML = '';
-      for (var r = 0; r < reps * 2; r++) { tmSet().forEach(function (n) { tmTrack.appendChild(n); }); }
-      tmE.measure(reps * first.length);
-      if (tmMedia) { tmMedia.classList.add('has-tmq'); }
+  var hmqBox = document.querySelector('.about-hmq');
+  var hmqTrack = hmqBox ? hmqBox.querySelector('.about-hmq__track') : null;
+  var hmqSrc = document.querySelector('.about-hmq__src');
+  if (hmqBox && hmqTrack && hmqSrc) {
+    var hmqE = initMarquee(hmqBox, hmqTrack, {});
+    var hmqBuild = function () {
+      var html = hmqSrc.innerHTML.trim();
+      if (!html) { return; }
+      var mk = function () { var it = document.createElement('span'); it.className = 'about-hmq__item'; it.innerHTML = html; return it; };
+      hmqTrack.innerHTML = '';
+      var one = mk(); hmqTrack.appendChild(one);
+      var w = one.getBoundingClientRect().width || 200;
+      var vw = hmqBox.clientWidth || window.innerWidth;
+      var reps = Math.max(1, Math.ceil((vw * 2) / w));
+      hmqTrack.innerHTML = '';
+      for (var k = 0; k < reps * 2; k++) { hmqTrack.appendChild(mk()); }
+      hmqE.measure(reps);
+      hmqBox.classList.add('is-ready');
+      if (hmqBox.parentNode) { hmqBox.parentNode.classList.add('has-hmq'); }
       if (typeof liftMedia === 'function') { liftMedia(); }
     };
-    tmBuild();
-    window.addEventListener('load', tmBuild);
-    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(tmBuild); }
-    var tmW = window.innerWidth, tmT;
+    hmqBuild();
+    window.addEventListener('load', hmqBuild);
+    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(hmqBuild); }
+    var hmqW = window.innerWidth, hmqT;
     window.addEventListener('resize', function () {
-      if (window.innerWidth === tmW) { return; }
-      tmW = window.innerWidth; clearTimeout(tmT); tmT = setTimeout(tmBuild, 200);
+      if (window.innerWidth === hmqW) { return; }
+      hmqW = window.innerWidth; clearTimeout(hmqT); hmqT = setTimeout(hmqBuild, 200);
     });
     if ('MutationObserver' in window) {
-      new MutationObserver(function () { clearTimeout(tmT); tmT = setTimeout(tmBuild, 50); })
-        .observe(tmSrc, { childList: true, subtree: true, characterData: true });
+      new MutationObserver(function () { clearTimeout(hmqT); hmqT = setTimeout(hmqBuild, 50); })
+        .observe(hmqSrc, { childList: true, subtree: true, characterData: true });
     }
-    // לחיצה על תמונה אמיתית (בפס או באריחים הסטטיים) — לייטבוקס; הגרירה נבלעת במנוע (capture)
-    var tmClick = function (e) {
-      var im = e.target.closest ? e.target.closest('.about-tile:not(.about-tile--soon) img') : null;
-      if (im && window.openImageLightbox) { window.openImageLightbox(im.getAttribute('src'), im.getAttribute('alt')); }
-    };
-    tmBox.addEventListener('click', tmClick);
-    tmSrc.addEventListener('click', tmClick);
   }
 
 
