@@ -5470,4 +5470,4 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
 .hero .hero-location { color: #38bdf8; }
 
 /* ----- Hero: באדג' "בקרוב" עולה ~4px (היה bottom: -6px) ----- */
-.hero .hero-badge { bottom: -2px !important; }
+.hero .hero-badge { bottom: 4px !important; }
