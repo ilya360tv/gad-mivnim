@@ -5456,3 +5456,18 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
 @media (max-width: 1023.98px) {
   .site-header .logo-img { width: 50.72px !important; height: 50.72px !important; min-width: 50.72px; }
 }
+
+/* ----- Hero: באדג' "בקרוב" ממורכז מעל שורת "לרשותכם..." + תכלת כמו קטגוריות ההדר; שורת HERZLIYA תכלת (כל הרוחבים) ----- */
+.hero .hero-badge {
+  inset-inline-start: auto;
+  left: 50%;
+  transform: translateX(-50%);
+  padding-inline: 12px;
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, .55);
+  background: rgba(56, 189, 248, .08);
+}
+.hero .hero-location { color: #38bdf8; }
+
+/* ----- Hero: באדג' "בקרוב" עולה ~4px (היה bottom: -6px) ----- */
+.hero .hero-badge { bottom: -2px !important; }
