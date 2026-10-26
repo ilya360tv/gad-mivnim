@@ -5489,7 +5489,7 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
   .site-header .main-nav ul { max-width: none !important; width: 100% !important; }
 }
 
-/* ----- #about: עמודת התמונה — כותרת "מאז ועד היום" + שני אריחים שווים (מאז / היום). אריח "היום" = placeholder עד שתתווסף תמונה ----- */
+/* ----- #about: עמודת התמונה — כותרת "מאז ועד היום" + שני אריחים שווים (מאז / היום), שניהם רצועות ----- */
 .about-media .about-media-title {
   margin: 0 0 12px;
   font-size: .95rem;
@@ -5596,8 +5596,9 @@ html.a11y-no-motion .about-media-title .about-hmq__src {
 html[dir="ltr"] .about-hmq__item,
 html[dir="ltr"] .about-mq__item { direction: ltr; }
 
-/* ----- #about: אריח "היום" — חלון קבוע עם רצועת תמונות אנכית שרצה כלפי מעלה (js/script.js סעיף 15, initMarquee axis:'y').
-         .about-reel__src = המקור (מוסתר ויזואלית כשהרצועה פעילה); לפני שהרצועה מוכנה וב"עצירת אנימציות" — התמונה הראשונה סטטית ----- */
+/* ----- #about: אריחי "מאז" ו"היום" — חלון קבוע, כל תמונה ממלאת את האריח כולו (object-fit: cover)
+         ורצה כלפי מעלה (js/script.js סעיף 15). גובה הפריים נקבע ב-JS לגובה האריח; 100cqh הוא גיבוי.
+         .about-reel__src = המקור (מוסתר כשהרצועה פעילה); לפני המוכנות וב"עצירת אנימציות" — התמונה הראשונה סטטית ----- */
 .about-tile--reel { background: #12151a; }
 .about-tile--reel.is-ready .about-reel__src {
   position: absolute !important;
@@ -5607,20 +5608,45 @@ html[dir="ltr"] .about-mq__item { direction: ltr; }
   clip-path: inset(50%);
 }
 .about-reel__src { width: 100%; height: 100%; }
-.about-reel__src img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.about-reel__src img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
 .about-reel__src img:not(:first-child) { display: none; }
 .about-tile--reel.is-ready .about-reel__src img:not(:first-child) { display: block; }
-.about-reel { position: absolute; inset: 0; display: none; }
-.about-tile--reel.is-ready {
-  cursor: zoom-in;
-  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 8%, #000 92%, transparent 100%);
-          mask-image: linear-gradient(180deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+.about-reel {
+  position: absolute;
+  inset: 0;
+  display: none;
+  overflow: hidden;
+  container-type: size;
 }
+.about-tile--reel.is-ready { cursor: zoom-in; }
 .about-tile--reel.is-ready .about-reel { display: block; }
 .about-tile--reel.is-dragging { cursor: grabbing; }
-.about-reel__track { display: flex; flex-direction: column; gap: 10px; width: 100%; will-change: transform; }
-.about-reel__item { flex: none; display: block; width: 100%; aspect-ratio: 1; border-radius: 10px; overflow: hidden; }
-.about-reel__item img { display: block; width: 100%; height: 100%; object-fit: cover; -webkit-user-drag: none; user-select: none; }
+.about-reel__track { display: flex; flex-direction: column; gap: 0; width: 100%; will-change: transform; }
+.about-media .about-reel__item {
+  flex: none;
+  display: block;
+  width: 100%;
+  height: 100cqh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  aspect-ratio: auto;
+  border-radius: 0;
+  overflow: hidden;
+}
+.about-media .about-reel__item img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  aspect-ratio: auto;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 0;
+  box-shadow: none;
+  -webkit-user-drag: none;
+  user-select: none;
+}
 html.a11y-no-motion .about-tile--reel .about-reel { display: none !important; }
 html.a11y-no-motion .about-tile--reel.is-ready .about-reel__src {
   position: static !important;
@@ -5630,4 +5656,4 @@ html.a11y-no-motion .about-tile--reel.is-ready .about-reel__src {
   clip-path: none;
 }
 html.a11y-no-motion .about-tile--reel.is-ready .about-reel__src img:not(:first-child) { display: none; }
-html.a11y-no-motion .about-tile--reel.is-ready { -webkit-mask-image: none; mask-image: none; cursor: default; }
+html.a11y-no-motion .about-tile--reel.is-ready { cursor: default; }
