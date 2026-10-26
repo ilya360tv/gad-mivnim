@@ -5596,9 +5596,10 @@ html.a11y-no-motion .about-media-title .about-hmq__src {
 html[dir="ltr"] .about-hmq__item,
 html[dir="ltr"] .about-mq__item { direction: ltr; }
 
-/* ----- #about: אריחי "מאז" ו"היום" — חלון קבוע, כל תמונה ממלאת את האריח כולו (object-fit: cover)
-         ורצה כלפי מעלה (js/script.js סעיף 15). גובה הפריים נקבע ב-JS לגובה האריח; 100cqh הוא גיבוי.
-         .about-reel__src = המקור (מוסתר כשהרצועה פעילה); לפני המוכנות וב"עצירת אנימציות" — התמונה הראשונה סטטית ----- */
+/* ----- #about: אריחי "מאז" ו"היום" — חלון קבוע, כל תמונה ממלאת את האריח (object-fit: cover)
+         ורצה כלפי מעלה (js/script.js סעיף 15). בין תמונות קו מפריד של 2px בצבע התכלת של הכותרת.
+         גובה הפריים נקבע ב-JS לגובה האריח; המנוע מוסיף את הקו לצעדי הלולאה כדי שתישאר קו אחד גם במעבר.
+         100cqh הוא גיבוי. .about-reel__src = המקור (מוסתר כשהרצועה פעילה); לפני המוכנות וב"עצירת אנימציות" — תמונה ראשונה סטטית ----- */
 .about-tile--reel { background: #12151a; }
 .about-tile--reel.is-ready .about-reel__src {
   position: absolute !important;
@@ -5621,7 +5622,14 @@ html[dir="ltr"] .about-mq__item { direction: ltr; }
 .about-tile--reel.is-ready { cursor: zoom-in; }
 .about-tile--reel.is-ready .about-reel { display: block; }
 .about-tile--reel.is-dragging { cursor: grabbing; }
-.about-reel__track { display: flex; flex-direction: column; gap: 0; width: 100%; will-change: transform; }
+.about-reel__track {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;                 /* הקו המפריד — הרקע של הרצועה נראה רק ברווח */
+  width: 100%;
+  background: #38bdf8;
+  will-change: transform;
+}
 .about-media .about-reel__item {
   flex: none;
   display: block;
@@ -5633,6 +5641,7 @@ html[dir="ltr"] .about-mq__item { direction: ltr; }
   aspect-ratio: auto;
   border-radius: 0;
   overflow: hidden;
+  background: #12151a;      /* טעינה: לא צובע את כל האריח בתכלת */
 }
 .about-media .about-reel__item img {
   display: block;
