@@ -5544,3 +5544,12 @@ html[dir="rtl"] .about-media .about-media-title { margin-inline-start: -.14em; }
   .about-media .about-media-title { font-size: .92rem; }
   .about-tiles { aspect-ratio: auto; height: 160px; }
 }
+
+/* ----- #about: "מאז ועד היום..." ממורכז מעל שתי התמונות ----- */
+.about-media .about-media-title,
+html[dir="rtl"] .about-media .about-media-title,
+html[dir="ltr"] .about-media .about-media-title {
+  text-align: center !important;
+  margin-inline: 0 !important;
+  width: 100%;
+}
