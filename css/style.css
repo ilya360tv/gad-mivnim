@@ -5092,3 +5092,16 @@ body .site-header .main-nav.is-open ul li a { color: var(--lb); }
   color: var(--logo-g);
 }
 #about .about-text .about-quote .aq-l { display: block; }
+
+/* ==========================================================================
+   #about — מראה זהה בכל מחשב (≥1024): גודל הכתב יחסי לרוחב הקונטיינר (cqi),
+   כך שבמסך צר / הגדלת Windows 125%-150% הטקסט מתכווץ באותו יחס והשורות נשברות
+   בדיוק באותם מקומות כמו במסך רחב. ברוחב מלא (1180px) — אותם גדלים כמו היום.
+   ========================================================================== */
+@media (min-width: 1024px) {
+  #about .about-text > p:not(.about-quote),
+  #about .about-text .about-list li { font-size: 1.343cqi; }
+  #about .about-text h3.about-sub   { font-size: 1.767cqi; }
+  #about .about-text h4.about-sub--sm { font-size: 1.484cqi; }
+  #about .about-text .about-quote   { font-size: 1.625cqi; }
+}
