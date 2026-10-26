@@ -5308,3 +5308,44 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
   padding-inline: 14px !important;
 }
 .lang-menu { border-radius: 16px !important; overflow: hidden; }
+
+/* ----- בורר השפה: עיגול בגודל הלוגו (72px), מסגרת תכלת כמו הקטגוריות; בפנים רק הדגל העגול ----- */
+.lang-btn {
+  width: 72px !important;
+  height: 72px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  background: rgba(56, 189, 248, .08) !important;
+  border: 0 !important;
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, .45) !important;
+  color: #38bdf8 !important;
+}
+.lang-btn:hover,
+.lang-btn:focus-visible,
+.lang-btn[aria-expanded="true"] {
+  background: rgba(56, 189, 248, .18) !important;
+  box-shadow: 0 0 0 1px #38bdf8, 0 0 10px rgba(56, 189, 248, .25) !important;
+}
+.lang-btn #langLabel,
+.lang-btn .lang-caret {                         /* שם השפה נשאר לקוראי מסך, מוסתר ויזואלית */
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.lang-btn .flag {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  vertical-align: middle;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .3);
+}
+@media (max-width: 1023.98px) {
+  .lang-btn { width: 56px !important; height: 56px !important; }
+  .lang-btn .flag { width: 28px; height: 28px; }
+}
