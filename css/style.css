@@ -5425,3 +5425,23 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
 @media (max-width: 1023.98px) {
   .lang-btn .flag { width: 44%; height: 44%; margin: 0; }
 }
+
+/* ----- הלוגו בהדר ועיגול השפות — בדיוק אותו גודל בכל רוחב (72px מחשב / 56px טאבלט+טלפון),
+         ואותה עובי טבעת כך שהקוטר הנראה זהה ----- */
+.site-header .logo-img,
+.site-header .lang-btn {
+  width: 72px !important;
+  height: 72px !important;
+  min-width: 72px;
+  flex-shrink: 0;
+}
+.site-header .logo-img {
+  box-shadow: 0 0 0 1.5px rgba(56, 189, 248, .75), 0 0 12px rgba(56, 189, 248, .3) !important;
+}
+.site-header .lang-btn {
+  box-shadow: 0 0 0 1.5px rgba(56, 189, 248, .75), 0 0 12px rgba(56, 189, 248, .3) !important;
+}
+@media (max-width: 1023.98px) {
+  .site-header .logo-img,
+  .site-header .lang-btn { width: 56px !important; height: 56px !important; min-width: 56px; }
+}
