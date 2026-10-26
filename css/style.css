@@ -5471,3 +5471,20 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
 
 /* ----- Hero: באדג' "בקרוב" עולה ~4px (היה bottom: -6px) ----- */
 .hero .hero-badge { bottom: 4px !important; }
+
+/* ==========================================================================
+   הדר (דסקטופ ≥1024): הלוגו ועיגול השפות לא נצמדים לקצוות המסך —
+   כל התוכן (לוגו · גלולות · שפות) בתוך רוחב מקסימלי 1560px וממורכז,
+   אותו רווח (28px) בין כל עיגול לגלולות, ואותו מרחק מקצה המסך משני הצדדים.
+   ========================================================================== */
+@media (min-width: 1024px) {
+  .site-header {
+    padding-inline: max(24px, calc((100vw - 1560px) / 2)) !important;
+    column-gap: 28px !important;
+    grid-template-columns: 72px minmax(0, 1fr) 72px !important;
+  }
+  .site-header .logo,
+  .site-header .header-side { justify-self: center !important; margin: 0 !important; }
+  .site-header .header-side .logo-text { display: none !important; }   /* לא תופס מקום ליד העיגול */
+  .site-header .main-nav ul { max-width: none !important; width: 100% !important; }
+}
