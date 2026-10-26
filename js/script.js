@@ -57,7 +57,12 @@ document.addEventListener('DOMContentLoaded', function () {
       while (s.offset >= 0) { s.offset -= s.W; }
       while (s.offset < -s.W) { s.offset += s.W; }
     }
-    function apply() { track.style.transform = Y ? 'translate3d(0,' + s.offset.toFixed(2) + 'px,0)' : 'translate3d(' + s.offset.toFixed(2) + 'px,0,0)'; }
+    function apply() {
+      // אנכי: פיקסלים שלמים — קו 2px נשאר חד ולא נמרח בין שורות
+      track.style.transform = Y
+        ? 'translate3d(0,' + Math.round(s.offset) + 'px,0)'
+        : 'translate3d(' + s.offset.toFixed(2) + 'px,0,0)';
+    }
     function measure(per, fixed) {
       // רוחב עותק אחד = המרחק בין הפריט הראשון לפריט הראשון של העותק השני (כולל הרווחים).
       // fixed > 0 — גובה/רוחב ידוע מראש (כשהרצועה עדיין מוסתרת ו-offsetTop לא אמין).
@@ -1329,7 +1334,7 @@ document.addEventListener('DOMContentLoaded', function () {
           f = ((f % 1) + 1) % 1;
           if (f > 0.999) { f = 0; }
         }
-        st.offset = -st.W * (1 + f);          // -W = תמונה מלאה; עד -2W = המעבר לתמונה הבאה
+        st.offset = -st.W * (1 + f);          // -W = תמונה מלאה; עד -2W = המעבר. W כולל את קו 2px
       },
       wrap: function (st) {
         if (!st.W) { return; }
@@ -1345,11 +1350,18 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
 
+    var RL_LINE = 2;
+    // צעד הלולאה = גובה תמונה + הקו שביניהן. בלי זה המעבר מקפיץ או מכפיל קו.
+    function rlPitch(h) {
+      var kids = rlTrack.children;
+      var d = (kids.length >= 2) ? (kids[1].offsetTop - kids[0].offsetTop) : 0;
+      return (d > h) ? d : (h + RL_LINE);
+    }
     function rlLayout() {
       var h = rlTile.clientHeight;
       if (!h) { return false; }
       Array.prototype.forEach.call(rlTrack.children, function (el) { el.style.height = h + 'px'; });
-      rlE.measure(1, h);
+      rlE.measure(1, rlPitch(h));
       return true;
     }
 
@@ -1367,7 +1379,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       Array.prototype.forEach.call(kids, function (el) { el.style.height = h + 'px'; });
       rlTile.classList.add('is-ready');
-      rlE.measure(1, h);
+      rlE.measure(1, rlPitch(h));
     }
     function rlArm() {
       if (rlArmed) { return; }
