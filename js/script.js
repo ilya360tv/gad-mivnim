@@ -1112,4 +1112,30 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+
+  /* ---------------------------------------------------------------
+     13) #about — הכותרת "מאז ועד היום..." (מעל התמונות) עולה לגובה של "מדוע נולד הרעיון..." (מחשב ≥1024)
+     --------------------------------------------------------------- */
+  var mdHead = document.querySelector('#about .about-media-title');
+  var mdRef = document.querySelector('#about .about-title');
+  if (mdHead && mdRef) {
+    var mdCol = mdHead.closest('.about-media') || mdHead.parentNode;   // כל העמודה עולה — התמונות נשארות צמודות לכותרת
+    var liftMedia = function () {
+      mdCol.style.marginTop = '';
+      if (window.innerWidth < 1024) { return; }
+      var a = mdRef.getBoundingClientRect(), b = mdHead.getBoundingClientRect();
+      var d = (a.top + a.height / 2) - (b.top + b.height / 2);
+      if (Math.abs(d) > 0.5) { mdCol.style.marginTop = d.toFixed(1) + 'px'; }
+    };
+    liftMedia();
+    window.addEventListener('load', liftMedia);
+    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(liftMedia); }
+    var lmW = window.innerWidth;
+    window.addEventListener('resize', function () { if (window.innerWidth !== lmW) { lmW = window.innerWidth; liftMedia(); } });
+    if ('MutationObserver' in window) {
+      new MutationObserver(function () { setTimeout(liftMedia, 80); })
+        .observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    }
+  }
+
 });
