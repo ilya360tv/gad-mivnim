@@ -5621,13 +5621,12 @@ html[dir="ltr"] .about-mq__item { direction: ltr; }
 }
 .about-tile--reel.is-ready { cursor: zoom-in; }
 .about-tile--reel.is-ready .about-reel { display: block; }
-.about-tile--reel.is-dragging { cursor: grabbing; }
+.about-tiles.is-dragging .about-tile--reel { cursor: grabbing; }
 .about-reel__track {
   display: flex;
   flex-direction: column;
-  gap: 2px;                 /* הקו המפריד — הרקע של הרצועה נראה רק ברווח */
+  gap: 10px;                /* רווח נקי בין תמונות — מראה את רקע הסקשן (ב-JS: RL_GAP) */
   width: 100%;
-  background: #38bdf8;
   will-change: transform;
 }
 .about-media .about-reel__item {
@@ -5639,9 +5638,10 @@ html[dir="ltr"] .about-mq__item { direction: ltr; }
   padding: 0;
   border: 0;
   aspect-ratio: auto;
-  border-radius: 0;
+  border-radius: 12px;
   overflow: hidden;
-  background: #12151a;      /* טעינה: לא צובע את כל האריח בתכלת */
+  background: #12151a;      /* טעינה */
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .35);
 }
 .about-media .about-reel__item img {
   display: block;
@@ -5666,3 +5666,11 @@ html.a11y-no-motion .about-tile--reel.is-ready .about-reel__src {
 }
 html.a11y-no-motion .about-tile--reel.is-ready .about-reel__src img:not(:first-child) { display: none; }
 html.a11y-no-motion .about-tile--reel.is-ready { cursor: default; }
+
+/* ----- #about: חלון האריח — רקע כהה של הסקשן + דהייה רכה למעלה ולמטה (8%) כדי שהתמונות נכנסות ויוצאות בעדינות ----- */
+.about-tile--reel { background: #0a0c0e; }
+.about-tile--reel.is-ready {
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+          mask-image: linear-gradient(180deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+}
+html.a11y-no-motion .about-tile--reel.is-ready { -webkit-mask-image: none; mask-image: none; }

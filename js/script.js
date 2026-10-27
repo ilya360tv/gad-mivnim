@@ -1222,15 +1222,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
   /* ---------------------------------------------------------------
-     15) #about — אריחי "מאז" ו"היום": כל תמונה ממלאת את האריח ורצה כלפי מעלה.
-         כל .about-tile--reel משתמש באותו מנוע (initMarquee, axis:'y', אותה מהירות).
-         ב-DOM רק 3 פריימים (קודם / נוכחי / הבא) שממוחזרים — רצועה של מאות תמונות
-         לא בונה שכבת ענק ולא חוסמת את טעינת הדף. התמונות עולות רק כשהאריח קרוב למסך.
+     15) #about — אריחי "מאז" ו"היום": כל תמונה ממלאת את האריח בדיוק ורצה כלפי מעלה.
+         שני האריחים נעים כיחידה אחת: מנוע initMarquee אחד (axis:'y') עם offset אחד מניע את שתי הרצועות
+         (אותה מהירות, אותו כיוון, אותה התחלה, אותו גובה תמונה ורווח) — גבולות התמונות תמיד באותו גובה.
+         ריחוף/גרירה על אחד האריחים (המכל .about-tiles) עוצרים את שניהם; מחוץ למסך — שניהם נעצרים.
+         ב-DOM של כל אריח רק 3 פריימים (קודם / נוכחי / הבא) שממוחזרים לפי אינדקס — לכן גם אם בכל אריח מספר תמונות שונה
+         (ב"מאז" 102, ב"היום" 14) הלולאה נשארת מיושרת. התמונות עולות רק כשהאריחים קרובים למסך.
          המקור ב-.about-reel__src (התמונה הראשונה סטטית לפני המוכנות וב"עצירת אנימציות").
-         רשימה ארוכה: data-src-base + data-count (בלי <img> לכל קובץ). data-reel-phase (0–1)
-         מזיז אריח אחד ביחס לשני כדי שלא יתחלפו יחד.
-         לחיצה פותחת לייטבוקס על כל התמונות; גרירה לא נחשבת ללחיצה.
+         רשימה ארוכה: data-src-base + data-count. לחיצה פותחת לייטבוקס על כל התמונות; גרירה לא נחשבת ללחיצה.
      --------------------------------------------------------------- */
+  var RL_GAP = 10;                                           // הרווח בין תמונות (מראה את רקע הסקשן) — זהה ל-gap ב-CSS
+  var rlTilesBox = document.querySelector('#about .about-tiles');
+  var rlReels = [];
   Array.prototype.forEach.call(document.querySelectorAll('.about-tile--reel'), function (rlTile) {
     var rlTrack = rlTile.querySelector('.about-reel__track');
     var rlSrc = rlTile.querySelector('.about-reel__src');
@@ -1251,10 +1254,6 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
     if (!rlList.length) { return; }
-
-    var rlPhase = parseFloat(rlTile.getAttribute('data-reel-phase') || '0');
-    if (!isFinite(rlPhase)) { rlPhase = 0; }
-    rlPhase = ((rlPhase % 1) + 1) % 1;
 
     var rlIndex = 0;
     function rlMod(i) {
@@ -1324,89 +1323,36 @@ document.addEventListener('DOMContentLoaded', function () {
       rlTrack.appendChild(it);
     }
 
-    var rlE = initMarquee(rlTile, rlTrack, {
-      axis: 'y',
-      speed: 40,
-      place: function (st, prevW, prevOff) {
-        var f = rlPhase;
-        if (prevW) {
-          f = (-prevOff / prevW) - 1;
-          f = ((f % 1) + 1) % 1;
-          if (f > 0.999) { f = 0; }
-        }
-        st.offset = -st.W * (1 + f);          // -W = תמונה מלאה; עד -2W = המעבר. W כולל את קו 2px
+    var reel = {
+      tile: rlTile, track: rlTrack, step: rlStep, ready: false, armed: false, tries: 0,
+      // גובה האריח המדויק (כולל שברי פיקסל) — כל פריים בגובה האריח בדיוק
+      height: function () { return rlTile.getBoundingClientRect().height; },
+      size: function (h) {
+        Array.prototype.forEach.call(rlTrack.children, function (el) { el.style.height = h + 'px'; });
       },
-      wrap: function (st) {
-        if (!st.W) { return; }
-        var guard = 0;
-        while (st.offset <= -2 * st.W && guard++ < 40) {
-          st.offset += st.W;
-          rlStep(1);
+      reveal: function () {
+        var kids = rlTrack.children;
+        rlAssign(kids[0], rlIndex - 1);
+        rlAssign(kids[1], rlIndex);
+        rlAssign(kids[2], rlIndex + 1);
+        rlPreload(rlIndex + 2);
+        var h = reel.height();
+        if (!h) {
+          if (reel.tries++ < 90) { requestAnimationFrame(reel.reveal); }
+          return;
         }
-        while (st.offset > -st.W && guard++ < 80) {
-          st.offset -= st.W;
-          rlStep(-1);
-        }
-      }
-    });
-
-    var RL_LINE = 2;
-    // צעד הלולאה = גובה תמונה + הקו שביניהן. בלי זה המעבר מקפיץ או מכפיל קו.
-    function rlPitch(h) {
-      var kids = rlTrack.children;
-      var d = (kids.length >= 2) ? (kids[1].offsetTop - kids[0].offsetTop) : 0;
-      return (d > h) ? d : (h + RL_LINE);
-    }
-    function rlLayout() {
-      var h = rlTile.clientHeight;
-      if (!h) { return false; }
-      Array.prototype.forEach.call(rlTrack.children, function (el) { el.style.height = h + 'px'; });
-      rlE.measure(1, rlPitch(h));
-      return true;
-    }
-
-    var rlArmed = false, rlTries = 0;
-    function rlReveal() {
-      var kids = rlTrack.children;
-      rlAssign(kids[0], rlIndex - 1);
-      rlAssign(kids[1], rlIndex);
-      rlAssign(kids[2], rlIndex + 1);
-      rlPreload(rlIndex + 2);
-      var h = rlTile.clientHeight;
-      if (!h) {
-        if (rlTries++ < 90) { requestAnimationFrame(rlReveal); }
-        return;
-      }
-      Array.prototype.forEach.call(kids, function (el) { el.style.height = h + 'px'; });
-      rlTile.classList.add('is-ready');
-      rlE.measure(1, rlPitch(h));
-    }
-    function rlArm() {
-      if (rlArmed) { return; }
-      rlArmed = true;
-      rlWarm([0, 1, 2, rlList.length - 1], rlReveal);
-    }
-
-    var rlT;
-    var rlStart = function () {
-      window.addEventListener('resize', function () {
-        clearTimeout(rlT);
-        rlT = setTimeout(function () { if (rlArmed) { rlLayout(); } }, 200);
-      });
-      if ('IntersectionObserver' in window) {
-        var io = new IntersectionObserver(function (ents) {
-          if (ents.some(function (e) { return e.isIntersecting; })) {
-            io.disconnect();
-            rlArm();
-          }
-        }, { rootMargin: '600px 0px' });
-        io.observe(rlTile);
-      } else {
-        rlArm();
+        reel.size(h);
+        rlTile.classList.add('is-ready');
+        reel.ready = true;
+        rlLayout();
+      },
+      arm: function () {
+        if (reel.armed) { return; }
+        reel.armed = true;
+        rlWarm([0, 1, 2, rlList.length - 1], reel.reveal);
       }
     };
-    if (document.readyState === 'complete') { rlStart(); }
-    else { window.addEventListener('load', rlStart); }
+    rlReels.push(reel);
 
     rlTile.addEventListener('click', function (e) {
       var it = e.target.closest ? e.target.closest('.about-reel__item') : null;
@@ -1417,6 +1363,70 @@ document.addEventListener('DOMContentLoaded', function () {
       window.openImageLightbox(rlList, rlMod(rlIndex + (slot - 1)));
     });
   });
+
+  if (rlTilesBox && rlReels.length) {
+    // "רצועה" וירטואלית אחת: מנוע אחד כותב את אותו transform לשתי הרצועות
+    var rlProxy = { style: {}, children: rlReels[0].track.children };
+    Object.defineProperty(rlProxy.style, 'transform', {
+      set: function (v) { rlReels.forEach(function (r) { r.track.style.transform = v; }); },
+      get: function () { return rlReels[0].track.style.transform; }
+    });
+    var rlE = initMarquee(rlTilesBox, rlProxy, {
+      axis: 'y',
+      speed: 40,
+      place: function (st, prevW, prevOff) {
+        var f = 0;                                  // שני האריחים מתחילים יחד, בלי הזזה זה ביחס לזה
+        if (prevW) {
+          f = (-prevOff / prevW) - 1;
+          f = ((f % 1) + 1) % 1;
+          if (f > 0.999) { f = 0; }
+        }
+        st.offset = -st.W * (1 + f);                // -W = תמונה מלאה; עד -2W = המעבר. W כולל את הרווח
+      },
+      wrap: function (st) {
+        if (!st.W) { return; }
+        var guard = 0;
+        while (st.offset <= -2 * st.W && guard++ < 40) {
+          st.offset += st.W;
+          rlReels.forEach(function (r) { r.step(1); });
+        }
+        while (st.offset > -st.W && guard++ < 80) {
+          st.offset -= st.W;
+          rlReels.forEach(function (r) { r.step(-1); });
+        }
+      }
+    });
+    // מידות + מדידה מחדש לשני האריחים יחד: גובה תמונה = גובה האריח, צעד הלולאה = גובה + רווח
+    var rlLayout = function () {
+      var hs = rlReels.filter(function (r) { return r.ready; }).map(function (r) { return r.height(); }).filter(Boolean);
+      if (!hs.length) { return false; }
+      var h = hs[0];
+      rlReels.forEach(function (r) { if (r.ready) { r.size(h); } });
+      rlE.measure(1, h + RL_GAP);
+      return true;
+    };
+    var rlT;
+    var rlStart = function () {
+      window.addEventListener('resize', function () {
+        clearTimeout(rlT);
+        rlT = setTimeout(rlLayout, 200);
+      });
+      if ('IntersectionObserver' in window) {
+        var io = new IntersectionObserver(function (ents) {
+          if (ents.some(function (e) { return e.isIntersecting; })) {
+            io.disconnect();
+            rlReels.forEach(function (r) { r.arm(); });        // שני האריחים נטענים ומתחילים יחד
+          }
+        }, { rootMargin: '600px 0px' });
+        io.observe(rlTilesBox);
+      } else {
+        rlReels.forEach(function (r) { r.arm(); });
+      }
+      rlLayout();
+    };
+    if (document.readyState === 'complete') { rlStart(); }
+    else { window.addEventListener('load', rlStart); }
+  }
 
 
 });
