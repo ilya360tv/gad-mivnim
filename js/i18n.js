@@ -109,6 +109,9 @@
     ab2_close: { he: '<span class="aq-l">בכל מקום במפה</span> <bdi><span class="gad-sp">GAD</span> MIVNIM</bdi> <span class="aq-l"><span class="aq-brush">משנים את הדרך לבניה נכונה !</span></span>', ru: '<span class="aq-l">Повсюду на карте</span> <bdi><span class="gad-sp">GAD</span> MIVNIM</bdi> <span class="aq-l">Меняем путь к правильному строительству!</span>', en: '<span class="aq-l">Everywhere on the map</span> <bdi><span class="gad-sp">GAD</span> MIVNIM</bdi> <span class="aq-l">Changing the way to proper construction!</span>', fr: '<span class="aq-l">Partout sur la carte</span> <bdi><span class="gad-sp">GAD</span> MIVNIM</bdi> <span class="aq-l">Nous changeons la façon de bien construire !</span>' },
     ab2_media_title: { he: 'מאז ועד היום...', ru: 'Тогда и сейчас...', en: 'Then and Now...', fr: "Hier et aujourd'hui..." },
     ab2_media_soon: { he: 'תמונה תתווסף בקרוב', ru: 'Фото скоро появится', en: 'Photo coming soon', fr: 'Photo bientôt disponible' },
+    tm_h1: { he: 'הנהלה', ru: 'Руководство', en: 'Management', fr: 'Direction' },
+    tm_h2: { he: 'אנשי משרד', ru: 'Офисные сотрудники', en: 'Office Staff', fr: 'Équipe de bureau' },
+    tm_h3: { he: 'אנשי שטח', ru: 'Полевые команды', en: 'Field Teams', fr: 'Équipes de terrain' },
 
     /* ----- השירותים שלנו ----- */
     svc_eyebrow: { he: 'השירותים שלנו', ru: 'Наши услуги', en: 'Our Services', fr: 'Nos services' },
