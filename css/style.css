@@ -5676,11 +5676,12 @@ html.a11y-no-motion .about-tile--reel.is-ready { cursor: default; }
 html.a11y-no-motion .about-tile--reel.is-ready { -webkit-mask-image: none; mask-image: none; }
 
 /* ----- #contact: הכותרת במשפט אחד בשורה אחת, קטנה (~70%); במובייל מותר לשבור שורה, ממורכז ----- */
+/* עודכן: מיושר לימין כמו קודם (לא ממורכז), גודל 9pt */
 #contact .contact-title {
-  font-size: clamp(1.3rem, 2.2vw, 1.8rem);
-  white-space: nowrap;
-  text-align: center;
+  font-size: 9pt;
+  white-space: normal;
+  text-align: start;
 }
 @media (max-width: 767.98px) {
-  #contact .contact-title { font-size: 1.2rem; white-space: normal; text-wrap: balance; }
+  #contact .contact-title { font-size: 9pt; }
 }
