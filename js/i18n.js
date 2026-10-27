@@ -244,8 +244,7 @@
     media_3: { he: 'סרטונים של שלבי בניה', ru: 'Видео этапов строительства', en: 'Videos of construction stages', fr: 'Vidéos des étapes de construction' },
 
     /* ----- צור קשר / קוד משתמש ----- */
-    ct_t1:   { he: 'המבנה שלכם שווה הרבה !', ru: 'Ваше здание стоит многого!', en: 'Your building is worth a lot!', fr: 'Votre bâtiment vaut beaucoup !' },
-    ct_t2:   { he: 'והוא רק שלכם !', ru: 'И оно только ваше!', en: 'And it is only yours!', fr: 'Et il n’est qu’à vous !' },
+    ct_title: { he: 'המבנה שלכם שווה הרבה... והוא רק שלכם !', ru: 'Ваше здание стоит многого... и оно только ваше!', en: "Your building is worth a lot... and it's yours alone!", fr: "Votre bâtiment vaut beaucoup... et il n'appartient qu'à vous !" },
     ct_dear: { he: 'לקוחות יקרים', ru: 'Дорогие клиенты', en: 'Dear clients', fr: 'Chers clients' },
     ct_lead: { he: 'לצורך הבטחה על האתר והמשתמשים בו עליכם להירשם באמצעות מספרכם ושמכם וישלח אליכם קוד משתמש', ru: 'Для защиты сайта и его пользователей вам необходимо зарегистрироваться, указав ваш номер и имя, и вам будет отправлен код пользователя', en: 'To secure the site and its users, you must register with your number and name, and a user code will be sent to you', fr: 'Afin de sécuriser le site et ses utilisateurs, vous devez vous inscrire avec votre numéro et votre nom, et un code utilisateur vous sera envoyé' },
     f_first:  { he: 'שם', ru: 'Имя', en: 'First name', fr: 'Prénom' },

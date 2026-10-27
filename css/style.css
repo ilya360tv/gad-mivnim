@@ -5674,3 +5674,13 @@ html.a11y-no-motion .about-tile--reel.is-ready { cursor: default; }
           mask-image: linear-gradient(180deg, transparent 0, #000 8%, #000 92%, transparent 100%);
 }
 html.a11y-no-motion .about-tile--reel.is-ready { -webkit-mask-image: none; mask-image: none; }
+
+/* ----- #contact: הכותרת במשפט אחד בשורה אחת, קטנה (~70%); במובייל מותר לשבור שורה, ממורכז ----- */
+#contact .contact-title {
+  font-size: clamp(1.3rem, 2.2vw, 1.8rem);
+  white-space: nowrap;
+  text-align: center;
+}
+@media (max-width: 767.98px) {
+  #contact .contact-title { font-size: 1.2rem; white-space: normal; text-wrap: balance; }
+}
