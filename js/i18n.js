@@ -31,7 +31,7 @@
     nav_gallery:  { he: 'גלריה בנייה ועיצובים', ru: 'Галерея — строительство и дизайн', en: 'Gallery — Building & Design', fr: 'Galerie — construction & design' },
     nav_gallery_short: { he: 'גלריה', ru: 'Галерея', en: 'Gallery', fr: 'Galerie' },
     nav_info:     { he: 'מידע לאזרח ולבונה', ru: 'Инфо гражданам', en: 'Citizen & Builder Info', fr: 'Info citoyen' },
-    nav_contact:  { he: 'צור קשר', ru: 'Связаться', en: 'Contact', fr: 'Contact' },
+    nav_contact:  { he: 'שירות לקוחות', ru: 'Служба клиентов', en: 'Customer Service', fr: 'Service client' },
     nav_podcast:  { he: 'פודקאסט', ru: 'Подкаст', en: 'Podcast', fr: 'Podcast' },
     nav_in_progress:   { he: 'פרויקטים בביצוע', ru: 'Текущие проекты', en: 'Projects in Progress', fr: 'Projets en cours' },
     nav_careers:       { he: 'דרושים', ru: 'Вакансии', en: 'Careers', fr: 'Recrutement' },
