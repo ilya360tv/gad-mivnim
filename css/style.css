@@ -5491,7 +5491,7 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
     --side-w: clamp(150px, 9.9vw, 190px);          /* רוחב עמודה: 190px ב-1920, מינימום 150px */
     --side-pad: clamp(12px, .83vw, 16px);          /* ריווח פנימי בצדי העמודה */
     --side-top: clamp(16px, 1.25vw, 24px);         /* ריווח עליון */
-    --side-gap: clamp(8px, .625vw, 12px);          /* רווח בין גלולות */
+    --side-gap: clamp(14px, 1.15vw, 22px);         /* רווח בין גלולות (22px ב-1920) */
     --side-pill-h: clamp(30px, 1.875vw, 36px);     /* גובה גלולה */
     --header-height: 0px;                          /* אין הדר עליון בדסקטופ (Hero בגובה מסך מלא) */
   }
