@@ -3429,14 +3429,6 @@ html.nav-open body { overflow: hidden; }
 .podcast     { background: #12151a; padding-block: 72px; }
 .gallery     { background: #0a0c0e; }
 .careers     { background: #12151a; }
-/* מכרזים / מנויים, אפליקציה / מנויים (בקרוב) — בין דרושים לצור קשר; קו דק מפריד מ-#contact שמתחיל באותו גוון */
-.tenders     { background: #0a0c0e; padding-block: 72px; }
-.app-soon    { background: #12151a; padding-block: 72px; border-bottom: 1px solid var(--line); }
-.tenders .soon-lead,
-.app-soon .soon-lead { text-align: center; margin-inline: auto; font-size: 1.25rem; }
-@media (max-width: 767.98px) {
-  .tenders, .app-soon { padding-block: 48px; }
-}
 
 .podcast .podcast-banner { border: 1px solid var(--line); margin-top: 8px; }
 

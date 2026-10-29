@@ -429,9 +429,12 @@ document.addEventListener('DOMContentLoaded', function () {
       setNav(!mainNav.classList.contains('is-open'));
     });
 
-    // סגירת התפריט אחרי לחיצה על קישור
+    // סגירת התפריט אחרי לחיצה על קישור; קטגוריות "בקרוב" (data-soon) — לחיצה לא עושה כלום
     mainNav.querySelectorAll('a').forEach(function (link) {
-      link.addEventListener('click', function () { setNav(false); });
+      link.addEventListener('click', function (e) {
+        if (link.hasAttribute('data-soon')) { e.preventDefault(); return; }
+        setNav(false);
+      });
     });
 
     // סגירה במקש Escape (והחזרת המיקוד להמבורגר)
