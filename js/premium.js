@@ -140,7 +140,7 @@
       // כל היעדים שקיימים בדף (גם סקשנים שאינם בתפריט — כדי לנקות סימון ישן)
       var spyIds = ['hero', 'about', 'services', 'projects', 'in-progress', 'teams',
                     'partners', 'gallery', 'info',
-                    'podcast', 'contact', 'careers'];
+                    'podcast', 'contact', 'careers', 'tenders', 'app'];
       var spyTargets = spyIds.map(function (id) { return document.getElementById(id); })
                              .filter(Boolean);
       var currentLink = null;
@@ -161,7 +161,10 @@
       var spyTicking = false;
       var updateSpy = function () {
         spyTicking = false;
-        var probe = window.innerHeight * 0.35;     // קו הבדיקה במסך
+        // קו הבדיקה במסך: 35% מהגובה, אבל לא יותר מ-80px מתחת להדר — כדי שסקשנים קצרים (#tenders, #app) יסומנו נכון
+        var hdrEl = document.querySelector('.site-header');
+        var hdrBottom = hdrEl ? hdrEl.getBoundingClientRect().bottom : 0;
+        var probe = Math.min(window.innerHeight * 0.35, hdrBottom + 80);
         var atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
         var best = null, bestTop = -Infinity;
         spyTargets.forEach(function (el) {

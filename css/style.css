@@ -3352,6 +3352,8 @@ html.nav-open body { overflow: hidden; }
   .main-nav li:nth-child(10) a { --d: 0.88s; }
   .main-nav li:nth-child(11) a { --d: 0.95s; }
   .main-nav li:nth-child(12) a { --d: 1.02s; }
+  .main-nav li:nth-child(13) a { --d: 1.09s; }
+  .main-nav li:nth-child(14) a { --d: 1.16s; }
   }
 
   /* מובייל/טאבלט — בכל פתיחה של המגירה */
@@ -3371,6 +3373,8 @@ html.nav-open body { overflow: hidden; }
   .main-nav.is-open li:nth-child(10) a { --d: 0.455s; }
   .main-nav.is-open li:nth-child(11) a { --d: 0.5s; }
   .main-nav.is-open li:nth-child(12) a { --d: 0.545s; }
+  .main-nav.is-open li:nth-child(13) a { --d: 0.59s; }
+  .main-nav.is-open li:nth-child(14) a { --d: 0.635s; }
   }
 }
 
@@ -3425,6 +3429,14 @@ html.nav-open body { overflow: hidden; }
 .podcast     { background: #12151a; padding-block: 72px; }
 .gallery     { background: #0a0c0e; }
 .careers     { background: #12151a; }
+/* מכרזים / מנויים, אפליקציה / מנויים (בקרוב) — בין דרושים לצור קשר; קו דק מפריד מ-#contact שמתחיל באותו גוון */
+.tenders     { background: #0a0c0e; padding-block: 72px; }
+.app-soon    { background: #12151a; padding-block: 72px; border-bottom: 1px solid var(--line); }
+.tenders .soon-lead,
+.app-soon .soon-lead { text-align: center; margin-inline: auto; font-size: 1.25rem; }
+@media (max-width: 767.98px) {
+  .tenders, .app-soon { padding-block: 48px; }
+}
 
 .podcast .podcast-banner { border: 1px solid var(--line); margin-top: 8px; }
 
@@ -5289,9 +5301,10 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
 /* ----- ניווט בהדר (דסקטופ): טבעת עדינה יותר (1px, בלי זוהר חזק) + גלולות קטנות יותר ----- */
 @media (min-width: 1024px) {
   body .site-header .main-nav ul li a {
-    height: clamp(22px, 1.354vw, 26px);                 /* יחסי לרוחב המסך (בסיס 1920) */
-    font-size: clamp(10px, .633vw, 12.15px);
-    padding-inline: clamp(3px, .73vw, 14px);
+    height: clamp(24px, 1.46vw, 28px);                  /* יחסי לרוחב המסך (בסיס 1920) */
+    font-size: clamp(11px, .68vw, 13px);                /* מינימום 11px — קריא */
+    padding-inline: clamp(3px, .42vw, 8px);
+    width: 100%;
     box-shadow: 0 0 0 1px rgba(56, 189, 248, .45);
   }
   body .site-header .main-nav ul li a:hover,
@@ -5484,27 +5497,41 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
   :root { --header-height: clamp(64px, 5.83vw, 112px); }
   .site-header {
     height: var(--header-height) !important;
-    padding-inline: max(9.375vw, calc((100vw - 1560px) / 2)) !important;   /* 180px ב-1920 */
+    padding-inline: max(6.25vw, calc((100vw - 1680px) / 2)) !important;    /* 120px ב-1920 */
     column-gap: min(1.46vw, 28px) !important;
     grid-template-columns: clamp(52px, 3.75vw, 72px) minmax(0, 1fr) clamp(52px, 3.75vw, 72px) !important;
   }
   .site-header .logo,
   .site-header .header-side { justify-self: center !important; margin: 0 !important; }
   .site-header .header-side .logo-text { display: none !important; }   /* לא תופס מקום ליד העיגול */
+  /* 14 קטגוריות: 7 בכל שורה × 2 שורות, כל הגלולות באותו רוחב ובאותו גובה */
   .site-header .main-nav ul {
-    max-width: min(55.2vw, 1060px) !important;
+    grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+    grid-auto-rows: 1fr;
+    align-items: stretch !important;
+    max-width: min(72.9vw, 1400px) !important;
     width: 100% !important;
     margin-inline: auto !important;
     gap: min(.52vw, 10px) min(.625vw, 12px) !important;
   }
+  .site-header .main-nav ul li { display: flex; }
 }
-/* אנגלית/צרפתית ב-1024–1264: הטקסט הארוך ("Citizen & Builder Info") לא נכנס בשורה אחת בגודל 10px —
-   הגריד מתרחב עד רוחב העמודה (698px ב-1024) וריווח צדדי קטן; מ-1265 חוזר ל-55.2vw */
-@media (min-width: 1024px) and (max-width: 1264px) {
-  html[lang="en"] .site-header .main-nav ul,
-  html[lang="fr"] .site-header .main-nav ul { max-width: max(55.2vw, 698px) !important; }
-  html[lang="en"] body .site-header .main-nav ul li a,
-  html[lang="fr"] body .site-header .main-nav ul li a { padding-inline: 4px; }
+/* אנגלית/רוסית/צרפתית: אם תווית לא נכנסת בשורה אחת (בעיקר ב-1024) — נשברת לשתי שורות בתוך הגלולה,
+   וכל הגלולות גדלות יחד (grid-auto-rows: 1fr). עברית תמיד בשורה אחת */
+@media (min-width: 1024px) {
+  html:not([lang="he"]) body .site-header .main-nav ul li a {
+    height: auto;
+    min-height: clamp(24px, 1.46vw, 28px);
+    padding-block: 3px;
+    white-space: normal;
+    line-height: 1.15;
+    border-radius: 14px;
+  }
+  html:not([lang="he"]) .site-header {     /* אם הגלולות גבהו — ההדר גדל איתן (בלי גלישה) */
+    height: auto !important;
+    min-height: var(--header-height);
+    padding-block: 6px !important;
+  }
 }
 
 /* ----- #about: עמודת התמונה — כותרת "מאז ועד היום" + שני אריחים שווים (מאז / היום), שניהם רצועות ----- */
