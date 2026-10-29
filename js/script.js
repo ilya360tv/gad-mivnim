@@ -494,7 +494,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function updateAnchorOffsets() {
     if (!siteHeader) { return; }
-    var h = Math.round(siteHeader.getBoundingClientRect().height);
+    // דסקטופ: הניווט בעמודות צד קבועות — אין הדר עליון, ההיסט לעוגנים = 16px בלבד (scroll-padding)
+    var h = window.matchMedia('(min-width: 1024px)').matches ? 0 : Math.round(siteHeader.getBoundingClientRect().height);
     document.documentElement.style.setProperty('--header-h', h + 'px');
 
     spySections.forEach(function (sec) {

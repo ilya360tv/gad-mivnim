@@ -5479,50 +5479,126 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
 .hero .hero-badge { bottom: 4px !important; }
 
 /* ==========================================================================
-   הדר (דסקטופ ≥1024): הלוגו ועיגול השפות לא נצמדים לקצוות המסך —
-   כל התוכן (לוגו · גלולות · שפות) בתוך רוחב מקסימלי 1560px וממורכז,
-   אותו רווח (28px) בין כל עיגול לגלולות, ואותו מרחק מקצה המסך משני הצדדים.
+   ניווט בדסקטופ (≥1024): שתי עמודות צד קבועות — תמיד גלויות, גם בגלילה.
+   ימין: עיגול הלוגו + קטגוריות 1–7 · שמאל: עיגול השפות + קטגוריות 8–14.
+   ההדר הקיים הופך לשכבה שקופה בגובה המסך (גריד: עמודה | ריק | עמודה); ה-nav וה-ul הם display:contents,
+   כך שה-li מסודרים ישירות בגריד — גלולה N מימין באותה שורה כמו N+7 משמאל.
+   רקע העמודות + הקו הדק — body::before / body::after (קבועים, בגובה המסך המלא).
+   כל המידות יחסיות לרוחב המסך (בסיס 1920), מינימום קריא ב-1024. מובייל (<1024) — ללא שינוי.
    ========================================================================== */
-/* עודכן: כל המידות יחסיות לרוחב המסך (vw, בסיס = המראה ב-1920) — אותה תמונה בכל מסך ובכל הגדלת Windows;
-   מעל 1920 נעצר בערכי 1920, ב-1024 מינימום קריא */
 @media (min-width: 1024px) {
-  :root { --header-height: clamp(64px, 5.83vw, 112px); }
+  :root {
+    --side-w: clamp(150px, 9.9vw, 190px);          /* רוחב עמודה: 190px ב-1920, מינימום 150px */
+    --side-pad: clamp(12px, .83vw, 16px);          /* ריווח פנימי בצדי העמודה */
+    --side-top: clamp(16px, 1.25vw, 24px);         /* ריווח עליון */
+    --side-gap: clamp(8px, .625vw, 12px);          /* רווח בין גלולות */
+    --side-pill-h: clamp(30px, 1.875vw, 36px);     /* גובה גלולה */
+    --header-height: 0px;                          /* אין הדר עליון בדסקטופ (Hero בגובה מסך מלא) */
+  }
+
+  /* התוכן (כל הסקשנים והפוטר) בין שתי העמודות */
+  body { padding-inline: var(--side-w); }
+
+  /* רקע העמודות + קו דק בצד הפנימי */
+  body::before,
+  body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: var(--side-w);
+    background: #0a0c0e;
+    z-index: 99;
+    pointer-events: none;
+  }
+  body::before { right: 0; border-left: 1px solid rgba(56, 189, 248, .15); }
+  body::after  { left: 0;  border-right: 1px solid rgba(56, 189, 248, .15); }
+
   .site-header {
-    height: var(--header-height) !important;
-    padding-inline: max(6.25vw, calc((100vw - 1680px) / 2)) !important;    /* 120px ב-1920 */
-    column-gap: min(1.46vw, 28px) !important;
-    grid-template-columns: clamp(52px, 3.75vw, 72px) minmax(0, 1fr) clamp(52px, 3.75vw, 72px) !important;
-  }
-  .site-header .logo,
-  .site-header .header-side { justify-self: center !important; margin: 0 !important; }
-  .site-header .header-side .logo-text { display: none !important; }   /* לא תופס מקום ליד העיגול */
-  /* 14 קטגוריות: 7 בכל שורה × 2 שורות, כל הגלולות באותו רוחב ובאותו גובה */
-  .site-header .main-nav ul {
-    grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
-    grid-auto-rows: 1fr;
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: auto !important;
+    max-height: 100vh;
+    max-height: 100dvh;
+    overflow-y: auto;                               /* מסך נמוך — העמודות נגללות פנימית */
+    scrollbar-width: thin;
+    z-index: 100;
+    pointer-events: none;                           /* האמצע השקוף לא חוסם את הדף */
+    background: transparent !important;
+    backdrop-filter: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    display: grid !important;
+    grid-template-columns: var(--side-w) minmax(0, 1fr) var(--side-w) !important;   /* RTL: ימין | ריק | שמאל */
+    grid-template-rows: auto;                       /* שורה 1: העיגולים */
+    grid-auto-rows: 1fr;                            /* שורות 2–8: גלולות — כולן באותו גובה */
+    grid-auto-flow: row dense;
     align-items: stretch !important;
-    max-width: min(72.9vw, 1400px) !important;
-    width: 100% !important;
-    margin-inline: auto !important;
-    gap: min(.52vw, 10px) min(.625vw, 12px) !important;
+    column-gap: 0 !important;
+    row-gap: var(--side-gap);
+    padding: var(--side-top) 0 var(--side-top) !important;
   }
-  .site-header .main-nav ul li { display: flex; }
+  .site-header > *,
+  .site-header .header-inner > * { pointer-events: auto; }
+  .site-header .header-inner,
+  .site-header .main-nav,
+  .site-header .main-nav ul { display: contents !important; }
+
+  /* עיגולים למעלה, באותו גובה ובאותו גודל */
+  .site-header .logo        { grid-column: 1; grid-row: 1; }
+  .site-header .header-side { grid-column: 3; grid-row: 1; }
+  .site-header .logo,
+  .site-header .header-side {
+    justify-self: center !important;
+    align-self: center !important;
+    margin: 0 0 calc(var(--side-top) - var(--side-gap)) !important;
+  }
+  .site-header .header-side .logo-text { display: none !important; }
+
+  /* 1–7 בעמודה הימנית, 8–14 בשמאלית */
+  .site-header .main-nav ul li {
+    display: flex;
+    width: auto;
+    min-width: 0;
+    margin: 0;
+    padding-inline: var(--side-pad);
+  }
+  .site-header .main-nav ul li:nth-child(-n+7) { grid-column: 1; }
+  .site-header .main-nav ul li:nth-child(n+8)  { grid-column: 3; }
+  /* בשפות LTR הגריד מתהפך — מקבעים את הצדדים הפיזיים: לוגו + 1–7 תמיד מימין, שפות + 8–14 תמיד משמאל */
+  html[dir="ltr"] .site-header .logo        { grid-column: 3; }
+  html[dir="ltr"] .site-header .header-side { grid-column: 1; }
+  html[dir="ltr"] .site-header .main-nav ul li:nth-child(-n+7) { grid-column: 3; }
+  html[dir="ltr"] .site-header .main-nav ul li:nth-child(n+8)  { grid-column: 1; }
+
+  /* מספר הטלפון הגדול ב-#contact: הגודל היה לפי רוחב המסך המלא — מותאם לרוחב התוכן, בשורה אחת */
+  .phone-big-num { font-size: clamp(1.25rem, 2.2vw, 2.1rem); white-space: nowrap; }
+
+  /* הפס הנע ב-Hero (היה ברוחב 100vw) — רק ברוחב התוכן שבין העמודות */
+  .hero .hero-title.hero-title--mq {
+    width: calc(100vw - 2 * var(--side-w));
+    margin-inline: calc(50% - 50vw + var(--side-w));
+  }
+
+  /* גלולה: אותו סגנון (טבעת תכלת דקה, כתב רגיל, סימון פעיל), בגודל לעמודה */
+  body .site-header .main-nav ul li a {
+    width: 100%;
+    height: auto;
+    min-height: var(--side-pill-h);
+    padding: 3px 8px;
+    font-size: clamp(11px, .68vw, 13px);
+    line-height: 1.15;
+    white-space: nowrap;
+    border-radius: 999px;
+  }
 }
-/* אנגלית/רוסית/צרפתית: אם תווית לא נכנסת בשורה אחת (בעיקר ב-1024) — נשברת לשתי שורות בתוך הגלולה,
-   וכל הגלולות גדלות יחד (grid-auto-rows: 1fr). עברית תמיד בשורה אחת */
+/* אנגלית/רוסית/צרפתית: תווית ארוכה נשברת לשתי שורות; כל הגלולות גדלות יחד (grid-auto-rows: 1fr). עברית — שורה אחת */
 @media (min-width: 1024px) {
   html:not([lang="he"]) body .site-header .main-nav ul li a {
-    height: auto;
-    min-height: clamp(24px, 1.46vw, 28px);
-    padding-block: 3px;
     white-space: normal;
-    line-height: 1.15;
-    border-radius: 14px;
-  }
-  html:not([lang="he"]) .site-header {     /* אם הגלולות גבהו — ההדר גדל איתן (בלי גלישה) */
-    height: auto !important;
-    min-height: var(--header-height);
-    padding-block: 6px !important;
+    border-radius: 16px;
   }
 }
 
