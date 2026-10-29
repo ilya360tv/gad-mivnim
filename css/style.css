@@ -5730,3 +5730,8 @@ html.a11y-no-motion .about-tile--reel.is-ready { -webkit-mask-image: none; mask-
   .teams-media .teams-tile { height: 170px; }
   .teams-media .teams-tile-title { font-size: .8rem; letter-spacing: .08em; }
 }
+
+/* ----- ניווט בהדר: כתב רגיל (לא מודגש) בכל הגלולות, גם בגלולה הפעילה ----- */
+body .site-header .main-nav ul li a,
+body .site-header .main-nav ul li a:hover,
+body .site-header .main-nav ul li a.is-current { font-weight: 400 !important; }
