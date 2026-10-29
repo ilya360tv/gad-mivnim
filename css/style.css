@@ -5289,8 +5289,9 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
 /* ----- ניווט בהדר (דסקטופ): טבעת עדינה יותר (1px, בלי זוהר חזק) + גלולות קטנות יותר ----- */
 @media (min-width: 1024px) {
   body .site-header .main-nav ul li a {
-    height: 26px;
-    font-size: clamp(.62rem, .4rem + .31vw, .76rem);
+    height: clamp(22px, 1.354vw, 26px);                 /* יחסי לרוחב המסך (בסיס 1920) */
+    font-size: clamp(10px, .633vw, 12.15px);
+    padding-inline: clamp(3px, .73vw, 14px);
     box-shadow: 0 0 0 1px rgba(56, 189, 248, .45);
   }
   body .site-header .main-nav ul li a:hover,
@@ -5430,9 +5431,9 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
          ואותה עובי טבעת כך שהקוטר הנראה זהה ----- */
 .site-header .logo-img,
 .site-header .lang-btn {
-  width: 72px !important;
-  height: 72px !important;
-  min-width: 72px;
+  width: clamp(52px, 3.75vw, 72px) !important;      /* דסקטופ: יחסי לרוחב המסך (72px ב-1920) */
+  height: clamp(52px, 3.75vw, 72px) !important;
+  min-width: clamp(52px, 3.75vw, 72px);
   flex-shrink: 0;
 }
 .site-header .logo-img {
@@ -5448,9 +5449,9 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
 
 /* ----- הלוגו מוגדל ב-1.104 (כדי שהדיסק ימלא את הטבעת) — לכן הריבוע שלו קטן ב-1/1.104, והקוטר הנראה (כולל הטבעת) זהה בדיוק לעיגול השפות ----- */
 .site-header .logo-img {
-  width: 65.22px !important;
-  height: 65.22px !important;
-  min-width: 65.22px;
+  width: clamp(47.1px, 3.397vw, 65.22px) !important;      /* = עיגול השפות / 1.104 */
+  height: clamp(47.1px, 3.397vw, 65.22px) !important;
+  min-width: clamp(47.1px, 3.397vw, 65.22px);
   box-shadow: 0 0 0 1.36px rgba(56, 189, 248, .75), 0 0 10.9px rgba(56, 189, 248, .3) !important;
 }
 @media (max-width: 1023.98px) {
@@ -5477,16 +5478,33 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
    כל התוכן (לוגו · גלולות · שפות) בתוך רוחב מקסימלי 1560px וממורכז,
    אותו רווח (28px) בין כל עיגול לגלולות, ואותו מרחק מקצה המסך משני הצדדים.
    ========================================================================== */
+/* עודכן: כל המידות יחסיות לרוחב המסך (vw, בסיס = המראה ב-1920) — אותה תמונה בכל מסך ובכל הגדלת Windows;
+   מעל 1920 נעצר בערכי 1920, ב-1024 מינימום קריא */
 @media (min-width: 1024px) {
+  :root { --header-height: clamp(64px, 5.83vw, 112px); }
   .site-header {
-    padding-inline: max(24px, calc((100vw - 1560px) / 2)) !important;
-    column-gap: 28px !important;
-    grid-template-columns: 72px minmax(0, 1fr) 72px !important;
+    height: var(--header-height) !important;
+    padding-inline: max(9.375vw, calc((100vw - 1560px) / 2)) !important;   /* 180px ב-1920 */
+    column-gap: min(1.46vw, 28px) !important;
+    grid-template-columns: clamp(52px, 3.75vw, 72px) minmax(0, 1fr) clamp(52px, 3.75vw, 72px) !important;
   }
   .site-header .logo,
   .site-header .header-side { justify-self: center !important; margin: 0 !important; }
   .site-header .header-side .logo-text { display: none !important; }   /* לא תופס מקום ליד העיגול */
-  .site-header .main-nav ul { max-width: 1060px !important; width: 100% !important; margin-inline: auto !important; }   /* גלולות קטנות (~70%), ממורכז בעמודה */
+  .site-header .main-nav ul {
+    max-width: min(55.2vw, 1060px) !important;
+    width: 100% !important;
+    margin-inline: auto !important;
+    gap: min(.52vw, 10px) min(.625vw, 12px) !important;
+  }
+}
+/* אנגלית/צרפתית ב-1024–1264: הטקסט הארוך ("Citizen & Builder Info") לא נכנס בשורה אחת בגודל 10px —
+   הגריד מתרחב עד רוחב העמודה (698px ב-1024) וריווח צדדי קטן; מ-1265 חוזר ל-55.2vw */
+@media (min-width: 1024px) and (max-width: 1264px) {
+  html[lang="en"] .site-header .main-nav ul,
+  html[lang="fr"] .site-header .main-nav ul { max-width: max(55.2vw, 698px) !important; }
+  html[lang="en"] body .site-header .main-nav ul li a,
+  html[lang="fr"] body .site-header .main-nav ul li a { padding-inline: 4px; }
 }
 
 /* ----- #about: עמודת התמונה — כותרת "מאז ועד היום" + שני אריחים שווים (מאז / היום), שניהם רצועות ----- */
