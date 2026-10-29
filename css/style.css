@@ -5491,28 +5491,22 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
     --side-w: clamp(150px, 9.9vw, 190px);          /* רוחב עמודה: 190px ב-1920, מינימום 150px */
     --side-pad: clamp(12px, .83vw, 16px);          /* ריווח פנימי בצדי העמודה */
     --side-top: clamp(16px, 1.25vw, 24px);         /* ריווח עליון */
-    --side-gap: clamp(14px, 1.15vw, 22px);         /* רווח בין גלולות (22px ב-1920) */
     --side-pill-h: clamp(30px, 1.875vw, 36px);     /* גובה גלולה */
+    --side-font: clamp(11px, .68vw, 13px);         /* גודל כתב בגלולה */
+    --side-circle: clamp(52px, 3.75vw, 72px);      /* עיגול הלוגו / השפות */
+    --side-bottom: 24px;                           /* מרווח מתחתית המסך */
+    --pill-h: var(--side-pill-h);                  /* גובה הגלולה בפועל (עברית — שורה אחת) */
+    /* רווח בין גלולות: כל הגובה הפנוי מתחת לעיגול עד 24px מהתחתית, מחולק שווה ל-6 רווחים; מינימום 14px */
+    --side-gap: max(14px, calc((100vh - 2 * var(--side-top) - var(--side-circle) - var(--side-bottom) - 7 * var(--pill-h)) / 6));
     --header-height: 0px;                          /* אין הדר עליון בדסקטופ (Hero בגובה מסך מלא) */
   }
 
-  /* התוכן (כל הסקשנים והפוטר) בין שתי העמודות */
-  body { padding-inline: var(--side-w); }
+  /* התוכן (כל הסקשנים והפוטר) בין שתי העמודות. הריווח בתוך כל סקשן (לא על body) —
+     התוכן באותו מקום, אבל רקע הסקשן / וידאו ה-Hero נמשכים מתחת לעמודות השקופות */
+  main > section,
+  body > footer { padding-inline: var(--side-w) !important; }
 
-  /* רקע העמודות + קו דק בצד הפנימי */
-  body::before,
-  body::after {
-    content: "";
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    width: var(--side-w);
-    background: #0a0c0e;
-    z-index: 99;
-    pointer-events: none;
-  }
-  body::before { right: 0; border-left: 1px solid rgba(56, 189, 248, .15); }
-  body::after  { left: 0;  border-right: 1px solid rgba(56, 189, 248, .15); }
+  /* העמודות עצמן שקופות (בלי רקע ובלי קו) — הדף נראה מאחוריהן; לכל גלולה ועיגול רקע כהה חצי-שקוף + טשטוש */
 
   .site-header {
     position: fixed !important;
@@ -5533,12 +5527,12 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
     display: grid !important;
     grid-template-columns: var(--side-w) minmax(0, 1fr) var(--side-w) !important;   /* RTL: ימין | ריק | שמאל */
     grid-template-rows: auto;                       /* שורה 1: העיגולים */
-    grid-auto-rows: 1fr;                            /* שורות 2–8: גלולות — כולן באותו גובה */
+    grid-auto-rows: auto;                           /* שורות 2–8: גלולות — גובה קבוע ושווה (--pill-h) */
     grid-auto-flow: row dense;
     align-items: stretch !important;
     column-gap: 0 !important;
-    row-gap: var(--side-gap);
-    padding: var(--side-top) 0 var(--side-top) !important;
+    row-gap: 0;                                     /* הרווחים — margin-top של הגלולות (למטה) */
+    padding: var(--side-top) 0 var(--side-bottom) !important;
   }
   .site-header > *,
   .site-header .header-inner > * { pointer-events: auto; }
@@ -5553,7 +5547,7 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
   .site-header .header-side {
     justify-self: center !important;
     align-self: center !important;
-    margin: 0 0 calc(var(--side-top) - var(--side-gap)) !important;
+    margin: 0 !important;
   }
   .site-header .header-side .logo-text { display: none !important; }
 
@@ -5562,9 +5556,11 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
     display: flex;
     width: auto;
     min-width: 0;
-    margin: 0;
+    margin: var(--side-gap) 0 0;                  /* רווח שווה מעל כל גלולה */
     padding-inline: var(--side-pad);
   }
+  .site-header .main-nav ul li:nth-child(1),
+  .site-header .main-nav ul li:nth-child(8) { margin-top: var(--side-top); }   /* הגלולה הראשונה — כמו קודם, מתחת לעיגול */
   .site-header .main-nav ul li:nth-child(-n+7) { grid-column: 1; }
   .site-header .main-nav ul li:nth-child(n+8)  { grid-column: 3; }
   /* בשפות LTR הגריד מתהפך — מקבעים את הצדדים הפיזיים: לוגו + 1–7 תמיד מימין, שפות + 8–14 תמיד משמאל */
@@ -5572,6 +5568,11 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
   html[dir="ltr"] .site-header .header-side { grid-column: 1; }
   html[dir="ltr"] .site-header .main-nav ul li:nth-child(-n+7) { grid-column: 3; }
   html[dir="ltr"] .site-header .main-nav ul li:nth-child(n+8)  { grid-column: 1; }
+
+  /* כפתור הנגישות וכפתור "חזרה למעלה" — לא על הגלולות התחתונות: נכנסים פנימה, צמודים לקצה העמודה */
+  .a11y-fab,
+  .a11y-panel { right: calc(var(--side-w) + 22px) !important; }
+  .back-top   { inset-inline-start: calc(var(--side-w) + 22px) !important; }
 
   /* מספר הטלפון הגדול ב-#contact: הגודל היה לפי רוחב המסך המלא — מותאם לרוחב התוכן, בשורה אחת */
   .phone-big-num { font-size: clamp(1.25rem, 2.2vw, 2.1rem); white-space: nowrap; }
@@ -5585,20 +5586,49 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
   /* גלולה: אותו סגנון (טבעת תכלת דקה, כתב רגיל, סימון פעיל), בגודל לעמודה */
   body .site-header .main-nav ul li a {
     width: 100%;
-    height: auto;
-    min-height: var(--side-pill-h);
+    height: var(--pill-h);
     padding: 3px 8px;
-    font-size: clamp(11px, .68vw, 13px);
+    font-size: var(--side-font);
     line-height: 1.15;
     white-space: nowrap;
     border-radius: 999px;
   }
 }
-/* אנגלית/רוסית/צרפתית: תווית ארוכה נשברת לשתי שורות; כל הגלולות גדלות יחד (grid-auto-rows: 1fr). עברית — שורה אחת */
+/* אנגלית/רוסית/צרפתית: תווית ארוכה נשברת לשתי שורות; כל הגלולות בגובה של שתי שורות. עברית — שורה אחת */
 @media (min-width: 1024px) {
+  html:not([lang="he"]) { --pill-h: max(var(--side-pill-h), calc(2.3 * var(--side-font) + 6px)); }
   html:not([lang="he"]) body .site-header .main-nav ul li a {
     white-space: normal;
     border-radius: 16px;
+  }
+}
+/* רקע כהה חצי-שקוף + טשטוש לגלולות ולעיגולים (הגוון התכלת של רגיל / hover / פעיל נשמר מעליו) */
+@media (min-width: 1024px) {
+  body .site-header .main-nav ul li a {
+    background: linear-gradient(var(--lb-bg), var(--lb-bg)), rgba(10, 12, 14, .55);
+    -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
+  }
+  body .site-header .main-nav ul li a:hover,
+  body .site-header .main-nav ul li a:focus-visible,
+  body .site-header .main-nav ul li a.is-current {
+    background: linear-gradient(var(--lb-bg-strong), var(--lb-bg-strong)), rgba(10, 12, 14, .55);
+  }
+  .site-header .lang-btn {
+    background: linear-gradient(rgba(56, 189, 248, .08), rgba(56, 189, 248, .08)), rgba(10, 12, 14, .55) !important;
+    -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
+  }
+  .site-header .lang-btn:hover,
+  .site-header .lang-btn:focus-visible,
+  .site-header .lang-btn[aria-expanded="true"] {
+    background: linear-gradient(rgba(56, 189, 248, .18), rgba(56, 189, 248, .18)), rgba(10, 12, 14, .55) !important;
+  }
+  .site-header .logo-img {
+    background-color: rgba(10, 12, 14, .55);
+    border-radius: 50%;
+    -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
   }
 }
 
