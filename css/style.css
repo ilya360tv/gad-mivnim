@@ -5289,7 +5289,7 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
 /* ----- ניווט בהדר (דסקטופ): טבעת עדינה יותר (1px, בלי זוהר חזק) + גלולות קטנות יותר ----- */
 @media (min-width: 1024px) {
   body .site-header .main-nav ul li a {
-    height: 29px;
+    height: 26px;
     font-size: clamp(.62rem, .4rem + .31vw, .76rem);
     box-shadow: 0 0 0 1px rgba(56, 189, 248, .45);
   }
@@ -5486,7 +5486,7 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
   .site-header .logo,
   .site-header .header-side { justify-self: center !important; margin: 0 !important; }
   .site-header .header-side .logo-text { display: none !important; }   /* לא תופס מקום ליד העיגול */
-  .site-header .main-nav ul { max-width: none !important; width: 100% !important; }
+  .site-header .main-nav ul { max-width: 1060px !important; width: 100% !important; margin-inline: auto !important; }   /* גלולות קטנות (~70%), ממורכז בעמודה */
 }
 
 /* ----- #about: עמודת התמונה — כותרת "מאז ועד היום" + שני אריחים שווים (מאז / היום), שניהם רצועות ----- */
