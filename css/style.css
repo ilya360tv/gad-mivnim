@@ -3326,34 +3326,42 @@ html.nav-open body { overflow: hidden; }
 @keyframes navFadeIn {
   from { opacity: 0; }
 }
+/* עמודות הצד (דסקטופ) */
+@keyframes sideCircleIn {
+  from { opacity: 0; transform: scale(.85); }
+}
+@keyframes sidePillDrop {
+  from { opacity: 0; transform: translateY(-18px); filter: blur(4px); }
+  to   { opacity: 1; transform: translateY(0);     filter: blur(0); }
+}
+@keyframes sidePillGlow {
+  from { box-shadow: 0 0 0 1px rgba(56, 189, 248, .45), 0 0 14px rgba(56, 189, 248, .45); }
+}
 
 @media (prefers-reduced-motion: no-preference) {
-  /* דסקטופ — בטעינת הדף: קודם לוגו + בורר שפה, ואז 12 הגלולות */
+  /* דסקטופ — עמודות הצד, בטעינת הדף (פעם אחת): קודם עיגול הלוגו + עיגול השפות (fade + scale),
+     ואז 7 הגלולות בכל עמודה "נופלות" אחת אחרי השנייה מתחת לעיגול; גלולה N מימין ו-N+7 משמאל — באותו רגע.
+     עם הנחיתה — פעימת זוהר תכלת קצרה על הטבעת. transform / opacity / filter בלבד — אפס הזזת פריסה;
+     fill-mode: backwards — אחרי הסיום hover / סימון פעיל עובדים כרגיל */
   @media (min-width: 1024px) {
     .site-header .logo,
     .site-header .header-side {
-      animation: navFadeIn .3s ease-out backwards;
+      animation: sideCircleIn .45s cubic-bezier(.22, .61, .36, 1) backwards;
     }
 
-    .main-nav a {
+    body .site-header .main-nav ul li a {
+      --d: calc(250ms + var(--i, 0) * 90ms);
       animation:
-        navPillIn .5s cubic-bezier(.22, .61, .36, 1) var(--d, 0s) backwards,
-        navRingIn .35s ease-out calc(var(--d, 0s) + .4s) backwards;
+        sidePillDrop .55s cubic-bezier(.22, .61, .36, 1) var(--d) backwards,
+        sidePillGlow .4s ease-out calc(var(--d) + .45s);
     }
-  .main-nav li:nth-child(1) a { --d: 0.25s; }
-  .main-nav li:nth-child(2) a { --d: 0.32s; }
-  .main-nav li:nth-child(3) a { --d: 0.39s; }
-  .main-nav li:nth-child(4) a { --d: 0.46s; }
-  .main-nav li:nth-child(5) a { --d: 0.53s; }
-  .main-nav li:nth-child(6) a { --d: 0.6s; }
-  .main-nav li:nth-child(7) a { --d: 0.67s; }
-  .main-nav li:nth-child(8) a { --d: 0.74s; }
-  .main-nav li:nth-child(9) a { --d: 0.81s; }
-  .main-nav li:nth-child(10) a { --d: 0.88s; }
-  .main-nav li:nth-child(11) a { --d: 0.95s; }
-  .main-nav li:nth-child(12) a { --d: 1.02s; }
-  .main-nav li:nth-child(13) a { --d: 1.09s; }
-  .main-nav li:nth-child(14) a { --d: 1.16s; }
+    .site-header .main-nav ul li:nth-child(7n+1) a { --i: 0; }   /* 1 · 8 */
+    .site-header .main-nav ul li:nth-child(7n+2) a { --i: 1; }   /* 2 · 9 */
+    .site-header .main-nav ul li:nth-child(7n+3) a { --i: 2; }   /* 3 · 10 */
+    .site-header .main-nav ul li:nth-child(7n+4) a { --i: 3; }   /* 4 · 11 */
+    .site-header .main-nav ul li:nth-child(7n+5) a { --i: 4; }   /* 5 · 12 */
+    .site-header .main-nav ul li:nth-child(7n+6) a { --i: 5; }   /* 6 · 13 */
+    .site-header .main-nav ul li:nth-child(7n+7) a { --i: 6; }   /* 7 · 14 */
   }
 
   /* מובייל/טאבלט — בכל פתיחה של המגירה */
