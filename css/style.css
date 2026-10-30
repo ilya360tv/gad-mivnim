@@ -5887,36 +5887,93 @@ body .site-header .main-nav ul li a,
 body .site-header .main-nav ul li a:hover,
 body .site-header .main-nav ul li a.is-current { font-weight: 400 !important; }
 
-/* ----- תפריט השפות: נפתח בתוך המסך לכיוון המרכז (המיקום מחושב ב-JS), כהה עם טבעת תכלת ----- */
+/* ----- תפריט השפות: פופאובר קומפקטי צמוד לעיגול, עם חץ לכיוון העיגול.
+         המיקום, הצד (data-side) ומיקום החץ (--lm-arrow) נקבעים ב-JS — js/script.js סעיף 12ב ----- */
 body .lang-menu {
   position: fixed !important;
-  top: 0; left: 0; right: auto; bottom: auto;    /* left/top נקבעים ב-JS */
+  top: 0; left: 0; right: auto; bottom: auto;
   z-index: 3000 !important;
-  min-width: 180px;
+  box-sizing: border-box;
+  width: 168px;
+  min-width: 0;
   margin: 0;
   padding: 6px;
-  background: rgba(10, 12, 14, .92) !important;
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+  overflow: visible !important;                 /* החץ בולט מחוץ לקופסה */
+  background: rgba(12, 15, 19, .94) !important;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   border: 0 !important;
-  box-shadow: 0 0 0 1px rgba(56, 189, 248, .45), 0 14px 34px rgba(0, 0, 0, .5) !important;
-  border-radius: 16px !important;
+  border-radius: 14px !important;
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, .35), 0 12px 32px rgba(0, 0, 0, .45) !important;
+  opacity: 1;
+  transform: scale(1);
+  visibility: visible;
+  transition: opacity .16s ease, transform .16s ease, visibility 0s;
 }
-body .lang-menu[hidden] { display: none !important; }
+body .lang-menu[hidden] {                        /* נשאר ב-DOM לאנימציית הסגירה; visibility מוציא אותו מהמקלדת ומקוראי המסך */
+  display: block !important;
+  opacity: 0;
+  transform: scale(.96);
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .16s ease, transform .16s ease, visibility 0s .16s;
+}
+body .lang-menu[data-side="right"]  { transform-origin: 0 var(--lm-arrow, 50%); }
+body .lang-menu[data-side="left"]   { transform-origin: 100% var(--lm-arrow, 50%); }
+body .lang-menu[data-side="bottom"] { transform-origin: var(--lm-arrow, 50%) 0; }
+body .lang-menu[data-side="top"]    { transform-origin: var(--lm-arrow, 50%) 100%; }
+@media (prefers-reduced-motion: reduce) {
+  body .lang-menu, body .lang-menu[hidden] { transition: none; transform: none; }
+}
+
+/* החץ: ריבוע 8px מסובב, אותו רקע וטבעת; רק החצי החיצוני נראה (clip-path) */
+body .lang-menu::before {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: rgba(12, 15, 19, .94);
+  border: 0 solid rgba(56, 189, 248, .35);
+  transform: rotate(45deg);
+}
+body .lang-menu[data-side="right"]::before  { left: -4.5px;   top: calc(var(--lm-arrow, 50%) - 4px);  border-left-width: 1px;  border-bottom-width: 1px; clip-path: polygon(0 0, 0 100%, 100% 100%); }
+body .lang-menu[data-side="left"]::before   { right: -4.5px;  top: calc(var(--lm-arrow, 50%) - 4px);  border-top-width: 1px;   border-right-width: 1px;  clip-path: polygon(0 0, 100% 0, 100% 100%); }
+body .lang-menu[data-side="bottom"]::before { top: -4.5px;    left: calc(var(--lm-arrow, 50%) - 4px); border-top-width: 1px;   border-left-width: 1px;   clip-path: polygon(0 0, 0 100%, 100% 0); }
+body .lang-menu[data-side="top"]::before    { bottom: -4.5px; left: calc(var(--lm-arrow, 50%) - 4px); border-right-width: 1px; border-bottom-width: 1px; clip-path: polygon(100% 0, 100% 100%, 0 100%); }
+
 body .lang-menu button {
   display: flex;
   align-items: center;
   gap: 10px;
-  min-height: 44px;
-  padding: 0 14px;
-  border-radius: 11px;
+  height: 36px;
+  min-height: 0;
+  padding: 0 12px;
+  border-radius: 10px;
+  font-size: .9rem;
+  font-weight: 400;
+  line-height: 1;
+  text-align: start;
   white-space: nowrap;
-  color: #d7dbe0;
+  color: #cbd5e1;
+  background: none;
+}
+body .lang-menu .flag {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .3);
 }
 body .lang-menu button:hover,
-body .lang-menu button:focus-visible { background: rgba(56, 189, 248, .1); color: #fff; }
+body .lang-menu button:focus-visible { background: rgba(56, 189, 248, .10); color: #fff; }
 body .lang-menu button.is-active {
-  background: rgba(56, 189, 248, .18) !important;
+  background: rgba(56, 189, 248, .14) !important;
   color: #38bdf8 !important;
-  font-weight: 500;
+  font-weight: 400;
+}
+body .lang-menu button.is-active::after {        /* ✓ בצד הסוף */
+  content: "✓";
+  margin-inline-start: auto;
+  font-size: .85rem;
+  color: #38bdf8;
 }

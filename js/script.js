@@ -1156,42 +1156,45 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* ---------------------------------------------------------------
      12ב) תפריט השפות — נפתח תמיד בתוך המסך, לכיוון מרכז הדף.
-          מחשב (≥1024): לצד העיגול הפונה למרכז, מיושר לראש העיגול. טאבלט/טלפון: מתחת לעיגול.
-          position: fixed; מקזזים את ראשית ה-containing block (אב עם backdrop-filter/transform) במדידה.
+          פופאובר צמוד לעיגול (10px מהקצה) עם חץ אליו. מחשב (≥1024): בצד הפונה למרכז, ממורכז אנכית לעיגול.
+          טאבלט/טלפון: מתחת לעיגול. הצד נשמר ב-data-side, מיקום החץ ב---lm-arrow (CSS בסוף style.css).
+          position: fixed; מקזזים את ראשית ה-containing block (אב עם backdrop-filter/transform) במדידה,
+          כולל ה-scale של אנימציית הפתיחה.
      --------------------------------------------------------------- */
   var lmMenu = document.getElementById('langMenu');
   if (lgBtn && lmMenu && 'MutationObserver' in window) {
-    var LM_M = 12, LM_GAP = 10;
+    var LM_M = 12, LM_GAP = 10, LM_ARROW_MIN = 16;
     var placeLangMenu = function () {
       if (lmMenu.hidden) { return; }
       lmMenu.style.left = '0px'; lmMenu.style.top = '0px';
       var o = lmMenu.getBoundingClientRect(), b = lgBtn.getBoundingClientRect();
-      var w = o.width, h = o.height;
+      var w = lmMenu.offsetWidth, h = lmMenu.offsetHeight;          // גודל אמיתי, בלי ה-scale של האנימציה
+      var s = w ? o.width / w : 1;
+      var tOrig = getComputedStyle(lmMenu).transformOrigin.split(' ');
+      var ox = o.left - parseFloat(tOrig[0]) * (1 - s), oy = o.top - parseFloat(tOrig[1]) * (1 - s);
       var vw = document.documentElement.clientWidth, vh = window.innerHeight;
-      var toRight = (b.left + b.width / 2) < vw / 2;               // העיגול בחצי השמאלי — נפתחים ימינה
-      var x, y;
+      var cx = b.left + b.width / 2, cy = b.top + b.height / 2;
+      var toRight = cx < vw / 2;                                     // העיגול בחצי השמאלי — נפתחים ימינה
+      var x, y, side;
       if (window.innerWidth >= 1024) {
-        y = b.top;
-        // לא מכסים את הגלולות שמתחת לעיגול — נפתחים מעבר לקצה העמודה בגובה התפריט
-        var edgeR = b.right, edgeL = b.left;
-        document.querySelectorAll('.site-header a, .site-header button').forEach(function (el) {
-          if (lmMenu.contains(el)) { return; }
-          var r = el.getBoundingClientRect();
-          if (!r.width || r.bottom <= y || r.top >= y + h) { return; }
-          if (toRight && r.left < b.right && r.right > edgeR) { edgeR = r.right; }
-          if (!toRight && r.right > b.left && r.left < edgeL) { edgeL = r.left; }
-        });
-        x = toRight ? edgeR + LM_GAP : edgeL - LM_GAP - w;
-        if (x < LM_M || x + w > vw - LM_M) { x = toRight ? b.left - LM_GAP - w : b.right + LM_GAP; }   // הפיכה
+        side = toRight ? 'right' : 'left';
+        x = toRight ? b.right + LM_GAP : b.left - LM_GAP - w;
+        if (x < LM_M || x + w > vw - LM_M) { side = toRight ? 'left' : 'right'; x = toRight ? b.left - LM_GAP - w : b.right + LM_GAP; }   // הפיכה
+        y = cy - h / 2;
       } else {
-        x = toRight ? b.left : b.right - w;
+        side = 'bottom';
+        x = cx - w / 2;
         y = b.bottom + LM_GAP;
-        if (y + h > vh - LM_M) { y = b.top - LM_GAP - h; }
+        if (y + h > vh - LM_M) { side = 'top'; y = b.top - LM_GAP - h; }
       }
       x = Math.max(LM_M, Math.min(x, vw - LM_M - w));
       y = Math.max(LM_M, Math.min(y, vh - LM_M - h));
-      lmMenu.style.left = (x - o.left).toFixed(1) + 'px';
-      lmMenu.style.top = (y - o.top).toFixed(1) + 'px';
+      var arrow = (side === 'left' || side === 'right') ? cy - y : cx - x;
+      arrow = Math.max(LM_ARROW_MIN, Math.min(arrow, ((side === 'left' || side === 'right') ? h : w) - LM_ARROW_MIN));
+      lmMenu.setAttribute('data-side', side);
+      lmMenu.style.setProperty('--lm-arrow', arrow.toFixed(1) + 'px');
+      lmMenu.style.left = (x - ox).toFixed(1) + 'px';
+      lmMenu.style.top = (y - oy).toFixed(1) + 'px';
     };
     var lmOpen = false;
     new MutationObserver(function () {
