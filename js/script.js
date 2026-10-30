@@ -983,6 +983,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
     hmBuild();
     window.addEventListener('load', hmBuild);                          // אחרי טעינת הפונט/הלוגו — מדידה מדויקת
+    window.addEventListener('pageshow', function (e) { if (e.persisted) { hmBuild(); } });   // חזרה מ-bfcache
     var hmW = window.innerWidth, hmT;
     window.addEventListener('resize', function () {
       if (window.innerWidth === hmW) { return; }
@@ -1077,6 +1078,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
     fitAbout();
     window.addEventListener('load', fitAbout);
+    window.addEventListener('pageshow', function (e) { if (e.persisted) { fitAbout(); } });   // חזרה מ-bfcache
     if (document.fonts && document.fonts.ready) { document.fonts.ready.then(fitAbout); }
     var abW = window.innerWidth;
     window.addEventListener('resize', function () { if (window.innerWidth !== abW) { abW = window.innerWidth; fitAbout(); } });
@@ -1160,21 +1162,30 @@ document.addEventListener('DOMContentLoaded', function () {
   var mdRef = document.querySelector('#about .about-title');
   if (mdHead && mdRef) {
     var mdCol = mdHead.closest('.about-media') || mdHead.parentNode;   // כל העמודה עולה — התמונות נשארות צמודות לכותרת
+    var LM_MAX = 120;   // העמודה זזה לכל היותר 120px; ערך גדול יותר = מדידה שגויה — מתעלמים
     var liftMedia = function () {
       mdCol.style.marginTop = '';
       if (window.innerWidth < 1024) { return; }
+      // העמודה היא position: sticky — אחרי רענון באמצע הדף (הדפדפן משחזר את הגלילה) היא "תקועה" והמיקום שלה במסך שגוי.
+      // מודדים במיקום הטבעי: sticky כבוי לרגע המדידה (באותו פריים — בלי הבהוב), ואז מחזירים
+      var prevPos = mdCol.style.position;
+      mdCol.style.position = 'static';
       // מגביהים רק אם הכותרת לא חופפת אופקית את עמודת התמונה (בשתי הכיוונים הכותרת יושבת מעל עמודת הטקסט בלבד)
       var rg = document.createRange(); rg.selectNodeContents(mdRef);
       var lines = rg.getClientRects();
       var t = rg.getBoundingClientRect(), m = mdCol.getBoundingClientRect();
-      if (!(t.right <= m.left + 0.5 || t.left >= m.right - 0.5)) { return; }
-      var a = (lines.length > 1 || document.documentElement.getAttribute('dir') === 'ltr') ? lines[0] : mdRef.getBoundingClientRect();   // כותרת בשורות מרובות — יישור לשורה הראשונה
-      var b = mdHead.getBoundingClientRect();
-      var d = (a.top + a.height / 2) - (b.top + b.height / 2);
-      if (Math.abs(d) > 0.5) { mdCol.style.marginTop = d.toFixed(1) + 'px'; }
+      var d = 0;
+      if (t.right <= m.left + 0.5 || t.left >= m.right - 0.5) {
+        var a = (lines.length > 1 || document.documentElement.getAttribute('dir') === 'ltr') ? lines[0] : mdRef.getBoundingClientRect();   // כותרת בשורות מרובות — יישור לשורה הראשונה
+        var b = mdHead.getBoundingClientRect();
+        d = (a.top + a.height / 2) - (b.top + b.height / 2);
+      }
+      mdCol.style.position = prevPos;
+      if (Math.abs(d) > 0.5 && Math.abs(d) <= LM_MAX) { mdCol.style.marginTop = d.toFixed(1) + 'px'; }
     };
     liftMedia();
     window.addEventListener('load', liftMedia);
+    window.addEventListener('pageshow', function (e) { if (e.persisted) { liftMedia(); } });   // חזרה מ-bfcache
     if (document.fonts && document.fonts.ready) { document.fonts.ready.then(liftMedia); }
     var lmW = window.innerWidth;
     window.addEventListener('resize', function () { if (window.innerWidth !== lmW) { lmW = window.innerWidth; liftMedia(); } });
