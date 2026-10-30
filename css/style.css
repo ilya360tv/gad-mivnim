@@ -6094,3 +6094,25 @@ body .plan-card .plan-price { margin: -4px 0 6px; font-size: .9rem; color: var(-
   margin-inline: auto;
 }
 #app .plans-grid { margin-inline: auto; }
+
+/* ==========================================================================
+   FINAL — #tenders ו-#app ממורכזים (גובר על שכבת "RIGHT-ALIGNED HEADINGS" ועל .section-eyebrow { margin-inline: 0 }).
+   קו המרכז = מרכז ה-container, שסימטרי (24px ריפוד לכל צד) ויושב באמצע האזור שבין עמודות הצד.
+   ========================================================================== */
+html[dir] body #tenders .section-eyebrow,
+html[dir] body #tenders .section-title,
+html[dir] body #tenders .section-lead,
+html[dir] body #app .section-eyebrow,
+html[dir] body #app .section-title,
+html[dir] body #app .section-lead {
+  display: block;
+  width: auto;
+  max-width: 900px;
+  text-align: center !important;
+  margin-inline: auto !important;
+}
+html[dir] body #tenders .careers-form-card { margin-inline: auto !important; }
+html[dir] body #app .plans-grid {
+  margin-inline: auto !important;
+  justify-content: center;
+}
