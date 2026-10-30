@@ -5580,8 +5580,20 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
   html[dir="ltr"] .site-header .main-nav ul li:nth-child(n+8)  { grid-column: 1; }
 
   /* כפתור הנגישות וכפתור "חזרה למעלה" — לא על הגלולות התחתונות: נכנסים פנימה, צמודים לקצה העמודה */
-  .a11y-fab,
-  .a11y-panel { right: calc(var(--side-w) + 22px) !important; }
+  /* כפתור הנגישות — בעמודה הימנית: ממורכז מתחת לגלולות (קו המרכז של הלוגו), 24px מתחתית המסך;
+     במסך נמוך — לפחות 16px מתחת לגלולה האחרונה (תחתית הגלולה = 2×ריווח עליון + עיגול + 7 גלולות + 6 רווחים) */
+  .a11y-fab {
+    right: calc((var(--side-w) - 56px) / 2) !important;
+    bottom: auto !important;
+    top: max(calc(100vh - 24px - 56px),
+             calc(2 * var(--side-top) + var(--side-circle) + 7 * var(--pill-h) + 6 * var(--side-gap) + 16px));
+  }
+  /* הפאנל נפתח לידו, משמאל לעמודה, מיושר לתחתית הכפתור — כולו בתוך המסך */
+  .a11y-panel {
+    right: calc(var(--side-w) + 12px) !important;
+    bottom: 24px;
+    max-height: calc(100vh - 48px);
+  }
   .back-top   { inset-inline-start: calc(var(--side-w) + 22px) !important; }
 
   /* מספר הטלפון הגדול ב-#contact: הגודל היה לפי רוחב המסך המלא — מותאם לרוחב התוכן, בשורה אחת */
