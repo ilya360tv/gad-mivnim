@@ -5580,13 +5580,24 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
   html[dir="ltr"] .site-header .main-nav ul li:nth-child(n+8)  { grid-column: 1; }
 
   /* כפתור הנגישות וכפתור "חזרה למעלה" — לא על הגלולות התחתונות: נכנסים פנימה, צמודים לקצה העמודה */
-  /* כפתור הנגישות — בעמודה הימנית: ממורכז מתחת לגלולות (קו המרכז של הלוגו), 24px מתחתית המסך;
-     במסך נמוך — לפחות 16px מתחת לגלולה האחרונה (תחתית הגלולה = 2×ריווח עליון + עיגול + 7 גלולות + 6 רווחים) */
+  /* כפתור הנגישות — בעמודה הימנית: ממורכז מתחת לגלולות (קו המרכז של הלוגו), 24px מתחתית המסך.
+     מעליו (12px) כפתור "חזרה למעלה" (54px); במסך נמוך — החץ לפחות 16px מתחת לגלולה האחרונה
+     (תחתית הגלולה = 2×ריווח עליון + עיגול + 7 גלולות + 6 רווחים) */
+  :root {
+    --fab-top: max(calc(100vh - 24px - 56px),
+                   calc(2 * var(--side-top) + var(--side-circle) + 7 * var(--pill-h) + 6 * var(--side-gap) + 16px + 54px + 12px));
+  }
   .a11y-fab {
     right: calc((var(--side-w) - 56px) / 2) !important;
     bottom: auto !important;
-    top: max(calc(100vh - 24px - 56px),
-             calc(2 * var(--side-top) + var(--side-circle) + 7 * var(--pill-h) + 6 * var(--side-gap) + 16px));
+    top: var(--fab-top);
+  }
+  .back-top {
+    right: calc((var(--side-w) - 54px) / 2) !important;
+    left: auto !important;
+    inset-inline-start: auto;
+    bottom: auto !important;
+    top: calc(var(--fab-top) - 12px - 54px);
   }
   /* הפאנל נפתח לידו, משמאל לעמודה, מיושר לתחתית הכפתור — כולו בתוך המסך */
   .a11y-panel {
@@ -5594,7 +5605,6 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
     bottom: 24px;
     max-height: calc(100vh - 48px);
   }
-  .back-top   { inset-inline-start: calc(var(--side-w) + 22px) !important; }
 
   /* מספר הטלפון הגדול ב-#contact: הגודל היה לפי רוחב המסך המלא — מותאם לרוחב התוכן, בשורה אחת */
   .phone-big-num { font-size: clamp(1.25rem, 2.2vw, 2.1rem); white-space: nowrap; }
@@ -6051,4 +6061,23 @@ body .plan-card .plan-price { margin: -4px 0 6px; font-size: .9rem; color: var(-
 .plan-btn:focus-visible { outline: 3px solid #ffffff; outline-offset: 3px; }
 @media (max-width: 767.98px) {
   .plans-grid { grid-template-columns: 1fr; }
+}
+
+/* ----- "חזרה למעלה" מעל כפתור הנגישות (טאבלט/טלפון), באותו קו מרכז, 12px ביניהם.
+         דסקטופ — ראו --fab-top בעמודות הצד. כפתור הנגישות: 56px ב-22px מימין/מלמטה;
+         ≤560px — 48px, 16px מלמטה, 22px מימין (עברית) / 16px (LTR) ----- */
+@media (max-width: 1023.98px) {
+  .back-top {
+    inset-inline-start: auto;
+    left: auto;
+    right: 23px;                         /* 22 + (56 − 54) / 2 */
+    bottom: calc(22px + 56px + 12px);
+  }
+}
+@media (max-width: 560px) {
+  .back-top {
+    right: 21px;                         /* 22 + (48 − 50) / 2 */
+    bottom: calc(16px + 48px + 12px);
+  }
+  html[dir="ltr"] .back-top { right: 15px; }
 }
