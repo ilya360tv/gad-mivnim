@@ -453,24 +453,159 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
   /* ---------------------------------------------------------------
-     5) דרושים — כפתור "שלחו קורות חיים" בוחר תחום וגולל לטופס;
+     5) דרושים — לחיצה על כרטיס תפקיד (או על "לפרטים") פותחת חלון פרטים
+        (אותו מראה כמו חלון הפרויקט: .proj-modal). התוכן מ-js/careers-data.js.
+        "שלחו קורות חיים" בחלון סוגר אותו, בוחר את התחום וגולל לטופס;
         הטופס מציג הודעת הצלחה (בלי שרת, כמו טופס צור קשר)
      --------------------------------------------------------------- */
   var careersForm    = document.getElementById('careersForm');
   var careersSuccess = document.getElementById('careersSuccess');
   var careerField    = document.getElementById('careerField');
+  var careersSec     = document.getElementById('careers');
+  var CDATA          = window.CAREERS_DATA || null;
 
-  if (careersForm) {
-    document.querySelectorAll('.role-btn').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        if (careerField) { careerField.value = btn.getAttribute('data-role'); }
-        var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        careersForm.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
-        var first = document.getElementById('careerName');
-        if (first) { first.focus({ preventScroll: true }); }
+  function goToCareersForm(role) {
+    if (careerField) { careerField.value = role; }
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    careersForm.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+    var first = document.getElementById('careerName');
+    if (first) { first.focus({ preventScroll: true }); }
+  }
+
+  if (careersForm && careersSec && CDATA) {
+    var CT = function (key, fallback) {
+      var lang = document.documentElement.getAttribute('lang') || 'he';
+      var e = window.GAD_T && window.GAD_T[key];
+      return (e && e[lang]) || fallback;
+    };
+
+    var rm = document.createElement('div');
+    rm.className = 'proj-modal role-modal';
+    rm.id = 'roleModal';
+    rm.hidden = true;
+    rm.innerHTML =
+      '<div class="proj-modal__backdrop" data-rm-close></div>' +
+      '<div class="proj-modal__box role-modal__box" role="dialog" aria-modal="true" aria-labelledby="roleModalTitle" tabindex="-1">' +
+        '<button type="button" class="proj-modal__x" data-rm-close>&times;</button>' +
+        '<div class="role-modal__head">' +
+          '<span class="role-icon" aria-hidden="true"></span>' +
+          '<h2 class="proj-modal__name" id="roleModalTitle"></h2>' +
+          '<p class="role-modal__intro"></p>' +
+        '</div>' +
+        '<div class="role-modal__body"></div>' +
+        '<div class="role-modal__foot"><button type="button" class="role-modal__cta"></button></div>' +
+      '</div>';
+    document.body.appendChild(rm);
+
+    var rmBox   = rm.querySelector('.proj-modal__box');
+    var rmX     = rm.querySelector('.proj-modal__x');
+    var rmIcon  = rm.querySelector('.role-icon');
+    var rmTitle = rm.querySelector('.proj-modal__name');
+    var rmIntro = rm.querySelector('.role-modal__intro');
+    var rmBody  = rm.querySelector('.role-modal__body');
+    var rmCta   = rm.querySelector('.role-modal__cta');
+    var rmRole = null, rmFrom = null;
+
+    function rmList(heading, items) {
+      if (!items || !items.length) { return; }
+      var h = document.createElement('h3');
+      h.className = 'role-modal__h';
+      h.textContent = heading;
+      var ul = document.createElement('ul');
+      ul.className = 'role-modal__list';
+      items.forEach(function (txt) {
+        var li = document.createElement('li');
+        li.textContent = txt;
+        ul.appendChild(li);
+      });
+      rmBody.appendChild(h);
+      rmBody.appendChild(ul);
+    }
+
+    function renderRole() {
+      var all = CDATA.roles && CDATA.roles[rmRole];
+      if (!all) { return; }
+      var lang = document.documentElement.getAttribute('lang') || 'he';
+      var d = all[lang] || all.he;
+      var card = careersSec.querySelector('.role-card[data-role="' + rmRole + '"]');
+      var cardIcon = card ? card.querySelector('.role-icon') : null;
+      rmIcon.innerHTML = cardIcon ? cardIcon.innerHTML : '';
+      var cardTitle = card ? card.querySelector('h3') : null;
+      rmTitle.textContent = CT('car_' + rmRole, cardTitle ? cardTitle.textContent : '');
+      rmIntro.textContent = d.intro || '';
+      rmIntro.hidden = !d.intro;
+      rmBody.innerHTML = '';
+      rmList(CT('car_req', 'דרישות התפקיד'), d.req);
+      rmList(CT('car_adv', 'יתרון'), d.adv);
+      rmList(CT('car_offer', 'מה אנחנו מציעים'), (CDATA.offer && (CDATA.offer[lang] || CDATA.offer.he)) || []);
+      rmCta.textContent = CT('car_btn', 'שלחו קורות חיים');
+      rmX.setAttribute('aria-label', CT('pm_close', 'סגירה'));
+    }
+
+    function openRole(role, from) {
+      if (!CDATA.roles || !CDATA.roles[role]) { return; }
+      rmRole = role;
+      rmFrom = from;
+      renderRole();
+      rmBox.scrollTop = 0;
+      rm.hidden = false;
+      void rm.offsetWidth;
+      rm.classList.add('is-open');
+      document.documentElement.classList.add('modal-open');
+      rmBox.focus();
+    }
+
+    function closeRole(restoreFocus) {
+      if (rm.hidden) { return; }
+      rm.classList.remove('is-open');
+      rm.hidden = true;
+      document.documentElement.classList.remove('modal-open');
+      if (restoreFocus && rmFrom && rmFrom.focus) { rmFrom.focus(); }
+      rmFrom = null;
+    }
+
+    // כל הכרטיס לחיץ; הכפתור "לפרטים" בתוכו הוא נקודת הכניסה למקלדת
+    careersSec.querySelectorAll('.role-card').forEach(function (card) {
+      var btn = card.querySelector('.role-btn');
+      if (btn && !card.hasAttribute('data-role')) { card.setAttribute('data-role', btn.getAttribute('data-role')); }
+      card.addEventListener('click', function () {
+        openRole(card.getAttribute('data-role'), btn || card);
       });
     });
 
+    rm.addEventListener('click', function (e) {
+      if (e.target.closest && e.target.closest('[data-rm-close]')) { closeRole(true); }
+    });
+    rmCta.addEventListener('click', function () {
+      var role = rmRole;
+      closeRole(false);
+      goToCareersForm(role);
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (rm.hidden) { return; }
+      if (e.key === 'Escape') { e.stopPropagation(); closeRole(true); return; }
+      if (e.key === 'Tab') {                             // מלכודת פוקוס בתוך החלון
+        var g = rm.querySelectorAll('button:not([hidden]):not([disabled])');
+        if (!g.length) { return; }
+        var gf = g[0], gl = g[g.length - 1];
+        if (e.shiftKey && (document.activeElement === gf || document.activeElement === rmBox)) { e.preventDefault(); gl.focus(); }
+        else if (!e.shiftKey && document.activeElement === gl) { e.preventDefault(); gf.focus(); }
+      }
+    }, true);
+
+    // החלפת שפה בזמן שהחלון פתוח
+    if ('MutationObserver' in window) {
+      new MutationObserver(function () { if (!rm.hidden) { renderRole(); } })
+        .observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    }
+  } else if (careersForm) {                              // בלי קובץ הנתונים: הכפתור גולל ישר לטופס
+    document.querySelectorAll('.role-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () { goToCareersForm(btn.getAttribute('data-role')); });
+    });
+  }
+
+  if (careersForm) {
     careersForm.addEventListener('submit', function (e) {
       e.preventDefault(); // אין שרת — לא שולחים לשום מקום
       if (!careersForm.checkValidity()) {

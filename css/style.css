@@ -6159,3 +6159,79 @@ html[dir] body #app .plans-grid {
   html[dir] body #app .plan-card { padding: 18px 20px 16px; }
   html[dir] body #app .plan-list li { line-height: 1.35; }
 }
+
+/* ==========================================================================
+   #careers — כרטיסים קטנים יותר, כפתור "לפרטים ←" וחלון פרטים לכל תפקיד
+   (החלון משתמש במראה של .proj-modal; כאן רק התוספות שלו)
+   ========================================================================== */
+#careers .role-card { gap: 8px; padding: 20px 18px 18px; cursor: pointer; }
+#careers .role-icon { width: 48px; height: 48px; margin-bottom: 2px; }
+#careers .role-icon svg { width: 24px; height: 24px; }
+#careers .role-card h3 { font-size: 1.05rem; }
+#careers .role-card p  { font-size: .9rem; margin-bottom: 6px; }
+
+#careers .role-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 20px;
+  font-size: .95rem;
+}
+.role-btn__arrow { flex: none; transition: transform .2s ease; }
+.role-btn:hover .role-btn__arrow,
+.role-card:hover .role-btn__arrow { transform: translateX(-3px); }
+html[dir="ltr"] .role-btn__arrow { transform: scaleX(-1); }
+html[dir="ltr"] .role-btn:hover .role-btn__arrow,
+html[dir="ltr"] .role-card:hover .role-btn__arrow { transform: translateX(3px) scaleX(-1); }
+
+@media (min-width: 1024px) {
+  #careers .careers-grid {
+    grid-template-columns: repeat(4, minmax(0, 216px));
+    gap: 20px;
+    justify-content: center;
+  }
+}
+
+/* ----- חלון פרטי התפקיד ----- */
+.role-modal__box { width: 560px; max-width: calc(100vw - 32px); }
+.role-modal__head { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 18px; text-align: center; }
+.role-modal__head .role-icon { width: 64px; height: 64px; margin: 0; }
+.role-modal__head .role-icon svg { width: 30px; height: 30px; }
+.role-modal__intro { margin: 0; max-width: 44ch; color: var(--ink-soft); font-size: 1rem; line-height: 1.6; }
+.role-modal__intro[hidden] { display: none; }
+.role-modal__h { margin: 18px 0 8px; font-size: 1.02rem; font-weight: 700; color: var(--lb); }
+.role-modal__list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.role-modal__list li { position: relative; padding-inline-start: 18px; color: #e6e9ec; font-size: .97rem; line-height: 1.55; }
+.role-modal__list li::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 2px;
+  top: .62em;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--lb);
+  box-shadow: 0 0 8px var(--lb-glow);
+}
+.role-modal__foot { display: flex; justify-content: center; margin-top: 24px; }
+.role-modal__cta {
+  min-height: 48px;
+  padding: 0 28px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--lb);
+  color: #0a0c0e;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 22px var(--lb-glow);
+  transition: background .2s ease, box-shadow .2s ease;
+}
+.role-modal__cta:hover { background: var(--lb-hover); box-shadow: 0 10px 26px var(--lb-glow); }
+.role-modal__cta:focus-visible { outline: 3px solid #ffffff; outline-offset: 3px; }
+@media (max-width: 767.98px) {
+  .role-modal__box { width: calc(100vw - 24px); max-width: none; }
+  .role-modal__head { padding-top: 22px; }
+}
