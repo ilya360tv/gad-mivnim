@@ -54,16 +54,16 @@
     car_r3s:    { he: 'תכנון והנדסה ברמה הגבוהה ביותר', ru: 'Проектирование и инженерия высочайшего уровня', en: 'Planning and engineering at the highest level', fr: 'Conception et ingénierie au plus haut niveau' },
     car_r4:     { he: 'אנשי משרד ושירות', ru: 'Офис и сервис', en: 'Office & Service Staff', fr: 'Personnel de bureau et de service' },
     car_r4s:    { he: 'שירות אישי וחם לכל לקוח', ru: 'Личный и тёплый сервис для каждого клиента', en: 'Personal, warm service for every client', fr: 'Un service personnel et chaleureux pour chaque client' },
-    car_btn:    { he: 'שלחו קורות חיים', ru: 'Отправить резюме', en: 'Send Your CV', fr: 'Envoyer votre CV' },
     car_more:   { he: 'לפרטים', ru: 'Подробнее', en: 'Details', fr: 'Détails' },
     car_req:    { he: 'דרישות התפקיד', ru: 'Требования', en: 'Requirements', fr: 'Exigences du poste' },
     car_adv:    { he: 'יתרון', ru: 'Преимуществом будет', en: 'An advantage', fr: 'Un atout' },
     car_offer:  { he: 'מה אנחנו מציעים', ru: 'Что мы предлагаем', en: 'What we offer', fr: 'Ce que nous offrons' },
+    car_apply:  { he: 'הגשת מועמדות', ru: 'Подать заявку', en: 'Apply for this role', fr: 'Postuler' },
+    car_thanks: { he: 'תודה! קורות החיים התקבלו לתפקיד {role}. נחזור אליכם בהקדם.', ru: 'Спасибо! Ваше резюме на должность «{role}» получено. Мы скоро свяжемся с вами.', en: 'Thank you! Your CV for the {role} role has been received. We will get back to you soon.', fr: 'Merci ! Votre CV pour le poste « {role} » a bien été reçu. Nous vous recontacterons rapidement.' },
     car_f_name: { he: 'שם מלא', ru: 'Полное имя', en: 'Full name', fr: 'Nom complet' },
     car_f_field:{ he: 'תחום', ru: 'Направление', en: 'Field', fr: 'Domaine' },
     car_f_pick: { he: 'בחרו תחום', ru: 'Выберите направление', en: 'Choose a field', fr: 'Choisissez un domaine' },
     car_submit: { he: 'שליחה', ru: 'Отправить', en: 'Submit', fr: 'Envoyer' },
-    car_success:{ he: 'תודה! קיבלנו את הפרטים ונחזור אליכם בהקדם', ru: 'Спасибо! Мы получили ваши данные и скоро свяжемся с вами', en: 'Thank you! We received your details and will get back to you soon', fr: 'Merci ! Nous avons bien reçu vos informations et vous recontacterons rapidement' },
 
     // מכרזים / מנויים
     tn_title:   { he: 'קבלו עדכון על כל מכרז חדש', ru: 'Получайте уведомления о каждом новом тендере', en: 'Get notified about every new tender', fr: 'Soyez informé de chaque nouvel appel d\'offres' },

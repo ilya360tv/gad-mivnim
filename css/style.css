@@ -6214,23 +6214,24 @@ html[dir="ltr"] .role-card:hover .role-btn__arrow { transform: translateX(3px) s
   background: var(--lb);
   box-shadow: 0 0 8px var(--lb-glow);
 }
-.role-modal__foot { display: flex; justify-content: center; margin-top: 24px; }
-.role-modal__cta {
-  min-height: 48px;
-  padding: 0 28px;
-  border: 0;
-  border-radius: 999px;
-  background: var(--lb);
-  color: #0a0c0e;
-  font: inherit;
-  font-size: 1rem;
+/* טופס "הגשת מועמדות" בתחתית החלון — אותו עיצוב כמו טפסי האתר (.contact-form / .form-field) */
+.role-form { margin-top: 24px; padding-top: 6px; border-top: 1px solid var(--line); }
+.role-form .role-form__title { margin-bottom: 4px; }
+.role-form__row { display: grid; grid-template-columns: 1fr; gap: inherit; }
+.role-form .form-field input.role-form__chip {
+  color: var(--lb);
   font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 8px 22px var(--lb-glow);
-  transition: background .2s ease, box-shadow .2s ease;
+  background: var(--lb-bg);
+  border-color: rgba(56, 189, 248, .55);
+  cursor: default;
 }
-.role-modal__cta:hover { background: var(--lb-hover); box-shadow: 0 10px 26px var(--lb-glow); }
-.role-modal__cta:focus-visible { outline: 3px solid #ffffff; outline-offset: 3px; }
+.role-form .form-field input.role-form__chip:focus { border-color: rgba(56, 189, 248, .55); background: var(--lb-bg); }
+.role-form .form-submit { align-self: stretch; }
+.role-form__ok[hidden] { display: none; }
+@media (min-width: 768px) {
+  .role-form__row { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 14px; }
+  .role-form .form-submit { align-self: flex-start; }
+}
 @media (max-width: 767.98px) {
   .role-modal__box { width: calc(100vw - 24px); max-width: none; }
   .role-modal__head { padding-top: 22px; }

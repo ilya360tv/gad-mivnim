@@ -455,24 +455,13 @@ document.addEventListener('DOMContentLoaded', function () {
   /* ---------------------------------------------------------------
      5) דרושים — לחיצה על כרטיס תפקיד (או על "לפרטים") פותחת חלון פרטים
         (אותו מראה כמו חלון הפרויקט: .proj-modal). התוכן מ-js/careers-data.js.
-        "שלחו קורות חיים" בחלון סוגר אותו, בוחר את התחום וגולל לטופס;
-        הטופס מציג הודעת הצלחה (בלי שרת, כמו טופס צור קשר)
+        בתחתית החלון טופס "הגשת מועמדות" אחד לכל התפקידים: התחום נקבע לפי
+        התפקיד (שדה לקריאה בלבד + role נסתר). בלי שרת — הודעת תודה בתוך החלון.
      --------------------------------------------------------------- */
-  var careersForm    = document.getElementById('careersForm');
-  var careersSuccess = document.getElementById('careersSuccess');
-  var careerField    = document.getElementById('careerField');
-  var careersSec     = document.getElementById('careers');
-  var CDATA          = window.CAREERS_DATA || null;
+  var careersSec = document.getElementById('careers');
+  var CDATA      = window.CAREERS_DATA || null;
 
-  function goToCareersForm(role) {
-    if (careerField) { careerField.value = role; }
-    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    careersForm.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
-    var first = document.getElementById('careerName');
-    if (first) { first.focus({ preventScroll: true }); }
-  }
-
-  if (careersForm && careersSec && CDATA) {
+  if (careersSec && CDATA) {
     var CT = function (key, fallback) {
       var lang = document.documentElement.getAttribute('lang') || 'he';
       var e = window.GAD_T && window.GAD_T[key];
@@ -493,7 +482,26 @@ document.addEventListener('DOMContentLoaded', function () {
           '<p class="role-modal__intro"></p>' +
         '</div>' +
         '<div class="role-modal__body"></div>' +
-        '<div class="role-modal__foot"><button type="button" class="role-modal__cta"></button></div>' +
+        '<form class="contact-form role-form" novalidate>' +
+          '<h3 class="role-modal__h role-form__title"></h3>' +
+          '<div class="role-form__row">' +
+            '<div class="form-field">' +
+              '<label for="roleFormName" data-rf="car_f_name"></label>' +
+              '<input type="text" id="roleFormName" name="name" autocomplete="name" required>' +
+            '</div>' +
+            '<div class="form-field">' +
+              '<label for="roleFormPhone" data-rf="f_phone"></label>' +
+              '<input type="tel" id="roleFormPhone" name="phone" autocomplete="tel" placeholder="05X-XXXXXXX" required>' +
+            '</div>' +
+          '</div>' +
+          '<div class="form-field">' +
+            '<label for="roleFormField" data-rf="car_f_field"></label>' +
+            '<input type="text" id="roleFormField" class="role-form__chip" readonly tabindex="-1">' +
+            '<input type="hidden" name="role">' +
+          '</div>' +
+          '<button type="submit" class="btn btn-primary form-submit" data-rf="car_submit"></button>' +
+          '<p class="form-success role-form__ok" role="status" hidden></p>' +
+        '</form>' +
       '</div>';
     document.body.appendChild(rm);
 
@@ -503,8 +511,11 @@ document.addEventListener('DOMContentLoaded', function () {
     var rmTitle = rm.querySelector('.proj-modal__name');
     var rmIntro = rm.querySelector('.role-modal__intro');
     var rmBody  = rm.querySelector('.role-modal__body');
-    var rmCta   = rm.querySelector('.role-modal__cta');
-    var rmRole = null, rmFrom = null;
+    var rmForm  = rm.querySelector('.role-form');
+    var rmChip  = rm.querySelector('.role-form__chip');
+    var rmRoleIn = rmForm.querySelector('input[name="role"]');
+    var rmOk    = rm.querySelector('.role-form__ok');
+    var rmRole = null, rmFrom = null, rmSent = false;
 
     function rmList(heading, items) {
       if (!items || !items.length) { return; }
@@ -522,6 +533,12 @@ document.addEventListener('DOMContentLoaded', function () {
       rmBody.appendChild(ul);
     }
 
+    function roleName() {
+      var card = careersSec.querySelector('.role-card[data-role="' + rmRole + '"]');
+      var cardTitle = card ? card.querySelector('h3') : null;
+      return CT('car_' + rmRole, cardTitle ? cardTitle.textContent : '');
+    }
+
     function renderRole() {
       var all = CDATA.roles && CDATA.roles[rmRole];
       if (!all) { return; }
@@ -530,15 +547,21 @@ document.addEventListener('DOMContentLoaded', function () {
       var card = careersSec.querySelector('.role-card[data-role="' + rmRole + '"]');
       var cardIcon = card ? card.querySelector('.role-icon') : null;
       rmIcon.innerHTML = cardIcon ? cardIcon.innerHTML : '';
-      var cardTitle = card ? card.querySelector('h3') : null;
-      rmTitle.textContent = CT('car_' + rmRole, cardTitle ? cardTitle.textContent : '');
+      rmTitle.textContent = roleName();
       rmIntro.textContent = d.intro || '';
       rmIntro.hidden = !d.intro;
       rmBody.innerHTML = '';
       rmList(CT('car_req', 'דרישות התפקיד'), d.req);
       rmList(CT('car_adv', 'יתרון'), d.adv);
       rmList(CT('car_offer', 'מה אנחנו מציעים'), (CDATA.offer && (CDATA.offer[lang] || CDATA.offer.he)) || []);
-      rmCta.textContent = CT('car_btn', 'שלחו קורות חיים');
+
+      // טופס: טקסטים לפי שפה, התחום לפי התפקיד
+      rmForm.querySelector('.role-form__title').textContent = CT('car_apply', 'הגשת מועמדות');
+      rmForm.querySelectorAll('[data-rf]').forEach(function (el) { el.textContent = CT(el.getAttribute('data-rf'), el.textContent); });
+      rm.querySelector('#roleFormName').placeholder = CT('car_f_name', 'שם מלא');
+      rmChip.value = roleName();
+      rmRoleIn.value = rmRole;
+      if (rmSent) { rmOk.textContent = CT('car_thanks', 'תודה! קורות החיים התקבלו לתפקיד {role}. נחזור אליכם בהקדם.').replace('{role}', roleName()); }
       rmX.setAttribute('aria-label', CT('pm_close', 'סגירה'));
     }
 
@@ -546,6 +569,9 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!CDATA.roles || !CDATA.roles[role]) { return; }
       rmRole = role;
       rmFrom = from;
+      rmSent = false;
+      rmForm.reset();
+      rmOk.hidden = true;
       renderRole();
       rmBox.scrollTop = 0;
       rm.hidden = false;
@@ -555,12 +581,12 @@ document.addEventListener('DOMContentLoaded', function () {
       rmBox.focus();
     }
 
-    function closeRole(restoreFocus) {
+    function closeRole() {
       if (rm.hidden) { return; }
       rm.classList.remove('is-open');
       rm.hidden = true;
       document.documentElement.classList.remove('modal-open');
-      if (restoreFocus && rmFrom && rmFrom.focus) { rmFrom.focus(); }
+      if (rmFrom && rmFrom.focus) { rmFrom.focus(); }
       rmFrom = null;
     }
 
@@ -574,19 +600,31 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     rm.addEventListener('click', function (e) {
-      if (e.target.closest && e.target.closest('[data-rm-close]')) { closeRole(true); }
+      if (e.target.closest && e.target.closest('[data-rm-close]')) { closeRole(); }
     });
-    rmCta.addEventListener('click', function () {
-      var role = rmRole;
-      closeRole(false);
-      goToCareersForm(role);
+
+    rmForm.addEventListener('submit', function (e) {
+      e.preventDefault(); // אין שרת — לא שולחים לשום מקום
+      if (!rmForm.checkValidity()) {
+        rmForm.reportValidity();
+        return;
+      }
+      rmForm.reset();
+      rmChip.value = roleName();                         // reset מוחק גם את התחום — מחזירים
+      rmRoleIn.value = rmRole;
+      rmSent = true;
+      rmOk.textContent = CT('car_thanks', 'תודה! קורות החיים התקבלו לתפקיד {role}. נחזור אליכם בהקדם.').replace('{role}', roleName());
+      rmOk.hidden = false;
+      rmOk.scrollIntoView({ block: 'nearest' });
     });
 
     document.addEventListener('keydown', function (e) {
       if (rm.hidden) { return; }
-      if (e.key === 'Escape') { e.stopPropagation(); closeRole(true); return; }
+      if (e.key === 'Escape') { e.stopPropagation(); closeRole(); return; }
       if (e.key === 'Tab') {                             // מלכודת פוקוס בתוך החלון
-        var g = rm.querySelectorAll('button:not([hidden]):not([disabled])');
+        var g = Array.prototype.filter.call(
+          rm.querySelectorAll('button:not([hidden]):not([disabled]), input:not([type="hidden"]):not([tabindex="-1"])'),
+          function (el) { return el.offsetParent !== null; });
         if (!g.length) { return; }
         var gf = g[0], gl = g[g.length - 1];
         if (e.shiftKey && (document.activeElement === gf || document.activeElement === rmBox)) { e.preventDefault(); gl.focus(); }
@@ -594,27 +632,11 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }, true);
 
-    // החלפת שפה בזמן שהחלון פתוח
+    // החלפת שפה בזמן שהחלון פתוח (הערכים שהוקלדו נשמרים)
     if ('MutationObserver' in window) {
       new MutationObserver(function () { if (!rm.hidden) { renderRole(); } })
         .observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
     }
-  } else if (careersForm) {                              // בלי קובץ הנתונים: הכפתור גולל ישר לטופס
-    document.querySelectorAll('.role-btn').forEach(function (btn) {
-      btn.addEventListener('click', function () { goToCareersForm(btn.getAttribute('data-role')); });
-    });
-  }
-
-  if (careersForm) {
-    careersForm.addEventListener('submit', function (e) {
-      e.preventDefault(); // אין שרת — לא שולחים לשום מקום
-      if (!careersForm.checkValidity()) {
-        careersForm.reportValidity();
-        return;
-      }
-      careersSuccess.hidden = false;
-      careersForm.reset();
-    });
   }
 
   // מכרזים / מנויים — הרשמה לעדכונים: אותה התנהגות (הודעת הצלחה + איפוס, בלי שרת)
