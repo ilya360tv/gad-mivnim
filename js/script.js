@@ -1154,6 +1154,61 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  /* ---------------------------------------------------------------
+     12ב) תפריט השפות — נפתח תמיד בתוך המסך, לכיוון מרכז הדף.
+          מחשב (≥1024): לצד העיגול הפונה למרכז, מיושר לראש העיגול. טאבלט/טלפון: מתחת לעיגול.
+          position: fixed; מקזזים את ראשית ה-containing block (אב עם backdrop-filter/transform) במדידה.
+     --------------------------------------------------------------- */
+  var lmMenu = document.getElementById('langMenu');
+  if (lgBtn && lmMenu && 'MutationObserver' in window) {
+    var LM_M = 12, LM_GAP = 10;
+    var placeLangMenu = function () {
+      if (lmMenu.hidden) { return; }
+      lmMenu.style.left = '0px'; lmMenu.style.top = '0px';
+      var o = lmMenu.getBoundingClientRect(), b = lgBtn.getBoundingClientRect();
+      var w = o.width, h = o.height;
+      var vw = document.documentElement.clientWidth, vh = window.innerHeight;
+      var toRight = (b.left + b.width / 2) < vw / 2;               // העיגול בחצי השמאלי — נפתחים ימינה
+      var x, y;
+      if (window.innerWidth >= 1024) {
+        y = b.top;
+        // לא מכסים את הגלולות שמתחת לעיגול — נפתחים מעבר לקצה העמודה בגובה התפריט
+        var edgeR = b.right, edgeL = b.left;
+        document.querySelectorAll('.site-header a, .site-header button').forEach(function (el) {
+          if (lmMenu.contains(el)) { return; }
+          var r = el.getBoundingClientRect();
+          if (!r.width || r.bottom <= y || r.top >= y + h) { return; }
+          if (toRight && r.left < b.right && r.right > edgeR) { edgeR = r.right; }
+          if (!toRight && r.right > b.left && r.left < edgeL) { edgeL = r.left; }
+        });
+        x = toRight ? edgeR + LM_GAP : edgeL - LM_GAP - w;
+        if (x < LM_M || x + w > vw - LM_M) { x = toRight ? b.left - LM_GAP - w : b.right + LM_GAP; }   // הפיכה
+      } else {
+        x = toRight ? b.left : b.right - w;
+        y = b.bottom + LM_GAP;
+        if (y + h > vh - LM_M) { y = b.top - LM_GAP - h; }
+      }
+      x = Math.max(LM_M, Math.min(x, vw - LM_M - w));
+      y = Math.max(LM_M, Math.min(y, vh - LM_M - h));
+      lmMenu.style.left = (x - o.left).toFixed(1) + 'px';
+      lmMenu.style.top = (y - o.top).toFixed(1) + 'px';
+    };
+    var lmOpen = false;
+    new MutationObserver(function () {
+      var open = !lmMenu.hidden;
+      if (open === lmOpen) { return; }
+      lmOpen = open;
+      if (open) {
+        placeLangMenu();
+        window.addEventListener('resize', placeLangMenu);
+        window.addEventListener('scroll', placeLangMenu, { passive: true });
+      } else {
+        window.removeEventListener('resize', placeLangMenu);
+        window.removeEventListener('scroll', placeLangMenu);
+      }
+    }).observe(lmMenu, { attributes: true, attributeFilter: ['hidden'] });
+  }
+
 
   /* ---------------------------------------------------------------
      13) #about — הכותרת "מאז ועד היום..." (מעל התמונות) עולה לגובה של "מדוע נולד הרעיון..." (מחשב ≥1024)

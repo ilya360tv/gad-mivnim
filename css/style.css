@@ -5886,3 +5886,37 @@ html.a11y-no-motion .about-tile--reel.is-ready { -webkit-mask-image: none; mask-
 body .site-header .main-nav ul li a,
 body .site-header .main-nav ul li a:hover,
 body .site-header .main-nav ul li a.is-current { font-weight: 400 !important; }
+
+/* ----- תפריט השפות: נפתח בתוך המסך לכיוון המרכז (המיקום מחושב ב-JS), כהה עם טבעת תכלת ----- */
+body .lang-menu {
+  position: fixed !important;
+  top: 0; left: 0; right: auto; bottom: auto;    /* left/top נקבעים ב-JS */
+  z-index: 3000 !important;
+  min-width: 180px;
+  margin: 0;
+  padding: 6px;
+  background: rgba(10, 12, 14, .92) !important;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border: 0 !important;
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, .45), 0 14px 34px rgba(0, 0, 0, .5) !important;
+  border-radius: 16px !important;
+}
+body .lang-menu[hidden] { display: none !important; }
+body .lang-menu button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 11px;
+  white-space: nowrap;
+  color: #d7dbe0;
+}
+body .lang-menu button:hover,
+body .lang-menu button:focus-visible { background: rgba(56, 189, 248, .1); color: #fff; }
+body .lang-menu button.is-active {
+  background: rgba(56, 189, 248, .18) !important;
+  color: #38bdf8 !important;
+  font-weight: 500;
+}
