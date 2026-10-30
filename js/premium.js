@@ -158,9 +158,27 @@
         currentLink = link;
       };
 
+      // לחיצה על גלולה (או טעינה עם #עוגן): הגלולה נשארת מסומנת עד שהמשתמש גולל בעצמו —
+      // בלי "קפיצות" בזמן הגלילה האוטומטית (למשל #tenders / #app שממורכזים במסך, ראו script.js 6ב)
+      var spyLocked = false;
+      var lockSpy = function (link) { setCurrent(link); spyLocked = true; };
+      var unlockSpy = function () { spyLocked = false; };
+      navLinks.forEach(function (link) {
+        link.addEventListener('click', function () {
+          if (!link.hasAttribute('data-soon')) { lockSpy(link); }
+        });
+      });
+      ['wheel', 'touchstart', 'keydown', 'mousedown'].forEach(function (ev) {
+        window.addEventListener(ev, function (e) {
+          if (ev === 'mousedown' && e.target.closest && e.target.closest('.main-nav')) { return; }
+          unlockSpy();
+        }, { passive: true });
+      });
+
       var spyTicking = false;
       var updateSpy = function () {
         spyTicking = false;
+        if (spyLocked) { return; }
         // קו הבדיקה במסך — עד 200px מלמעלה, כדי שגם סקשן נמוך (#podcast) יסומן אחרי קפיצה אליו
         var probe = Math.min(window.innerHeight * 0.35, 200);
         var atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
@@ -178,6 +196,7 @@
       window.addEventListener('scroll', queueSpy, { passive: true });
       window.addEventListener('resize', queueSpy);
       updateSpy();
+      if (linkById[location.hash.slice(1)]) { lockSpy(linkById[location.hash.slice(1)]); }
     }
 
     /* ---------------------------------------------------------------

@@ -6116,3 +6116,46 @@ html[dir] body #app .plans-grid {
   margin-inline: auto !important;
   justify-content: center;
 }
+
+/* ==========================================================================
+   #tenders + #app — כל הבלוק במסך אחד (דסקטופ ≥1024). המיקום האנכי בלחיצה על הגלולה — js/script.js סעיף 6ב
+   ========================================================================== */
+@media (min-width: 1024px) {
+  html[dir] body #tenders,
+  html[dir] body #app { padding-block: 48px; }
+  html[dir] body #tenders .section-eyebrow,
+  html[dir] body #app .section-eyebrow { margin-top: 0; margin-bottom: 10px; }
+  html[dir] body #tenders .section-title,
+  html[dir] body #app .section-title { font-size: clamp(1.8rem, 2.6vw, 2.6rem); margin-top: 0; margin-bottom: 12px; }
+  html[dir] body #tenders .section-lead,
+  html[dir] body #app .section-lead { margin-top: 0; margin-bottom: 28px; }
+
+  /* טופס: 760px, שדות 52px, תווית→שדה 8px, שדה→תווית הבאה 18px */
+  html[dir] body #tenders .careers-form-card { max-width: 760px; margin-top: 0; padding: 28px 36px; }
+  html[dir] body #tenders .contact-form { gap: 18px; }
+  html[dir] body #tenders .form-field { gap: 8px; }
+  html[dir] body #tenders .form-field input,
+  html[dir] body #tenders .form-field select { box-sizing: border-box; height: 52px; padding-block: 0; }
+  html[dir] body #tenders .form-submit { margin-top: 0; }
+
+  /* #app: כרטיסים צמודים יותר לכותרת */
+  html[dir] body #app .plans-grid { margin-top: 0; }
+}
+/* מסך נמוך: "שם מלא" ו"טלפון" באותה שורה, "תחום מקצועי" ברוחב מלא מתחת, הכפתור מתחת */
+@media (min-width: 1024px) and (max-height: 900px) {
+  html[dir] body #tenders .contact-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 18px;
+  }
+  html[dir] body #tenders .contact-form > :nth-child(n+3) { grid-column: 1 / -1; }
+  html[dir] body #tenders .form-submit { justify-self: start; }
+  html[dir] body #app .plan-card { padding: 22px 22px 20px; gap: 8px; }
+  html[dir] body #app .plan-list { gap: 6px; margin-bottom: 10px; }
+}
+@media (min-width: 1024px) and (max-height: 700px) {
+  html[dir] body #tenders .section-lead,
+  html[dir] body #app .section-lead { margin-bottom: 20px; }
+  html[dir] body #app .plan-card { padding: 18px 20px 16px; }
+  html[dir] body #app .plan-list li { line-height: 1.35; }
+}

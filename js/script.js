@@ -532,6 +532,55 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ---------------------------------------------------------------
+     6ב) #tenders / #app (דסקטופ ≥1024): לחיצה על הגלולה — הבלוק (מהכותרת העליונה ועד סוף הטופס / הכרטיסים)
+         ממורכז אנכית במסך כשהוא נכנס בו; אחרת — צמוד למעלה עם 16px. גם בטעינה ישירה עם #tenders / #app.
+         המדידה לפי offsetTop (בלי transform של אנימציות ה-reveal).
+     --------------------------------------------------------------- */
+  var CENTER_BLOCKS = { tenders: '.careers-form-card', app: '.plans-grid' };
+  var docTop = function (el) {
+    var y = 0;
+    for (; el; el = el.offsetParent) { y += el.offsetTop; }
+    return y;
+  };
+  var centerBlockTarget = function (id) {
+    var sec = document.getElementById(id);
+    var head = sec && sec.querySelector('.section-eyebrow');
+    var last = sec && sec.querySelector(CENTER_BLOCKS[id]);
+    if (!head || !last) { return null; }
+    var top = docTop(head), bottom = docTop(last) + last.offsetHeight;
+    var free = window.innerHeight - (bottom - top);
+    return Math.max(0, Math.round(free >= 32 ? top - free / 2 : top - 16));
+  };
+  var centerBlock = function (id, behavior) {
+    var y = centerBlockTarget(id);
+    if (y === null) { return; }
+    window.scrollTo({ top: y, behavior: behavior });
+    // בזמן הגלילה תוכן מעל (תמונות lazy) עשוי לשנות גובה בכמה פיקסלים — תיקון קטן בסוף הגלילה
+    var fix = function () {
+      var y2 = centerBlockTarget(id);
+      if (y2 !== null && Math.abs(y2 - window.scrollY) > 1) { window.scrollTo({ top: y2, behavior: 'instant' }); }
+    };
+    if ('onscrollend' in window) { window.addEventListener('scrollend', fix, { once: true }); }
+    setTimeout(fix, 1500);
+  };
+  document.querySelectorAll('a[href="#tenders"], a[href="#app"]').forEach(function (link) {
+    link.addEventListener('click', function (e) {
+      if (!desktopMq.matches) { return; }                          // טלפון/טאבלט — גלילה רגילה לעוגן
+      e.preventDefault();
+      var id = link.getAttribute('href').slice(1);
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      centerBlock(id, reduce ? 'auto' : 'smooth');
+      if (history.replaceState) { history.replaceState(null, '', '#' + id); }
+    });
+  });
+  var hashId = location.hash.slice(1);
+  if (CENTER_BLOCKS[hashId] && desktopMq.matches) {
+    var centerOnLoad = function () { centerBlock(hashId, 'instant'); };
+    window.addEventListener('load', function () { setTimeout(centerOnLoad, 60); });   // אחרי קפיצת העוגן של הדפדפן
+    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(centerOnLoad); }
+  }
+
+  /* ---------------------------------------------------------------
      7) חלון פרויקט (modal) — נפתח בלחיצה על לוגו לקוח בפס #projects.
         התוכן מגיע מ-js/projects-data.js (window.PROJECTS_DATA); עברית = המקור,
         en / ru / fr מתוך d.i18n. תמונות נפתחות בלייטבוקס עם כיתוב, מונה וחיצים.
