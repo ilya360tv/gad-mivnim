@@ -6236,3 +6236,67 @@ html[dir="ltr"] .role-card:hover .role-btn__arrow { transform: translateX(3px) s
   .role-modal__box { width: calc(100vw - 24px); max-width: none; }
   .role-modal__head { padding-top: 22px; }
 }
+/* ----- העלאת קורות חיים בטופס חלון התפקיד (תיבת גרירה מעוצבת; ה-input האמיתי מוסתר אך נגיש) ----- */
+.cv-drop {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 112px;
+  padding: 16px;
+  border: 2px dashed rgba(56, 189, 248, .6);
+  border-radius: 12px;
+  background: rgba(56, 189, 248, .05);
+  color: var(--lb);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .18s ease, background .18s ease, box-shadow .18s ease;
+}
+.cv-drop:hover,
+.cv-drop.is-drag { border-color: var(--lb); background: var(--lb-bg-strong); box-shadow: 0 0 18px var(--lb-glow); }
+.cv-drop:focus-within { border-color: var(--lb); box-shadow: 0 0 0 3px rgba(56, 189, 248, .45); }
+.cv-drop.is-invalid { border-color: #f87171; }
+.cv-drop.has-file { min-height: 0; border-style: solid; cursor: default; }
+.cv-drop__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+.cv-drop__empty { display: flex; flex-direction: column; align-items: center; gap: 6px; pointer-events: none; }
+.cv-drop__empty[hidden], .cv-drop__file[hidden] { display: none; }
+.cv-drop__text { color: #ffffff; font-weight: 700; font-size: .98rem; }
+.cv-drop__types { color: var(--ink-soft); font-size: .85rem; }
+.cv-drop__file { display: flex; align-items: center; gap: 12px; width: 100%; text-align: start; }
+.cv-drop__file > svg { flex: none; }
+.cv-drop__meta { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.cv-drop__name { overflow: hidden; color: #ffffff; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.cv-drop__size { color: var(--ink-soft); font-size: .85rem; }
+.cv-drop__x {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #ffffff;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, .55);
+  transition: background .2s ease, color .2s ease;
+}
+.cv-drop__x:hover { background: var(--lb); color: #0a0c0e; }
+.cv-drop__x:focus-visible { outline: 3px solid #ffffff; outline-offset: 3px; }
+.cv-drop__err { margin: 2px 0 0; color: #f87171; font-size: .9rem; font-weight: 600; }
+.cv-drop__err[hidden] { display: none; }
+.role-form__hp { display: none; }
+.role-form__ok.is-error { background: rgba(248, 113, 113, .1); border-color: rgba(248, 113, 113, .45); color: #fca5a5; }

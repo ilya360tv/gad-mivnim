@@ -482,7 +482,9 @@ document.addEventListener('DOMContentLoaded', function () {
           '<p class="role-modal__intro"></p>' +
         '</div>' +
         '<div class="role-modal__body"></div>' +
-        '<form class="contact-form role-form" novalidate>' +
+        '<form class="contact-form role-form" name="careers-application" method="POST" action="/" enctype="multipart/form-data" data-netlify="true" netlify-honeypot="bot-field" novalidate>' +
+          '<input type="hidden" name="form-name" value="careers-application">' +
+          '<p class="role-form__hp" hidden><label>Leave empty <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>' +
           '<h3 class="role-modal__h role-form__title"></h3>' +
           '<div class="role-form__row">' +
             '<div class="form-field">' +
@@ -498,6 +500,24 @@ document.addEventListener('DOMContentLoaded', function () {
             '<label for="roleFormField" data-rf="car_f_field"></label>' +
             '<input type="text" id="roleFormField" class="role-form__chip" readonly tabindex="-1">' +
             '<input type="hidden" name="role">' +
+          '</div>' +
+          '<div class="form-field">' +
+            '<label for="roleFormCv" data-rf="car_cv"></label>' +
+            '<div class="cv-drop">' +
+              '<input type="file" id="roleFormCv" name="cv" class="cv-drop__input" aria-required="true" aria-describedby="roleFormCvHint roleFormCvErr"' +
+                ' accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">' +
+              '<div class="cv-drop__empty">' +
+                '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 15V4"/><path d="m7 9 5-5 5 5"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>' +
+                '<span class="cv-drop__text" id="roleFormCvHint" data-rf="car_cv_hint"></span>' +
+                '<span class="cv-drop__types" data-rf="car_cv_types"></span>' +
+              '</div>' +
+              '<div class="cv-drop__file" hidden>' +
+                '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>' +
+                '<span class="cv-drop__meta"><span class="cv-drop__name" dir="auto"></span><span class="cv-drop__size"></span></span>' +
+                '<button type="button" class="cv-drop__x">&times;</button>' +
+              '</div>' +
+            '</div>' +
+            '<p class="cv-drop__err" id="roleFormCvErr" role="alert" hidden></p>' +
           '</div>' +
           '<button type="submit" class="btn btn-primary form-submit" data-rf="car_submit"></button>' +
           '<p class="form-success role-form__ok" role="status" hidden></p>' +
@@ -515,7 +535,80 @@ document.addEventListener('DOMContentLoaded', function () {
     var rmChip  = rm.querySelector('.role-form__chip');
     var rmRoleIn = rmForm.querySelector('input[name="role"]');
     var rmOk    = rm.querySelector('.role-form__ok');
-    var rmRole = null, rmFrom = null, rmSent = false;
+    var rmSubmit = rmForm.querySelector('.form-submit');
+    var cvInput = rm.querySelector('.cv-drop__input');
+    var cvDrop  = rm.querySelector('.cv-drop');
+    var cvEmpty = rm.querySelector('.cv-drop__empty');
+    var cvFileBox = rm.querySelector('.cv-drop__file');
+    var cvErr   = rm.querySelector('.cv-drop__err');
+    var cvX     = rm.querySelector('.cv-drop__x');
+    var CV_MAX  = 5 * 1024 * 1024;
+    var rmRole = null, rmFrom = null, rmStatus = null, cvErrKey = null;
+
+    var THANKS = 'תודה! קורות החיים התקבלו לתפקיד {role}. נחזור אליכם בהקדם.';
+    var CV_ERR = { car_cv_err_type: 'ניתן להעלות קבצי PDF או Word בלבד', car_cv_err_size: 'הקובץ גדול מ-5MB', car_cv_req: 'יש לצרף קובץ קורות חיים' };
+
+    // ----- העלאת קורות חיים: לחיצה / גרירה, PDF או Word בלבד, עד 5MB -----
+    function cvSize(n) { return n < 1024 * 1024 ? Math.max(1, Math.round(n / 1024)) + ' KB' : (n / 1024 / 1024).toFixed(1) + ' MB'; }
+    function cvShowErr(key) {
+      cvErrKey = key;
+      cvErr.textContent = key ? CT(key, CV_ERR[key]) : '';
+      cvErr.hidden = !key;
+      cvDrop.classList.toggle('is-invalid', !!key);
+    }
+    function cvRender() {
+      var f = cvInput.files && cvInput.files[0];
+      cvDrop.classList.toggle('has-file', !!f);
+      cvEmpty.hidden = !!f;
+      cvFileBox.hidden = !f;
+      if (f) {
+        cvFileBox.querySelector('.cv-drop__name').textContent = f.name;
+        cvFileBox.querySelector('.cv-drop__size').textContent = cvSize(f.size);
+      }
+    }
+    function cvClear() { cvInput.value = ''; cvRender(); }
+    function cvCheck() {                                 // true אם הקובץ תקין (או שעדיין אין קובץ)
+      var f = cvInput.files && cvInput.files[0];
+      if (!f) { cvRender(); return true; }
+      if (!/\.(pdf|docx?)$/i.test(f.name)) { cvClear(); cvShowErr('car_cv_err_type'); return false; }
+      if (f.size > CV_MAX) { cvClear(); cvShowErr('car_cv_err_size'); return false; }
+      cvShowErr(null);
+      cvRender();
+      return true;
+    }
+    cvInput.addEventListener('change', cvCheck);
+    cvDrop.addEventListener('click', function (e) {
+      if (e.target.closest('.cv-drop__x') || e.target === cvInput) { return; }
+      cvInput.click();
+    });
+    cvX.addEventListener('click', function () { cvClear(); cvShowErr(null); cvInput.focus(); });
+    ['dragenter', 'dragover'].forEach(function (ev) {
+      cvDrop.addEventListener(ev, function (e) { e.preventDefault(); cvDrop.classList.add('is-drag'); });
+    });
+    ['dragleave', 'dragend'].forEach(function (ev) {
+      cvDrop.addEventListener(ev, function (e) { if (!cvDrop.contains(e.relatedTarget)) { cvDrop.classList.remove('is-drag'); } });
+    });
+    cvDrop.addEventListener('drop', function (e) {
+      e.preventDefault();
+      cvDrop.classList.remove('is-drag');
+      var files = e.dataTransfer && e.dataTransfer.files;
+      if (!files || !files.length) { return; }
+      var dt = new DataTransfer();                       // קובץ אחד בלבד
+      dt.items.add(files[0]);
+      cvInput.files = dt.files;
+      cvCheck();
+    });
+    // קובץ שנזרק מחוץ לתיבה לא נפתח בלשונית במקום האתר
+    rm.addEventListener('dragover', function (e) { e.preventDefault(); });
+    rm.addEventListener('drop', function (e) { e.preventDefault(); });
+
+    function roleHe() { var e = window.GAD_T && window.GAD_T['car_' + rmRole]; return (e && e.he) || roleName(); }
+    function showStatus() {
+      rmOk.hidden = !rmStatus;
+      rmOk.classList.toggle('is-error', rmStatus === 'fail');
+      if (rmStatus === 'ok') { rmOk.textContent = CT('car_thanks', THANKS).replace('{role}', roleName()); }
+      else if (rmStatus === 'fail') { rmOk.textContent = CT('car_fail', 'השליחה נכשלה, נסו שוב.'); }
+    }
 
     function rmList(heading, items) {
       if (!items || !items.length) { return; }
@@ -560,8 +653,10 @@ document.addEventListener('DOMContentLoaded', function () {
       rmForm.querySelectorAll('[data-rf]').forEach(function (el) { el.textContent = CT(el.getAttribute('data-rf'), el.textContent); });
       rm.querySelector('#roleFormName').placeholder = CT('car_f_name', 'שם מלא');
       rmChip.value = roleName();
-      rmRoleIn.value = rmRole;
-      if (rmSent) { rmOk.textContent = CT('car_thanks', 'תודה! קורות החיים התקבלו לתפקיד {role}. נחזור אליכם בהקדם.').replace('{role}', roleName()); }
+      rmRoleIn.value = roleHe();
+      cvX.setAttribute('aria-label', CT('car_cv_remove', 'הסרת הקובץ'));
+      if (cvErrKey) { cvShowErr(cvErrKey); }
+      showStatus();
       rmX.setAttribute('aria-label', CT('pm_close', 'סגירה'));
     }
 
@@ -569,9 +664,10 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!CDATA.roles || !CDATA.roles[role]) { return; }
       rmRole = role;
       rmFrom = from;
-      rmSent = false;
+      rmStatus = null;
       rmForm.reset();
-      rmOk.hidden = true;
+      cvShowErr(null);
+      cvRender();
       renderRole();
       rmBox.scrollTop = 0;
       rm.hidden = false;
@@ -603,19 +699,40 @@ document.addEventListener('DOMContentLoaded', function () {
       if (e.target.closest && e.target.closest('[data-rm-close]')) { closeRole(); }
     });
 
+    // שליחה אמיתית ל-Netlify Forms (טופס careers-application; עותק סטטי חבוי ב-index.html לזיהוי בזמן הפריסה)
     rmForm.addEventListener('submit', function (e) {
-      e.preventDefault(); // אין שרת — לא שולחים לשום מקום
+      e.preventDefault();
       if (!rmForm.checkValidity()) {
         rmForm.reportValidity();
         return;
       }
-      rmForm.reset();
-      rmChip.value = roleName();                         // reset מוחק גם את התחום — מחזירים
-      rmRoleIn.value = rmRole;
-      rmSent = true;
-      rmOk.textContent = CT('car_thanks', 'תודה! קורות החיים התקבלו לתפקיד {role}. נחזור אליכם בהקדם.').replace('{role}', roleName());
-      rmOk.hidden = false;
-      rmOk.scrollIntoView({ block: 'nearest' });
+      if (!cvCheck()) { cvInput.focus(); return; }
+      if (!(cvInput.files && cvInput.files[0])) { cvShowErr('car_cv_req'); cvInput.focus(); return; }
+
+      rmRoleIn.value = roleHe();
+      var data = new FormData(rmForm);
+      var label = rmSubmit.textContent;
+      rmSubmit.disabled = true;
+      rmSubmit.textContent = CT('car_sending', 'שולח…');
+      rmStatus = null;
+      showStatus();
+      fetch(rmForm.getAttribute('action') || '/', { method: 'POST', body: data })
+        .then(function (res) {
+          if (!res.ok) { throw new Error('HTTP ' + res.status); }
+          rmForm.reset();
+          cvShowErr(null);
+          cvRender();
+          rmChip.value = roleName();                     // reset מוחק גם את התחום — מחזירים
+          rmRoleIn.value = roleHe();
+          rmStatus = 'ok';
+        })
+        .catch(function () { rmStatus = 'fail'; })
+        .then(function () {
+          rmSubmit.disabled = false;
+          rmSubmit.textContent = label;
+          showStatus();
+          rmOk.scrollIntoView({ block: 'nearest' });
+        });
     });
 
     document.addEventListener('keydown', function (e) {
