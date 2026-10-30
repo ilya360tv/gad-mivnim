@@ -482,6 +482,21 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // מכרזים / מנויים — הרשמה לעדכונים: אותה התנהגות (הודעת הצלחה + איפוס, בלי שרת)
+  var tendersForm    = document.getElementById('tendersForm');
+  var tendersSuccess = document.getElementById('tendersSuccess');
+  if (tendersForm && tendersSuccess) {
+    tendersForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!tendersForm.checkValidity()) {
+        tendersForm.reportValidity();
+        return;
+      }
+      tendersSuccess.hidden = false;
+      tendersForm.reset();
+    });
+  }
+
   /* ---------------------------------------------------------------
      6) מיקום עוגנים — מודדים את גובה ההדר הדביק בפועל (שתי שורות בדסקטופ,
         עשוי להשתנות) ומעדכנים scroll-padding-top = גובה + 16px.

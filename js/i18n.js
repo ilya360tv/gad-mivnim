@@ -61,6 +61,40 @@
     car_submit: { he: 'שליחה', ru: 'Отправить', en: 'Submit', fr: 'Envoyer' },
     car_success:{ he: 'תודה! קיבלנו את הפרטים ונחזור אליכם בהקדם', ru: 'Спасибо! Мы получили ваши данные и скоро свяжемся с вами', en: 'Thank you! We received your details and will get back to you soon', fr: 'Merci ! Nous avons bien reçu vos informations et vous recontacterons rapidement' },
 
+    // מכרזים / מנויים
+    tn_title:   { he: 'קבלו עדכון על כל מכרז חדש', ru: 'Получайте уведомления о каждом новом тендере', en: 'Get notified about every new tender', fr: 'Soyez informé de chaque nouvel appel d\'offres' },
+    tn_lead:    { he: 'הירשמו לקבלת עדכונים על מכרזים חדשים של GAD MIVNIM בתחום המקצועי שלכם', ru: 'Подпишитесь на новости о новых тендерах GAD MIVNIM в вашей профессиональной области', en: 'Sign up for updates on new GAD MIVNIM tenders in your professional field', fr: 'Inscrivez-vous pour recevoir les nouveaux appels d\'offres de GAD MIVNIM dans votre domaine' },
+    tn_f_field: { he: 'תחום מקצועי', ru: 'Профессиональная область', en: 'Professional field', fr: 'Domaine professionnel' },
+    tn_o1:      { he: 'קבלן ראשי', ru: 'Генеральный подрядчик', en: 'Main contractor', fr: 'Entrepreneur principal' },
+    tn_o2:      { he: 'קבלן משנה', ru: 'Субподрядчик', en: 'Subcontractor', fr: 'Sous-traitant' },
+    tn_o3:      { he: 'ספק חומרים', ru: 'Поставщик материалов', en: 'Materials supplier', fr: 'Fournisseur de matériaux' },
+    tn_o4:      { he: 'אדריכלות והנדסה', ru: 'Архитектура и инженерия', en: 'Architecture & engineering', fr: 'Architecture et ingénierie' },
+    tn_o5:      { he: 'עיצוב פנים', ru: 'Дизайн интерьера', en: 'Interior design', fr: 'Design d\'intérieur' },
+    tn_o6:      { he: 'מערכות (חשמל / אינסטלציה / מיזוג)', ru: 'Системы (электрика / сантехника / кондиционирование)', en: 'Systems (electrical / plumbing / HVAC)', fr: 'Systèmes (électricité / plomberie / climatisation)' },
+    tn_o7:      { he: 'אחר', ru: 'Другое', en: 'Other', fr: 'Autre' },
+    tn_submit:  { he: 'הרשמה לעדכונים', ru: 'Подписаться на обновления', en: 'Sign up for updates', fr: 'S\'inscrire aux mises à jour' },
+    tn_success: { he: 'נרשמתם בהצלחה! נעדכן אתכם על מכרזים חדשים בתחום שלכם.', ru: 'Вы успешно подписались! Мы сообщим вам о новых тендерах в вашей области.', en: 'You\'re signed up! We\'ll let you know about new tenders in your field.', fr: 'Inscription réussie ! Nous vous informerons des nouveaux appels d\'offres dans votre domaine.' },
+
+    // אפליקציה / מנויים — מסלולי שירות ואחזקה
+    ap_title:   { he: 'מנויי שירות ואחזקה', ru: 'Абонементы на сервис и обслуживание', en: 'Service & maintenance plans', fr: 'Abonnements service et entretien' },
+    ap_lead:    { he: 'שקט נפשי גם אחרי המסירה — בחרו את מסלול השירות המתאים לכם', ru: 'Спокойствие и после сдачи объекта — выберите подходящий вам тариф обслуживания', en: 'Peace of mind after handover too — choose the service plan that suits you', fr: 'La tranquillité d\'esprit même après la livraison — choisissez la formule qui vous convient' },
+    ap_price:   { he: 'המחיר יותאם לנכס', ru: 'Цена подбирается под объект', en: 'Price tailored to your property', fr: 'Prix adapté à votre bien' },
+    ap_btn:     { he: 'לפרטים', ru: 'Подробнее', en: 'Details', fr: 'En savoir plus' },
+    ap_p1:      { he: 'בסיסי', ru: 'Базовый', en: 'Basic', fr: 'Essentiel' },
+    ap_p1_l1:   { he: 'בדק בית שנתי', ru: 'Ежегодная проверка дома', en: 'Annual home inspection', fr: 'Inspection annuelle du logement' },
+    ap_p1_l2:   { he: 'מוקד שירות בשעות העבודה', ru: 'Сервисный центр в рабочие часы', en: 'Service center during business hours', fr: 'Centre de service aux heures ouvrables' },
+    ap_p1_l3:   { he: 'טיפול בתקלות דחופות', ru: 'Устранение срочных неисправностей', en: 'Urgent fault handling', fr: 'Traitement des pannes urgentes' },
+    ap_p2:      { he: 'מורחב', ru: 'Расширенный', en: 'Extended', fr: 'Étendu' },
+    ap_p2_l1:   { he: 'שתי ביקורות בשנה', ru: 'Две проверки в год', en: 'Two inspections a year', fr: 'Deux inspections par an' },
+    ap_p2_l2:   { he: 'מוקד שירות מורחב', ru: 'Расширенный сервисный центр', en: 'Extended service center', fr: 'Centre de service étendu' },
+    ap_p2_l3:   { he: 'אחזקה שוטפת של מערכות', ru: 'Текущее обслуживание систем', en: 'Ongoing systems maintenance', fr: 'Entretien courant des systèmes' },
+    ap_p2_l4:   { he: 'עדיפות בטיפול', ru: 'Приоритетное обслуживание', en: 'Priority handling', fr: 'Traitement prioritaire' },
+    ap_p3:      { he: 'פרימיום', ru: 'Премиум', en: 'Premium', fr: 'Premium' },
+    ap_p3_l1:   { he: 'ביקורות רבעוניות', ru: 'Ежеквартальные проверки', en: 'Quarterly inspections', fr: 'Inspections trimestrielles' },
+    ap_p3_l2:   { he: 'מוקד שירות 24/7', ru: 'Сервисный центр 24/7', en: '24/7 service center', fr: 'Centre de service 24h/24, 7j/7' },
+    ap_p3_l3:   { he: 'אחזקה מלאה למבני מגורים ומסחר', ru: 'Полное обслуживание жилых и коммерческих зданий', en: 'Full maintenance for residential & commercial buildings', fr: 'Entretien complet des immeubles résidentiels et commerciaux' },
+    ap_p3_l4:   { he: 'מנהל לקוח אישי', ru: 'Персональный менеджер', en: 'Personal account manager', fr: 'Gestionnaire de compte dédié' },
+
     hero_soon:    { he: 'בקרוב', ru: 'Скоро', en: 'Coming Soon', fr: 'Bientôt' },
 
     /* ----- Hero ----- */
@@ -198,7 +232,6 @@
     p9: { he: 'מבנים מיוחדים', ru: 'Особые здания', en: 'Special Buildings', fr: 'Bâtiments spéciaux' },
 
     /* ----- השותפים שלנו ----- */
-    partners_title: { he: 'חטיבת השותפים שלנו', ru: 'Подразделение наших партнёров', en: 'Our Partners Division', fr: 'Division de nos partenaires' },
     partners_sub:   { he: 'המותגים והחברות המובלים בישראל', ru: 'Ведущие бренды и компании Израиля', en: 'The leading brands and companies in Israel', fr: 'Les marques et entreprises leaders en Israël' },
     partners_badge: { he: 'המותגים המובלים', ru: 'Ведущие бренды', en: 'The leading brands', fr: 'Les marques leaders' },
     partners_lead:  { he: 'בית טוב זה משפחה', ru: 'Хороший дом — это семья', en: 'A good home is family', fr: 'Une bonne maison, c’est une famille' },
@@ -225,7 +258,6 @@
     pt16: { he: 'אלומיניום', ru: 'Алюминий', en: 'Aluminum', fr: 'Aluminium' },
 
     /* ----- הצוותים שלנו ----- */
-    teams_title:  { he: 'חטיבת הצוותים שלנו', ru: 'Подразделение наших команд', en: 'Our Teams Division', fr: 'Division de nos équipes' },
     teams_slogan: { he: 'מצוינות ללא פשרות', ru: 'Совершенство без компромиссов', en: 'Excellence without compromise', fr: 'L’excellence sans compromis' },
     teams_l1: { he: 'קבלני בית משותפים', ru: 'Подрядчики многоквартирных домов', en: 'Shared-building contractors', fr: 'Entrepreneurs de copropriétés' },
     teams_l2: { he: 'אמינות ומקצועיות ללא פשרות', ru: 'Надёжность и профессионализм без компромиссов', en: 'Reliability and professionalism without compromise', fr: 'Fiabilité et professionnalisme sans compromis' },

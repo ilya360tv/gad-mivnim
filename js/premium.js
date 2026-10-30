@@ -139,8 +139,8 @@
 
       // כל היעדים שקיימים בדף (גם סקשנים שאינם בתפריט — כדי לנקות סימון ישן)
       var spyIds = ['hero', 'about', 'services', 'projects', 'in-progress', 'teams',
-                    'partners', 'gallery', 'info',
-                    'podcast', 'contact', 'careers'];
+                    'partners', 'info', 'podcast', 'gallery', 'careers',
+                    'tenders', 'app', 'contact'];
       var spyTargets = spyIds.map(function (id) { return document.getElementById(id); })
                              .filter(Boolean);
       var currentLink = null;
@@ -161,7 +161,8 @@
       var spyTicking = false;
       var updateSpy = function () {
         spyTicking = false;
-        var probe = window.innerHeight * 0.35;     // קו הבדיקה במסך
+        // קו הבדיקה במסך — עד 200px מלמעלה, כדי שגם סקשן נמוך (#podcast) יסומן אחרי קפיצה אליו
+        var probe = Math.min(window.innerHeight * 0.35, 200);
         var atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
         var best = null, bestTop = -Infinity;
         spyTargets.forEach(function (el) {

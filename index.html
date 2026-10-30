@@ -68,8 +68,8 @@
         <li><a href="#podcast"     data-i18n="nav_podcast">פודקאסט</a></li>
         <li><a href="#gallery"     data-i18n="nav_gallery_short">גלריה / השראות</a></li>
         <li><a href="#careers"     data-i18n="nav_careers">דרושים</a></li>
-        <li><a href="#" data-soon aria-disabled="true" data-i18n="nav_tenders">מכרזים / מנויים</a></li>
-        <li><a href="#" data-soon aria-disabled="true" data-i18n="nav_app">אפליקציה / מנויים</a></li>
+        <li><a href="#tenders"     data-i18n="nav_tenders">מכרזים / מנויים</a></li>
+        <li><a href="#app"         data-i18n="nav_app">אפליקציה / מנויים</a></li>
         <li><a href="#contact"     data-i18n="nav_contact">שירות לקוחות</a></li>
       </ul>
     </nav>
@@ -422,7 +422,6 @@
         </div>
         <div class="teams-text reveal reveal-d1">
           <span class="section-eyebrow" data-i18n="nav_teams">הצוותים שלנו</span>
-          <h2 class="section-title" data-i18n="teams_title">חטיבת הצוותים שלנו</h2>
           <p class="teams-slogan" data-i18n="teams_slogan">מצוינות ללא פשרות</p>
           <ul class="teams-list">
             <li data-i18n="teams_l1">קבלני בית משותפים</li>
@@ -438,7 +437,7 @@
   <section id="partners" class="section partners">
     <div class="container">
       <span class="section-eyebrow reveal" data-i18n="partners_eyebrow">השותפים שלנו</span>
-      <h2 class="section-title reveal reveal-d1"><span data-i18n="partners_title">חטיבת השותפים שלנו</span><br><span data-i18n="partners_sub">המותגים והחברות המובלים בישראל</span></h2>
+      <h2 class="section-title reveal reveal-d1"><span data-i18n="partners_sub">המותגים והחברות המובלים בישראל</span></h2>
       <div class="badges-row reveal reveal-d2">
         <span class="badge-chip" data-i18n="partners_badge">המותגים המובלים</span>
         <span class="badge-chip" data-i18n="partners_lead">בית טוב זה משפחה</span>
@@ -596,6 +595,87 @@
           <button type="submit" class="btn btn-primary form-submit" data-i18n="car_submit">שליחה</button>
           <p class="form-success" id="careersSuccess" role="status" data-i18n="car_success" hidden>תודה! קיבלנו את הפרטים ונחזור אליכם בהקדם</p>
         </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== מכרזים / מנויים — הרשמה לעדכונים על מכרזים ===== -->
+  <section id="tenders" class="section tenders">
+    <div class="container">
+      <span class="section-eyebrow reveal" data-i18n="nav_tenders">מכרזים / מנויים</span>
+      <h2 class="section-title reveal reveal-d1" data-i18n="tn_title">קבלו עדכון על כל מכרז חדש</h2>
+      <p class="section-lead reveal reveal-d2" data-i18n="tn_lead">הירשמו לקבלת עדכונים על מכרזים חדשים של GAD MIVNIM בתחום המקצועי שלכם</p>
+
+      <div class="careers-form-card reveal">
+        <form id="tendersForm" class="contact-form" novalidate>
+          <div class="form-field">
+            <label for="tenderName" data-i18n="car_f_name">שם מלא</label>
+            <input type="text" id="tenderName" name="tenderName" autocomplete="name" data-i18n-ph="car_f_name" placeholder="שם מלא" required>
+          </div>
+          <div class="form-field">
+            <label for="tenderPhone" data-i18n="f_phone">טלפון</label>
+            <input type="tel" id="tenderPhone" name="tenderPhone" autocomplete="tel" placeholder="05X-XXXXXXX" required>
+          </div>
+          <div class="form-field">
+            <label for="tenderField" data-i18n="tn_f_field">תחום מקצועי</label>
+            <select id="tenderField" name="tenderField" required>
+              <option value="" data-i18n="car_f_pick">בחרו תחום</option>
+              <option value="main" data-i18n="tn_o1">קבלן ראשי</option>
+              <option value="sub" data-i18n="tn_o2">קבלן משנה</option>
+              <option value="supplier" data-i18n="tn_o3">ספק חומרים</option>
+              <option value="arch" data-i18n="tn_o4">אדריכלות והנדסה</option>
+              <option value="interior" data-i18n="tn_o5">עיצוב פנים</option>
+              <option value="systems" data-i18n="tn_o6">מערכות (חשמל / אינסטלציה / מיזוג)</option>
+              <option value="other" data-i18n="tn_o7">אחר</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary form-submit" data-i18n="tn_submit">הרשמה לעדכונים</button>
+          <p class="form-success" id="tendersSuccess" role="status" data-i18n="tn_success" hidden>נרשמתם בהצלחה! נעדכן אתכם על מכרזים חדשים בתחום שלכם.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== אפליקציה / מנויים — מסלולי שירות ואחזקה ===== -->
+  <section id="app" class="section app-plans">
+    <div class="container">
+      <span class="section-eyebrow reveal" data-i18n="nav_app">אפליקציה / מנויים</span>
+      <h2 class="section-title reveal reveal-d1" data-i18n="ap_title">מנויי שירות ואחזקה</h2>
+      <p class="section-lead reveal reveal-d2" data-i18n="ap_lead">שקט נפשי גם אחרי המסירה — בחרו את מסלול השירות המתאים לכם</p>
+
+      <div class="plans-grid reveal-group">
+        <article class="role-card plan-card">
+          <h3 data-i18n="ap_p1">בסיסי</h3>
+          <p class="plan-price" data-i18n="ap_price">המחיר יותאם לנכס</p>
+          <ul class="plan-list">
+            <li data-i18n="ap_p1_l1">בדק בית שנתי</li>
+            <li data-i18n="ap_p1_l2">מוקד שירות בשעות העבודה</li>
+            <li data-i18n="ap_p1_l3">טיפול בתקלות דחופות</li>
+          </ul>
+          <a href="#contact" class="plan-btn" data-i18n="ap_btn">לפרטים</a>
+        </article>
+        <article class="role-card plan-card">
+          <h3 data-i18n="ap_p2">מורחב</h3>
+          <p class="plan-price" data-i18n="ap_price">המחיר יותאם לנכס</p>
+          <ul class="plan-list">
+            <li data-i18n="ap_p2_l1">שתי ביקורות בשנה</li>
+            <li data-i18n="ap_p2_l2">מוקד שירות מורחב</li>
+            <li data-i18n="ap_p2_l3">אחזקה שוטפת של מערכות</li>
+            <li data-i18n="ap_p2_l4">עדיפות בטיפול</li>
+          </ul>
+          <a href="#contact" class="plan-btn" data-i18n="ap_btn">לפרטים</a>
+        </article>
+        <article class="role-card plan-card">
+          <h3 data-i18n="ap_p3">פרימיום</h3>
+          <p class="plan-price" data-i18n="ap_price">המחיר יותאם לנכס</p>
+          <ul class="plan-list">
+            <li data-i18n="ap_p3_l1">ביקורות רבעוניות</li>
+            <li data-i18n="ap_p3_l2">מוקד שירות 24/7</li>
+            <li data-i18n="ap_p3_l3">אחזקה מלאה למבני מגורים ומסחר</li>
+            <li data-i18n="ap_p3_l4">מנהל לקוח אישי</li>
+          </ul>
+          <a href="#contact" class="plan-btn" data-i18n="ap_btn">לפרטים</a>
+        </article>
       </div>
     </div>
   </section>
