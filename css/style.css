@@ -6081,3 +6081,16 @@ body .plan-card .plan-price { margin: -4px 0 6px; font-size: .9rem; color: var(-
   }
   html[dir="ltr"] .back-top { right: 15px; }
 }
+
+/* ----- #tenders ו-#app: הכותרות, שורת ההסבר והתוכן ממורכזים על קו המרכז של אזור התוכן (בין עמודות הצד) ----- */
+#tenders .section-eyebrow,
+#tenders .section-title,
+#tenders .section-lead,
+#app .section-eyebrow,
+#app .section-title,
+#app .section-lead {
+  display: block;
+  text-align: center;
+  margin-inline: auto;
+}
+#app .plans-grid { margin-inline: auto; }
