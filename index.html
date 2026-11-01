@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Gveret+Levin&family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 
   <!-- העיצוב שלנו -->
-  <link rel="stylesheet" href="css/style.css?v=20261101pc">
+  <link rel="stylesheet" href="css/style.css?v=20261101ic">
 </head>
 <body>
 
@@ -475,21 +475,23 @@
       <span class="section-eyebrow reveal" data-i18n="info_title">מידע לאזרח ולבונה</span>
       <h2 class="section-title info-title reveal reveal-d1"><span class="info-mq__src"><span data-i18n="info_l1">עם קצת ידע והכוונה נכונה</span> <span data-i18n="info_l2">כל אחד יכול לבנות את מבנה חיו !</span> <span class="info-brush" data-i18n="info_l3">חשבנו בשבילכם על הכל...</span></span><span class="info-mq" aria-hidden="true"><span class="info-mq__track"></span></span></h2>
 
-
-      <div class="media-grid reveal-group">
-        <div class="media-tile">
-          <span class="media-label" data-i18n="media_label">מסך פרסום</span>
-          <p data-i18n="media_1">סרטון - משמעות הצבע הירוק</p>
-        </div>
-        <div class="media-tile">
-          <span class="media-label" data-i18n="media_label">מסך פרסום</span>
-          <p data-i18n="media_2">תמונות רצות</p>
-        </div>
-        <div class="media-tile">
-          <span class="media-label" data-i18n="media_label">מסך פרסום</span>
-          <p data-i18n="media_3">סרטונים של שלבי בניה</p>
+      <!-- 10 כרטיסי נושאים — אותו גודל ומראה כמו כרטיסי #partners; לחיצה פותחת חלון (תוכן ב-js/info-data.js) -->
+      <div class="info-cards-wrap">
+        <div class="info-cards">
+          <div class="info-card" data-slug="renovation" role="button" tabindex="0"><strong data-i18n="ic1">מתכננים שיפוץ? זה מה שחשוב לדעת</strong><div class="info-card__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div><span class="info-card__teaser" data-i18n="ic1t">לפני שמזיזים קיר אחד: היתרים, תכנון ולוחות זמנים שיחסכו לכם כאב ראש.</span></div>
+          <div class="info-card" data-slug="private-home" role="button" tabindex="0"><strong data-i18n="ic2">בונים בית פרטי – חכם, יעיל ונכון</strong><div class="info-card__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v12h14V9"/><path d="M10 21v-6h4v6"/></svg></div><span class="info-card__teaser" data-i18n="ic2t">הדרך הקצרה מהחלום למפתח, צעד אחר צעד.</span></div>
+          <div class="info-card" data-slug="weather" role="button" tabindex="0"><strong data-i18n="ic3">שומרים על המבנה מפני מזג האוויר</strong><div class="info-card__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 0 1 9 9H3a9 9 0 0 1 9-9z"/><path d="M12 12v7a2 2 0 0 1-4 0"/><path d="M12 1.5V3"/></svg></div><span class="info-card__teaser" data-i18n="ic3t">איטום, בידוד ותחזוקה מונעת – כי נזק קטן היום הוא הוצאה גדולה מחר.</span></div>
+          <div class="info-card" data-slug="budget" role="button" tabindex="0"><strong data-i18n="ic4">תכנון תקציב בלי הפתעות</strong><div class="info-card__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8"/><path d="M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h.01M8 18.5h.01M12 18.5h.01M16 18.5h.01"/></svg></div><span class="info-card__teaser" data-i18n="ic4t">איך בונים תקציב מציאותי, משאירים מקום לבלתי צפוי ושומרים על שליטה.</span></div>
+          <div class="info-card" data-slug="dangerous" role="button" tabindex="0"><strong data-i18n="ic5">מבנה מסוכן ומבנה לשימור</strong><div class="info-card__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div><span class="info-card__teaser" data-i18n="ic5t">סימני אזהרה, חובות הבעלים, ואיך משדרגים מבנה היסטורי לפי החוק.</span></div>
+          <div class="info-card" data-slug="maintenance" role="button" tabindex="0"><strong data-i18n="ic6">תחזוקה שוטפת – ככה שומרים על הערך</strong><div class="info-card__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="m9 16 2 2 4-4"/></svg></div><span class="info-card__teaser" data-i18n="ic6t">מה בודקים, מתי ולמה – לבית שנשאר כמו חדש.</span></div>
+          <div class="info-card" data-slug="safety" role="button" tabindex="0"><strong data-i18n="ic7">בטיחות בעבודה – לפני הכל</strong><div class="info-card__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 18a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1z"/><path d="M10 15V6.5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1V15"/><path d="M4 15v-3a6 6 0 0 1 6-6"/><path d="M14 6a6 6 0 0 1 6 6v3"/></svg></div><span class="info-card__teaser" data-i18n="ic7t">הכללים שמגנים על העובדים, על הדיירים ועל הפרויקט.</span></div>
+          <div class="info-card" data-slug="contractor" role="button" tabindex="0"><strong data-i18n="ic8">בחירת קבלן ובעלי מקצוע</strong><div class="info-card__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="7" r="4"/><path d="M2 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/><path d="m16 11 2 2 4-4"/></svg></div><span class="info-card__teaser" data-i18n="ic8t">השאלות הנכונות, הבדיקות שחובה לעשות והסימנים שכדאי לשים לב אליהם.</span></div>
+          <div class="info-card" data-slug="products" role="button" tabindex="0"><strong data-i18n="ic9">בחירת מוצרים נלווים לפרויקט</strong><div class="info-card__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22a10 10 0 1 1 10-10c0 2.8-2.2 4-4 4h-2a2 2 0 0 0-1.5 3.3A1.6 1.6 0 0 1 12 22z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="10.5" cy="7" r="1"/><circle cx="15" cy="7.5" r="1"/></svg></div><span class="info-card__teaser" data-i18n="ic9t">ריצוף, מטבח, תאורה ודלתות – איך בוחרים נכון, יפה ומשתלם.</span></div>
+          <div class="info-card" data-slug="defects" role="button" tabindex="0"><strong data-i18n="ic10">ליקויי בנייה ותכנון נכון</strong><div class="info-card__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/><path d="M10 6.5 12 9.5l-2 2 2 2.5"/></svg></div><span class="info-card__teaser" data-i18n="ic10t">איך מזהים ומטפלים בליקויים, ולמה תכנון נכון מההתחלה חוסך זמן, כסף ועצבים.</span></div>
         </div>
       </div>
+
+
     </div>
   </section>
 
@@ -845,13 +847,14 @@
     <input type="text" name="bot-field">
   </form>
 
-  <script src="js/i18n.js?v=20261101pc"></script>
+  <script src="js/i18n.js?v=20261101ic"></script>
   <script src="js/premium.js?v=20261030cv"></script>
   <script src="js/projects-data.js?v=1"></script>
   <script src="js/in-progress-data.js?v=1"></script>
   <script src="js/careers-data.js?v=2"></script>
   <script src="js/partners-data.js?v=3"></script>
-  <script src="js/script.js?v=20261101ct"></script>
+  <script src="js/info-data.js?v=1"></script>
+  <script src="js/script.js?v=20261101ic"></script>
   <script src="js/a11y.js?v=20261030cv"></script>
 
 </body>

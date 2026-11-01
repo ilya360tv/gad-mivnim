@@ -6625,3 +6625,122 @@ html.a11y-no-motion #info .info-title { overflow: visible; }
 @media (max-width: 1023.98px) {
   html.a11y-no-motion #info .info-title { white-space: normal; }
 }
+
+/* ----- #info: 10 כרטיסי נושאים — אותו גודל ומראה כמו כרטיסי #partners (רוחב, רדיוס, מסגרת, ריפוד, טבעת ריחוף).
+         במקום תמונה: תיבה באותו גודל (16:9, במובייל 21:9) עם אייקון קו תכלת. רוחב הכרטיס לפי רוחב התוכן (100cqw)
+         בדיוק כמו בפס השותפים: דסקטופ (רוחב−64)/5, טאבלט (min(רוחב,900)−20)/2, מובייל 240px. ----- */
+.info-cards-wrap { container-type: inline-size; margin-top: 36px; }
+.info-cards {
+  --ic-gap: 16px;
+  --ic-w: calc((100cqw - 4 * var(--ic-gap) - .1px) / 5);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--ic-gap);
+  margin-inline: auto;
+}
+@media (min-width: 1024px) and (max-width: 1365.98px) {
+  .info-cards { max-width: calc(4 * var(--ic-w) + 3 * var(--ic-gap)); }   /* 4 בשורה, השורה האחרונה ממורכזת */
+}
+@media (max-width: 1023.98px) {
+  .info-cards { --ic-gap: 20px; --ic-w: calc((min(100cqw, 900px) - 20px - .1px) / 2); }
+}
+@media (max-width: 767.98px) {
+  .info-cards { --ic-w: 240px; max-width: 240px; }
+}
+.info-card {
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  width: var(--ic-w);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid #2a323b;
+  border-radius: 14px;
+  background: #161b22;
+  box-shadow: 0 1px 2px rgba(16, 20, 24, .04);
+  color: #e8ecef;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .25s, box-shadow .25s;
+}
+.info-card:hover,
+.info-card:focus-visible {
+  outline: none;
+  border-color: var(--lb);
+  box-shadow: 0 0 0 2px var(--lb-glow), 0 0 16px var(--lb-glow);
+}
+.info-card strong {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--ic-title-h, auto);
+  padding: 14px 10px 10px;
+  color: #fff;
+  font-size: clamp(.74rem, 1.25vw, .95rem);
+  font-weight: 700;
+  line-height: 1.6;
+  text-align: center;
+  text-wrap: balance;
+}
+.info-card__icon {
+  box-sizing: border-box;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 16 / 9;
+  background: #12151a;
+  border: 1px solid rgba(56, 189, 248, .45);
+}
+.info-card__icon svg,
+.ic-modal__icon svg {
+  width: 44px;
+  height: 44px;
+  fill: none;
+  stroke: #38bdf8;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform .45s ease;
+}
+.info-card:hover .info-card__icon svg,
+.info-card:focus-visible .info-card__icon svg { transform: scale(1.08); }
+.info-card__teaser {
+  box-sizing: border-box;
+  flex: 1;
+  display: block;
+  min-height: var(--ic-teaser-h, calc(2 * 1.6em + 40px));
+  padding: 12px 12px 28px;
+  color: #aeb7c0;
+  font-size: .88rem;
+  line-height: 1.6;
+  text-align: center;
+}
+@media (max-width: 1023.98px) {
+  .info-card strong { font-size: 1.15rem; }
+  .info-card__teaser { font-size: .95rem; }
+}
+@media (max-width: 640px) {
+  .info-card__icon { aspect-ratio: 21 / 9; }
+}
+
+/* חלון הנושא — אותו חלון כמו חלון השותפים (.pt-modal); במקום התמונה: תיבת אייקון באותו גובה */
+.ic-modal__icon {
+  box-sizing: border-box;
+  flex: none;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 240px;
+  border: 1px solid rgba(56, 189, 248, .45);
+  border-radius: 10px;
+  background: #12151a;
+}
+.ic-modal__icon svg { width: 88px; height: 88px; stroke-width: 1.4; }
+@media (max-width: 560px) {
+  .ic-modal__icon { height: 200px; }
+}

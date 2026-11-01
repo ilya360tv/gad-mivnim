@@ -1441,6 +1441,120 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  /* ---------------------------------------------------------------
+     7ג) #info — 10 כרטיסי נושאים. לחיצה (או Enter/Space) פותחת חלון באותו עיצוב וגודל כמו חלון השותפים:
+         כותרת + אייקון + משפט + תוכן. התוכן מ-js/info-data.js (window.INFO_DATA) לפי data-slug.
+     --------------------------------------------------------------- */
+  var icSec = document.getElementById('info');
+  var icGrid = icSec ? icSec.querySelector('.info-cards') : null;
+  var ICDATA = window.INFO_DATA || {};
+  if (icGrid) {
+    var IT = function (key, fallback) {
+      var lang = document.documentElement.getAttribute('lang') || 'he';
+      var e = window.GAD_T && window.GAD_T[key];
+      return (e && e[lang]) || fallback;
+    };
+    var icm = document.createElement('div');
+    icm.className = 'proj-modal pt-modal ic-modal';
+    icm.hidden = true;
+    icm.innerHTML =
+      '<div class="proj-modal__backdrop" data-icm-close></div>' +
+      '<div class="proj-modal__box pt-modal__box" role="dialog" aria-modal="true" aria-labelledby="icModalTitle" tabindex="-1">' +
+        '<button type="button" class="proj-modal__x" data-icm-close>&times;</button>' +
+        '<div class="pt-modal__head">' +
+          '<h2 class="proj-modal__name" id="icModalTitle"></h2>' +
+          '<p class="pt-modal__tag"></p>' +
+        '</div>' +
+        '<div class="ic-modal__icon"></div>' +
+        '<div class="pt-modal__content"></div>' +
+      '</div>';
+    document.body.appendChild(icm);
+
+    var icBox = icm.querySelector('.proj-modal__box');
+    var icX = icm.querySelector('.proj-modal__x');
+    var icName = icm.querySelector('.proj-modal__name');
+    var icTag = icm.querySelector('.pt-modal__tag');
+    var icIcon = icm.querySelector('.ic-modal__icon');
+    var icContent = icm.querySelector('.pt-modal__content');
+    var icCard = null;
+
+    var renderInfo = function () {
+      if (!icCard) { return; }
+      var d = ICDATA[icCard.getAttribute('data-slug')] || {};
+      var lang = document.documentElement.getAttribute('lang') || 'he';
+      var txt = (d.content && typeof d.content === 'object') ? (d.content[lang] || d.content.he || '') : (d.content || '');
+      icName.textContent = icCard.querySelector('strong').textContent;
+      icTag.textContent = icCard.querySelector('.info-card__teaser').textContent;
+      icIcon.innerHTML = icCard.querySelector('.info-card__icon').innerHTML;
+      icContent.textContent = txt || IT('pt_content_soon', 'תוכן יתווסף בקרוב');
+      icContent.classList.toggle('is-soon', !txt);
+      icX.setAttribute('aria-label', IT('pm_close', 'סגירה'));
+    };
+    var openInfo = function (card) {
+      icCard = card;
+      renderInfo();
+      icBox.scrollTop = 0;
+      icm.hidden = false;
+      document.documentElement.classList.add('modal-open');
+      icBox.focus();
+      void icm.offsetWidth; icm.classList.add('is-open');
+    };
+    var closeInfo = function () {
+      if (icm.hidden) { return; }
+      icm.classList.remove('is-open');
+      icm.hidden = true;
+      document.documentElement.classList.remove('modal-open');
+      if (icCard) { icCard.focus(); }
+      icCard = null;
+    };
+
+    icGrid.addEventListener('click', function (e) {
+      var c = e.target.closest ? e.target.closest('.info-card[data-slug]') : null;
+      if (c) { e.preventDefault(); openInfo(c); }
+    });
+    icGrid.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter' && e.key !== ' ') { return; }
+      var c = e.target.closest ? e.target.closest('.info-card[data-slug]') : null;
+      if (c && e.target === c) { e.preventDefault(); openInfo(c); }
+    });
+    icm.addEventListener('click', function (e) {
+      if (e.target.closest && e.target.closest('[data-icm-close]')) { closeInfo(); }
+    });
+    document.addEventListener('keydown', function (e) {
+      if (icm.hidden) { return; }
+      if (e.key === 'Escape') { e.stopPropagation(); closeInfo(); return; }
+      if (e.key === 'Tab') { e.preventDefault(); icX.focus(); }      // מלכודת פוקוס: כפתור הסגירה הוא הפקד היחיד
+    });
+
+    // כל אזורי הכותרת והמשפט בגובה הגבוה ביותר — כל הכרטיסים באותו גובה והאייקונים על קו אחד
+    var icCards = icGrid.querySelectorAll('.info-card');
+    var icFit = function () {
+      icGrid.style.removeProperty('--ic-title-h');
+      icGrid.style.removeProperty('--ic-teaser-h');
+      var th = 0, sh = 0;
+      icCards.forEach(function (c) {
+        th = Math.max(th, c.querySelector('strong').offsetHeight);
+        sh = Math.max(sh, c.querySelector('.info-card__teaser').offsetHeight);
+      });
+      if (th) { icGrid.style.setProperty('--ic-title-h', th + 'px'); }
+      if (sh) { icGrid.style.setProperty('--ic-teaser-h', sh + 'px'); }
+    };
+    icFit();
+    window.addEventListener('load', icFit);
+    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(icFit); }
+    var icW = window.innerWidth, icT;
+    window.addEventListener('resize', function () {
+      if (window.innerWidth === icW) { return; }
+      icW = window.innerWidth; clearTimeout(icT); icT = setTimeout(icFit, 150);
+    });
+    if ('MutationObserver' in window) {
+      new MutationObserver(function () {
+        clearTimeout(icT); icT = setTimeout(icFit, 50);
+        if (!icm.hidden) { renderInfo(); }
+      }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    }
+  }
+
   /* מפה במובייל: מכוסה עד הקשה, כדי שהחלקה עליה תגלול את הדף */
   var mapBtn = document.getElementById('mapActivate');
   if (mapBtn) {
