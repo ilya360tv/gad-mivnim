@@ -6890,3 +6890,20 @@ html.a11y-no-motion #info .info-cards.is-replaced { display: flex; }
 }
 .ic-modal__cta:hover { box-shadow: 0 0 0 3px var(--lb-glow); transform: translateY(-1px); }
 .ic-modal__cta:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+
+/* ----- חלון נושא ב-#info: תיבת האייקון קטנה ואחידה בכל החלונות — גובה קבוע 110px (מובייל 90px), אייקון 48px, 14px מעל ומתחת ----- */
+.ic-modal .pt-modal__head { margin-bottom: 0; }
+.ic-modal .ic-modal__icon {
+  width: 100%;
+  height: 110px;
+  min-height: 0;
+  margin: 14px 0;
+  border: 1px solid rgba(56, 189, 248, .45);
+  border-radius: 12px;
+  background: #12151a;
+}
+.ic-modal .ic-modal__icon svg { width: 48px; height: 48px; }
+.ic-modal .pt-modal__content { margin-top: 0; }
+@media (max-width: 767.98px) {
+  .ic-modal .ic-modal__icon { height: 90px; }
+}
