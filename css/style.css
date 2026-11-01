@@ -6581,3 +6581,47 @@ html[lang="he"] #info .info-title .info-brush {
 
 /* ----- #info: "חשבנו בשבילכם על הכל..." בלבן (כמו הכותרת) ----- */
 html[lang="he"] #info .info-title .info-brush { color: inherit !important; }
+
+/* ----- #info כותרת כשורה נעה (אותו מנוע initMarquee כמו ה-Hero ו-#about). הטקסט האמיתי פעם אחת ב-.info-mq__src (מוסתר ויזואלית),
+         העותקים הנעים aria-hidden. רווח 80px בין החזרות, דהייה רכה בשני הקצוות. ----- */
+#info .info-title { display: block; max-width: 100%; min-width: 0; overflow: hidden; white-space: nowrap; }
+.info-mq__src {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.info-mq {
+  display: block;
+  direction: ltr;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: pan-y;
+  -webkit-user-select: none;
+          user-select: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+}
+.info-mq.is-dragging { cursor: grabbing; }
+.info-mq__track { display: flex; align-items: baseline; width: max-content; will-change: transform; }
+.info-mq__item { flex: none; display: inline-block; padding-inline-end: 80px; direction: rtl; white-space: nowrap; }
+html[dir="ltr"] .info-mq__item { direction: ltr; }
+@media (max-width: 767.98px) {
+  #info .info-title { font-size: 1.2rem !important; }
+}
+/* כפתור הנגישות "עצירת אנימציות": הכותרת הסטטית כמו קודם */
+html.a11y-no-motion .info-mq { display: none; }
+html.a11y-no-motion .info-mq__src {
+  position: static !important;
+  width: auto; height: auto;
+  overflow: visible;
+  clip: auto;
+  clip-path: none;
+  white-space: inherit;
+}
+html.a11y-no-motion #info .info-title { overflow: visible; }
+@media (max-width: 1023.98px) {
+  html.a11y-no-motion #info .info-title { white-space: normal; }
+}
