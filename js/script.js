@@ -1212,8 +1212,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* ---------------------------------------------------------------
      7ב) חלון שותף — לחיצה על כרטיס ב-#partners פותחת חלון אחד (מראה .proj-modal):
-         כותרת + סלוגן מהכרטיס, גלריה (תמונה ראשית + רצועת תמונות קטנות), תוכן וכפתור לעמוד המלא.
-         התמונות, התוכן והעמוד מגיעים מ-js/partners-data.js (window.PARTNERS_DATA) לפי data-slug.
+         כותרת + סלוגן מהכרטיס, גלריה (תמונה ראשית + רצועת תמונות קטנות) ותוכן.
+         התמונות והתוכן מגיעים מ-js/partners-data.js (window.PARTNERS_DATA) לפי data-slug.
      --------------------------------------------------------------- */
   var ptSec = document.getElementById('partners');
   var PTDATA = window.PARTNERS_DATA || {};
@@ -1237,7 +1237,6 @@ document.addEventListener('DOMContentLoaded', function () {
         '<button type="button" class="pt-modal__photo"><img alt="" decoding="async"></button>' +
         '<div class="pt-modal__thumbs" hidden></div>' +
         '<div class="pt-modal__content"></div>' +
-        '<a class="pt-modal__link" hidden></a>' +
       '</div>';
     document.body.appendChild(ptm);
 
@@ -1249,7 +1248,6 @@ document.addEventListener('DOMContentLoaded', function () {
     var ptTag = ptm.querySelector('.pt-modal__tag');
     var ptThumbs = ptm.querySelector('.pt-modal__thumbs');
     var ptContent = ptm.querySelector('.pt-modal__content');
-    var ptLink = ptm.querySelector('.pt-modal__link');
     var ptCard = null, ptPhotos = [], ptCur = 0;
 
     function ptShow(i) {
@@ -1293,8 +1291,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
       ptContent.textContent = d.content || PT('pt_content_soon', 'תוכן יתווסף בקרוב');
       ptContent.classList.toggle('is-soon', !d.content);
-      ptLink.hidden = !d.page;
-      if (d.page) { ptLink.href = d.page; ptLink.textContent = PT('pt_full', 'לעמוד המלא ←'); }
       ptX.setAttribute('aria-label', PT('pm_close', 'סגירה'));
     }
 

@@ -6418,8 +6418,8 @@ html.a11y-no-motion #partners .partners-grid.is-replaced { display: grid; }
   .pt-track { will-change: auto; }
 }
 
-/* ----- חלון שותף: כותרת + סלוגן, גלריה (תמונה ראשית + תמונות קטנות), תוכן, כפתור (מראה .proj-modal) ----- */
-.pt-modal__box { width: 820px; max-width: calc(100vw - 24px); text-align: center; padding-top: 68px; }
+/* ----- חלון שותף: כותרת + סלוגן, גלריה (תמונה ראשית + תמונות קטנות), תוכן (מראה .proj-modal) ----- */
+.pt-modal__box { width: 820px; max-width: calc(100vw - 24px); text-align: center; }
 .pt-modal__head { margin-bottom: 16px; }
 .pt-modal__tag.is-soon { color: #7d8790; font-style: italic; }
 .pt-modal__thumbs { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
@@ -6475,19 +6475,23 @@ html.a11y-no-motion #partners .partners-grid.is-replaced { display: grid; }
 .pt-modal__photo:focus-visible { outline: 3px solid var(--lb); outline-offset: 3px; }
 .pt-modal .proj-modal__name { font-size: 1.4rem; }
 .pt-modal__tag { margin: 8px 0 0; color: var(--ink-soft); font-size: 1.02rem; line-height: 1.55; }
-.pt-modal__tag[hidden], .pt-modal__link[hidden] { display: none; }
-.pt-modal__link {
-  display: inline-flex;
-  margin-top: 18px;
-  padding: 10px 22px;
-  border-radius: 999px;
-  font-weight: 700;
-  color: var(--lb);
-  background: var(--lb-bg);
-  box-shadow: 0 0 0 2px var(--lb), 0 0 16px var(--lb-glow);
-  text-decoration: none;
+.pt-modal__tag[hidden] { display: none; }
+
+/* ----- חלון שותף ממורכז: החלון באמצע המסך (גם במובייל), כל התוכן על קו מרכז אחד,
+         ריפוד שווה מכל הצדדים; ה-X בפינה והכותרת מרווחת ממנו באופן סימטרי ----- */
+.proj-modal.pt-modal { align-items: center; justify-content: center; }
+.pt-modal__box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px;
+  scrollbar-gutter: stable both-edges;      /* פס גלילה לא מזיז את קו המרכז */
 }
-.pt-modal__link:hover { color: #0a0c0e; background: var(--lb); }
+.pt-modal__head { align-self: stretch; padding-inline: 56px; }
+.pt-modal__photo { align-self: stretch; }
+.pt-modal__content { align-self: stretch; margin-bottom: 0; }
 @media (max-width: 560px) {
-  .pt-modal__box { width: calc(100vw - 24px); padding: 64px 14px 20px; }
+  .proj-modal.pt-modal { align-items: center; }
+  .pt-modal__box { width: calc(100vw - 24px); margin: 0; padding: 20px; }
+  .pt-modal__head { padding-inline: 48px; }
 }
