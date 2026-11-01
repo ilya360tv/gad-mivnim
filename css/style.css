@@ -6550,3 +6550,12 @@ html[lang="he"] #info .info-brush {
   letter-spacing: 0 !important;
   line-height: 1.4;
 }
+
+/* ----- #info: "חשבנו בשבילכם על הכל..." באותה שורה של הכותרת (בגופן המכחול) — הכותרת מוקטנת כדי שהכל ייכנס בשורה אחת ----- */
+@media (min-width: 1024px) {
+  #info .info-title { font-size: clamp(1.1rem, 1.38vw, 1.7rem) !important; white-space: nowrap; }
+}
+html[lang="he"] #info .info-title .info-brush {
+  font-size: 1.15em !important;          /* גופן מכחול נראה קטן יותר — מיושר לגובה הכותרת */
+  vertical-align: baseline;
+}
