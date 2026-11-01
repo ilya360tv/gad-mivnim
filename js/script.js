@@ -1403,7 +1403,16 @@ document.addEventListener('DOMContentLoaded', function () {
         ptqTrack.appendChild(set(true));
         ptqE.measure(reps * ptqSrc.length);
         if (window.setLanguage) { window.setLanguage(document.documentElement.getAttribute('lang') || 'he'); }
+        ptqTitles();
       };
+      // כל אזורי הכותרת בגובה הכותרת הגבוהה ביותר (כותרת ארוכה נשברת לשתי שורות) — התמונות נשארות על קו אחד
+      var ptqTitles = function () {
+        ptqBox.style.removeProperty('--pt-title-h');
+        var h = 0;
+        ptqTrack.querySelectorAll('.partner-chip strong').forEach(function (t) { h = Math.max(h, t.offsetHeight); });
+        if (h) { ptqBox.style.setProperty('--pt-title-h', h + 'px'); }
+      };
+      if (document.fonts && document.fonts.ready) { document.fonts.ready.then(function () { ptqTitles(); }); }
 
       ptqBox.hidden = false;
       ptqBox.classList.add('is-on');

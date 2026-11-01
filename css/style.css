@@ -6513,3 +6513,20 @@ html.a11y-no-motion #partners .partners-grid.is-replaced { display: grid; }
   .pt-modal__photo { height: 200px; }
   .pt-modal__tag { min-height: calc(2 * 1.55em); }   /* סלוגן ארוך נשבר לשתי שורות — אותו גובה חלון לכולם */
 }
+
+/* ----- #partners: טקסט הכרטיסים ממורכז (כותרת למעלה, סלוגן למטה) — על אותו קו מרכז כמו התמונה,
+         גם בעותקים המשוכפלים בפס. גובר על שכבות היישור לימין/start הישנות. ----- */
+html[dir] body #partners .partner-chip { text-align: center !important; }
+html[dir] body #partners .partner-chip strong {
+  justify-content: center;
+  text-align: center !important;
+  text-wrap: balance;
+  padding-inline: 10px;
+  margin-inline: 0 !important;
+}
+html[dir] body #partners .partner-chip .partner-slogan {
+  text-align: center !important;
+  padding-inline: 12px;
+  margin-inline: 0 !important;
+}
+html[dir] body #partners .pt-track .partner-chip strong { min-height: var(--pt-title-h, auto); }
