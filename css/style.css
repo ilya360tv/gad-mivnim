@@ -6744,3 +6744,91 @@ html.a11y-no-motion #info .info-title { overflow: visible; }
 @media (max-width: 560px) {
   .ic-modal__icon { height: 200px; }
 }
+
+/* ----- #info כרטיסי הנושאים: נמוכים יותר (~35%) ובשורה אחת נעה (מנוע initMarquee, כמו #projects / #partners).
+         גובה קבוע לכולם: כותרת עד 2 שורות (…), תיבת אייקון 90px, משפט עד 2 שורות, ריפוד 14px. רוחב ללא שינוי.
+         הרשת = גיבוי בלי JS ותצוגה סטטית כשכפתור "עצירת אנימציות" פעיל. ----- */
+.ic-marquee {
+  --ic-gap: 16px;
+  --ic-w: calc((100cqw - 4 * var(--ic-gap) - .1px) / 5);
+  display: none;
+}
+@media (max-width: 1023.98px) {
+  .ic-marquee { --ic-gap: 20px; --ic-w: calc((min(100cqw, 900px) - 20px - .1px) / 2); }
+}
+@media (max-width: 767.98px) {
+  .ic-marquee { --ic-gap: 16px; --ic-w: 220px; }        /* מובייל: מעט קטן יותר */
+}
+.has-js #info .ic-marquee.is-on {
+  display: block;
+  direction: ltr;
+  overflow: hidden;
+  padding: 16px 0 22px;
+  cursor: grab;
+  touch-action: pan-y;
+  -webkit-user-select: none;
+          user-select: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+}
+.ic-marquee.is-dragging { cursor: grabbing; }
+.has-js #info .info-cards.is-replaced { display: none; }
+html.a11y-no-motion #info .ic-marquee.is-on { display: none; }
+html.a11y-no-motion #info .info-cards.is-replaced { display: flex; }
+.ic-track { display: flex; align-items: stretch; width: max-content; will-change: transform; }
+.ic-track .info-card {
+  direction: rtl;
+  flex: 0 0 auto;
+  width: var(--ic-w);
+  margin-inline-end: var(--ic-gap);
+}
+.ic-marquee svg { pointer-events: none; }
+@media (max-width: 767.98px) {
+  /* כמו #partners במובייל: בלי mask/will-change (מונע גלילה "תקועה") */
+  .has-js #info .ic-marquee.is-on { -webkit-mask-image: none; mask-image: none; }
+  .ic-track { will-change: auto; }
+}
+
+/* כרטיס נמוך: גבהים קבועים — כל הכרטיסים זהים */
+.info-card strong {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: content-box;
+  height: calc(2 * 1.45em);
+  min-height: 0;
+  padding: 14px 14px 6px;
+  line-height: 1.45;
+}
+.info-card strong > span {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+          line-clamp: 2;
+  overflow: hidden;
+}
+.info-card__icon { aspect-ratio: auto; height: 90px; }
+.info-card__icon svg { width: 36px; height: 36px; }
+.info-card__teaser {
+  box-sizing: content-box;
+  flex: none;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+          line-clamp: 2;
+  overflow: hidden;
+  height: calc(2 * 1.45em);
+  min-height: 0;
+  padding: 6px 14px 14px;
+  line-height: 1.45;
+}
+@media (max-width: 640px) {
+  .info-card__icon { aspect-ratio: auto; }
+}
+@media (max-width: 767.98px) {
+  .info-card strong { font-size: 1rem; }
+  .info-card__teaser { font-size: .88rem; }
+}
+/* המשפט נחתך בדיוק אחרי 2 שורות: בלי ריפוד תחתון באלמנט עצמו (הריפוד היה חושף שורה שלישית) — הריווח עובר לכרטיס */
+.info-card { padding-bottom: 14px; }
+.info-card__teaser { padding-bottom: 0; }

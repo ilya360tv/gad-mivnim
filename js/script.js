@@ -1480,12 +1480,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var renderInfo = function () {
       if (!icCard) { return; }
-      var d = ICDATA[icCard.getAttribute('data-slug')] || {};
+      var slug = icCard.getAttribute('data-slug');
+      var src = icGrid.querySelector('.info-card[data-slug="' + slug + '"]') || icCard;   // הטקסט המתורגם תמיד מהרשת המקורית
+      var d = ICDATA[slug] || {};
       var lang = document.documentElement.getAttribute('lang') || 'he';
       var txt = (d.content && typeof d.content === 'object') ? (d.content[lang] || d.content.he || '') : (d.content || '');
-      icName.textContent = icCard.querySelector('strong').textContent;
-      icTag.textContent = icCard.querySelector('.info-card__teaser').textContent;
-      icIcon.innerHTML = icCard.querySelector('.info-card__icon').innerHTML;
+      icName.textContent = src.querySelector('strong').textContent;
+      icTag.textContent = src.querySelector('.info-card__teaser').textContent;
+      icIcon.innerHTML = src.querySelector('.info-card__icon').innerHTML;
       icContent.textContent = txt || IT('pt_content_soon', 'תוכן יתווסף בקרוב');
       icContent.classList.toggle('is-soon', !txt);
       icX.setAttribute('aria-label', IT('pm_close', 'סגירה'));
@@ -1504,15 +1506,16 @@ document.addEventListener('DOMContentLoaded', function () {
       icm.classList.remove('is-open');
       icm.hidden = true;
       document.documentElement.classList.remove('modal-open');
-      if (icCard) { icCard.focus(); }
+      if (icCard && icCard.isConnected) { icCard.focus(); }
       icCard = null;
     };
 
-    icGrid.addEventListener('click', function (e) {
+    // האזנה על כל הסקשן: גם הכרטיסים ברשת וגם בפס הנע (גרירה בפס נבלעת במנוע ולא מגיעה לכאן)
+    icSec.addEventListener('click', function (e) {
       var c = e.target.closest ? e.target.closest('.info-card[data-slug]') : null;
       if (c) { e.preventDefault(); openInfo(c); }
     });
-    icGrid.addEventListener('keydown', function (e) {
+    icSec.addEventListener('keydown', function (e) {
       if (e.key !== 'Enter' && e.key !== ' ') { return; }
       var c = e.target.closest ? e.target.closest('.info-card[data-slug]') : null;
       if (c && e.target === c) { e.preventDefault(); openInfo(c); }
@@ -1526,30 +1529,64 @@ document.addEventListener('DOMContentLoaded', function () {
       if (e.key === 'Tab') { e.preventDefault(); icX.focus(); }      // מלכודת פוקוס: כפתור הסגירה הוא הפקד היחיד
     });
 
-    // כל אזורי הכותרת והמשפט בגובה הגבוה ביותר — כל הכרטיסים באותו גובה והאייקונים על קו אחד
-    var icCards = icGrid.querySelectorAll('.info-card');
-    var icFit = function () {
-      icGrid.style.removeProperty('--ic-title-h');
-      icGrid.style.removeProperty('--ic-teaser-h');
-      var th = 0, sh = 0;
-      icCards.forEach(function (c) {
-        th = Math.max(th, c.querySelector('strong').offsetHeight);
-        sh = Math.max(sh, c.querySelector('.info-card__teaser').offsetHeight);
+    /* ----- פס נע של הכרטיסים — אותו מנוע (initMarquee) כמו #projects ו-#partners.
+             הרשת המקורית נשארת כגיבוי ותצוגה סטטית כשכפתור "עצירת אנימציות" פעיל (ב-CSS).
+             העותק הראשון נגיש; כל השאר aria-hidden + tabindex -1. ----- */
+    var icqBox = icSec.querySelector('.ic-marquee');
+    var icqTrack = icqBox ? icqBox.querySelector('.ic-track') : null;
+    var icqBuild = function () {};
+    if (icqBox && icqTrack) {
+      var icqSrc = Array.prototype.slice.call(icGrid.querySelectorAll('.info-card'));
+      var icqE = initMarquee(icqBox, icqTrack, {
+        isPaused: function () {
+          if (!icm.hidden) { return true; }                                                   // החלון פתוח
+          try { if (icqBox.querySelector(':focus-visible')) { return true; } } catch (err) {}   // פוקוס מקלדת עוצר את הפס
+          return false;
+        }
       });
-      if (th) { icGrid.style.setProperty('--ic-title-h', th + 'px'); }
-      if (sh) { icGrid.style.setProperty('--ic-teaser-h', sh + 'px'); }
-    };
-    icFit();
-    window.addEventListener('load', icFit);
-    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(icFit); }
-    var icW = window.innerWidth, icT;
-    window.addEventListener('resize', function () {
-      if (window.innerWidth === icW) { return; }
-      icW = window.innerWidth; clearTimeout(icT); icT = setTimeout(icFit, 150);
-    });
+      var icqSet = function (reps, firstReal) {
+        var f = document.createDocumentFragment();
+        for (var r = 0; r < reps; r++) {
+          icqSrc.forEach(function (c) {
+            var n = c.cloneNode(true);
+            n.querySelectorAll('[data-i18n]').forEach(function (el) { el.removeAttribute('data-i18n'); });   // התרגום כותב רק לרשת המקורית
+            if (!(firstReal && r === 0)) { n.setAttribute('aria-hidden', 'true'); n.setAttribute('tabindex', '-1'); }
+            f.appendChild(n);
+          });
+        }
+        return f;
+      };
+      icqBuild = function () {
+        icqTrack.innerHTML = '';
+        icqTrack.appendChild(icqSet(1, false));
+        var first = icqTrack.children[0], second = icqTrack.children[1];
+        var step = (second && first) ? Math.abs(second.offsetLeft - first.offsetLeft) : 230;
+        var vw = icqBox.clientWidth || window.innerWidth;
+        var reps = Math.max(1, Math.ceil((vw + step) / (step * icqSrc.length)));
+        icqTrack.innerHTML = '';
+        icqTrack.appendChild(icqSet(reps, true));
+        icqTrack.appendChild(icqSet(reps, false));
+        icqE.measure(reps * icqSrc.length);
+      };
+      icqBox.hidden = false;
+      icqBox.classList.add('is-on');
+      icGrid.classList.add('is-replaced');
+      icqBuild();
+      window.addEventListener('load', icqBuild);
+      if (document.fonts && document.fonts.ready) { document.fonts.ready.then(icqBuild); }
+      var icW = window.innerWidth, icT;
+      window.addEventListener('resize', function () {
+        if (window.innerWidth === icW) { return; }
+        icW = window.innerWidth; clearTimeout(icT); icT = setTimeout(icqBuild, 200);
+      });
+    }
     if ('MutationObserver' in window) {
+      var icqLang = document.documentElement.getAttribute('lang');   // רק החלפת שפה אמיתית
       new MutationObserver(function () {
-        clearTimeout(icT); icT = setTimeout(icFit, 50);
+        var cur = document.documentElement.getAttribute('lang') || 'he';
+        if (cur === icqLang) { return; }
+        icqLang = cur;
+        icqBuild();                                       // החלפת שפה: הפס נבנה מחדש מהרשת המתורגמת
         if (!icm.hidden) { renderInfo(); }
       }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
     }
