@@ -6578,3 +6578,6 @@ html[lang="he"] #info .info-title .info-brush {
   color: #38bdf8;
   font-weight: 400 !important;
 }
+
+/* ----- #info: "חשבנו בשבילכם על הכל..." בלבן (כמו הכותרת) ----- */
+html[lang="he"] #info .info-title .info-brush { color: inherit !important; }
