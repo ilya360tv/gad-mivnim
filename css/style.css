@@ -6495,3 +6495,21 @@ html.a11y-no-motion #partners .partners-grid.is-replaced { display: grid; }
   .pt-modal__box { width: calc(100vw - 24px); margin: 0; padding: 20px; }
   .pt-modal__head { padding-inline: 48px; }
 }
+
+/* ----- חלון שותף קטן: 480px, אזור תמונה קבוע (התמונה כולה, contain), גלילה פנימית מעבר ל-72vh ----- */
+.pt-modal__box { width: 480px; max-width: calc(100vw - 32px); max-height: 72vh; padding: 22px; }
+.pt-modal .proj-modal__name { font-size: 1.2rem; }
+.pt-modal__tag { font-size: .95rem; }
+.pt-modal__content { font-size: .9rem; }
+.pt-modal__photo {
+  flex: none;
+  align-items: center;
+  height: 240px;
+  border-radius: 10px;
+}
+.pt-modal__photo img { max-width: 100%; max-height: 100%; border-radius: 10px; }
+@media (max-width: 560px) {
+  .pt-modal__box { width: calc(100vw - 32px); max-height: 80vh; padding: 22px; }
+  .pt-modal__photo { height: 200px; }
+  .pt-modal__tag { min-height: calc(2 * 1.55em); }   /* סלוגן ארוך נשבר לשתי שורות — אותו גובה חלון לכולם */
+}
