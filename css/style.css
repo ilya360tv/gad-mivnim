@@ -6530,3 +6530,14 @@ html[dir] body #partners .partner-chip .partner-slogan {
   margin-inline: 0 !important;
 }
 html[dir] body #partners .pt-track .partner-chip strong { min-height: var(--pt-title-h, auto); }
+
+/* ----- #info: הכותרת "עם קצת ידע והכוונה נכונה כל אחד יכול לבנות את מבנה חיו !" בשורה אחת, קטנה יותר ----- */
+@media (min-width: 1024px) {
+  #info .info-title {
+    font-size: clamp(1.35rem, 1.75vw, 2.1rem) !important;
+    white-space: nowrap;
+  }
+}
+@media (max-width: 1023.98px) {
+  #info .info-title { font-size: 1.35rem !important; }
+}
