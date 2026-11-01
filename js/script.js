@@ -1265,10 +1265,17 @@ document.addEventListener('DOMContentLoaded', function () {
       renderPartner();
       ptBox.scrollTop = 0;
       ptm.hidden = false;
-      void ptm.offsetWidth;
-      ptm.classList.add('is-open');
       document.documentElement.classList.add('modal-open');
       ptBox.focus();
+      // אנימציית הפתיחה מתחילה רק אחרי שהתמונה נטענה — החלון לא "קופץ"
+      var shown = false;
+      var show = function () { if (shown || ptCard !== card) { return; } shown = true; void ptm.offsetWidth; ptm.classList.add('is-open'); };
+      if (ptImg.complete && ptImg.naturalWidth) { show(); }
+      else {
+        ptImg.addEventListener('load', show, { once: true });
+        ptImg.addEventListener('error', show, { once: true });
+        setTimeout(show, 1500);
+      }
     }
 
     function closePartner() {

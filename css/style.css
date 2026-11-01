@@ -6333,18 +6333,26 @@ html[dir="ltr"] .role-card:hover .role-btn__arrow { transform: translateX(3px) s
 
 /* ----- חלון שותף (מראה .proj-modal) ----- */
 .pt-modal__box { width: 720px; max-width: calc(100vw - 24px); text-align: center; padding-top: 68px; }
+/* התמונה כולה, בלי חיתוך: החלון מתאים את עצמו לצורת התמונה */
 .pt-modal__photo {
-  display: block;
+  display: flex;
+  justify-content: center;
   width: 100%;
   padding: 0;
   border: 0;
   border-radius: 14px;
-  overflow: hidden;
-  background: #1b1f24;
+  background: transparent;
   cursor: zoom-in;
 }
-.pt-modal__photo img { display: block; width: 100%; max-height: 60vh; object-fit: cover; transition: transform .45s ease; }
-.pt-modal__photo:hover img { transform: scale(1.03); }
+.pt-modal__photo img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  border-radius: 14px;
+}
 .pt-modal__photo:focus-visible { outline: 3px solid var(--lb); outline-offset: 3px; }
 .pt-modal .proj-modal__name { margin-top: 18px; font-size: 1.4rem; }
 .pt-modal__tag { margin: 8px 0 0; color: var(--ink-soft); font-size: 1.02rem; line-height: 1.55; }
