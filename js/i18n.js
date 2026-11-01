@@ -341,7 +341,9 @@
 
     map_tap: { he: 'הקישו להפעלת המפה', ru: 'Нажмите, чтобы включить карту', en: 'Tap to activate the map', fr: 'Touchez pour activer la carte' },
     pm_close: { he: 'סגירה', ru: 'Закрыть', en: 'Close', fr: 'Fermer' },
-    pt_page: { he: 'לעמוד השותף ←', ru: 'Страница партнёра →', en: 'Partner page →', fr: 'Page du partenaire →' },
+    pt_full: { he: 'לעמוד המלא ←', ru: 'Полная страница →', en: 'Full page →', fr: 'Page complète →' },
+    pt_slogan_soon: { he: 'סלוגן יתווסף בקרוב', ru: 'Слоган скоро появится', en: 'Slogan coming soon', fr: 'Slogan à venir' },
+    pt_content_soon: { he: 'תוכן יתווסף בקרוב', ru: 'Скоро будет добавлено', en: 'Content coming soon', fr: 'Contenu à venir' },
 
     sector_all: { he: 'כל המגזרים', ru: 'Все секторы', en: 'All sectors', fr: 'Tous les secteurs' },
     sector_private: { he: 'מגזר פרטי', ru: 'Частный сектор', en: 'Private sector', fr: 'Secteur privé' },

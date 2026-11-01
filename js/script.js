@@ -1211,10 +1211,12 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ---------------------------------------------------------------
-     7ב) חלון שותף — לחיצה על כרטיס ב-#partners פותחת חלון אחד (מראה .proj-modal)
-         עם תמונת הקטגוריה (data-photo), השם והסלוגן מהכרטיס, וכפתור לעמוד השותף (data-href).
+     7ב) חלון שותף — לחיצה על כרטיס ב-#partners פותחת חלון אחד (מראה .proj-modal):
+         כותרת + סלוגן מהכרטיס, גלריה (תמונה ראשית + רצועת תמונות קטנות), תוכן וכפתור לעמוד המלא.
+         התמונות, התוכן והעמוד מגיעים מ-js/partners-data.js (window.PARTNERS_DATA) לפי data-slug.
      --------------------------------------------------------------- */
   var ptSec = document.getElementById('partners');
+  var PTDATA = window.PARTNERS_DATA || {};
   if (ptSec) {
     var PT = function (key, fallback) {
       var lang = document.documentElement.getAttribute('lang') || 'he';
@@ -1228,9 +1230,13 @@ document.addEventListener('DOMContentLoaded', function () {
       '<div class="proj-modal__backdrop" data-ptm-close></div>' +
       '<div class="proj-modal__box pt-modal__box" role="dialog" aria-modal="true" aria-labelledby="ptModalTitle" tabindex="-1">' +
         '<button type="button" class="proj-modal__x" data-ptm-close>&times;</button>' +
+        '<div class="pt-modal__head">' +
+          '<h2 class="proj-modal__name" id="ptModalTitle"></h2>' +
+          '<p class="pt-modal__tag"></p>' +
+        '</div>' +
         '<button type="button" class="pt-modal__photo"><img alt="" decoding="async"></button>' +
-        '<h2 class="proj-modal__name" id="ptModalTitle"></h2>' +
-        '<p class="pt-modal__tag" hidden></p>' +
+        '<div class="pt-modal__thumbs" hidden></div>' +
+        '<div class="pt-modal__content"></div>' +
         '<a class="pt-modal__link" hidden></a>' +
       '</div>';
     document.body.appendChild(ptm);
@@ -1241,27 +1247,60 @@ document.addEventListener('DOMContentLoaded', function () {
     var ptImg = ptPhoto.querySelector('img');
     var ptName = ptm.querySelector('.proj-modal__name');
     var ptTag = ptm.querySelector('.pt-modal__tag');
+    var ptThumbs = ptm.querySelector('.pt-modal__thumbs');
+    var ptContent = ptm.querySelector('.pt-modal__content');
     var ptLink = ptm.querySelector('.pt-modal__link');
-    var ptCard = null;
+    var ptCard = null, ptPhotos = [], ptCur = 0;
+
+    function ptShow(i) {
+      ptCur = i;
+      ptImg.src = ptPhotos[i] || '';
+      ptThumbs.querySelectorAll('.pt-modal__thumb').forEach(function (t, k) {
+        t.classList.toggle('is-active', k === i);
+        t.setAttribute('aria-pressed', k === i ? 'true' : 'false');
+      });
+    }
 
     function renderPartner() {
       if (!ptCard) { return; }
+      var d = PTDATA[ptCard.getAttribute('data-slug')] || {};
       var title = ptCard.querySelector('strong');
-      var tag = ptCard.querySelector('span');
-      var href = ptCard.getAttribute('data-href');
+      var tag = ptCard.querySelector('.partner-slogan');
+      var cardImg = ptCard.querySelector('.partner-photo img');
       ptName.textContent = title ? title.textContent : '';
-      ptImg.src = ptCard.getAttribute('data-photo');
+      ptTag.textContent = tag ? tag.textContent : '';
+      ptTag.classList.toggle('is-soon', !!(tag && tag.classList.contains('is-soon')));
       ptImg.alt = ptName.textContent;
       ptPhoto.setAttribute('aria-label', ptName.textContent);
-      ptTag.hidden = !tag;
-      ptTag.textContent = tag ? tag.textContent : '';
-      ptLink.hidden = !href;
-      if (href) { ptLink.href = href; ptLink.textContent = PT('pt_page', 'לעמוד השותף ←'); }
+
+      ptPhotos = (d.photos && d.photos.length) ? d.photos.slice() : (cardImg ? [cardImg.getAttribute('src')] : []);
+      ptThumbs.innerHTML = '';
+      ptThumbs.hidden = ptPhotos.length < 2;              // תמונה אחת — בלי רצועת תמונות קטנות
+      if (ptPhotos.length > 1) {
+        ptPhotos.forEach(function (src, i) {
+          var t = document.createElement('button');
+          t.type = 'button';
+          t.className = 'pt-modal__thumb';
+          t.setAttribute('aria-label', ptName.textContent + ' ' + (i + 1));
+          var im = document.createElement('img');
+          im.src = src; im.alt = ''; im.decoding = 'async';
+          t.appendChild(im);
+          t.addEventListener('click', function () { ptShow(i); });
+          ptThumbs.appendChild(t);
+        });
+      }
+      ptShow(Math.min(ptCur, Math.max(ptPhotos.length - 1, 0)));
+
+      ptContent.textContent = d.content || PT('pt_content_soon', 'תוכן יתווסף בקרוב');
+      ptContent.classList.toggle('is-soon', !d.content);
+      ptLink.hidden = !d.page;
+      if (d.page) { ptLink.href = d.page; ptLink.textContent = PT('pt_full', 'לעמוד המלא ←'); }
       ptX.setAttribute('aria-label', PT('pm_close', 'סגירה'));
     }
 
     function openPartner(card) {
       ptCard = card;
+      ptCur = 0;
       renderPartner();
       ptBox.scrollTop = 0;
       ptm.hidden = false;
@@ -1288,28 +1327,28 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     ptSec.addEventListener('click', function (e) {
-      var c = e.target.closest ? e.target.closest('.partner-chip[data-photo]') : null;
+      var c = e.target.closest ? e.target.closest('.partner-chip[data-slug]') : null;
       if (c) { e.preventDefault(); openPartner(c); }
     });
     ptSec.addEventListener('keydown', function (e) {
       if (e.key !== 'Enter' && e.key !== ' ') { return; }
-      var c = e.target.closest ? e.target.closest('.partner-chip[data-photo]') : null;
+      var c = e.target.closest ? e.target.closest('.partner-chip[data-slug]') : null;
       if (c && e.target === c) { e.preventDefault(); openPartner(c); }
     });
     ptm.addEventListener('click', function (e) {
       if (e.target.closest && e.target.closest('[data-ptm-close]')) { closePartner(); }
     });
-    ptPhoto.addEventListener('click', function () {
-      var list = [{ src: ptImg.getAttribute('src'), alt: ptImg.alt }];
-      if (window.gadPhotoLightbox) { window.gadPhotoLightbox(list, 0, ptPhoto); }
-      else if (window.openImageLightbox) { window.openImageLightbox(list, 0); }
+    ptPhoto.addEventListener('click', function () {      // לייטבוקס עם הקודמת/הבאה על כל תמונות הקטגוריה
+      var list = ptPhotos.map(function (src) { return { src: src, alt: ptName.textContent }; });
+      if (window.gadPhotoLightbox) { window.gadPhotoLightbox(list, ptCur, ptPhoto); }
+      else if (window.openImageLightbox) { window.openImageLightbox(list, ptCur); }
     });
 
     document.addEventListener('keydown', function (e) {
       if (ptm.hidden || document.documentElement.classList.contains('pj-lb-open')) { return; }   // הלייטבוקס מעל — הוא מטפל
       if (e.key === 'Escape') { e.stopPropagation(); closePartner(); return; }
       if (e.key === 'Tab') {                             // מלכודת פוקוס בתוך החלון
-        var g = ptm.querySelectorAll('button:not([hidden]), a[href]:not([hidden])');
+        var g = Array.prototype.filter.call(ptm.querySelectorAll('button, a[href]'), function (el) { return el.offsetParent !== null; });
         var gf = g[0], gl = g[g.length - 1];
         if (e.shiftKey && (document.activeElement === gf || document.activeElement === ptBox)) { e.preventDefault(); gl.focus(); }
         else if (!e.shiftKey && document.activeElement === gl) { e.preventDefault(); gf.focus(); }

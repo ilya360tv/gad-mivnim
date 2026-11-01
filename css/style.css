@@ -6301,17 +6301,20 @@ html[dir="ltr"] .role-card:hover .role-btn__arrow { transform: translateX(3px) s
 .role-form__hp { display: none; }
 .role-form__ok.is-error { background: rgba(248, 113, 113, .1); border-color: rgba(248, 113, 113, .45); color: #fca5a5; }
 /* ==========================================================================
-   #partners: כרטיסים קומפקטיים (3 בשורה, כרטיס בודד אחרון במרכז) — לחיצה פותחת חלון עם תמונה
+   #partners: כרטיס = כותרת ← תמונה ← סלוגן (3 בשורה, כרטיס בודד אחרון במרכז) — לחיצה פותחת חלון גלריה
    ========================================================================== */
 #partners .partners-grid {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 14px;
+  gap: 16px;
 }
 #partners .partner-chip {
   grid-column: span 2;
   max-width: none;
   min-width: 0;
+  gap: 12px;
+  padding: 16px 16px 18px;
+  text-align: right;
   cursor: pointer;
 }
 #partners .partner-chip:last-child:nth-child(3n + 1) { grid-column: 3 / span 2; }
@@ -6321,6 +6324,23 @@ html[dir="ltr"] .role-card:hover .role-btn__arrow { transform: translateX(3px) s
   border-color: var(--lb);
   box-shadow: 0 0 0 2px var(--lb-glow), 0 0 16px var(--lb-glow);
 }
+#partners .partner-photo {
+  flex: none;
+  height: 170px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #1b1f24;
+}
+#partners .partner-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .45s ease;
+}
+#partners .partner-chip:hover .partner-photo img,
+#partners .partner-chip:focus-visible .partner-photo img { transform: scale(1.04); }
+#partners .partner-slogan.is-soon { color: #7d8790; font-style: italic; }
 
 @media (max-width: 900px) {
   #partners .partners-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -6328,11 +6348,44 @@ html[dir="ltr"] .role-card:hover .role-btn__arrow { transform: translateX(3px) s
   #partners .partner-chip:last-child:nth-child(3n + 1) { grid-column: auto; }
 }
 @media (max-width: 560px) {
-  #partners .partners-grid { grid-template-columns: minmax(0, 1fr); }
+  #partners .partners-grid { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  #partners .partner-photo { height: 140px; }
 }
 
-/* ----- חלון שותף (מראה .proj-modal) ----- */
-.pt-modal__box { width: 720px; max-width: calc(100vw - 24px); text-align: center; padding-top: 68px; }
+/* ----- חלון שותף: כותרת + סלוגן, גלריה (תמונה ראשית + תמונות קטנות), תוכן, כפתור (מראה .proj-modal) ----- */
+.pt-modal__box { width: 820px; max-width: calc(100vw - 24px); text-align: center; padding-top: 68px; }
+.pt-modal__head { margin-bottom: 16px; }
+.pt-modal__tag.is-soon { color: #7d8790; font-style: italic; }
+.pt-modal__thumbs { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.pt-modal__thumbs[hidden] { display: none; }
+.pt-modal__thumb {
+  width: 72px;
+  height: 54px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #1b1f24;
+  cursor: pointer;
+  opacity: .6;
+  transition: opacity .2s ease, box-shadow .2s ease;
+}
+.pt-modal__thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.pt-modal__thumb:hover, .pt-modal__thumb.is-active { opacity: 1; box-shadow: 0 0 0 2px var(--lb); }
+.pt-modal__thumb:focus-visible { outline: 3px solid var(--lb); outline-offset: 2px; }
+.pt-modal__content {
+  margin-top: 18px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .02);
+  color: #e6e9ec;
+  font-size: 1rem;
+  line-height: 1.65;
+  text-align: right;
+  white-space: pre-line;
+}
+.pt-modal__content.is-soon { text-align: center; color: #8a949e; font-style: italic; }
 /* התמונה כולה, בלי חיתוך: החלון מתאים את עצמו לצורת התמונה */
 .pt-modal__photo {
   display: flex;
@@ -6349,12 +6402,12 @@ html[dir="ltr"] .role-card:hover .role-btn__arrow { transform: translateX(3px) s
   width: auto;
   height: auto;
   max-width: 100%;
-  max-height: 70vh;
+  max-height: 60vh;
   object-fit: contain;
   border-radius: 14px;
 }
 .pt-modal__photo:focus-visible { outline: 3px solid var(--lb); outline-offset: 3px; }
-.pt-modal .proj-modal__name { margin-top: 18px; font-size: 1.4rem; }
+.pt-modal .proj-modal__name { font-size: 1.4rem; }
 .pt-modal__tag { margin: 8px 0 0; color: var(--ink-soft); font-size: 1.02rem; line-height: 1.55; }
 .pt-modal__tag[hidden], .pt-modal__link[hidden] { display: none; }
 .pt-modal__link {
