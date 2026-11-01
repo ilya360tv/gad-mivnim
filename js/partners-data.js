@@ -21,5 +21,6 @@ window.PARTNERS_DATA = {
   'gates':          { photos: ['images/partners/gates.jpg'],          content: '', page: 'partners-gates-frames.html' },
   'glazing':        { photos: ['images/partners/glazing.jpg'],        content: '', page: 'partners-gates-frames.html' },
   'metalwork':      { photos: ['images/partners/metalwork.jpg'],      content: '', page: 'partners-gates-frames.html' },
-  'aluminum':       { photos: ['images/partners/aluminum.jpg'],       content: '', page: 'partners-gates-frames.html' }
+  'aluminum':       { photos: ['images/partners/aluminum.jpg'],       content: '', page: 'partners-gates-frames.html' },
+  'hardware':       { photos: ['images/partners/hardware.jpg'],       content: '', page: '' }
 };

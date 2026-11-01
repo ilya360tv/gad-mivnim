@@ -6309,13 +6309,17 @@ html[dir="ltr"] .role-card:hover .role-btn__arrow { transform: translateX(3px) s
   --pt-cols: 5;
   --pt-gap: 16px;
   display: grid;
-  grid-template-columns: repeat(var(--pt-cols), minmax(0, 1fr));
+  grid-template-columns: repeat(calc(var(--pt-cols) * 2), minmax(0, 1fr));   /* כל כרטיס = 2 חצאי-עמודה */
   grid-auto-rows: 1fr;                       /* כל הכרטיסים באותו גובה, בכל השורות */
   justify-content: center;
   gap: var(--pt-gap);
 }
-/* 16 כרטיסים ב-5 עמודות: הכרטיס הבודד בשורה האחרונה — בעמודה האמצעית */
-#partners .partner-chip:last-child:nth-child(5n + 1) { grid-column: 3; }
+#partners .partner-chip { grid-column: span 2; }
+/* שורה אחרונה חלקית (5 בשורה) — ממורכזת: הכרטיס הראשון בה מוזז בחצאי-עמודה */
+#partners .partner-chip:nth-child(5n + 1):nth-last-child(1) { grid-column: 5 / span 2; }
+#partners .partner-chip:nth-child(5n + 1):nth-last-child(2) { grid-column: 4 / span 2; }
+#partners .partner-chip:nth-child(5n + 1):nth-last-child(3) { grid-column: 3 / span 2; }
+#partners .partner-chip:nth-child(5n + 1):nth-last-child(4) { grid-column: 2 / span 2; }
 #partners .partner-chip {
   max-width: none;
   min-width: 0;
@@ -6368,13 +6372,15 @@ html[dir="ltr"] .role-card:hover .role-btn__arrow { transform: translateX(3px) s
 /* טאבלט (כמו #services): 2 בשורה, מרווח 20, רשת עד 900px, ראש בגובה 76 */
 @media (max-width: 1023.98px) {
   #partners .partners-grid { --pt-cols: 2; --pt-gap: 20px; max-width: 900px; margin-inline: auto; }
-  #partners .partner-chip:last-child:nth-child(5n + 1) { grid-column: auto; }
+  #partners .partner-chip:nth-child(5n + 1):nth-last-child(n) { grid-column: span 2; }
+  #partners .partner-chip:nth-child(odd):last-child { grid-column: 2 / span 2; }   /* כרטיס בודד בשורה האחרונה — במרכז */
   #partners .partner-chip strong { min-height: 76px; padding-inline: 10px; font-size: 1.15rem; }
   #partners .partner-chip .partner-slogan { min-height: calc(1.6em + 40px); font-size: .95rem; }
 }
 /* מובייל (כמו #services): כרטיס אחד בשורה, תמונה 21:9 */
 @media (max-width: 640px) {
   #partners .partners-grid { --pt-cols: 1; }
+  #partners .partner-chip:nth-child(odd):last-child { grid-column: span 2; }
   #partners .partner-chip strong { min-height: 0; }
   #partners .partner-photo { aspect-ratio: 21 / 9; }
 }

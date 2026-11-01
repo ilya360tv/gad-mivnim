@@ -260,7 +260,7 @@
     pt6:  { he: 'פרקטיים', ru: 'Паркет', en: 'Parquet', fr: 'Parquets' },
     pt7:  { he: 'צבעיים וציפויים', ru: 'Краски и покрытия', en: 'Paints & Coatings', fr: 'Peintures et revêtements' },
     pt8:  { he: 'כלים סניטריים', ru: 'Сантехника', en: 'Sanitary Ware', fr: 'Sanitaires' },
-    pt9:  { he: 'ריהוט ואבזרי אמבט', ru: 'Мебель и аксессуары для ванной', en: 'Bathroom Furniture & Accessories', fr: 'Mobilier et accessoires de salle de bain' },
+    pt9:  { he: 'ריהוט ואביזרי אמבטיה', ru: 'Мебель и аксессуары для ванной', en: 'Bathroom Furniture & Accessories', fr: 'Mobilier et accessoires de salle de bain' },
     pt10: { he: 'תאורה', ru: 'Освещение', en: 'Lighting', fr: 'Éclairage' },
     pt10s:{ he: 'אור מביא אור', ru: 'Свет приносит свет', en: 'Light brings light', fr: 'La lumière apporte la lumière' },
     pt11: { he: 'דלתות פנים', ru: 'Межкомнатные двери', en: 'Interior Doors', fr: 'Portes intérieures' },
@@ -269,6 +269,7 @@
     pt14: { he: 'זגגות בנייה', ru: 'Строительное остекление', en: 'Building Glazing', fr: 'Vitrage de construction' },
     pt15: { he: 'מסגרות בנייה', ru: 'Строительные металлоконструкции', en: 'Building Metalwork', fr: 'Serrurerie de construction' },
     pt16: { he: 'אלומיניום', ru: 'Алюминий', en: 'Aluminum', fr: 'Aluminium' },
+    pt17: { he: 'פרזול', ru: 'Фурнитура', en: 'Hardware', fr: 'Quincaillerie' },
 
     /* ----- הצוותים שלנו ----- */
     teams_slogan: { he: 'מצוינות ללא פשרות', ru: 'Совершенство без компромиссов', en: 'Excellence without compromise', fr: 'L’excellence sans compromis' },
