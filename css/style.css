@@ -6301,23 +6301,46 @@ html[dir="ltr"] .role-card:hover .role-btn__arrow { transform: translateX(3px) s
 .role-form__hp { display: none; }
 .role-form__ok.is-error { background: rgba(248, 113, 113, .1); border-color: rgba(248, 113, 113, .45); color: #fca5a5; }
 /* ==========================================================================
-   #partners: כרטיס = כותרת ← תמונה ← סלוגן (3 בשורה, כרטיס בודד אחרון במרכז) — לחיצה פותחת חלון גלריה
+   #partners: כרטיס = כותרת ← תמונה ← סלוגן — באותן מידות כמו כרטיסי #services (.division-card):
+   רוחב עמודה, ראש, תמונה 16:9 (21:9 במובייל), גוף, רדיוס ומרווח. הרשת ממורכזת (flex + justify-content: center),
+   כך שהשורה האחרונה (פחות כרטיסים) יושבת במרכז. נקודות שבירה כמו #services: ≥1024 / 641–1023 / ≤640.
    ========================================================================== */
 #partners .partners-grid {
+  --pt-cols: 5;
+  --pt-gap: 16px;
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(var(--pt-cols), minmax(0, 1fr));
+  grid-auto-rows: 1fr;                       /* כל הכרטיסים באותו גובה, בכל השורות */
+  justify-content: center;
+  gap: var(--pt-gap);
 }
+/* 16 כרטיסים ב-5 עמודות: הכרטיס הבודד בשורה האחרונה — בעמודה האמצעית */
+#partners .partner-chip:last-child:nth-child(5n + 1) { grid-column: 3; }
 #partners .partner-chip {
-  grid-column: span 2;
   max-width: none;
   min-width: 0;
-  gap: 12px;
-  padding: 16px 16px 18px;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 14px;
   text-align: right;
   cursor: pointer;
 }
-#partners .partner-chip:last-child:nth-child(3n + 1) { grid-column: 3 / span 2; }
+#partners .partner-chip strong {
+  display: flex;
+  align-items: center;
+  padding: 14px 8px 10px;
+  font-size: clamp(.74rem, 1.25vw, .95rem);
+  line-height: 1.6;
+}
+#partners .partner-chip .partner-slogan {
+  box-sizing: border-box;
+  flex: 1;                                   /* כרטיסים באותה שורה נמתחים לגובה אחיד */
+  min-height: calc(2 * 1.6em + 40px);       /* כמו גוף כרטיס החטיבה: 12 + שתי שורות + 12 + 16 */
+  padding: 12px 12px 28px;
+  font-size: .88rem;
+  line-height: 1.6;
+}
 #partners .partner-chip:hover,
 #partners .partner-chip:focus-visible {
   outline: none;
@@ -6326,9 +6349,9 @@ html[dir="ltr"] .role-card:hover .role-btn__arrow { transform: translateX(3px) s
 }
 #partners .partner-photo {
   flex: none;
-  height: 170px;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
-  border-radius: 10px;
+  border-bottom: 1px solid var(--line);
   background: #1b1f24;
 }
 #partners .partner-photo img {
@@ -6342,14 +6365,18 @@ html[dir="ltr"] .role-card:hover .role-btn__arrow { transform: translateX(3px) s
 #partners .partner-chip:focus-visible .partner-photo img { transform: scale(1.04); }
 #partners .partner-slogan.is-soon { color: #7d8790; font-style: italic; }
 
-@media (max-width: 900px) {
-  #partners .partners-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  #partners .partner-chip,
-  #partners .partner-chip:last-child:nth-child(3n + 1) { grid-column: auto; }
+/* טאבלט (כמו #services): 2 בשורה, מרווח 20, רשת עד 900px, ראש בגובה 76 */
+@media (max-width: 1023.98px) {
+  #partners .partners-grid { --pt-cols: 2; --pt-gap: 20px; max-width: 900px; margin-inline: auto; }
+  #partners .partner-chip:last-child:nth-child(5n + 1) { grid-column: auto; }
+  #partners .partner-chip strong { min-height: 76px; padding-inline: 10px; font-size: 1.15rem; }
+  #partners .partner-chip .partner-slogan { min-height: calc(1.6em + 40px); font-size: .95rem; }
 }
-@media (max-width: 560px) {
-  #partners .partners-grid { grid-template-columns: minmax(0, 1fr); gap: 14px; }
-  #partners .partner-photo { height: 140px; }
+/* מובייל (כמו #services): כרטיס אחד בשורה, תמונה 21:9 */
+@media (max-width: 640px) {
+  #partners .partners-grid { --pt-cols: 1; }
+  #partners .partner-chip strong { min-height: 0; }
+  #partners .partner-photo { aspect-ratio: 21 / 9; }
 }
 
 /* ----- חלון שותף: כותרת + סלוגן, גלריה (תמונה ראשית + תמונות קטנות), תוכן, כפתור (מראה .proj-modal) ----- */
