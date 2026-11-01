@@ -6385,6 +6385,39 @@ html[dir="ltr"] .role-card:hover .role-btn__arrow { transform: translateX(3px) s
   #partners .partner-photo { aspect-ratio: 21 / 9; }
 }
 
+/* ----- #partners: פס נע של כרטיסי הקטגוריות (מנוע initMarquee, כמו #projects / #in-progress).
+         הרשת למעלה = גיבוי בלי JS ותצוגה סטטית כשכפתור "עצירת אנימציות" פעיל. ----- */
+.pt-marquee { display: none; }
+.has-js #partners .pt-marquee.is-on {
+  display: block;
+  direction: ltr;
+  overflow: hidden;
+  padding: 16px 0 22px;
+  cursor: grab;
+  touch-action: pan-y;
+  -webkit-user-select: none;
+          user-select: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+}
+.pt-marquee.is-dragging { cursor: grabbing; }
+.has-js #partners .partners-grid.is-replaced { display: none; }
+html.a11y-no-motion #partners .pt-marquee.is-on { display: none; }
+html.a11y-no-motion #partners .partners-grid.is-replaced { display: grid; }
+.pt-track { display: flex; align-items: stretch; width: max-content; will-change: transform; }
+#partners .pt-track .partner-chip {
+  direction: rtl;
+  flex: 0 0 auto;
+  width: var(--pt-card-w, 214px);
+  margin-inline-end: var(--pt-card-gap, 16px);
+}
+.pt-marquee img { -webkit-user-drag: none; pointer-events: none; }
+@media (max-width: 767.98px) {
+  /* כמו #in-progress במובייל: בלי mask/will-change (מונע גלילה "תקועה") */
+  .has-js #partners .pt-marquee.is-on { -webkit-mask-image: none; mask-image: none; }
+  .pt-track { will-change: auto; }
+}
+
 /* ----- חלון שותף: כותרת + סלוגן, גלריה (תמונה ראשית + תמונות קטנות), תוכן, כפתור (מראה .proj-modal) ----- */
 .pt-modal__box { width: 820px; max-width: calc(100vw - 24px); text-align: center; padding-top: 68px; }
 .pt-modal__head { margin-bottom: 16px; }

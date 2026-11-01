@@ -1359,6 +1359,81 @@ document.addEventListener('DOMContentLoaded', function () {
       new MutationObserver(function () { if (!ptm.hidden) { renderPartner(); } })
         .observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
     }
+
+    /* ----- פס נע של כרטיסי הקטגוריות — אותו מנוע (initMarquee) כמו #projects ו-#in-progress.
+             הרשת המקורית נשארת כגיבוי (וכתצוגה סטטית כשכפתור "עצירת אנימציות" פעיל — ב-CSS).
+             לחיצה/מקלדת על כרטיס בפס פותחת את החלון דרך ההאזנה של ptSec; גרירה נבלעת במנוע. ----- */
+    var ptGrid = ptSec.querySelector('.partners-grid');
+    var ptqBox = ptSec.querySelector('.pt-marquee');
+    var ptqTrack = ptqBox ? ptqBox.querySelector('.pt-track') : null;
+    if (ptGrid && ptqBox && ptqTrack) {
+      var ptqSrc = Array.prototype.slice.call(ptGrid.querySelectorAll('.partner-chip'));
+      var ptqE = initMarquee(ptqBox, ptqTrack, {
+        isPaused: function () {
+          if (!ptm.hidden) { return true; }                                                   // החלון פתוח
+          try { if (ptqBox.querySelector(':focus-visible')) { return true; } } catch (err) {}   // פוקוס מקלדת עוצר את הפס
+          return false;
+        }
+      });
+
+      var ptqBuild = function () {
+        var iw = window.innerWidth;
+        var gap = 16;
+        var vw = ptqBox.clientWidth || iw;
+        // רוחב כרטיס כמו ברשת (= כרטיסי #services): דסקטופ 5 בשורה, טאבלט 2 בשורה (עד 900px);
+        // מובייל: מעט קטן יותר, אותן פרופורציות
+        var cardW = iw < 768 ? 240
+          : iw < 1024 ? Math.round((Math.min(vw, 900) - 20) / 2)
+          : Math.round((vw - 4 * gap) / 5);
+        ptqBox.style.setProperty('--pt-card-w', cardW + 'px');
+        ptqBox.style.setProperty('--pt-card-gap', gap + 'px');
+        var step = cardW + gap;
+        var reps = Math.max(1, Math.ceil((vw + step) / (step * ptqSrc.length)));
+        function set(hidden) {
+          var f = document.createDocumentFragment();
+          for (var r = 0; r < reps; r++) {
+            ptqSrc.forEach(function (c) {
+              var n = c.cloneNode(true);
+              var im = n.querySelector('img');
+              if (im) { im.setAttribute('draggable', 'false'); im.loading = 'eager'; }
+              if (hidden) { n.setAttribute('aria-hidden', 'true'); n.setAttribute('tabindex', '-1'); }
+              f.appendChild(n);
+            });
+          }
+          return f;
+        }
+        ptqTrack.innerHTML = '';
+        ptqTrack.appendChild(set(false));
+        ptqTrack.appendChild(set(true));
+        ptqE.measure(reps * ptqSrc.length);
+        if (window.setLanguage) { window.setLanguage(document.documentElement.getAttribute('lang') || 'he'); }
+      };
+
+      ptqBox.hidden = false;
+      ptqBox.classList.add('is-on');
+      ptGrid.classList.add('is-replaced');
+      ptqBuild();
+
+      var ptqTimer;
+      var ptqW = window.innerWidth;   // רק שינוי רוחב אמיתי (לא שורת כתובת בגלילה)
+      window.addEventListener('resize', function () {
+        if (window.innerWidth === ptqW) { return; }
+        ptqW = window.innerWidth;
+        clearTimeout(ptqTimer);
+        ptqTimer = setTimeout(ptqBuild, 200);
+      });
+
+      if ('MutationObserver' in window) {
+        var ptqLang = document.documentElement.getAttribute('lang');   // מגן מלולאה: setLanguage כותב שוב את lang
+        new MutationObserver(function () {
+          var cur = document.documentElement.getAttribute('lang') || 'he';
+          if (cur === ptqLang) { return; }
+          ptqLang = cur;
+          ptqBuild();
+        })
+          .observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+      }
+    }
   }
 
   /* מפה במובייל: מכוסה עד הקשה, כדי שהחלקה עליה תגלול את הדף */
