@@ -1467,6 +1467,7 @@ document.addEventListener('DOMContentLoaded', function () {
         '</div>' +
         '<div class="ic-modal__icon"></div>' +
         '<div class="pt-modal__content"></div>' +
+        '<button type="button" class="ic-modal__cta"></button>' +
       '</div>';
     document.body.appendChild(icm);
 
@@ -1476,6 +1477,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var icTag = icm.querySelector('.pt-modal__tag');
     var icIcon = icm.querySelector('.ic-modal__icon');
     var icContent = icm.querySelector('.pt-modal__content');
+    var icCta = icm.querySelector('.ic-modal__cta');
     var icCard = null;
 
     var renderInfo = function () {
@@ -1484,12 +1486,39 @@ document.addEventListener('DOMContentLoaded', function () {
       var src = icGrid.querySelector('.info-card[data-slug="' + slug + '"]') || icCard;   // הטקסט המתורגם תמיד מהרשת המקורית
       var d = ICDATA[slug] || {};
       var lang = document.documentElement.getAttribute('lang') || 'he';
-      var txt = (d.content && typeof d.content === 'object') ? (d.content[lang] || d.content.he || '') : (d.content || '');
+      var L = function (o) { return !o ? '' : (typeof o === 'string' ? o : (o[lang] || o.he || '')); };
+      var el = function (tag, cls, text) { var n = document.createElement(tag); if (cls) { n.className = cls; } if (text) { n.textContent = text; } return n; };
       icName.textContent = src.querySelector('strong').textContent;
       icTag.textContent = src.querySelector('.info-card__teaser').textContent;
       icIcon.innerHTML = src.querySelector('.info-card__icon').innerHTML;
-      icContent.textContent = txt || IT('pt_content_soon', 'תוכן יתווסף בקרוב');
-      icContent.classList.toggle('is-soon', !txt);
+      // תוכן: לכל מקטע — כותרת (כשיש כמה), פתיחה, "מה חשוב לדעת" (נקודות תכלת), תיבת "טיפ GAD MIVNIM"
+      var secs = d.sections || [];
+      icContent.innerHTML = '';
+      icContent.classList.toggle('is-soon', !secs.length);
+      icContent.classList.toggle('is-rich', !!secs.length);
+      if (!secs.length) { icContent.textContent = L(d.content) || IT('pt_content_soon', 'תוכן יתווסף בקרוב'); }
+      secs.forEach(function (s) {
+        var sec = el('section', 'ic-sec');
+        if (s.title) { sec.appendChild(el('h3', 'ic-sec__title', L(s.title))); }
+        if (s.intro) { sec.appendChild(el('p', 'ic-sec__intro', L(s.intro))); }
+        if (s.points && s.points.length) {
+          sec.appendChild(el('h4', 'ic-sec__know', IT('ic_know', 'מה חשוב לדעת')));
+          var ul = el('ul', 'ic-sec__list');
+          s.points.forEach(function (pt) { ul.appendChild(el('li', '', L(pt))); });
+          sec.appendChild(ul);
+        }
+        if (s.tip) {
+          var tip = el('div', 'ic-tip');
+          var head = el('span', 'ic-tip__head');
+          head.appendChild(el('span', 'ic-tip__icon', '✦'));
+          head.appendChild(document.createTextNode(' ' + IT('ic_tip', 'טיפ GAD MIVNIM')));
+          tip.appendChild(head);
+          tip.appendChild(el('p', 'ic-tip__text', L(s.tip)));
+          sec.appendChild(tip);
+        }
+        icContent.appendChild(sec);
+      });
+      icCta.textContent = IT('ic_cta', 'דברו איתנו ←');
       icX.setAttribute('aria-label', IT('pm_close', 'סגירה'));
     };
     var openInfo = function (card) {
@@ -1498,17 +1527,24 @@ document.addEventListener('DOMContentLoaded', function () {
       icBox.scrollTop = 0;
       icm.hidden = false;
       document.documentElement.classList.add('modal-open');
-      icBox.focus();
+      icBox.focus({ preventScroll: true });
+      icBox.scrollTop = 0;                               // כל חלון נפתח מלמעלה (גם אחרי חלון שגולל)
       void icm.offsetWidth; icm.classList.add('is-open');
     };
-    var closeInfo = function () {
+    var closeInfo = function (noFocus) {
       if (icm.hidden) { return; }
       icm.classList.remove('is-open');
       icm.hidden = true;
       document.documentElement.classList.remove('modal-open');
-      if (icCard && icCard.isConnected) { icCard.focus(); }
+      if (!noFocus && icCard && icCard.isConnected) { icCard.focus(); }
       icCard = null;
     };
+    // "דברו איתנו" — סוגר את החלון וגולל לטופס צור קשר
+    icCta.addEventListener('click', function () {
+      closeInfo(true);
+      var ct = document.getElementById('contact');
+      if (ct) { ct.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    });
 
     // האזנה על כל הסקשן: גם הכרטיסים ברשת וגם בפס הנע (גרירה בפס נבלעת במנוע ולא מגיעה לכאן)
     icSec.addEventListener('click', function (e) {
@@ -1526,7 +1562,10 @@ document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('keydown', function (e) {
       if (icm.hidden) { return; }
       if (e.key === 'Escape') { e.stopPropagation(); closeInfo(); return; }
-      if (e.key === 'Tab') { e.preventDefault(); icX.focus(); }      // מלכודת פוקוס: כפתור הסגירה הוא הפקד היחיד
+      if (e.key === 'Tab') {                             // מלכודת פוקוס: סגירה ↔ "דברו איתנו"
+        e.preventDefault();
+        (document.activeElement === icX ? icCta : icX).focus();
+      }
     });
 
     /* ----- פס נע של הכרטיסים — אותו מנוע (initMarquee) כמו #projects ו-#partners.

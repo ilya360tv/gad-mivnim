@@ -6832,3 +6832,61 @@ html.a11y-no-motion #info .info-cards.is-replaced { display: flex; }
 /* המשפט נחתך בדיוק אחרי 2 שורות: בלי ריפוד תחתון באלמנט עצמו (הריפוד היה חושף שורה שלישית) — הריווח עובר לכרטיס */
 .info-card { padding-bottom: 14px; }
 .info-card__teaser { padding-bottom: 0; }
+
+/* ----- חלון נושא ב-#info: תוכן מלא — פתיחה, "מה חשוב לדעת" (נקודות תכלת), תיבת "טיפ GAD MIVNIM", כפתור "דברו איתנו".
+         גודל חלון אחיד לכל הנושאים (גובה קבוע), גלילה פנימית. טקסט מיושר לימין, כותרות ממורכזות. ----- */
+.ic-modal .pt-modal__box { height: 72vh; overflow-y: auto; }
+@media (max-width: 560px) {
+  .ic-modal .pt-modal__box { height: 80vh; }
+}
+.ic-modal .pt-modal__content.is-rich {
+  flex: none;
+  padding: 18px 20px;
+  font-style: normal;
+  color: #e6e9ec;
+  text-align: start;
+  white-space: normal;
+}
+.ic-sec + .ic-sec { margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--line); }
+.ic-sec__title { margin: 0 0 10px; color: #fff; font-size: 1.08rem; font-weight: 700; text-align: center; }
+.ic-sec__intro { margin: 0 0 14px; color: #e6e9ec; line-height: 1.65; }
+.ic-sec__know { margin: 0 0 8px; color: var(--lb); font-size: .95rem; font-weight: 700; text-align: center; }
+.ic-sec__list { list-style: none; margin: 0 0 16px; padding: 0; }
+.ic-sec__list li { position: relative; margin: 0 0 8px; padding-inline-start: 18px; color: #c9d1d8; line-height: 1.6; }
+.ic-sec__list li:last-child { margin-bottom: 0; }
+.ic-sec__list li::before {                       /* נקודת תכלת — כמו רשימות חלון המשרות */
+  content: "";
+  position: absolute;
+  inset-inline-start: 2px;
+  top: .62em;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--lb);
+}
+.ic-tip {
+  padding: 12px 14px;
+  border: 1px solid rgba(56, 189, 248, .45);
+  border-radius: 10px;
+  background: rgba(56, 189, 248, .08);
+}
+.ic-tip__head { display: block; margin-bottom: 4px; color: var(--lb); font-size: .9rem; font-weight: 700; text-align: center; }
+.ic-tip__icon { font-size: .85em; }
+.ic-tip__text { margin: 0; color: #e6e9ec; line-height: 1.6; }
+.ic-modal__cta {
+  flex: none;
+  align-self: center;
+  margin-top: 18px;
+  padding: 10px 26px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--lb);
+  color: #06131c;
+  font: inherit;
+  font-size: .98rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: box-shadow .2s ease, transform .2s ease;
+}
+.ic-modal__cta:hover { box-shadow: 0 0 0 3px var(--lb-glow); transform: translateY(-1px); }
+.ic-modal__cta:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
