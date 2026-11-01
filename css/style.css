@@ -6559,3 +6559,10 @@ html[lang="he"] #info .info-title .info-brush {
   font-size: 1.15em !important;          /* גופן מכחול נראה קטן יותר — מיושר לגובה הכותרת */
   vertical-align: baseline;
 }
+
+/* ----- #info כותרת: מרווחת יותר (רווח בין מילים + רווח לפני "חשבנו בשבילכם...") ----- */
+#info .info-title { word-spacing: .14em; letter-spacing: .01em; }
+@media (min-width: 1024px) {
+  #info .info-title { font-size: clamp(1.05rem, 1.3vw, 1.6rem) !important; }   /* מפצה על הריווח — נשאר בשורה אחת */
+}
+#info .info-title .info-brush { margin-inline-start: .45em; word-spacing: .08em; }
