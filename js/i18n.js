@@ -341,6 +341,7 @@
 
     map_tap: { he: 'הקישו להפעלת המפה', ru: 'Нажмите, чтобы включить карту', en: 'Tap to activate the map', fr: 'Touchez pour activer la carte' },
     pm_close: { he: 'סגירה', ru: 'Закрыть', en: 'Close', fr: 'Fermer' },
+    pt_page: { he: 'לעמוד השותף ←', ru: 'Страница партнёра →', en: 'Partner page →', fr: 'Page du partenaire →' },
 
     sector_all: { he: 'כל המגזרים', ru: 'Все секторы', en: 'All sectors', fr: 'Tous les secteurs' },
     sector_private: { he: 'מגזר פרטי', ru: 'Частный сектор', en: 'Private sector', fr: 'Secteur privé' },

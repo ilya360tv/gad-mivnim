@@ -947,6 +947,7 @@ document.addEventListener('DOMContentLoaded', function () {
       document.documentElement.classList.add('pj-lb-open');
       lbX.focus();
     }
+    window.gadPhotoLightbox = lbOpen;                  // גם לחלון השותפים (סעיף 7ב)
     function lbClose() {
       if (lb.hidden) { return; }
       lb.hidden = true;
@@ -1205,6 +1206,111 @@ document.addEventListener('DOMContentLoaded', function () {
     // החלפת שפה בזמן שהחלון פתוח
     if ('MutationObserver' in window) {
       new MutationObserver(function () { if (!pm.hidden) { renderModal(); } })
+        .observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    }
+  }
+
+  /* ---------------------------------------------------------------
+     7ב) חלון שותף — לחיצה על כרטיס ב-#partners פותחת חלון אחד (מראה .proj-modal)
+         עם תמונת הקטגוריה (data-photo), השם והסלוגן מהכרטיס, וכפתור לעמוד השותף (data-href).
+     --------------------------------------------------------------- */
+  var ptSec = document.getElementById('partners');
+  if (ptSec) {
+    var PT = function (key, fallback) {
+      var lang = document.documentElement.getAttribute('lang') || 'he';
+      var e = window.GAD_T && window.GAD_T[key];
+      return (e && e[lang]) || fallback;
+    };
+    var ptm = document.createElement('div');
+    ptm.className = 'proj-modal pt-modal';
+    ptm.hidden = true;
+    ptm.innerHTML =
+      '<div class="proj-modal__backdrop" data-ptm-close></div>' +
+      '<div class="proj-modal__box pt-modal__box" role="dialog" aria-modal="true" aria-labelledby="ptModalTitle" tabindex="-1">' +
+        '<button type="button" class="proj-modal__x" data-ptm-close>&times;</button>' +
+        '<button type="button" class="pt-modal__photo"><img alt="" decoding="async"></button>' +
+        '<h2 class="proj-modal__name" id="ptModalTitle"></h2>' +
+        '<p class="pt-modal__tag" hidden></p>' +
+        '<a class="pt-modal__link" hidden></a>' +
+      '</div>';
+    document.body.appendChild(ptm);
+
+    var ptBox = ptm.querySelector('.proj-modal__box');
+    var ptX = ptm.querySelector('.proj-modal__x');
+    var ptPhoto = ptm.querySelector('.pt-modal__photo');
+    var ptImg = ptPhoto.querySelector('img');
+    var ptName = ptm.querySelector('.proj-modal__name');
+    var ptTag = ptm.querySelector('.pt-modal__tag');
+    var ptLink = ptm.querySelector('.pt-modal__link');
+    var ptCard = null;
+
+    function renderPartner() {
+      if (!ptCard) { return; }
+      var title = ptCard.querySelector('strong');
+      var tag = ptCard.querySelector('span');
+      var href = ptCard.getAttribute('data-href');
+      ptName.textContent = title ? title.textContent : '';
+      ptImg.src = ptCard.getAttribute('data-photo');
+      ptImg.alt = ptName.textContent;
+      ptPhoto.setAttribute('aria-label', ptName.textContent);
+      ptTag.hidden = !tag;
+      ptTag.textContent = tag ? tag.textContent : '';
+      ptLink.hidden = !href;
+      if (href) { ptLink.href = href; ptLink.textContent = PT('pt_page', 'לעמוד השותף ←'); }
+      ptX.setAttribute('aria-label', PT('pm_close', 'סגירה'));
+    }
+
+    function openPartner(card) {
+      ptCard = card;
+      renderPartner();
+      ptBox.scrollTop = 0;
+      ptm.hidden = false;
+      void ptm.offsetWidth;
+      ptm.classList.add('is-open');
+      document.documentElement.classList.add('modal-open');
+      ptBox.focus();
+    }
+
+    function closePartner() {
+      if (ptm.hidden) { return; }
+      ptm.classList.remove('is-open');
+      ptm.hidden = true;
+      document.documentElement.classList.remove('modal-open');
+      if (ptCard) { ptCard.focus(); }
+      ptCard = null;
+    }
+
+    ptSec.addEventListener('click', function (e) {
+      var c = e.target.closest ? e.target.closest('.partner-chip[data-photo]') : null;
+      if (c) { e.preventDefault(); openPartner(c); }
+    });
+    ptSec.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter' && e.key !== ' ') { return; }
+      var c = e.target.closest ? e.target.closest('.partner-chip[data-photo]') : null;
+      if (c && e.target === c) { e.preventDefault(); openPartner(c); }
+    });
+    ptm.addEventListener('click', function (e) {
+      if (e.target.closest && e.target.closest('[data-ptm-close]')) { closePartner(); }
+    });
+    ptPhoto.addEventListener('click', function () {
+      var list = [{ src: ptImg.getAttribute('src'), alt: ptImg.alt }];
+      if (window.gadPhotoLightbox) { window.gadPhotoLightbox(list, 0, ptPhoto); }
+      else if (window.openImageLightbox) { window.openImageLightbox(list, 0); }
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (ptm.hidden || document.documentElement.classList.contains('pj-lb-open')) { return; }   // הלייטבוקס מעל — הוא מטפל
+      if (e.key === 'Escape') { e.stopPropagation(); closePartner(); return; }
+      if (e.key === 'Tab') {                             // מלכודת פוקוס בתוך החלון
+        var g = ptm.querySelectorAll('button:not([hidden]), a[href]:not([hidden])');
+        var gf = g[0], gl = g[g.length - 1];
+        if (e.shiftKey && (document.activeElement === gf || document.activeElement === ptBox)) { e.preventDefault(); gl.focus(); }
+        else if (!e.shiftKey && document.activeElement === gl) { e.preventDefault(); gf.focus(); }
+      }
+    });
+
+    if ('MutationObserver' in window) {
+      new MutationObserver(function () { if (!ptm.hidden) { renderPartner(); } })
         .observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
     }
   }
