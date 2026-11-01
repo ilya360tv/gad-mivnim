@@ -6104,7 +6104,9 @@ html[dir] body #tenders .section-title,
 html[dir] body #tenders .section-lead,
 html[dir] body #app .section-eyebrow,
 html[dir] body #app .section-title,
-html[dir] body #app .section-lead {
+html[dir] body #app .section-lead,
+html[dir] body #partners .section-eyebrow,
+html[dir] body #partners .section-title {
   display: block;
   width: auto;
   max-width: 900px;
@@ -6116,6 +6118,17 @@ html[dir] body #app .plans-grid {
   margin-inline: auto !important;
   justify-content: center;
 }
+/* #partners: שורת התגיות, רשת הכרטיסים ותוכן כל כרטיס — על אותו קו מרכז */
+html[dir] body #partners .badges-row {
+  justify-content: center !important;
+  margin-inline: auto !important;
+  text-align: center !important;
+}
+html[dir] body #partners .partners-grid {
+  justify-content: center !important;
+  margin-inline: auto !important;
+}
+html[dir] body #partners .partner-chip { text-align: center !important; align-items: stretch; }
 
 /* ==========================================================================
    #tenders + #app — כל הבלוק במסך אחד (דסקטופ ≥1024). המיקום האנכי בלחיצה על הגלולה — js/script.js סעיף 6ב
