@@ -6566,3 +6566,15 @@ html[lang="he"] #info .info-title .info-brush {
   #info .info-title { font-size: clamp(1.05rem, 1.3vw, 1.6rem) !important; }   /* מפצה על הריווח — נשאר בשורה אחת */
 }
 #info .info-title .info-brush { margin-inline-start: .45em; word-spacing: .08em; }
+
+/* ----- #info כותרת — סידור נקי: ריווח רגיל בכותרת, ביטוי המכחול באותו גובה ויזואלי,
+         בלי רווחים מוגזמים בין המילים, מודגש בתכלת ומופרד ברווח נעים ----- */
+#info .info-title { word-spacing: normal !important; letter-spacing: 0 !important; }
+html[lang="he"] #info .info-title .info-brush {
+  font-size: 1.08em !important;
+  word-spacing: normal !important;
+  letter-spacing: 0 !important;
+  margin-inline-start: .55em !important;
+  color: #38bdf8;
+  font-weight: 400 !important;
+}
