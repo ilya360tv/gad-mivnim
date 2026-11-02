@@ -6907,3 +6907,69 @@ html.a11y-no-motion #info .info-cards.is-replaced { display: flex; }
 @media (max-width: 767.98px) {
   .ic-modal .ic-modal__icon { height: 90px; }
 }
+
+/* ==========================================================================
+   רקע רציף לכל העמוד — רקע אחד (#0b0d10) לכל הסקשנים, בלי קווי גבול ובלי חילופי גוונים.
+   עומק דרך זוהרי תכלת רכים (radial-gradient ב-::before) שגולשים לסקשנים השכנים — אף פעם לא קצה חד.
+   ה-Hero שומר על הווידאו, עם דהייה רכה בתחתית. מצב "ניגודיות גבוהה" של הנגישות לא מושפע.
+   ========================================================================== */
+html:not(.a11y-contrast) body { background: #0b0d10; }
+html:not(.a11y-contrast) main > section.section,
+html:not(.a11y-contrast) .site-footer {
+  background: transparent !important;
+  background-image: none !important;
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+}
+
+/* זוהרים: שכבה מאחורי התוכן (z-index -1), גולשת ‎120px לסקשן שלפני ואחרי, בלי חיתוך */
+html:not(.a11y-contrast) main > section.section { position: relative; overflow: visible; }
+html:not(.a11y-contrast) :is(#about, #projects, #teams, #info, #careers, #app, #contact)::before {
+  content: "";
+  position: absolute;
+  inset: -120px 0;
+  z-index: -1;
+  pointer-events: none;
+}
+html:not(.a11y-contrast) #about::before    { background: radial-gradient(640px 420px at 88% 30%, rgba(56, 189, 248, .07), transparent 70%); }
+html:not(.a11y-contrast) #projects::before { background: radial-gradient(640px 420px at 12% 40%, rgba(56, 189, 248, .07), transparent 70%); }
+html:not(.a11y-contrast) #teams::before    { background: radial-gradient(600px 400px at 88% 50%, rgba(56, 189, 248, .06), transparent 70%),
+                                                         radial-gradient(520px 360px at 15% 70%, rgba(22, 163, 74, .04), transparent 70%); }
+html:not(.a11y-contrast) #info::before     { background: radial-gradient(640px 420px at 12% 40%, rgba(56, 189, 248, .07), transparent 70%); }
+html:not(.a11y-contrast) #careers::before  { background: radial-gradient(640px 420px at 88% 40%, rgba(56, 189, 248, .07), transparent 70%); }
+html:not(.a11y-contrast) #app::before      { background: radial-gradient(600px 400px at 12% 50%, rgba(56, 189, 248, .06), transparent 70%),
+                                                         radial-gradient(520px 360px at 85% 80%, rgba(22, 163, 74, .04), transparent 70%); }
+html:not(.a11y-contrast) #contact::before  { background: radial-gradient(760px 440px at 50% 45%, rgba(56, 189, 248, .07), transparent 70%); }
+@media (max-width: 767.98px) {
+  /* מובייל: זוהרים צרים יותר כדי שלא ימלאו את כל הרוחב */
+  html:not(.a11y-contrast) #about::before    { background: radial-gradient(340px 320px at 90% 30%, rgba(56, 189, 248, .07), transparent 70%); }
+  html:not(.a11y-contrast) #projects::before { background: radial-gradient(340px 320px at 10% 40%, rgba(56, 189, 248, .07), transparent 70%); }
+  html:not(.a11y-contrast) #teams::before    { background: radial-gradient(340px 320px at 90% 50%, rgba(56, 189, 248, .06), transparent 70%); }
+  html:not(.a11y-contrast) #info::before     { background: radial-gradient(340px 320px at 10% 40%, rgba(56, 189, 248, .07), transparent 70%); }
+  html:not(.a11y-contrast) #careers::before  { background: radial-gradient(340px 320px at 90% 40%, rgba(56, 189, 248, .07), transparent 70%); }
+  html:not(.a11y-contrast) #app::before      { background: radial-gradient(340px 320px at 10% 50%, rgba(56, 189, 248, .06), transparent 70%); }
+  html:not(.a11y-contrast) #contact::before  { background: radial-gradient(380px 340px at 50% 45%, rgba(56, 189, 248, .07), transparent 70%); }
+}
+
+/* Hero → הסקשן הראשון: דהייה רכה ל-#0b0d10 בתחתית הווידאו (מעל שכבת הכהות, מתחת לתוכן) */
+html:not(.a11y-contrast) .hero::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 120px;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(11, 13, 16, 0) 0%, #0b0d10 100%);
+}
+
+/* Footer: אותו רקע, זוהר עדין למעלה במקום קו */
+html:not(.a11y-contrast) .site-footer { position: relative; }
+html:not(.a11y-contrast) .site-footer::before {
+  content: "";
+  position: absolute;
+  inset: -80px 0 auto 0;
+  height: 260px;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(700px 200px at 50% 80px, rgba(56, 189, 248, .06), transparent 70%);
+}
