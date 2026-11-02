@@ -6973,3 +6973,28 @@ html:not(.a11y-contrast) .site-footer::before {
   pointer-events: none;
   background: radial-gradient(700px 200px at 50% 80px, rgba(56, 189, 248, .06), transparent 70%);
 }
+
+/* ----- #info: בתיבת האייקון (כרטיס + חלון) — לוגו GAD MIVNIM (ימין) · קו מפריד · אייקון הנושא (שמאל) ----- */
+.info-card__icon,
+.ic-modal .ic-modal__icon { direction: rtl; gap: 18px; }   /* אותו סדר בכל השפות */
+.info-card__icon .ic-logo,
+.ic-modal__icon .ic-logo {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, .5);
+}
+.info-card__icon .ic-divider,
+.ic-modal__icon .ic-divider {
+  flex: none;
+  width: 1px;
+  height: 44px;
+  background: rgba(56, 189, 248, .35);
+}
+.info-card__icon svg, .ic-modal__icon svg { flex: none; }
+@media (max-width: 767.98px) {
+  .info-card__icon .ic-logo, .ic-modal__icon .ic-logo { width: 32px; height: 32px; }
+  .info-card__icon .ic-divider, .ic-modal__icon .ic-divider { height: 36px; }
+}

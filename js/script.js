@@ -1458,6 +1458,12 @@ document.addEventListener('DOMContentLoaded', function () {
       var lang = document.documentElement.getAttribute('lang') || 'he';
       return !o ? '' : (typeof o === 'string' ? o : (o[lang] || o.he || ''));
     };
+    // תיבת האייקון: הלוגו (ימין) · קו מפריד · אייקון הנושא (שמאל)
+    var icBoxHTML = function (icon) {
+      return '<img class="ic-logo" src="images/gad_mivnim_logo.svg" alt="" width="40" height="40" decoding="async">' +
+        '<span class="ic-divider" aria-hidden="true"></span>' +
+        '<svg viewBox="0 0 24 24" aria-hidden="true">' + (icon || '') + '</svg>';
+    };
     var icFind = function (slug) {
       for (var i = 0; i < ICDATA.length; i++) { if (ICDATA[i].slug === slug) { return ICDATA[i]; } }
       return null;
@@ -1470,7 +1476,7 @@ document.addEventListener('DOMContentLoaded', function () {
       c.setAttribute('role', 'button');
       c.setAttribute('tabindex', '0');
       c.innerHTML = '<strong><span></span></strong>' +
-        '<div class="info-card__icon"><svg viewBox="0 0 24 24" aria-hidden="true">' + d.icon + '</svg></div>' +
+        '<div class="info-card__icon">' + icBoxHTML(d.icon) + '</div>' +
         '<span class="info-card__teaser"></span>';
       icGrid.appendChild(c);
     });
@@ -1517,7 +1523,7 @@ document.addEventListener('DOMContentLoaded', function () {
       var el = function (tag, cls, text) { var n = document.createElement(tag); if (cls) { n.className = cls; } if (text) { n.textContent = text; } return n; };
       icName.textContent = IL(d.title);
       icTag.textContent = IL(d.teaser);
-      icIcon.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true">' + (d.icon || '') + '</svg>';
+      icIcon.innerHTML = icBoxHTML(d.icon);
       // תוכן: פתיחה, "מה חשוב לדעת" (נקודות תכלת), תיבת "טיפ GAD MIVNIM"
       var has = !!(d.intro || (d.bullets && d.bullets.length) || d.tip);
       icContent.innerHTML = '';
