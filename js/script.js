@@ -1782,10 +1782,10 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ---------------------------------------------------------------
-     7ד) #podcast — תמונת הגיטרות עם ▶ פותחת את חלון הפודקאסט:
-         נגן וידאו 16:9 (הפרק הנבחר) + פרטי הפרק + רשימת כל הפרקים (טקסט בלבד, גלילה בתוך החלון).
-         הכל מ-js/podcast-data.js — המקור היחיד. ברירת מחדל: פרק 1.
-         video: YouTube / Vimeo (הטמעה במצב פרטיות) או קובץ mp4; ריק = "הפרק יעלה בקרוב".
+     7ד) #podcast — תמונת הגיטרות עם ▶ + פס נע של אריחי פרקים (כולם עם תמונת הגיטרות).
+         לחיצה פותחת את חלון הפודקאסט: נגן 16:9 (הפרק הנבחר) + פרטי הפרק + רשימת כל הפרקים (טקסט, גלילה בתוך החלון).
+         הכל מ-js/podcast-data.js — המקור היחיד. התמונה הגדולה פותחת את פרק 1, אריח — את הפרק שלו.
+         video: YouTube / Vimeo (הטמעה במצב פרטיות) או קובץ mp4; אחרת audio; בלי שניהם = "הפרק יעלה בקרוב".
      --------------------------------------------------------------- */
   var pcSec = document.getElementById('podcast');
   var pcOpenBtn = pcSec ? pcSec.querySelector('.pod-cover__media') : null;
@@ -1803,6 +1803,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var pcMin = function (d) { return d.min + ' ' + PL(PCUI.min); };
     var pcMetaTxt = function (d) { return PL(PCUI.ep) + ' ' + d.n + ' · ' + pcMin(d); };
     var PC_PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>';
+    var PC_IMG = 'images/image3.png';                    // תמונת הפודקאסט (הגיטרות) — לכל הפרקים
 
     // קישור וידאו → כתובת הטמעה (YouTube במצב פרטיות, Vimeo עם dnt); אחרת null = קובץ וידאו רגיל
     var pcEmbed = function (url) {
@@ -1860,12 +1861,12 @@ document.addEventListener('DOMContentLoaded', function () {
     var pmList = pcm.querySelector('.pod-list');
     var pmCur = PCDATA[0];
 
-    var pmStop = function () { pmMedia.innerHTML = ''; pmVp.classList.remove('is-playing'); };
+    var pmStop = function () { pmMedia.innerHTML = ''; pmVp.classList.remove('is-playing', 'is-audio'); };
     var pmRender = function () {
       var d = pmCur;
       pmPlay.setAttribute('aria-label', PL(PCUI.play) + ' – ' + PL(d.title));
       pmNote.textContent = PL(PCUI.soon);
-      pmNote.hidden = !!d.video;
+      pmNote.hidden = !!(d.video || d.audio);
       pcm.querySelector('.pod-info__title').textContent = PL(d.title);
       pcm.querySelector('.pod-info__meta').textContent = pcMetaTxt(d);
       pcm.querySelector('.pod-info__guest').textContent = PL(d.guest);
@@ -1899,8 +1900,11 @@ document.addEventListener('DOMContentLoaded', function () {
       var act = pmList.querySelector('.pod-row.is-active');
       if (act) { act.focus({ preventScroll: true }); }
     };
-    var pcOpen = function () {
+    var pcOpener = null;
+    var pcOpen = function (d, opener) {
       pmStop();
+      pmCur = d || PCDATA[0];
+      pcOpener = opener || pcOpenBtn;
       pmRender();
       pcm.hidden = false;
       document.documentElement.classList.add('modal-open');
@@ -1914,12 +1918,17 @@ document.addEventListener('DOMContentLoaded', function () {
       pcm.classList.remove('is-open');
       pcm.hidden = true;
       document.documentElement.classList.remove('modal-open');
-      if (pcOpenBtn.isConnected) { pcOpenBtn.focus(); }
+      if (pcOpener && pcOpener.isConnected) { pcOpener.focus(); }
     };
     pmPlay.addEventListener('click', function () {
       var d = pmCur;
       if (d.video) { pmMedia.innerHTML = ''; pmMedia.appendChild(pcVideoEl(d)); pmVp.classList.add('is-playing'); return; }
-      pmNote.classList.remove('is-pulse'); void pmNote.offsetWidth; pmNote.classList.add('is-pulse');   // אין וידאו: ההודעה מהבהבת
+      if (d.audio) {                                   // שמע: נגן HTML5 בתחתית המסך (תמונת הגיטרות נשארת)
+        var au = document.createElement('audio');
+        au.src = d.audio; au.controls = true; au.autoplay = true;
+        pmMedia.innerHTML = ''; pmMedia.appendChild(au); pmVp.classList.add('is-audio'); return;
+      }
+      pmNote.classList.remove('is-pulse'); void pmNote.offsetWidth; pmNote.classList.add('is-pulse');   // אין מדיה: ההודעה מהבהבת
     });
     pmList.addEventListener('click', function (e) {
       var r = e.target.closest ? e.target.closest('.pod-row[data-ep]') : null;
@@ -1934,14 +1943,45 @@ document.addEventListener('DOMContentLoaded', function () {
       if (pcm.hidden) { return; }
       if (e.key === 'Escape') { e.stopPropagation(); pcClose(); return; }
       if (e.key === 'Tab') {                             // מלכודת פוקוס: כל הכפתורים בתוך החלון
-        var f = Array.prototype.filter.call(pmBox.querySelectorAll('button, iframe, video[controls]'), function (x) { return !x.disabled && x.offsetParent !== null; });
+        var f = Array.prototype.filter.call(pmBox.querySelectorAll('button, iframe, video[controls], audio[controls]'), function (x) { return !x.disabled && x.offsetParent !== null; });
         if (!f.length) { return; }
         var i = f.indexOf(document.activeElement);
         if (e.shiftKey && (i <= 0)) { e.preventDefault(); f[f.length - 1].focus(); }
         else if (!e.shiftKey && (i === -1 || i === f.length - 1)) { e.preventDefault(); f[0].focus(); }
       }
     });
-    pcOpenBtn.addEventListener('click', pcOpen);
+    pcOpenBtn.addEventListener('click', function () { pcOpen(PCDATA[0], pcOpenBtn); });
+
+    // ----- אריחי הפרקים: תמונת הגיטרות + "פרק N" + ▶ + כותרת (הרשת המקורית; הפס משכפל אותה) -----
+    var pcGrid = pcSec.querySelector('.pod-eps');
+    var pcFind = function (n) {
+      for (var i = 0; i < PCDATA.length; i++) { if (String(PCDATA[i].n) === String(n)) { return PCDATA[i]; } }
+      return null;
+    };
+    if (pcGrid) {
+      PCDATA.forEach(function (d) {
+        var c = document.createElement('div');
+        c.className = 'pod-tile';
+        c.setAttribute('data-ep', d.n);
+        c.setAttribute('role', 'button');
+        c.setAttribute('tabindex', '0');
+        c.innerHTML =
+          '<img class="pod-tile__img" src="' + PC_IMG + '" alt="" loading="lazy" decoding="async" draggable="false">' +
+          '<span class="pod-tile__chip"></span>' +
+          '<span class="pod-tile__play">' + PC_PLAY + '</span>' +
+          '<strong class="pod-tile__title"></strong>';
+        pcGrid.appendChild(c);
+      });
+      pcSec.addEventListener('click', function (e) {
+        var c = e.target.closest ? e.target.closest('.pod-tile[data-ep]') : null;
+        if (c) { e.preventDefault(); pcOpen(pcFind(c.getAttribute('data-ep')), c); }
+      });
+      pcSec.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter' && e.key !== ' ') { return; }
+        var c = e.target.closest ? e.target.closest('.pod-tile[data-ep]') : null;
+        if (c && e.target === c) { e.preventDefault(); pcOpen(pcFind(c.getAttribute('data-ep')), c); }
+      });
+    }
 
     // ----- טקסטים בסקשן (כותרת, שורת המשנה) לפי השפה -----
     var pcFill = function () {
@@ -1951,8 +1991,67 @@ document.addEventListener('DOMContentLoaded', function () {
       var sub = pcSec.querySelector('.pod-cover__sub');
       if (sub) { sub.textContent = PL(PCUI.eyebrow) + ' · ' + PL(PCUI.count).replace('{n}', PCDATA.length); }
       pcOpenBtn.setAttribute('aria-label', PL(PCUI.play) + ' – ' + PL(PCUI.eyebrow));
+      if (pcGrid) {
+        pcGrid.querySelectorAll('.pod-tile[data-ep]').forEach(function (c) {
+          var d = pcFind(c.getAttribute('data-ep'));
+          if (!d) { return; }
+          c.querySelector('.pod-tile__chip').textContent = PL(PCUI.ep) + ' ' + d.n;
+          c.querySelector('.pod-tile__title').textContent = PL(d.title);
+          c.setAttribute('aria-label', pcMetaTxt(d) + ' – ' + PL(d.title));
+        });
+      }
     };
     pcFill();
+
+    /* ----- פס נע של האריחים — אותו מנוע (initMarquee) ואותה בנייה כמו ב-#info ----- */
+    var pcqBox = pcSec.querySelector('.pod-marquee');
+    var pcqTrack = pcqBox ? pcqBox.querySelector('.ic-track') : null;
+    var pcqBuild = function () {};
+    if (pcGrid && pcqBox && pcqTrack) {
+      var pcqSrc = Array.prototype.slice.call(pcGrid.querySelectorAll('.pod-tile'));
+      var pcqE = initMarquee(pcqBox, pcqTrack, {
+        isPaused: function () {
+          if (!pcm.hidden) { return true; }                                                    // החלון פתוח
+          try { if (pcqBox.querySelector(':focus-visible')) { return true; } } catch (err) {}
+          return false;
+        }
+      });
+      var pcqSet = function (reps, firstReal) {
+        var f = document.createDocumentFragment();
+        for (var r = 0; r < reps; r++) {
+          pcqSrc.forEach(function (c) {
+            var n = c.cloneNode(true);
+            if (!(firstReal && r === 0)) { n.setAttribute('aria-hidden', 'true'); n.setAttribute('tabindex', '-1'); }
+            f.appendChild(n);
+          });
+        }
+        return f;
+      };
+      pcqBuild = function () {
+        pcqTrack.innerHTML = '';
+        pcqTrack.appendChild(pcqSet(1, false));
+        var first = pcqTrack.children[0], second = pcqTrack.children[1];
+        var step = (second && first) ? Math.abs(second.offsetLeft - first.offsetLeft) : 184;
+        var vw = pcqBox.clientWidth || window.innerWidth;
+        var reps = Math.max(1, Math.ceil((vw + step) / (step * pcqSrc.length)));
+        pcqTrack.innerHTML = '';
+        pcqTrack.appendChild(pcqSet(reps, true));
+        pcqTrack.appendChild(pcqSet(reps, false));
+        pcqE.measure(reps * pcqSrc.length);
+      };
+      pcqBox.setAttribute('aria-label', PL(PCUI.strip));
+      pcqBox.hidden = false;
+      pcqBox.classList.add('is-on');
+      pcGrid.classList.add('is-replaced');
+      pcqBuild();
+      window.addEventListener('load', pcqBuild);
+      if (document.fonts && document.fonts.ready) { document.fonts.ready.then(pcqBuild); }
+      var pcW = window.innerWidth, pcT;
+      window.addEventListener('resize', function () {
+        if (window.innerWidth === pcW) { return; }
+        pcW = window.innerWidth; clearTimeout(pcT); pcT = setTimeout(pcqBuild, 200);
+      });
+    }
     if ('MutationObserver' in window) {
       var pcLang = document.documentElement.getAttribute('lang');   // רק החלפת שפה אמיתית
       new MutationObserver(function () {
@@ -1960,6 +2059,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (cur === pcLang) { return; }
         pcLang = cur;
         pcFill();
+        if (pcqBox) { pcqBox.setAttribute('aria-label', PL(PCUI.strip)); }
+        pcqBuild();
         if (!pcm.hidden) { var y = pmList.scrollTop; pmRender(); pmList.scrollTop = y; }
       }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
     }

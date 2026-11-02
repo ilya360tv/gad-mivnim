@@ -7240,3 +7240,121 @@ html[dir] body #podcast .section-title {
   .pod-info__title { font-size: 1.1rem; }
   .pod-row { gap: 8px; padding: 9px 8px; font-size: .86rem; }
 }
+
+/* ----- #podcast — פס נע של אריחי פרקים (כולם עם תמונת הגיטרות) — אותו מנוע ואותה התנהגות כמו #info ----- */
+.pod-wrap { margin-top: 36px; }
+.pod-marquee { display: none; }
+.has-js #podcast .pod-marquee.is-on {
+  display: block;
+  direction: ltr;
+  overflow: hidden;
+  padding: 10px 0 14px;
+  cursor: grab;
+  touch-action: pan-y;
+  -webkit-user-select: none;
+          user-select: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+}
+#podcast .pod-marquee.is-dragging { cursor: grabbing; }
+#podcast .pod-marquee .ic-track { align-items: center; }
+#podcast .pod-marquee .ic-track .pod-tile { margin-inline-end: 14px; }
+.pod-marquee svg { pointer-events: none; }
+.pod-eps { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
+.has-js #podcast .pod-eps.is-replaced { display: none; }
+html.a11y-no-motion #podcast .pod-marquee.is-on { display: none; }
+html.a11y-no-motion #podcast .pod-eps.is-replaced { display: flex; }
+
+/* אריח פרק — תמונת הגיטרות + הכהיה, "פרק N", ▶ במרכז, כותרת בתחתית */
+.pod-tile {
+  position: relative;
+  direction: rtl;
+  flex: 0 0 auto;
+  width: 170px;
+  height: 170px;
+  overflow: hidden;
+  border: 1px solid rgba(56, 189, 248, .2);
+  border-radius: 16px;
+  background: #12151a;
+  cursor: pointer;
+  outline: none;
+  transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+}
+.pod-tile__img { display: block; width: 100%; height: 100%; object-fit: cover; -webkit-user-drag: none; }
+.pod-tile::after {                                /* הכהיה אחידה + עמוקה יותר בתחתית לקריאות הכותרת */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(10, 12, 14, 0) 45%, rgba(10, 12, 14, .55) 72%, rgba(10, 12, 14, .85) 100%), rgba(10, 12, 14, .45);
+  pointer-events: none;
+}
+.pod-tile:hover,
+.pod-tile:focus-visible { border-color: var(--pc-lb); box-shadow: 0 0 0 2px rgba(56, 189, 248, .55), 0 10px 24px rgba(0, 0, 0, .4); transform: scale(1.04); }
+.pod-tile__chip {
+  position: absolute;
+  inset-block-start: 8px;
+  inset-inline-start: 8px;
+  z-index: 1;
+  padding: 3px 8px;
+  border: 1px solid rgba(56, 189, 248, .55);
+  border-radius: 999px;
+  background: rgba(11, 13, 16, .72);
+  color: var(--pc-lb);
+  font-size: .7rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.pod-tile__play {
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1.5px solid rgba(255, 255, 255, .8);
+  border-radius: 50%;
+  background: rgba(11, 13, 16, .4);
+  transform: translate(-50%, -50%);
+  transition: background .25s ease, border-color .25s ease, box-shadow .25s ease;
+}
+.pod-tile__play svg { width: 15px; height: 15px; fill: #fff; transform: translateX(1px); }
+.pod-tile:hover .pod-tile__play,
+.pod-tile:focus-visible .pod-tile__play { border-color: var(--pc-lb); background: var(--pc-lb); box-shadow: 0 0 18px rgba(56, 189, 248, .7); }
+.pod-tile:hover .pod-tile__play svg,
+.pod-tile:focus-visible .pod-tile__play svg { fill: #0b0d10; }
+.pod-tile__title {
+  position: absolute;
+  inset-inline: 10px;
+  bottom: 9px;
+  z-index: 1;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+          line-clamp: 2;
+  overflow: hidden;
+  color: #fff;
+  font-size: .78rem;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: start;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, .5);
+}
+
+/* חלון הפודקאסט: הנגן על רקע תמונת הגיטרות; שמע — נגן HTML5 בתחתית המסך */
+.pod-vp { background: linear-gradient(rgba(10, 12, 14, .55), rgba(10, 12, 14, .55)), #05070a url("../images/image3.png") center / cover no-repeat; }
+.pod-vp.is-audio .pod-vp__media { display: block; top: auto; height: auto; padding: 10px; background: rgba(10, 12, 14, .75); }
+.pod-vp.is-audio .pod-vp__media audio { display: block; width: 100%; }
+.pod-vp.is-audio .pod-vp__play,
+.pod-vp.is-audio .pod-vp__note { display: none; }
+
+@media (max-width: 767.98px) {
+  .has-js #podcast .pod-marquee.is-on { -webkit-mask-image: none; mask-image: none; }
+  .pod-tile { width: 130px; height: 130px; border-radius: 14px; }
+  .pod-tile__chip { font-size: .64rem; padding: 2px 7px; }
+  .pod-tile__play { width: 32px; height: 32px; }
+  .pod-tile__play svg { width: 13px; height: 13px; }
+  .pod-tile__title { font-size: .7rem; inset-inline: 8px; bottom: 7px; }
+}
