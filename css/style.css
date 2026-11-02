@@ -6998,3 +6998,11 @@ html:not(.a11y-contrast) .site-footer::before {
   .info-card__icon .ic-logo, .ic-modal__icon .ic-logo { width: 32px; height: 32px; }
   .info-card__icon .ic-divider, .ic-modal__icon .ic-divider { height: 36px; }
 }
+
+/* ----- #info: כותרות הקוביות בתכלת ומעט קטנות יותר ----- */
+#info .info-card > strong,
+#info .info-card > strong span {
+  color: #38bdf8 !important;
+}
+#info .info-card > strong { font-size: .95rem !important; line-height: 1.35 !important; }
+@media (max-width: 767.98px) { #info .info-card > strong { font-size: .88rem !important; } }
