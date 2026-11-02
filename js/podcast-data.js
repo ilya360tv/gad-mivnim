@@ -137,5 +137,115 @@ window.PODCAST_DATA = [
       { he: 'תעודת אחריות', en: 'Warranty certificate', ru: 'Гарантийный сертификат', fr: 'Le certificat de garantie' },
       { he: 'בדק בית', en: 'Defects liability period', ru: 'Гарантийный период', fr: 'La garantie de parfait achèvement' },
       { he: 'מנויי אחזקה', en: 'Maintenance plans', ru: 'Абонементы на обслуживание', fr: 'Les contrats d’entretien' }
+    ] },
+
+  /* 11 */
+  { n: 11, min: 31, audio: '',
+    title: { he: 'תכנון נכון, חיסכון מוכח', en: 'Right planning, proven savings', ru: 'Правильное планирование — доказанная экономия', fr: 'Bonne planification, économies prouvées' },
+    guest: { he: 'אורח: אדריכל', en: 'Guest: Architect', ru: 'Гость: архитектор', fr: 'Invité : architecte' },
+    desc: { he: 'למה שעה של תכנון חוסכת שבוע של תיקונים – ואיך עושים את זה נכון.', en: 'Why an hour of planning saves a week of repairs – and how to do it right.', ru: 'Почему час планирования экономит неделю исправлений — и как сделать это правильно.', fr: 'Pourquoi une heure de planification épargne une semaine de réparations – et comment bien s’y prendre.' },
+    points: [
+      { he: 'תיאום בין אנשי המקצוע', en: 'Coordination between professionals', ru: 'Координация специалистов', fr: 'La coordination entre les professionnels' },
+      { he: 'תוכניות עבודה מפורטות', en: 'Detailed working drawings', ru: 'Подробные рабочие чертежи', fr: 'Des plans d’exécution détaillés' },
+      { he: 'ניהול שינויים', en: 'Managing changes', ru: 'Управление изменениями', fr: 'La gestion des modifications' }
+    ] },
+
+  /* 12 */
+  { n: 12, min: 27, audio: '',
+    title: { he: 'עיצוב פנים: מהחלום להדמיה', en: 'Interior design: from dream to visualization', ru: 'Дизайн интерьера: от мечты к визуализации', fr: 'Architecture d’intérieur : du rêve à la visualisation' },
+    guest: { he: 'אורחת: מעצבת פנים', en: 'Guest: Interior designer', ru: 'Гостья: дизайнер интерьера', fr: 'Invitée : architecte d’intérieur' },
+    desc: { he: 'איך הופכים רעיון לעיצוב מדויק – ורואים אותו לפני שמשקיעים.', en: 'How to turn an idea into a precise design – and see it before you invest.', ru: 'Как превратить идею в точный дизайн — и увидеть его до вложений.', fr: 'Comment transformer une idée en un design précis – et le voir avant d’investir.' },
+    points: [
+      { he: 'קונספט וסגנון', en: 'Concept and style', ru: 'Концепция и стиль', fr: 'Concept et style' },
+      { he: 'הדמיות תלת-ממד', en: '3D visualizations', ru: '3D-визуализации', fr: 'Les visualisations 3D' },
+      { he: 'בחירת חומרים וצבעים', en: 'Choosing materials and colors', ru: 'Выбор материалов и цветов', fr: 'Le choix des matériaux et des couleurs' }
+    ] },
+
+  /* 13 */
+  { n: 13, min: 29, audio: '',
+    title: { he: 'בית חכם: הטכנולוגיה שנכנסת לקירות', en: 'Smart home: the technology inside the walls', ru: 'Умный дом: технологии в стенах', fr: 'Maison connectée : la technologie dans les murs' },
+    guest: { he: 'אורח: מתכנן מערכות חשמל ותקשורת', en: 'Guest: Electrical and communications designer', ru: 'Гость: проектировщик электрики и слаботочных систем', fr: 'Invité : concepteur en électricité et réseaux' },
+    desc: { he: 'אילו מערכות חכמות שווה לתכנן כבר היום, ואיך מכינים תשתית לעתיד.', en: 'Which smart systems are worth planning today, and how to prepare infrastructure for the future.', ru: 'Какие умные системы стоит заложить уже сегодня и как подготовить инфраструктуру на будущее.', fr: 'Quels systèmes intelligents prévoir dès aujourd’hui, et comment préparer l’infrastructure pour l’avenir.' },
+    points: [
+      { he: 'תאורה ותריסים חכמים', en: 'Smart lighting and shutters', ru: 'Умное освещение и жалюзи', fr: 'Éclairage et volets connectés' },
+      { he: 'מצלמות ואבטחה', en: 'Cameras and security', ru: 'Камеры и охрана', fr: 'Caméras et sécurité' },
+      { he: 'עמדת טעינה לרכב', en: 'EV charging point', ru: 'Зарядная станция для автомобиля', fr: 'Borne de recharge pour véhicule' }
+    ] },
+
+  /* 14 */
+  { n: 14, min: 23, audio: '',
+    title: { he: 'אינסטלציה: מה שמתחת לרצפה', en: 'Plumbing: what lies beneath the floor', ru: 'Сантехника: что скрыто под полом', fr: 'Plomberie : ce qui se cache sous le sol' },
+    guest: { he: 'אורח: אינסטלטור מוסמך', en: 'Guest: Licensed plumber', ru: 'Гость: лицензированный сантехник', fr: 'Invité : plombier agréé' },
+    desc: { he: 'צנרת, ביוב וניקוז – החלק שלא רואים אבל מרגישים כשהוא לא עובד.', en: 'Pipes, sewage and drainage – the part you don’t see but feel when it fails.', ru: 'Трубы, канализация и дренаж — то, чего не видно, но что сразу чувствуется, когда не работает.', fr: 'Tuyauterie, égouts et drainage – la partie qu’on ne voit pas mais qu’on ressent quand elle lâche.' },
+    points: [
+      { he: 'החלפת צנרת ישנה', en: 'Replacing old pipes', ru: 'Замена старых труб', fr: 'Remplacer les anciennes canalisations' },
+      { he: 'שיפועים וניקוז', en: 'Slopes and drainage', ru: 'Уклоны и дренаж', fr: 'Pentes et drainage' },
+      { he: 'איתור נזילות', en: 'Leak detection', ru: 'Поиск протечек', fr: 'La détection des fuites' }
+    ] },
+
+  /* 15 */
+  { n: 15, min: 25, audio: '',
+    title: { he: 'גינה שמזמינה הביתה', en: 'A garden that welcomes you home', ru: 'Сад, который зовёт домой', fr: 'Un jardin qui invite à rentrer' },
+    guest: { he: 'אורחת: מתכננת נוף', en: 'Guest: Landscape designer', ru: 'Гостья: ландшафтный дизайнер', fr: 'Invitée : paysagiste' },
+    desc: { he: 'איך מתכננים חוץ ירוק, חסכוני במים ונעים לאורך כל השנה.', en: 'How to plan a green, water-saving outdoor space that’s pleasant all year round.', ru: 'Как спланировать зелёную территорию, экономную в поливе и приятную круглый год.', fr: 'Comment concevoir un extérieur vert, économe en eau et agréable toute l’année.' },
+    points: [
+      { he: 'בחירת צמחייה', en: 'Choosing plants', ru: 'Выбор растений', fr: 'Le choix des plantes' },
+      { he: 'מערכת השקיה חכמה', en: 'Smart irrigation system', ru: 'Умная система полива', fr: 'Un arrosage intelligent' },
+      { he: 'תאורת גן', en: 'Garden lighting', ru: 'Садовое освещение', fr: 'L’éclairage du jardin' }
+    ] },
+
+  /* 16 */
+  { n: 16, min: 26, audio: '',
+    title: { he: 'ריצוף וחיפויים: לבחור פעם אחת ונכון', en: 'Flooring and cladding: choose once, choose right', ru: 'Напольные покрытия и облицовка: выбрать один раз и правильно', fr: 'Sols et revêtements : choisir une fois, et bien' },
+    guest: { he: 'אורח: מומחה ריצוף', en: 'Guest: Flooring expert', ru: 'Гость: эксперт по напольным покрытиям', fr: 'Invité : expert en revêtements de sol' },
+    desc: { he: 'אריחים, פרקט וחיפויים – מה מתאים לכל חלל ואיך לא להתחרט.', en: 'Tiles, parquet and cladding – what suits each space and how not to regret it.', ru: 'Плитка, паркет и облицовка — что подходит для каждого помещения и как не пожалеть о выборе.', fr: 'Carrelage, parquet et revêtements – ce qui convient à chaque pièce et comment ne pas le regretter.' },
+    points: [
+      { he: 'סוגי חומרים', en: 'Types of materials', ru: 'Виды материалов', fr: 'Les types de matériaux' },
+      { he: 'עמידות ותחזוקה', en: 'Durability and maintenance', ru: 'Износостойкость и уход', fr: 'Résistance et entretien' },
+      { he: 'התאמה לסגנון', en: 'Matching the style', ru: 'Соответствие стилю', fr: 'L’accord avec le style' }
+    ] },
+
+  /* 17 */
+  { n: 17, min: 38, audio: '',
+    title: { he: 'התחדשות עירונית מבפנים', en: 'Urban renewal from the inside', ru: 'Городское обновление изнутри', fr: 'Le renouvellement urbain de l’intérieur' },
+    guest: { he: 'אורח: מנהל פרויקטי התחדשות', en: 'Guest: Urban renewal project manager', ru: 'Гость: руководитель проектов обновления', fr: 'Invité : chef de projets de renouvellement' },
+    desc: { he: 'מה באמת קורה מאחורי הקלעים של פרויקט תמ"א ופינוי בינוי.', en: 'What really happens behind the scenes of a TAMA 38 or urban renewal project.', ru: 'Что на самом деле происходит за кулисами проектов ТАМА 38 и «снос-строительство».', fr: 'Ce qui se passe vraiment en coulisses d’un projet TAMA 38 ou de renouvellement urbain.' },
+    points: [
+      { he: 'מול הרשויות', en: 'Working with the authorities', ru: 'Работа с властями', fr: 'Face aux autorités' },
+      { he: 'ניהול הדיירים', en: 'Managing the residents', ru: 'Работа с жильцами', fr: 'La gestion des résidents' },
+      { he: 'לוחות זמנים', en: 'Timelines', ru: 'Сроки', fr: 'Les calendriers' }
+    ] },
+
+  /* 18 */
+  { n: 18, min: 24, audio: '',
+    title: { he: 'ניהול ואחזקת מבנים', en: 'Building management and maintenance', ru: 'Управление и обслуживание зданий', fr: 'Gestion et entretien des bâtiments' },
+    guest: { he: 'אורח: מנהל אחזקה', en: 'Guest: Maintenance manager', ru: 'Гость: руководитель службы эксплуатации', fr: 'Invité : responsable de l’entretien' },
+    desc: { he: 'איך שומרים על בניין מגורים או מסחר במצב מעולה לאורך שנים.', en: 'How to keep a residential or commercial building in excellent shape for years.', ru: 'Как годами поддерживать жилое или коммерческое здание в отличном состоянии.', fr: 'Comment garder un immeuble résidentiel ou commercial en excellent état pendant des années.' },
+    points: [
+      { he: 'תחזוקה מונעת', en: 'Preventive maintenance', ru: 'Профилактическое обслуживание', fr: 'L’entretien préventif' },
+      { he: 'מוקד שירות', en: 'Service center', ru: 'Сервисный центр', fr: 'Le centre de service' },
+      { he: 'תקציב ועד הבית', en: 'Building committee budget', ru: 'Бюджет домового комитета', fr: 'Le budget de la copropriété' }
+    ] },
+
+  /* 19 */
+  { n: 19, min: 30, audio: '',
+    title: { he: 'שותפים למבנה שלכם', en: 'Partners in your building', ru: 'Партнёры вашего здания', fr: 'Partenaires de votre bâtiment' },
+    guest: { he: 'אורח: מנהל שותפים וספקים', en: 'Guest: Partners and suppliers manager', ru: 'Гость: менеджер по партнёрам и поставщикам', fr: 'Invité : responsable partenaires et fournisseurs' },
+    desc: { he: 'איך עובדים עם המותגים והספקים המובילים כדי לתת ללקוח את הטוב ביותר.', en: 'How we work with the leading brands and suppliers to give the client the very best.', ru: 'Как мы работаем с ведущими брендами и поставщиками, чтобы дать клиенту лучшее.', fr: 'Comment nous travaillons avec les marques et fournisseurs leaders pour offrir le meilleur au client.' },
+    points: [
+      { he: 'בחירת ספקים', en: 'Choosing suppliers', ru: 'Выбор поставщиков', fr: 'Le choix des fournisseurs' },
+      { he: 'אולם התצוגה', en: 'The showroom', ru: 'Выставочный зал', fr: 'Le showroom' },
+      { he: 'התאמה אישית ללקוח', en: 'Personal tailoring for the client', ru: 'Индивидуальный подход к клиенту', fr: 'Le sur-mesure pour le client' }
+    ] },
+
+  /* 20 */
+  { n: 20, min: 35, audio: '',
+    title: { he: 'מסורת משפחתית מאז 1995', en: 'A family tradition since 1995', ru: 'Семейная традиция с 1995 года', fr: 'Une tradition familiale depuis 1995' },
+    guest: { he: 'אורח: מייסד הקבוצה', en: 'Guest: Founder of the group', ru: 'Гость: основатель группы', fr: 'Invité : fondateur du groupe' },
+    desc: { he: 'הסיפור של GAD MIVNIM – איך נולד הרעיון לאחד את הבנייה והעיצובים לבית אחד.', en: 'The story of GAD MIVNIM – how the idea was born to bring construction and design under one roof.', ru: 'История GAD MIVNIM — как родилась идея объединить строительство и дизайн под одной крышей.', fr: 'L’histoire de GAD MIVNIM – comment est née l’idée de réunir construction et design sous un même toit.' },
+    points: [
+      { he: 'הדרך מאז 1995', en: 'The journey since 1995', ru: 'Путь с 1995 года', fr: 'Le chemin depuis 1995' },
+      { he: 'ערכי היסוד', en: 'Core values', ru: 'Основные ценности', fr: 'Les valeurs fondamentales' },
+      { he: 'החזון לעתיד', en: 'The vision for the future', ru: 'Видение будущего', fr: 'La vision pour l’avenir' }
     ] }
 ];

@@ -1805,7 +1805,7 @@ document.addEventListener('DOMContentLoaded', function () {
       for (var i = 0; i < PCDATA.length; i++) { if (String(PCDATA[i].n) === String(n)) { return PCDATA[i]; } }
       return null;
     };
-    // עטיפה ייחודית לכל פרק — גוונים של תכלת / טורקיז / אינדיגו (לפי הסדר; מתחילים מחדש אחרי 10)
+    // עטיפה ייחודית לכל פרק — גוונים של תכלת / טורקיז / אינדיגו (לפי הסדר; מתחילים מחדש אחרי 20)
     var PC_GRADS = [
       'linear-gradient(135deg, #0ea5e9, #312e81)',
       'linear-gradient(135deg, #14b8a6, #0c4a6e)',
@@ -1816,7 +1816,17 @@ document.addEventListener('DOMContentLoaded', function () {
       'linear-gradient(135deg, #818cf8, #1e40af)',
       'linear-gradient(135deg, #2dd4bf, #1e3a8a)',
       'linear-gradient(135deg, #0284c7, #4338ca)',
-      'linear-gradient(135deg, #67e8f9, #0f766e)'
+      'linear-gradient(135deg, #67e8f9, #0f766e)',
+      'linear-gradient(160deg, #1d4ed8, #06b6d4)',
+      'linear-gradient(160deg, #0f766e, #22d3ee)',
+      'linear-gradient(160deg, #4f46e5, #38bdf8)',
+      'linear-gradient(160deg, #164e63, #2dd4bf)',
+      'linear-gradient(160deg, #3730a3, #67e8f9)',
+      'linear-gradient(160deg, #075985, #a5b4fc)',
+      'linear-gradient(160deg, #134e4a, #38bdf8)',
+      'linear-gradient(160deg, #1e3a8a, #5eead4)',
+      'linear-gradient(160deg, #0369a1, #818cf8)',
+      'linear-gradient(160deg, #312e81, #0ea5e9)'
     ];
     var pcGrad = function (d) { return PC_GRADS[(PCDATA.indexOf(d) + PC_GRADS.length) % PC_GRADS.length]; };
     var pcNum = function (d) { return (d.n < 10 ? '0' : '') + d.n; };
