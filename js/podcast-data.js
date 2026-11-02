@@ -3,6 +3,7 @@
    תוכן לדוגמה (placeholder) — יוחלף בפרקים האמיתיים. הסדר כאן = הסדר בפס. כל פרק:
      n       — מספר הפרק
      min     — אורך בדקות
+     image   — תמונת האריח והחלון (תמונה קיימת מהאתר שמתאימה לנושא)
      video   — וידאו: קישור YouTube / Vimeo (מוטמע במצב פרטיות) או קובץ mp4; ריק = אין וידאו
      audio   — נתיב לקובץ שמע (למשל 'audio/ep1.mp3') — מתנגן כשאין video; שניהם ריקים = "הפרק יעלה בקרוב"
      title   — כותרת הפרק
@@ -36,7 +37,7 @@ window.PODCAST_UI = {
 window.PODCAST_DATA = [
 
   /* 1 */
-  { n: 1, min: 34, video: '', audio: '',
+  { n: 1, min: 34, image: 'images/projects/tzur-hadassah-house-2.jpg', video: '', audio: '',
     title: { he: 'החלום הראשון: איך מתחילים לבנות בית', en: 'The first dream: how to start building a home', ru: 'Первая мечта: с чего начать строительство дома', fr: 'Le premier rêve : comment commencer à construire sa maison' },
     guest: { he: 'אורח: מנהל פרויקטים, GAD MIVNIM', en: 'Guest: Project manager, GAD MIVNIM', ru: 'Гость: руководитель проектов, GAD MIVNIM', fr: 'Invité : chef de projet, GAD MIVNIM' },
     desc: { he: 'שיחה פתוחה על הצעדים הראשונים – מהמגרש ועד התוכנית, ואיך לא ללכת לאיבוד בדרך.', en: 'An open conversation about the first steps – from the plot to the plan, and how not to get lost along the way.', ru: 'Откровенный разговор о первых шагах — от участка до проекта и о том, как не заблудиться в пути.', fr: 'Une conversation ouverte sur les premiers pas – du terrain au plan, et comment ne pas se perdre en route.' },
@@ -47,7 +48,7 @@ window.PODCAST_DATA = [
     ] },
 
   /* 2 */
-  { n: 2, min: 28, video: '', audio: '',
+  { n: 2, min: 28, image: 'images/projects/crowne-plaza-tel-aviv-2.jpg', video: '', audio: '',
     title: { he: 'שיפוץ בלי כאב ראש', en: 'Renovation without the headache', ru: 'Ремонт без головной боли', fr: 'Rénover sans prise de tête' },
     guest: { he: 'אורח: מנהל עבודה', en: 'Guest: Site manager', ru: 'Гость: прораб', fr: 'Invité : chef de chantier' },
     desc: { he: 'מה באמת קורה באתר שיפוץ, ואיך שומרים על לוח זמנים ותקציב.', en: 'What really happens on a renovation site, and how to stay on schedule and on budget.', ru: 'Что на самом деле происходит на ремонте и как уложиться в сроки и бюджет.', fr: 'Ce qui se passe vraiment sur un chantier de rénovation, et comment tenir les délais et le budget.' },
@@ -58,7 +59,7 @@ window.PODCAST_DATA = [
     ] },
 
   /* 3 */
-  { n: 3, min: 41, video: '', audio: '',
+  { n: 3, min: 41, image: 'images/projects/nofei-yerushalayim-3.jpg', video: '', audio: '',
     title: { he: 'תמ"א 38 ופינוי בינוי – מה הדיירים צריכים לדעת', en: 'TAMA 38 and urban renewal – what residents need to know', ru: 'ТАМА 38 и «снос-строительство» — что нужно знать жильцам', fr: 'TAMA 38 et renouvellement urbain – ce que les résidents doivent savoir' },
     guest: { he: 'אורחת: יועצת התחדשות עירונית', en: 'Guest: Urban renewal consultant', ru: 'Гостья: консультант по городскому обновлению', fr: 'Invitée : consultante en renouvellement urbain' },
     desc: { he: 'התחדשות עירונית מנקודת המבט של הדיירים – זכויות, תהליכים ושקיפות.', en: 'Urban renewal from the residents’ point of view – rights, processes and transparency.', ru: 'Городское обновление глазами жильцов — права, процессы и прозрачность.', fr: 'Le renouvellement urbain du point de vue des résidents – droits, démarches et transparence.' },
@@ -69,7 +70,7 @@ window.PODCAST_DATA = [
     ] },
 
   /* 4 */
-  { n: 4, min: 25, video: '', audio: '',
+  { n: 4, min: 25, image: 'images/partners/kitchens.jpg', video: '', audio: '',
     title: { he: 'מטבח שהוא הלב של הבית', en: 'A kitchen that is the heart of the home', ru: 'Кухня — сердце дома', fr: 'Une cuisine au cœur de la maison' },
     guest: { he: 'אורחת: מעצבת פנים', en: 'Guest: Interior designer', ru: 'Гостья: дизайнер интерьера', fr: 'Invitée : architecte d’intérieur' },
     desc: { he: 'איך מתכננים מטבח יפה, נוח ופרקטי – מהסקיצה ועד ההתקנה.', en: 'How to plan a beautiful, comfortable and practical kitchen – from sketch to installation.', ru: 'Как спланировать красивую, удобную и практичную кухню — от эскиза до монтажа.', fr: 'Comment concevoir une cuisine belle, confortable et pratique – de l’esquisse à l’installation.' },
@@ -80,7 +81,7 @@ window.PODCAST_DATA = [
     ] },
 
   /* 5 */
-  { n: 5, min: 30, video: '', audio: '',
+  { n: 5, min: 30, image: 'images/projects/harel-3.jpg', video: '', audio: '',
     title: { he: 'רטיבות: האויב השקט של המבנה', en: 'Damp: the building’s silent enemy', ru: 'Сырость: тихий враг здания', fr: 'L’humidité : l’ennemi silencieux du bâtiment' },
     guest: { he: 'אורח: מומחה איטום', en: 'Guest: Waterproofing expert', ru: 'Гость: эксперт по гидроизоляции', fr: 'Invité : expert en étanchéité' },
     desc: { he: 'מאיפה מגיעה הרטיבות, איך מזהים אותה מוקדם ואיך מטפלים בה פעם אחת ולתמיד.', en: 'Where damp comes from, how to spot it early and how to deal with it once and for all.', ru: 'Откуда берётся сырость, как распознать её вовремя и устранить раз и навсегда.', fr: 'D’où vient l’humidité, comment la repérer tôt et la traiter une fois pour toutes.' },
@@ -91,7 +92,7 @@ window.PODCAST_DATA = [
     ] },
 
   /* 6 */
-  { n: 6, min: 37, video: '', audio: '',
+  { n: 6, min: 37, image: 'images/projects/crowne-plaza-tel-aviv-6.jpg', video: '', audio: '',
     title: { he: 'שיקום מבנים ישנים – לשמור על הנשמה', en: 'Restoring old buildings – keeping their soul', ru: 'Реставрация старых зданий — сохранить душу', fr: 'Restaurer les bâtiments anciens – préserver leur âme' },
     guest: { he: 'אורח: מהנדס קונסטרוקציה', en: 'Guest: Structural engineer', ru: 'Гость: инженер-конструктор', fr: 'Invité : ingénieur en structure' },
     desc: { he: 'איך מחזירים חיים למבנה ותיק בלי לאבד את האופי שלו.', en: 'How to bring an old building back to life without losing its character.', ru: 'Как вернуть к жизни старое здание, не потеряв его характер.', fr: 'Comment redonner vie à un bâtiment ancien sans perdre son caractère.' },
@@ -102,7 +103,7 @@ window.PODCAST_DATA = [
     ] },
 
   /* 7 */
-  { n: 7, min: 22, video: '', audio: '',
+  { n: 7, min: 22, image: 'images/projects/tzur-hadassah-house-4.jpg', video: '', audio: '',
     title: { he: 'בטיחות באתר – לפני הכל', en: 'Site safety – first of all', ru: 'Безопасность на площадке — прежде всего', fr: 'La sécurité sur le chantier – avant tout' },
     guest: { he: 'אורח: ממונה בטיחות', en: 'Guest: Safety officer', ru: 'Гость: специалист по охране труда', fr: 'Invité : responsable sécurité' },
     desc: { he: 'מה עושים כדי שכל יום עבודה באתר יסתיים בשלום.', en: 'What it takes for every working day on site to end safely.', ru: 'Что нужно, чтобы каждый рабочий день на площадке заканчивался благополучно.', fr: 'Ce qu’il faut pour que chaque journée de chantier se termine sans incident.' },
@@ -113,7 +114,7 @@ window.PODCAST_DATA = [
     ] },
 
   /* 8 */
-  { n: 8, min: 29, video: '', audio: '',
+  { n: 8, min: 29, image: 'images/projects/harel-2.jpg', video: '', audio: '',
     title: { he: 'איך בוחרים קבלן שאפשר לסמוך עליו', en: 'How to choose a contractor you can trust', ru: 'Как выбрать подрядчика, которому можно доверять', fr: 'Comment choisir un entrepreneur de confiance' },
     guest: { he: 'אורח: מנהל פרויקטים, GAD MIVNIM', en: 'Guest: Project manager, GAD MIVNIM', ru: 'Гость: руководитель проектов, GAD MIVNIM', fr: 'Invité : chef de projet, GAD MIVNIM' },
     desc: { he: 'השאלות הנכונות, הבדיקות שחייבים לעשות והנורות האדומות.', en: 'The right questions, the must-do checks and the red flags.', ru: 'Правильные вопросы, обязательные проверки и тревожные сигналы.', fr: 'Les bonnes questions, les vérifications indispensables et les signaux d’alarme.' },
@@ -124,7 +125,7 @@ window.PODCAST_DATA = [
     ] },
 
   /* 9 */
-  { n: 9, min: 24, video: '', audio: '',
+  { n: 9, min: 24, image: 'images/partners/lighting.jpg', video: '', audio: '',
     title: { he: 'תאורה שמשנה את הבית', en: 'Lighting that transforms the home', ru: 'Освещение, которое меняет дом', fr: 'Un éclairage qui transforme la maison' },
     guest: { he: 'אורחת: מעצבת תאורה', en: 'Guest: Lighting designer', ru: 'Гостья: дизайнер освещения', fr: 'Invitée : conceptrice lumière' },
     desc: { he: 'איך אור נכון יוצר אווירה, נוחות וחיסכון.', en: 'How the right light creates atmosphere, comfort and savings.', ru: 'Как правильный свет создаёт атмосферу, комфорт и экономию.', fr: 'Comment une bonne lumière crée ambiance, confort et économies.' },
@@ -135,7 +136,7 @@ window.PODCAST_DATA = [
     ] },
 
   /* 10 */
-  { n: 10, min: 26, video: '', audio: '',
+  { n: 10, min: 26, image: 'images/projects/malha-house-1.jpg', video: '', audio: '',
     title: { he: 'אחרי המסירה: בדק בית ואחריות', en: 'After handover: defects period and warranty', ru: 'После сдачи: гарантийный период и обязательства', fr: 'Après la livraison : garantie et parfait achèvement' },
     guest: { he: 'אורח: מנהל שירות לקוחות', en: 'Guest: Customer service manager', ru: 'Гость: руководитель клиентского сервиса', fr: 'Invité : responsable du service client' },
     desc: { he: 'מה קורה אחרי שמקבלים את המפתח, ולמה שירות טוב לא נגמר במסירה.', en: 'What happens after you get the key, and why good service doesn’t end at handover.', ru: 'Что происходит после получения ключей и почему хороший сервис не заканчивается сдачей.', fr: 'Ce qui se passe après la remise des clés, et pourquoi un bon service ne s’arrête pas à la livraison.' },
@@ -146,7 +147,7 @@ window.PODCAST_DATA = [
     ] },
 
   /* 11 */
-  { n: 11, min: 31, video: '', audio: '',
+  { n: 11, min: 31, image: 'images/projects/crowne-plaza-tel-aviv-1.jpg', video: '', audio: '',
     title: { he: 'תכנון נכון, חיסכון מוכח', en: 'Right planning, proven savings', ru: 'Правильное планирование — доказанная экономия', fr: 'Bonne planification, économies prouvées' },
     guest: { he: 'אורח: אדריכל', en: 'Guest: Architect', ru: 'Гость: архитектор', fr: 'Invité : architecte' },
     desc: { he: 'למה שעה של תכנון חוסכת שבוע של תיקונים – ואיך עושים את זה נכון.', en: 'Why an hour of planning saves a week of repairs – and how to do it right.', ru: 'Почему час планирования экономит неделю исправлений — и как сделать это правильно.', fr: 'Pourquoi une heure de planification épargne une semaine de réparations – et comment bien s’y prendre.' },
@@ -157,7 +158,7 @@ window.PODCAST_DATA = [
     ] },
 
   /* 12 */
-  { n: 12, min: 27, video: '', audio: '',
+  { n: 12, min: 27, image: 'images/partners/furniture.jpg', video: '', audio: '',
     title: { he: 'עיצוב פנים: מהחלום להדמיה', en: 'Interior design: from dream to visualization', ru: 'Дизайн интерьера: от мечты к визуализации', fr: 'Architecture d’intérieur : du rêve à la visualisation' },
     guest: { he: 'אורחת: מעצבת פנים', en: 'Guest: Interior designer', ru: 'Гостья: дизайнер интерьера', fr: 'Invitée : architecte d’intérieur' },
     desc: { he: 'איך הופכים רעיון לעיצוב מדויק – ורואים אותו לפני שמשקיעים.', en: 'How to turn an idea into a precise design – and see it before you invest.', ru: 'Как превратить идею в точный дизайн — и увидеть его до вложений.', fr: 'Comment transformer une idée en un design précis – et le voir avant d’investir.' },
@@ -168,7 +169,7 @@ window.PODCAST_DATA = [
     ] },
 
   /* 13 */
-  { n: 13, min: 29, video: '', audio: '',
+  { n: 13, min: 29, image: 'images/projects/dana-david-1.jpg', video: '', audio: '',
     title: { he: 'בית חכם: הטכנולוגיה שנכנסת לקירות', en: 'Smart home: the technology inside the walls', ru: 'Умный дом: технологии в стенах', fr: 'Maison connectée : la technologie dans les murs' },
     guest: { he: 'אורח: מתכנן מערכות חשמל ותקשורת', en: 'Guest: Electrical and communications designer', ru: 'Гость: проектировщик электрики и слаботочных систем', fr: 'Invité : concepteur en électricité et réseaux' },
     desc: { he: 'אילו מערכות חכמות שווה לתכנן כבר היום, ואיך מכינים תשתית לעתיד.', en: 'Which smart systems are worth planning today, and how to prepare infrastructure for the future.', ru: 'Какие умные системы стоит заложить уже сегодня и как подготовить инфраструктуру на будущее.', fr: 'Quels systèmes intelligents prévoir dès aujourd’hui, et comment préparer l’infrastructure pour l’avenir.' },
@@ -179,7 +180,7 @@ window.PODCAST_DATA = [
     ] },
 
   /* 14 */
-  { n: 14, min: 23, video: '', audio: '',
+  { n: 14, min: 23, image: 'images/partners/sanitary.jpg', video: '', audio: '',
     title: { he: 'אינסטלציה: מה שמתחת לרצפה', en: 'Plumbing: what lies beneath the floor', ru: 'Сантехника: что скрыто под полом', fr: 'Plomberie : ce qui se cache sous le sol' },
     guest: { he: 'אורח: אינסטלטור מוסמך', en: 'Guest: Licensed plumber', ru: 'Гость: лицензированный сантехник', fr: 'Invité : plombier agréé' },
     desc: { he: 'צנרת, ביוב וניקוז – החלק שלא רואים אבל מרגישים כשהוא לא עובד.', en: 'Pipes, sewage and drainage – the part you don’t see but feel when it fails.', ru: 'Трубы, канализация и дренаж — то, чего не видно, но что сразу чувствуется, когда не работает.', fr: 'Tuyauterie, égouts et drainage – la partie qu’on ne voit pas mais qu’on ressent quand elle lâche.' },
@@ -190,7 +191,7 @@ window.PODCAST_DATA = [
     ] },
 
   /* 15 */
-  { n: 15, min: 25, video: '', audio: '',
+  { n: 15, min: 25, image: 'images/projects/neve-ilan-10.jpg', video: '', audio: '',
     title: { he: 'גינה שמזמינה הביתה', en: 'A garden that welcomes you home', ru: 'Сад, который зовёт домой', fr: 'Un jardin qui invite à rentrer' },
     guest: { he: 'אורחת: מתכננת נוף', en: 'Guest: Landscape designer', ru: 'Гостья: ландшафтный дизайнер', fr: 'Invitée : paysagiste' },
     desc: { he: 'איך מתכננים חוץ ירוק, חסכוני במים ונעים לאורך כל השנה.', en: 'How to plan a green, water-saving outdoor space that’s pleasant all year round.', ru: 'Как спланировать зелёную территорию, экономную в поливе и приятную круглый год.', fr: 'Comment concevoir un extérieur vert, économe en eau et agréable toute l’année.' },
@@ -201,7 +202,7 @@ window.PODCAST_DATA = [
     ] },
 
   /* 16 */
-  { n: 16, min: 26, video: '', audio: '',
+  { n: 16, min: 26, image: 'images/partners/parquet.jpg', video: '', audio: '',
     title: { he: 'ריצוף וחיפויים: לבחור פעם אחת ונכון', en: 'Flooring and cladding: choose once, choose right', ru: 'Напольные покрытия и облицовка: выбрать один раз и правильно', fr: 'Sols et revêtements : choisir une fois, et bien' },
     guest: { he: 'אורח: מומחה ריצוף', en: 'Guest: Flooring expert', ru: 'Гость: эксперт по напольным покрытиям', fr: 'Invité : expert en revêtements de sol' },
     desc: { he: 'אריחים, פרקט וחיפויים – מה מתאים לכל חלל ואיך לא להתחרט.', en: 'Tiles, parquet and cladding – what suits each space and how not to regret it.', ru: 'Плитка, паркет и облицовка — что подходит для каждого помещения и как не пожалеть о выборе.', fr: 'Carrelage, parquet et revêtements – ce qui convient à chaque pièce et comment ne pas le regretter.' },
@@ -212,7 +213,7 @@ window.PODCAST_DATA = [
     ] },
 
   /* 17 */
-  { n: 17, min: 38, video: '', audio: '',
+  { n: 17, min: 38, image: 'images/projects/nofei-yerushalayim-5.jpg', video: '', audio: '',
     title: { he: 'התחדשות עירונית מבפנים', en: 'Urban renewal from the inside', ru: 'Городское обновление изнутри', fr: 'Le renouvellement urbain de l’intérieur' },
     guest: { he: 'אורח: מנהל פרויקטי התחדשות', en: 'Guest: Urban renewal project manager', ru: 'Гость: руководитель проектов обновления', fr: 'Invité : chef de projets de renouvellement' },
     desc: { he: 'מה באמת קורה מאחורי הקלעים של פרויקט תמ"א ופינוי בינוי.', en: 'What really happens behind the scenes of a TAMA 38 or urban renewal project.', ru: 'Что на самом деле происходит за кулисами проектов ТАМА 38 и «снос-строительство».', fr: 'Ce qui se passe vraiment en coulisses d’un projet TAMA 38 ou de renouvellement urbain.' },
@@ -223,7 +224,7 @@ window.PODCAST_DATA = [
     ] },
 
   /* 18 */
-  { n: 18, min: 24, video: '', audio: '',
+  { n: 18, min: 24, image: 'images/projects/nofei-yerushalayim-2.jpg', video: '', audio: '',
     title: { he: 'ניהול ואחזקת מבנים', en: 'Building management and maintenance', ru: 'Управление и обслуживание зданий', fr: 'Gestion et entretien des bâtiments' },
     guest: { he: 'אורח: מנהל אחזקה', en: 'Guest: Maintenance manager', ru: 'Гость: руководитель службы эксплуатации', fr: 'Invité : responsable de l’entretien' },
     desc: { he: 'איך שומרים על בניין מגורים או מסחר במצב מעולה לאורך שנים.', en: 'How to keep a residential or commercial building in excellent shape for years.', ru: 'Как годами поддерживать жилое или коммерческое здание в отличном состоянии.', fr: 'Comment garder un immeuble résidentiel ou commercial en excellent état pendant des années.' },
@@ -234,7 +235,7 @@ window.PODCAST_DATA = [
     ] },
 
   /* 19 */
-  { n: 19, min: 30, video: '', audio: '',
+  { n: 19, min: 30, image: 'images/projects/sweet-home-2.jpg', video: '', audio: '',
     title: { he: 'שותפים למבנה שלכם', en: 'Partners in your building', ru: 'Партнёры вашего здания', fr: 'Partenaires de votre bâtiment' },
     guest: { he: 'אורח: מנהל שותפים וספקים', en: 'Guest: Partners and suppliers manager', ru: 'Гость: менеджер по партнёрам и поставщикам', fr: 'Invité : responsable partenaires et fournisseurs' },
     desc: { he: 'איך עובדים עם המותגים והספקים המובילים כדי לתת ללקוח את הטוב ביותר.', en: 'How we work with the leading brands and suppliers to give the client the very best.', ru: 'Как мы работаем с ведущими брендами и поставщиками, чтобы дать клиенту лучшее.', fr: 'Comment nous travaillons avec les marques et fournisseurs leaders pour offrir le meilleur au client.' },
@@ -245,7 +246,7 @@ window.PODCAST_DATA = [
     ] },
 
   /* 20 */
-  { n: 20, min: 35, video: '', audio: '',
+  { n: 20, min: 35, image: 'images/projects/shalom-hotel-1.jpg', video: '', audio: '',
     title: { he: 'מסורת משפחתית מאז 1995', en: 'A family tradition since 1995', ru: 'Семейная традиция с 1995 года', fr: 'Une tradition familiale depuis 1995' },
     guest: { he: 'אורח: מייסד הקבוצה', en: 'Guest: Founder of the group', ru: 'Гость: основатель группы', fr: 'Invité : fondateur du groupe' },
     desc: { he: 'הסיפור של GAD MIVNIM – איך נולד הרעיון לאחד את הבנייה והעיצובים לבית אחד.', en: 'The story of GAD MIVNIM – how the idea was born to bring construction and design under one roof.', ru: 'История GAD MIVNIM — как родилась идея объединить строительство и дизайн под одной крышей.', fr: 'L’histoire de GAD MIVNIM – comment est née l’idée de réunir construction et design sous un même toit.' },
