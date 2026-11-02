@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Gveret+Levin&family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 
   <!-- העיצוב שלנו -->
-  <link rel="stylesheet" href="css/style.css?v=20261102pt">
+  <link rel="stylesheet" href="css/style.css?v=20261102pn">
 </head>
 <body>
 
@@ -490,35 +490,9 @@
   <!-- ===== פודקאסט — אנשים משתפים ===== -->
   <section id="podcast" class="section podcast">
     <div class="container">
-      <!-- פודקאסט וידאו "אנשים משתפים" — מסך מוצג (פרק 1) + פס מסכי פרקים; הכל מ-js/podcast-data.js -->
-      <div class="pod-head">
-        <span class="section-eyebrow pod-eyebrow" data-pod="eyebrow">פודקאסט | אנשים משתפים</span>
-        <h2 class="section-title pod-title" data-pod="watch">האזינו וצפו בפרק הראשון...</h2>
-      </div>
-
-      <div class="pod-feature">
-        <div class="pod-screen" role="region" aria-label="נגן הפרק">
-          <div class="pod-screen__bg" aria-hidden="true"><span class="pod-screen__num"></span></div>
-          <div class="pod-screen__media"></div>
-          <button type="button" class="pod-screen__play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg></button>
-          <p class="pod-screen__note" data-pod="soon">הפרק יעלה בקרוב</p>
-          <div class="pod-screen__bar">
-            <div class="pod-screen__progress"><span class="pod-screen__fill"></span></div>
-            <div class="pod-screen__controls">
-              <span class="pod-screen__time">00:00 / 00:00</span>
-              <span class="pod-screen__icons" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
-                <svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
-              </span>
-            </div>
-          </div>
-        </div>
-        <div class="pod-feature__info">
-          <span class="pod-feature__meta"></span>
-          <h3 class="pod-feature__title"></h3>
-          <span class="pod-feature__guest"></span>
-        </div>
-      </div>
+      <!-- פודקאסט "אנשים משתפים" — כותרת רגילה + פס אריחי פרקים; לחיצה פותחת חלון פרק. הכל מ-js/podcast-data.js -->
+      <span class="section-eyebrow reveal" data-pod="eyebrow">פודקאסט | אנשים משתפים</span>
+      <h2 class="section-title reveal reveal-d1" data-pod="watch">האזינו וצפו בפרק הראשון...</h2>
 
       <div class="pod-wrap">
         <div class="ic-marquee pod-marquee" role="region" aria-label="פרקי הפודקאסט" hidden><div class="ic-track"></div></div>
@@ -855,8 +829,8 @@
   <script src="js/careers-data.js?v=2"></script>
   <script src="js/partners-data.js?v=3"></script>
   <script src="js/info-data.js?v=6"></script>
-  <script src="js/podcast-data.js?v=5"></script>
-  <script src="js/script.js?v=20261102pt"></script>
+  <script src="js/podcast-data.js?v=6"></script>
+  <script src="js/script.js?v=20261102pn"></script>
   <script src="js/a11y.js?v=20261030cv"></script>
 
 </body>

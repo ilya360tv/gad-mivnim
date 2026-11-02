@@ -21,9 +21,6 @@ window.PODCAST_UI = {
   pause: { he: 'השהיה', en: 'Pause', ru: 'Пауза', fr: 'Pause' },
   eyebrow: { he: 'פודקאסט | אנשים משתפים', en: 'Podcast | People Share', ru: 'Подкаст | Люди делятся', fr: 'Podcast | Les gens partagent' },
   watch:   { he: 'האזינו וצפו בפרק הראשון...', en: 'Listen and watch the first episode...', ru: 'Слушайте и смотрите первый выпуск...', fr: 'Écoutez et regardez le premier épisode...' },
-  screen:  { he: 'נגן הפרק', en: 'Episode player', ru: 'Плеер выпуска', fr: 'Lecteur de l’épisode' },
-  volume:  { he: 'עוצמת קול', en: 'Volume', ru: 'Громкость', fr: 'Volume' },
-  full:    { he: 'מסך מלא', en: 'Fullscreen', ru: 'Во весь экран', fr: 'Plein écran' },
   strip: { he: 'פרקי הפודקאסט', en: 'Podcast episodes', ru: 'Выпуски подкаста', fr: 'Épisodes du podcast' },
   // כותרת התוכנית (hero)
   title:   { he: 'אנשים משתפים', en: 'People Share', ru: 'Люди делятся', fr: 'Les gens partagent' },

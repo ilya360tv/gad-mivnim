@@ -7063,114 +7063,12 @@ html.a11y-no-motion #gallery .gal-grid.is-replaced { display: flex; }
 .lightbox-cap { color: #e6edf3; font-size: 1.05rem; font-weight: 600; text-align: center; }
 .lightbox-fig .lightbox-img { max-height: calc(85vh - 50px); }
 
-/* ----- #podcast — פודקאסט וידאו "האזינו וצפו": מסך מוצג גדול (16:9) + פס נע של מסכי פרקים (אותו מנוע).
+/* ----- #podcast — "האזינו וצפו": כותרת רגילה + פס נע של אריחי פרקים (אותו מנוע) + חלון פרק.
          צבעים: כותרות לבנות, הדגשות בתכלת #38bdf8 בלבד. ----- */
 #podcast { --pc-lb: #38bdf8; --pc-dim: #9aa6b2; }
-.pod-head { text-align: center; }
-.pod-head .pod-eyebrow { display: table; margin-inline: auto; color: var(--pc-lb); text-align: center; }
-.pod-head .pod-title { margin-inline: auto; color: #fff; font-weight: 800; text-align: center; }
-
-/* המסך המוצג */
-.pod-feature { max-width: 860px; margin: 28px auto 0; }
-.pod-screen {
-  position: relative;
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-  border: 1px solid rgba(56, 189, 248, .25);
-  border-radius: 18px;
-  background: #0b0d10;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, .45), 0 0 40px rgba(56, 189, 248, .12);
-  isolation: isolate;
-}
-.pod-screen__bg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; transition: background .4s ease; }
-.pod-screen__bg::before {                         /* תמונת הפודקאסט, עמומה, מעל הגרדיאנט */
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: url("../images/image3.png") center / cover no-repeat;
-  opacity: .2;
-  mix-blend-mode: luminosity;
-}
-.pod-screen__bg::after {                          /* הכהיה עדינה לקריאות הפקדים */
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at center, rgba(11, 13, 16, .05), rgba(11, 13, 16, .55) 80%), linear-gradient(180deg, transparent 55%, rgba(11, 13, 16, .75));
-}
-.pod-screen__num {
-  position: absolute;
-  inset-block-start: 18px;
-  inset-inline-start: 22px;
-  z-index: 1;
-  color: rgba(255, 255, 255, .9);
-  font-size: clamp(2.2rem, 5vw, 3.6rem);
-  font-weight: 800;
-  letter-spacing: -.02em;
-  line-height: 1;
-  text-shadow: 0 4px 18px rgba(0, 0, 0, .3);
-}
-.pod-screen__media { position: absolute; inset: 0; z-index: 3; display: none; background: #000; }
-.pod-screen__media iframe,
-.pod-screen__media video { display: block; width: 100%; height: 100%; border: 0; }
-.pod-screen.is-video .pod-screen__media { display: block; }
-.pod-screen__play {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 86px;
-  height: 86px;
-  padding: 0;
-  border: 2px solid var(--pc-lb);
-  border-radius: 50%;
-  background: rgba(11, 13, 16, .55);
-  box-shadow: 0 0 24px rgba(56, 189, 248, .3);
-  cursor: pointer;
-  transform: translate(-50%, -50%);
-  transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
-}
-.pod-screen__play svg { width: 34px; height: 34px; fill: var(--pc-lb); transform: translateX(2px); }
-.pod-screen__play:hover,
-.pod-screen__play:focus-visible { outline: none; background: rgba(56, 189, 248, .18); box-shadow: 0 0 0 6px rgba(56, 189, 248, .18), 0 0 44px rgba(56, 189, 248, .6); transform: translate(-50%, -50%) scale(1.06); }
-.pod-screen__note {
-  position: absolute;
-  top: calc(50% + 62px);
-  left: 50%;
-  z-index: 2;
-  margin: 0;
-  padding: 6px 14px;
-  border: 1px solid rgba(56, 189, 248, .35);
-  border-radius: 999px;
-  background: rgba(11, 13, 16, .6);
-  color: #dff3fd;
-  font-size: .85rem;
-  font-weight: 600;
-  white-space: nowrap;
-  transform: translateX(-50%);
-}
-.pod-screen__note.is-pulse { animation: podPulse .7s ease; }
-@keyframes podPulse { 40% { border-color: var(--pc-lb); box-shadow: 0 0 18px rgba(56, 189, 248, .55); } }
-.pod-screen__bar { position: absolute; inset-inline: 0; bottom: 0; z-index: 2; padding: 0 18px 12px; }
-.pod-screen__progress { height: 3px; margin-bottom: 9px; border-radius: 999px; background: rgba(255, 255, 255, .22); cursor: pointer; }
-.pod-screen__fill { display: block; width: 0; height: 100%; border-radius: inherit; background: var(--pc-lb); }
-.pod-screen__controls { display: flex; align-items: center; justify-content: space-between; }
-.pod-screen__time { direction: ltr; color: #e6edf3; font-size: .82rem; font-variant-numeric: tabular-nums; }
-.pod-screen__icons { display: flex; gap: 14px; }
-.pod-screen__icons svg { width: 18px; height: 18px; fill: none; stroke: #e6edf3; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; opacity: .85; }
-.pod-screen.is-video .pod-screen__play,
-.pod-screen.is-video .pod-screen__note,
-.pod-screen.is-video .pod-screen__bar,
-.pod-screen.is-video .pod-screen__num { display: none; }
-.pod-feature__info { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 16px; text-align: center; }
-.pod-feature__meta { color: var(--pc-lb); font-size: .9rem; font-weight: 600; }
-.pod-feature__title { margin: 0; color: #fff; font-size: clamp(1.15rem, 2vw, 1.45rem); font-weight: 800; line-height: 1.3; }
-.pod-feature__guest { color: var(--pc-dim); font-size: .92rem; }
 
 /* פס אריחי הפרקים — אותו מנוע ואותה התנהגות כמו #info */
-.pod-wrap { margin-top: 34px; }
+.pod-wrap { margin-top: 28px; }
 .pod-marquee { display: none; }
 .has-js #podcast .pod-marquee.is-on {
   display: block;
@@ -7333,6 +7231,7 @@ html.a11y-no-motion #podcast .pod-eps.is-replaced { display: flex; }
   transform: translateX(-50%);
 }
 .pod-mmedia__note.is-pulse { animation: podPulse .7s ease; }
+@keyframes podPulse { 40% { border-color: var(--pc-lb); box-shadow: 0 0 18px rgba(56, 189, 248, .55); } }
 .pod-mplayer { display: flex; align-items: center; gap: 12px; margin-top: 12px; padding: 10px 14px; border: 1px solid rgba(56, 189, 248, .22); border-radius: 12px; background: #12151a; }
 .pod-mplayer[hidden] { display: none; }
 .pod-mplayer__btn { flex: none; display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; padding: 0; border: 0; border-radius: 50%; background: var(--pc-lb); cursor: pointer; }
@@ -7349,16 +7248,8 @@ html.a11y-no-motion #podcast .pod-eps.is-replaced { display: flex; }
 .pod-mlist { margin-bottom: 18px; }
 .pod-modal .ic-modal__cta { display: flex; margin-inline: auto; }
 
-/* מובייל: המסך המוצג ברוחב מלא, אריחי פרק 130×130 */
+/* מובייל: אריחי פרק 130×130 */
 @media (max-width: 767.98px) {
-  .pod-feature { margin-top: 20px; }
-  .pod-screen { border-radius: 14px; }
-  .pod-screen__play { width: 64px; height: 64px; }
-  .pod-screen__play svg { width: 26px; height: 26px; }
-  .pod-screen__note { top: calc(50% - 64px); font-size: .74rem; padding: 3px 10px; }   /* מעל כפתור ההפעלה — לא על פס ההתקדמות */
-  .pod-screen__bar { padding: 0 12px 8px; }
-  .pod-screen__progress { margin-bottom: 6px; }
-  .pod-screen__icons svg { width: 16px; height: 16px; }
   .pod-tile { width: 130px; height: 130px; border-radius: 14px; }
   .pod-tile__chip { font-size: .64rem; padding: 2px 7px; }
   .pod-tile__play { width: 32px; height: 32px; }
