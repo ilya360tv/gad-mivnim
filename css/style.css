@@ -7012,7 +7012,7 @@ html:not(.a11y-contrast) .site-footer::before {
 .ic-modal .proj-modal__name { color: #38bdf8 !important; }
 
 /* ----- #gallery — שני פסים נעים מתמונות הפרויקטים (אותו מנוע initMarquee). שורה 2 בכיוון ההפוך.
-         אריח קבוע 280×200 (מובייל 200×145), פינות 14px, רווח 14px; דהייה רכה בשני הקצוות.
+         אריח קבוע 230×165 (מובייל 165×120), פינות 14px, רווח 14px; דהייה רכה בשני הקצוות.
          הרשת הסטטית מוצגת רק כש"עצירת אנימציות" פעיל. ----- */
 .gal-strips { margin-top: 36px; display: flex; flex-direction: column; gap: 14px; }
 .gal-marquee { display: none; }
@@ -7031,8 +7031,8 @@ html:not(.a11y-contrast) .site-footer::before {
 .gal-track { display: flex; gap: 14px; width: max-content; will-change: transform; }
 .gal-tile {
   flex: 0 0 auto;
-  width: 280px;
-  height: 200px;
+  width: 230px;
+  height: 165px;
   padding: 0;
   border: 0;
   border-radius: 14px;
@@ -7055,7 +7055,7 @@ html:not(.a11y-contrast) .site-footer::before {
 html.a11y-no-motion #gallery .gal-marquee.is-on { display: none; }
 html.a11y-no-motion #gallery .gal-grid.is-replaced { display: flex; }
 @media (max-width: 767.98px) {
-  .gal-tile { width: 200px; height: 145px; }
+  .gal-tile { width: 165px; height: 120px; }
 }
 
 /* lightbox — כיתוב מתחת לתמונה (שם הפרויקט בגלריה) */
