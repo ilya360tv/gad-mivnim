@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Gveret+Levin&family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 
   <!-- העיצוב שלנו -->
-  <link rel="stylesheet" href="css/style.css?v=20261102lg">
+  <link rel="stylesheet" href="css/style.css?v=20261102gl">
 </head>
 <body>
 
@@ -506,28 +506,13 @@
   <!-- ===== גלריה בנייה ועיצובים ===== -->
   <section id="gallery" class="section gallery">
     <div class="container">
-      <span class="section-eyebrow reveal" data-i18n="gal_title">גלריה בנייה ועיצובים</span>
-      <h2 class="section-title reveal reveal-d1" data-i18n="gal_slogan">לחלום ולהגשים !</h2>
+      <span class="section-eyebrow reveal" data-i18n="gal_title">גלריה / השראות</span>
 
-      <div class="gallery-grid reveal-group">
-        <button class="gallery-item" type="button" aria-label="הגדלת תמונה"><img src="images/image82.png"   alt="" loading="lazy" decoding="async"></button>
-        <button class="gallery-item" type="button" aria-label="הגדלת תמונה"><img src="images/image83.jpeg"  alt="" loading="lazy" decoding="async"></button>
-        <button class="gallery-item" type="button" aria-label="הגדלת תמונה"><img src="images/image85.jpeg"  alt="" loading="lazy" decoding="async"></button>
-        <button class="gallery-item" type="button" aria-label="הגדלת תמונה"><img src="images/image87.jpeg"  alt="" loading="lazy" decoding="async"></button>
-        <button class="gallery-item" type="button" aria-label="הגדלת תמונה"><img src="images/image88.jpeg"  alt="" loading="lazy" decoding="async"></button>
-        <button class="gallery-item" type="button" aria-label="הגדלת תמונה"><img src="images/image89.jpeg"  alt="" loading="lazy" decoding="async"></button>
-        <button class="gallery-item" type="button" aria-label="הגדלת תמונה"><img src="images/image93.jpeg"  alt="" loading="lazy" decoding="async"></button>
-        <button class="gallery-item" type="button" aria-label="הגדלת תמונה"><img src="images/image94.jpeg"  alt="" loading="lazy" decoding="async"></button>
-        <button class="gallery-item" type="button" aria-label="הגדלת תמונה"><img src="images/image95.jpeg"  alt="" loading="lazy" decoding="async"></button>
-        <button class="gallery-item" type="button" aria-label="הגדלת תמונה"><img src="images/image96.png"   alt="" loading="lazy" decoding="async"></button>
-        <button class="gallery-item" type="button" aria-label="הגדלת תמונה"><img src="images/image98.jpeg"  alt="" loading="lazy" decoding="async"></button>
-        <button class="gallery-item" type="button" aria-label="הגדלת תמונה"><img src="images/image99.jpeg"  alt="" loading="lazy" decoding="async"></button>
-        <button class="gallery-item" type="button" aria-label="הגדלת תמונה"><img src="images/image100.jpeg" alt="" loading="lazy" decoding="async"></button>
-        <button class="gallery-item" type="button" aria-label="הגדלת תמונה"><img src="images/image101.jpeg" alt="" loading="lazy" decoding="async"></button>
-        <button class="gallery-item" type="button" aria-label="הגדלת תמונה"><img src="images/image103.png"  alt="" loading="lazy" decoding="async"></button>
-        <button class="gallery-item" type="button" aria-label="הגדלת תמונה"><img src="images/image104.jpeg" alt="" loading="lazy" decoding="async"></button>
-        <button class="gallery-item" type="button" aria-label="הגדלת תמונה"><img src="images/image105.jpeg" alt="" loading="lazy" decoding="async"></button>
-        <button class="gallery-item" type="button" aria-label="הגדלת תמונה"><img src="images/image106.jpeg" alt="" loading="lazy" decoding="async"></button>
+      <!-- שני פסים נעים מתמונות הפרויקטים האמיתיים — נבנים מ-js/projects-data.js (המקור היחיד) -->
+      <div class="gal-strips">
+        <div class="gal-marquee" data-row="1" role="region" aria-label="גלריה / השראות" hidden><div class="gal-track"></div></div>
+        <div class="gal-marquee" data-row="2" role="region" aria-label="גלריה / השראות" hidden><div class="gal-track"></div></div>
+        <div class="gal-grid"></div>
       </div>
     </div>
   </section>
@@ -706,7 +691,7 @@
   <div class="lightbox" id="lightbox" aria-hidden="true">
     <button class="lightbox-close" id="lightboxClose" aria-label="Close">&times;</button>
     <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="Previous">&#8250;</button>
-    <img class="lightbox-img" id="lightboxImg" src="" alt="">
+    <figure class="lightbox-fig"><img class="lightbox-img" id="lightboxImg" src="" alt=""><figcaption class="lightbox-cap" id="lightboxCap" hidden></figcaption></figure>
     <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Next">&#8249;</button>
   </div>
 
@@ -839,14 +824,14 @@
     <input type="text" name="bot-field">
   </form>
 
-  <script src="js/i18n.js?v=20261102ic"></script>
+  <script src="js/i18n.js?v=20261102gl"></script>
   <script src="js/premium.js?v=20261030cv"></script>
   <script src="js/projects-data.js?v=1"></script>
   <script src="js/in-progress-data.js?v=1"></script>
   <script src="js/careers-data.js?v=2"></script>
   <script src="js/partners-data.js?v=3"></script>
   <script src="js/info-data.js?v=4"></script>
-  <script src="js/script.js?v=20261102lg"></script>
+  <script src="js/script.js?v=20261102gl"></script>
   <script src="js/a11y.js?v=20261030cv"></script>
 
 </body>

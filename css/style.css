@@ -7006,3 +7006,59 @@ html:not(.a11y-contrast) .site-footer::before {
 }
 #info .info-card > strong { font-size: .95rem !important; line-height: 1.35 !important; }
 @media (max-width: 767.98px) { #info .info-card > strong { font-size: .88rem !important; } }
+
+/* ----- #info חלון נושא: הכותרת בתכלת ----- */
+.ic-modal #icModalTitle,
+.ic-modal .proj-modal__name { color: #38bdf8 !important; }
+
+/* ----- #gallery — שני פסים נעים מתמונות הפרויקטים (אותו מנוע initMarquee). שורה 2 בכיוון ההפוך.
+         אריח קבוע 280×200 (מובייל 200×145), פינות 14px, רווח 14px; דהייה רכה בשני הקצוות.
+         הרשת הסטטית מוצגת רק כש"עצירת אנימציות" פעיל. ----- */
+.gal-strips { margin-top: 36px; display: flex; flex-direction: column; gap: 14px; }
+.gal-marquee { display: none; }
+.has-js #gallery .gal-marquee.is-on {
+  display: block;
+  direction: ltr;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: pan-y;
+  -webkit-user-select: none;
+          user-select: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+#gallery .gal-marquee.is-dragging { cursor: grabbing; }
+.gal-track { display: flex; gap: 14px; width: max-content; will-change: transform; }
+.gal-tile {
+  flex: 0 0 auto;
+  width: 280px;
+  height: 200px;
+  padding: 0;
+  border: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #12151a;
+  cursor: pointer;
+}
+.gal-tile img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  -webkit-user-drag: none;
+  transition: transform .45s ease;
+}
+.gal-tile:hover img { transform: scale(1.04); }
+.gal-tile:focus-visible { outline: 2px solid #38bdf8; outline-offset: -2px; }
+.gal-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
+.has-js #gallery .gal-grid.is-replaced { display: none; }
+html.a11y-no-motion #gallery .gal-marquee.is-on { display: none; }
+html.a11y-no-motion #gallery .gal-grid.is-replaced { display: flex; }
+@media (max-width: 767.98px) {
+  .gal-tile { width: 200px; height: 145px; }
+}
+
+/* lightbox — כיתוב מתחת לתמונה (שם הפרויקט בגלריה) */
+.lightbox-fig { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.lightbox-cap { color: #e6edf3; font-size: 1.05rem; font-weight: 600; text-align: center; }
+.lightbox-fig .lightbox-img { max-height: calc(85vh - 50px); }

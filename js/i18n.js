@@ -278,8 +278,7 @@
     teams_l3: { he: 'קבלנים מוסמכים', ru: 'Сертифицированные подрядчики', en: 'Certified contractors', fr: 'Entrepreneurs agréés' },
 
     /* ----- גלריה ----- */
-    gal_title:  { he: 'גלריה בנייה ועיצובים', ru: 'Галерея — строительство и дизайн', en: 'Gallery — Building & Design', fr: 'Galerie construction et design' },
-    gal_slogan: { he: 'לחלום ולהגשים !', ru: 'Мечтать и воплощать!', en: 'To dream and to achieve!', fr: 'Rêver et réaliser !' },
+    gal_title:  { he: 'גלריה / השראות', ru: 'Галерея / Вдохновение', en: 'Gallery / Inspiration', fr: 'Galerie / Inspiration' },
 
     /* ----- מידע לאזרח ולבונה ----- */
     info_title: { he: 'מידע לאזרח ולבונה', ru: 'Информация для клиента и застройщика', en: 'Info for the Citizen & Builder', fr: 'Info pour le citoyen et le bâtisseur' },

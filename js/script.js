@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
           s.resumeAt = Math.max(s.resumeAt, now + 1500);
         } else if (!s.dragging) {
           s.vel = 0;
-          if (!paused()) { s.offset += (Y ? -s.speed : s.speed) * dt; }   // כיוון הגלילה: ימינה (אנכי: למעלה)
+          if (!paused()) { s.offset += (Y ? -s.speed : s.speed) * (opts.dir || 1) * dt; }   // כיוון הגלילה: ימינה (אנכי: למעלה); opts.dir = -1 הפוך
         }
         wrap();
         apply();
@@ -319,6 +319,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   var lightbox      = document.getElementById('lightbox');
   var lightboxImg   = document.getElementById('lightboxImg');
+  var lightboxCap   = document.getElementById('lightboxCap');
   var closeBtn      = document.getElementById('lightboxClose');
   var prevBtn       = document.getElementById('lightboxPrev');
   var nextBtn       = document.getElementById('lightboxNext');
@@ -336,6 +337,11 @@ document.addEventListener('DOMContentLoaded', function () {
       if (index >= n) { index = 0; }
       currentIndex = index;
 
+      if (lightboxCap) {                       // כיתוב מתחת לתמונה (למשל שם הפרויקט בגלריה)
+        var cap = lbList && lbList[index].caption;
+        lightboxCap.textContent = cap || '';
+        lightboxCap.hidden = !cap;
+      }
       if (lbList) {
         lightboxImg.src = lbList[index].src;
         lightboxImg.alt = lbList[index].alt || '';
@@ -384,6 +390,118 @@ document.addEventListener('DOMContentLoaded', function () {
       if (e.key === 'ArrowLeft')  { showImage(currentIndex + 1); } // RTL: שמאל = הבא
       if (e.key === 'ArrowRight') { showImage(currentIndex - 1); } // RTL: ימין = הקודם
     });
+  }
+
+  /* ---------------------------------------------------------------
+     2א) #gallery — שני פסים נעים מתמונות הפרויקטים האמיתיים (js/projects-data.js — המקור היחיד).
+         שורה 1 בכיוון הרגיל, שורה 2 בכיוון ההפוך. לחיצה פותחת את ה-lightbox עם שם הפרויקט.
+         הרשת הסטטית מוצגת רק כשכפתור "עצירת אנימציות" פעיל (ב-CSS).
+     --------------------------------------------------------------- */
+  var galSec = document.getElementById('gallery');
+  var galGrid = galSec ? galSec.querySelector('.gal-grid') : null;
+  if (galGrid && window.PROJECTS_DATA) {
+    var GAL_MIN = 500;                                   // תמונות קטנות מזה (בצד הקצר) לא נכנסות
+    var galLang = function () { return document.documentElement.getAttribute('lang') || 'he'; };
+    var galName = function (slug) {
+      var c = window.PROJECTS_DATA[slug] || {}, tr = c.i18n && c.i18n[galLang()];
+      return (tr && tr.name) || c.name || '';
+    };
+    // תמונות לפי פרויקט (בלי קטנות ובלי כפולות), מחולקות לסירוגין בין שתי השורות
+    var galSeen = {}, galRows = [{}, {}], galN = 0;     // מונה משותף — שתי השורות כמעט שוות
+    Object.keys(window.PROJECTS_DATA).forEach(function (slug) {
+      var c = window.PROJECTS_DATA[slug];
+      (c.images || []).forEach(function (im, i) {
+        var src = typeof im === 'string' ? im : im.src;
+        if (!src || galSeen[src]) { return; }
+        if (im.width && im.height && Math.min(im.width, im.height) < GAL_MIN) { return; }
+        galSeen[src] = true;
+        var row = galRows[galN++ % 2];
+        (row[slug] = row[slug] || []).push({ src: src, slug: slug, alt: (im.alt || (c.name + ' - תמונה ' + (i + 1))) });
+      });
+    });
+    // ערבוב: בכל צעד — הפרויקט עם הכי הרבה תמונות שנשארו, ולא אותו פרויקט כמו התמונה הקודמת
+    var galMix = function (groups) {
+      var out = [], last = null;
+      var left = function () { return Object.keys(groups).filter(function (k) { return groups[k].length; }); };
+      for (var ks = left(); ks.length; ks = left()) {
+        ks.sort(function (a, b) { return groups[b].length - groups[a].length; });
+        var k = (ks[0] !== last || ks.length === 1) ? ks[0] : ks[1];
+        out.push(groups[k].shift()); last = k;
+      }
+      return out;
+    };
+    var galLists = galRows.map(galMix);
+    var galAll = galLists[0].concat(galLists[1]);        // ה-lightbox עובר על כל תמונות הגלריה
+    galAll.forEach(function (p, i) { p.i = i; });
+
+    var galTile = function (p, hidden) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'gal-tile';
+      b.setAttribute('data-gi', p.i);
+      if (hidden) { b.setAttribute('aria-hidden', 'true'); b.setAttribute('tabindex', '-1'); }
+      else { b.setAttribute('aria-label', p.alt); }
+      var img = document.createElement('img');
+      img.src = p.src; img.alt = hidden ? '' : p.alt;
+      img.loading = 'lazy'; img.decoding = 'async'; img.draggable = false;
+      b.appendChild(img);
+      return b;
+    };
+    galAll.forEach(function (p) { galGrid.appendChild(galTile(p, false)); });
+
+    galSec.addEventListener('click', function (e) {
+      var t = e.target.closest ? e.target.closest('.gal-tile[data-gi]') : null;
+      if (!t || !window.openImageLightbox) { return; }
+      window.openImageLightbox(galAll.map(function (p) {
+        return { src: p.src, alt: p.alt, caption: galName(p.slug) };
+      }), +t.getAttribute('data-gi'));
+    });
+
+    var galBoxes = galSec.querySelectorAll('.gal-marquee');
+    var galBuilds = [];
+    Array.prototype.forEach.call(galBoxes, function (box, r) {
+      var track = box.querySelector('.gal-track'), list = galLists[r];
+      if (!track || !list.length) { return; }
+      var eng = initMarquee(box, track, {
+        dir: r === 1 ? -1 : 1,
+        isPaused: function () {
+          if (document.querySelector('#lightbox.is-open')) { return true; }
+          try { if (box.querySelector(':focus-visible')) { return true; } } catch (err) {}
+          return false;
+        }
+      });
+      var set = function (reps, firstReal) {
+        var f = document.createDocumentFragment();
+        for (var k = 0; k < reps; k++) {
+          list.forEach(function (p) { f.appendChild(galTile(p, !(firstReal && k === 0))); });
+        }
+        return f;
+      };
+      galBuilds.push(function () {
+        track.innerHTML = '';
+        track.appendChild(set(1, false));
+        var a = track.children[0], b = track.children[1];
+        var step = (a && b) ? Math.abs(b.offsetLeft - a.offsetLeft) : 294;
+        var vw = box.clientWidth || window.innerWidth;
+        var reps = Math.max(1, Math.ceil((vw + step) / (step * list.length)));
+        track.innerHTML = '';
+        track.appendChild(set(reps, true));
+        track.appendChild(set(reps, false));
+        eng.measure(reps * list.length);
+      });
+      box.hidden = false;
+      box.classList.add('is-on');
+    });
+    if (galBuilds.length) {
+      galGrid.classList.add('is-replaced');
+      var galBuild = function () { galBuilds.forEach(function (f) { f(); }); };
+      galBuild();
+      var galW = window.innerWidth, galT;
+      window.addEventListener('resize', function () {
+        if (window.innerWidth === galW) { return; }
+        galW = window.innerWidth; clearTimeout(galT); galT = setTimeout(galBuild, 200);
+      });
+    }
   }
 
   /* ---------------------------------------------------------------
