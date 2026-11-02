@@ -7062,3 +7062,126 @@ html.a11y-no-motion #gallery .gal-grid.is-replaced { display: flex; }
 .lightbox-fig { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 14px; }
 .lightbox-cap { color: #e6edf3; font-size: 1.05rem; font-weight: 600; text-align: center; }
 .lightbox-fig .lightbox-img { max-height: calc(85vh - 50px); }
+
+/* ----- #podcast — כרטיסי פרקים (אותה משפחה כמו כרטיסי #info) בפס נע + חלון פרק עם נגן.
+         רוחב/פס/רשת: אותם משתנים ומחלקות כמו ב-#info (.info-cards / .ic-marquee / .ic-track). ----- */
+.pod-wrap { container-type: inline-size; margin-top: 28px; }
+.has-js #podcast .ic-marquee.is-on {
+  display: block;
+  direction: ltr;
+  overflow: hidden;
+  padding: 16px 0 22px;
+  cursor: grab;
+  touch-action: pan-y;
+  -webkit-user-select: none;
+          user-select: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+}
+.has-js #podcast .pod-cards.is-replaced { display: none; }
+html.a11y-no-motion #podcast .ic-marquee.is-on { display: none; }
+html.a11y-no-motion #podcast .pod-cards.is-replaced { display: flex; }
+@media (max-width: 767.98px) {
+  .has-js #podcast .ic-marquee.is-on { -webkit-mask-image: none; mask-image: none; }
+}
+.pod-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 14px 0;
+  font-size: .78rem;
+  line-height: 1;
+}
+.pod-chip {
+  padding: 5px 10px;
+  border: 1px solid rgba(56, 189, 248, .5);
+  border-radius: 999px;
+  background: rgba(56, 189, 248, .1);
+  color: #38bdf8;
+  font-weight: 700;
+}
+.pod-dur { color: #aeb7c0; }
+#podcast .pod-card > strong { padding-top: 8px; }
+#podcast .pod-card > strong,
+#podcast .pod-card > strong span { color: #38bdf8; }
+#podcast .pod-card > strong { font-size: .95rem; line-height: 1.35; }
+.pod-card__cover {
+  box-sizing: border-box;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 90px;
+  border: 1px solid rgba(56, 189, 248, .45);
+  background:
+    linear-gradient(rgba(11, 13, 16, .58), rgba(11, 13, 16, .58)),
+    #12151a url("../images/image3.png") center / cover no-repeat;
+}
+.pod-play {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border: 1.5px solid #38bdf8;
+  border-radius: 50%;
+  background: rgba(11, 13, 16, .55);
+  box-shadow: 0 0 14px rgba(56, 189, 248, .25);
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+.pod-play svg { width: 18px; height: 18px; margin-inline-start: 0; transform: translateX(1px); fill: #38bdf8; pointer-events: none; }
+.pod-card:hover .pod-play,
+.pod-card:focus-visible .pod-play { transform: scale(1.08); box-shadow: 0 0 20px rgba(56, 189, 248, .45); }
+.pod-card__guest {
+  display: block;
+  padding: 10px 14px 0;
+  overflow: hidden;
+  color: #aeb7c0;
+  font-size: .85rem;
+  line-height: 1.45;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+@media (max-width: 767.98px) {
+  #podcast .pod-card > strong { font-size: .88rem; }
+  .pod-card__guest { font-size: .8rem; }
+}
+
+/* חלון הפרק — אורח, נגן (placeholder עד שיתווסף audio) */
+.pod-modal__guest { margin: 2px 0 0; color: #aeb7c0; font-size: .9rem; text-align: center; }
+.pod-player {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 14px 0;
+  padding: 14px 16px;
+  border: 1px solid rgba(56, 189, 248, .45);
+  border-radius: 12px;
+  background: #12151a;
+}
+.pod-player__btn {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1.5px solid #38bdf8;
+  border-radius: 50%;
+  background: rgba(56, 189, 248, .12);
+  cursor: pointer;
+}
+.pod-player__btn svg { width: 18px; height: 18px; fill: #38bdf8; }
+.pod-player__btn:disabled { cursor: default; opacity: .55; }
+.pod-player__btn:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.pod-player__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.pod-player__bar { position: relative; height: 6px; border-radius: 999px; background: rgba(255, 255, 255, .12); overflow: hidden; cursor: pointer; }
+.pod-player.is-soon .pod-player__bar { cursor: default; }
+.pod-player__fill { position: absolute; inset-block: 0; inset-inline-start: 0; width: 0; border-radius: inherit; background: #38bdf8; }
+.pod-player__time { direction: ltr; align-self: flex-end; color: #aeb7c0; font-size: .8rem; font-variant-numeric: tabular-nums; }
+.pod-player__note { flex-basis: 100%; margin: 0; color: #38bdf8; font-size: .85rem; font-weight: 600; text-align: center; }
+.pod-player audio { display: none; }
+.pod-modal .pod-modal__meta { margin-bottom: 0; }
