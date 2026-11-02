@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Gveret+Levin&family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 
   <!-- העיצוב שלנו -->
-  <link rel="stylesheet" href="css/style.css?v=20261102pc2">
+  <link rel="stylesheet" href="css/style.css?v=20261102ph">
 </head>
 <body>
 
@@ -490,16 +490,18 @@
   <!-- ===== פודקאסט — אנשים משתפים ===== -->
   <section id="podcast" class="section podcast">
     <div class="container">
-      <!-- פודקאסט "אנשים משתפים" — כותרת ממורכזת + תמונת הגיטרות + פס אריחי פרקים; לחיצה פותחת את חלון הפודקאסט (נגן + רשימת פרקים מ-js/podcast-data.js) -->
-      <span class="section-eyebrow reveal" data-pod="eyebrow">פודקאסט | אנשים משתפים</span>
-      <h2 class="section-title reveal reveal-d1" data-pod="watch">האזינו וצפו בפרק הראשון...</h2>
-
-      <div class="pod-cover reveal reveal-d2">
-        <button type="button" class="pod-cover__media" aria-haspopup="dialog">
+      <!-- פודקאסט "אנשים משתפים" — שורת כותרת (כמו הבאנר המקורי): תמונת הגיטרות מימין (בגודל אזור התמונה של כרטיסי הפרקים) + הכותרת משמאלה;
+           לחיצה על התמונה פותחת את חלון הפודקאסט על פרק 1. מתחת: פס כרטיסי הפרקים. הכל מ-js/podcast-data.js -->
+      <div class="pod-head reveal">
+        <button type="button" class="pod-head__media" aria-haspopup="dialog">
           <img src="images/image3.png" alt="פודקאסט | אנשים משתפים" loading="lazy" decoding="async">
-          <span class="pod-cover__play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg></span>
+          <span class="pod-head__play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg></span>
         </button>
-        <p class="pod-cover__sub">פודקאסט | אנשים משתפים · 20 פרקים</p>
+        <div class="pod-head__text">
+          <span class="section-eyebrow" data-pod="eyebrow">פודקאסט | אנשים משתפים</span>
+          <h2 class="section-title" data-pod="watch">האזינו וצפו בפרק הראשון...</h2>
+          <p class="pod-head__count">20 פרקים</p>
+        </div>
       </div>
 
       <!-- כל הפרקים — כרטיסים בסגנון כרטיסי #partners, בפס נע (כולם עם תמונת הגיטרות); לחיצה פותחת את החלון על הפרק -->
@@ -839,7 +841,7 @@
   <script src="js/partners-data.js?v=3"></script>
   <script src="js/info-data.js?v=6"></script>
   <script src="js/podcast-data.js?v=7"></script>
-  <script src="js/script.js?v=20261102pc2"></script>
+  <script src="js/script.js?v=20261102ph"></script>
   <script src="js/a11y.js?v=20261030cv"></script>
 
 </body>

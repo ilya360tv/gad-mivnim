@@ -7063,39 +7063,30 @@ html.a11y-no-motion #gallery .gal-grid.is-replaced { display: flex; }
 .lightbox-cap { color: #e6edf3; font-size: 1.05rem; font-weight: 600; text-align: center; }
 .lightbox-fig .lightbox-img { max-height: calc(85vh - 50px); }
 
-/* ----- #podcast — כותרת ממורכזת + תמונת הגיטרות (בינונית) עם ▶ → חלון הפודקאסט:
+/* ----- #podcast — שורת כותרת (תמונת הגיטרות הקטנה עם ▶ + כותרת) → חלון הפודקאסט:
          נגן וידאו 16:9 + פרטי הפרק + רשימת פרקים (טקסט בלבד). הדגשות בתכלת #38bdf8 בלבד. ----- */
 #podcast, .pod-modal { --pc-lb: #38bdf8; --pc-dim: #9aa6b2; }   /* החלון נוסף ל-body — מחוץ ל-#podcast */
 
-/* מרכוז הכותרת — גובר על שכבת "RIGHT-ALIGNED HEADINGS" (כמו #tenders / #app) */
-html[dir] body #podcast .section-eyebrow,
-html[dir] body #podcast .section-title {
-  display: block;
-  width: auto;
-  max-width: 900px;
-  text-align: center !important;
-  margin-inline: auto !important;
-}
-
-/* תמונת הפודקאסט */
-.pod-cover { display: flex; flex-direction: column; align-items: center; gap: 14px; margin-top: 28px; }
-.pod-cover__media {
+/* שורת הכותרת (כמו הבאנר המקורי): תמונת הגיטרות מימין, בגודל אזור התמונה של כרטיסי הפרקים (--pod-photo-w מה-JS),
+   והטקסט משמאלה, ממורכז אנכית. בלי מסגרת/קופסה. */
+.pod-head { display: flex; align-items: center; gap: 28px; }
+.pod-head__media {
   position: relative;
+  flex: none;
   display: block;
-  width: 480px;
-  max-width: 100%;
+  width: var(--pod-photo-w, 212px);
+  aspect-ratio: 16 / 9;
   padding: 0;
   overflow: hidden;
   border: 0;
-  border-radius: 16px;
-  background: #12151a;
-  box-shadow: 0 0 0 1px rgba(56, 189, 248, .45), 0 18px 44px rgba(0, 0, 0, .4);
+  border-radius: 14px;
+  background: #1b1f24;
   cursor: pointer;
   transition: box-shadow .3s ease;
 }
-.pod-cover__media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; transition: transform .5s ease; }
-.pod-cover__media::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(11, 13, 16, .05), rgba(11, 13, 16, .45)); pointer-events: none; }
-.pod-cover__play {
+.pod-head__media img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .45s ease; }
+.pod-head__media::after { content: ""; position: absolute; inset: 0; background: rgba(10, 12, 14, .3); pointer-events: none; }
+.pod-head__play {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -7103,22 +7094,40 @@ html[dir] body #podcast .section-title {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 74px;
-  height: 74px;
+  width: 46px;
+  height: 46px;
   border: 2px solid var(--pc-lb);
   border-radius: 50%;
   background: rgba(11, 13, 16, .55);
-  box-shadow: 0 0 22px rgba(56, 189, 248, .35);
+  box-shadow: 0 0 16px rgba(56, 189, 248, .3);
   transform: translate(-50%, -50%);
-  transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
+  transition: background .25s ease, box-shadow .25s ease, transform .25s ease;
 }
-.pod-cover__play svg { width: 30px; height: 30px; fill: var(--pc-lb); transform: translateX(2px); }
-.pod-cover__media:hover,
-.pod-cover__media:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--pc-lb), 0 18px 44px rgba(0, 0, 0, .4); }
-.pod-cover__media:hover img { transform: scale(1.03); }
-.pod-cover__media:hover .pod-cover__play,
-.pod-cover__media:focus-visible .pod-cover__play { background: rgba(56, 189, 248, .2); box-shadow: 0 0 0 6px rgba(56, 189, 248, .18), 0 0 44px rgba(56, 189, 248, .65); transform: translate(-50%, -50%) scale(1.06); }
-.pod-cover__sub { margin: 0; color: var(--pc-dim); font-size: .95rem; text-align: center; }
+.pod-head__play svg { width: 18px; height: 18px; fill: var(--pc-lb); transform: translateX(1px); }
+.pod-head__media:hover,
+.pod-head__media:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--pc-lb), 0 0 16px rgba(56, 189, 248, .35); }
+.pod-head__media:hover img,
+.pod-head__media:focus-visible img { transform: scale(1.04); }
+.pod-head__media:hover .pod-head__play,
+.pod-head__media:focus-visible .pod-head__play { background: var(--pc-lb); box-shadow: 0 0 22px rgba(56, 189, 248, .65); transform: translate(-50%, -50%) scale(1.06); }
+.pod-head__media:hover .pod-head__play svg,
+.pod-head__media:focus-visible .pod-head__play svg { fill: #0b0d10; }
+.pod-head__text { min-width: 0; }
+#podcast .pod-head__text .section-title { margin-bottom: 6px; }
+.pod-head__count { margin: 0; color: var(--pc-dim); font-size: .95rem; }
+
+/* מובייל: התמונה למעלה (בגודל אזור התמונה של הכרטיס), הטקסט מתחתיה — ממורכז */
+@media (max-width: 767.98px) {
+  .pod-head { flex-direction: column; gap: 18px; }
+  html[dir] body #podcast .pod-head__text,
+  html[dir] body #podcast .pod-head__text .section-eyebrow,
+  html[dir] body #podcast .pod-head__text .section-title,
+  html[dir] body #podcast .pod-head__count { text-align: center !important; margin-inline: auto !important; }
+  html[dir] body #podcast .pod-head__text .section-eyebrow { display: flex; justify-content: center; }
+}
+@media (max-width: 640px) {
+  .pod-head__media { aspect-ratio: 21 / 9; }       /* כמו אזור התמונה בכרטיס במובייל */
+}
 
 /* חלון הפודקאסט — רוחב 760, נגן למעלה, רשימה שנגללת בתוך החלון */
 .pod-modal .pt-modal__box {
@@ -7228,10 +7237,6 @@ html[dir] body #podcast .section-title {
 .pod-row.is-active .pod-row__m { color: var(--pc-lb); }
 
 @media (max-width: 767.98px) {
-  .pod-cover__media { width: 100%; max-width: 340px; }
-  .pod-cover__play { width: 58px; height: 58px; }
-  .pod-cover__play svg { width: 24px; height: 24px; }
-  .pod-cover__sub { font-size: .88rem; }
   .pod-modal .pt-modal__box { height: 86vh; max-height: 86vh; }
   .pod-vp { margin-top: 48px; }
   .pod-vp__play { width: 56px; height: 56px; }

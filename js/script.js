@@ -1782,13 +1782,13 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ---------------------------------------------------------------
-     7ד) #podcast — תמונת הגיטרות עם ▶ + פס נע של כרטיסי פרקים בסגנון כרטיסי #partners (כולם עם תמונת הגיטרות).
+     7ד) #podcast — שורת כותרת (תמונת הגיטרות הקטנה עם ▶ + כותרת) + פס נע של כרטיסי פרקים בסגנון כרטיסי #partners (כולם עם תמונת הגיטרות).
          לחיצה פותחת את חלון הפודקאסט: נגן 16:9 (הפרק הנבחר) + פרטי הפרק + רשימת כל הפרקים (טקסט, גלילה בתוך החלון).
          הכל מ-js/podcast-data.js — המקור היחיד. התמונה הגדולה פותחת את פרק 1, אריח — את הפרק שלו.
          video: YouTube / Vimeo (הטמעה במצב פרטיות) או קובץ mp4; אחרת audio; בלי שניהם = "הפרק יעלה בקרוב".
      --------------------------------------------------------------- */
   var pcSec = document.getElementById('podcast');
-  var pcOpenBtn = pcSec ? pcSec.querySelector('.pod-cover__media') : null;
+  var pcOpenBtn = pcSec ? pcSec.querySelector('.pod-head__media') : null;
   var PCDATA = window.PODCAST_DATA || [];
   var PCUI = window.PODCAST_UI || {};
   if (pcOpenBtn && PCDATA.length) {
@@ -1989,8 +1989,8 @@ document.addEventListener('DOMContentLoaded', function () {
       pcSec.querySelectorAll('[data-pod]').forEach(function (n) {
         n.textContent = PL(PCUI[n.getAttribute('data-pod')]);
       });
-      var sub = pcSec.querySelector('.pod-cover__sub');
-      if (sub) { sub.textContent = PL(PCUI.eyebrow) + ' · ' + PL(PCUI.count).replace('{n}', PCDATA.length); }
+      var cnt = pcSec.querySelector('.pod-head__count');
+      if (cnt) { cnt.textContent = PL(PCUI.count).replace('{n}', PCDATA.length); }
       pcOpenBtn.setAttribute('aria-label', PL(PCUI.play) + ' – ' + PL(PCUI.eyebrow));
       if (pcGrid) {
         pcGrid.querySelectorAll('.pod-card[data-ep]').forEach(function (c) {
@@ -2037,6 +2037,7 @@ document.addEventListener('DOMContentLoaded', function () {
           : iw < 1024 ? Math.round((Math.min(vw, 900) - 20) / 2)
           : Math.round((vw - 4 * gap) / 5);
         pcqBox.style.setProperty('--pt-card-w', cardW + 'px');
+        pcSec.style.setProperty('--pod-photo-w', (cardW - 2) + 'px');   // תמונת הכותרת = אזור התמונה של הכרטיס (בלי המסגרת)
         pcqBox.style.setProperty('--pt-card-gap', gap + 'px');
         var step = cardW + gap;
         var reps = Math.max(1, Math.ceil((vw + step) / (step * pcqSrc.length)));
