@@ -1,153 +1,182 @@
 /* ==========================================================================
-   GAD MIVNIM — תוכן חלונות "מידע לאזרח ולבונה" (info-data.js)
-   כל כרטיס ב-#info (לפי data-slug של הכרטיס) מקבל sections — מקטע אחד או יותר. כל מקטע:
-     title  — כותרת מקטע (רק כשיש בחלון יותר ממקטע אחד; אחרת ריק)
-     intro  — פסקת פתיחה קצרה
-     points — "מה חשוב לדעת" (3–4 נקודות)
-     tip    — "טיפ GAD MIVNIM"
-   כל טקסט לפי שפה: { he, en, ru, fr } — העברית היא המקור. בלי sections = "תוכן יתווסף בקרוב".
+   GAD MIVNIM — "מידע לאזרח ולבונה" (info-data.js) — המקור היחיד ל-12 כרטיסי הנושאים ולחלונות שלהם.
+   הסדר כאן = הסדר בפס. כל נושא:
+     slug    — מזהה הכרטיס (data-slug)
+     icon    — תוכן ה-SVG (viewBox 0 0 24 24, קו תכלת)
+     title   — כותרת הכרטיס והחלון
+     teaser  — משפט הכרטיס (מופיע גם מתחת לכותרת בחלון)
+     intro   — פסקת פתיחה בחלון
+     bullets — "מה חשוב לדעת" (3–4 נקודות)
+     tip     — "טיפ GAD MIVNIM"
+   כל טקסט לפי שפה: { he, en, ru, fr } — העברית היא המקור.
    ========================================================================== */
-window.INFO_DATA = {
+window.INFO_DATA = [
 
-  /* 1. מתכננים שיפוץ? זה מה שחשוב לדעת */
-  'renovation': { sections: [{
+  /* 1. מה חשוב לדעת שמתכננים שיפוץ או רוצים לבצע שינוי במבנה קיים */
+  { slug: 'renovation',
+    icon: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
+    title: { he: 'מה חשוב לדעת שמתכננים שיפוץ או רוצים לבצע שינוי במבנה קיים', en: 'What to know when planning a renovation or a change to an existing building', ru: 'Что важно знать, планируя ремонт или изменения в существующем здании', fr: 'Ce qu’il faut savoir avant de rénover ou de modifier un bâtiment existant' },
+    teaser: { he: 'לפני שמזיזים קיר אחד: היתרים, תכנון ולוחות זמנים שיחסכו לכם כאב ראש.', en: 'Before moving a single wall: permits, planning and timelines that will save you headaches.', ru: 'Прежде чем сдвинуть хоть одну стену: разрешения, планирование и сроки, которые избавят вас от головной боли.', fr: 'Avant de déplacer un seul mur : permis, planification et délais qui vous éviteront bien des soucis.' },
     intro: { he: 'שיפוץ טוב מתחיל הרבה לפני הפטיש הראשון – בתכנון נכון שחוסך כסף, זמן ועוגמת נפש.', en: 'A good renovation starts long before the first hammer – with proper planning that saves money, time and heartache.', ru: 'Хороший ремонт начинается задолго до первого удара молотка — с правильного планирования, которое экономит деньги, время и нервы.', fr: 'Une bonne rénovation commence bien avant le premier coup de marteau – par une bonne planification qui fait gagner de l’argent, du temps et évite bien des tracas.' },
-    points: [
+    bullets: [
       { he: 'בדקו מראש אם השינוי דורש היתר בנייה או אישור מהרשות המקומית.', en: 'Check in advance whether the change requires a building permit or approval from the local authority.', ru: 'Заранее узнайте, требуется ли для изменений разрешение на строительство или согласование с местными властями.', fr: 'Vérifiez à l’avance si la modification nécessite un permis de construire ou l’accord de la municipalité.' },
       { he: 'קיר נושא, מערכות חשמל ואינסטלציה – לא נוגעים בלי מהנדס ובעלי מקצוע מוסמכים.', en: 'Load-bearing walls, electrical and plumbing systems – never touch them without an engineer and licensed professionals.', ru: 'Несущие стены, электрика и сантехника — не трогайте их без инженера и лицензированных специалистов.', fr: 'Murs porteurs, électricité et plomberie – on n’y touche pas sans ingénieur ni professionnels agréés.' },
       { he: 'הגדירו סדר עבודה ולוח זמנים ברור לפני שמתחילים.', en: 'Set a clear work order and timeline before you start.', ru: 'Определите чёткий порядок работ и график до начала.', fr: 'Fixez un ordre des travaux et un calendrier clairs avant de commencer.' },
       { he: 'השאירו 10%–15% מהתקציב לבלתי צפוי.', en: 'Keep 10%–15% of the budget for the unexpected.', ru: 'Оставьте 10–15% бюджета на непредвиденные расходы.', fr: 'Gardez 10 à 15 % du budget pour les imprévus.' }
     ],
-    tip: { he: 'צלמו ותעדו את המצב הקיים לפני תחילת העבודות – זה שווה זהב בכל שלב.', en: 'Photograph and document the existing condition before work begins – it’s worth gold at every stage.', ru: 'Сфотографируйте и задокументируйте исходное состояние до начала работ — это бесценно на любом этапе.', fr: 'Photographiez et documentez l’état existant avant le début des travaux – cela vaut de l’or à chaque étape.' }
-  }]},
+    tip: { he: 'צלמו ותעדו את המצב הקיים לפני תחילת העבודות – זה שווה זהב בכל שלב.', en: 'Photograph and document the existing condition before work begins – it’s worth gold at every stage.', ru: 'Сфотографируйте и задокументируйте исходное состояние до начала работ — это бесценно на любом этапе.', fr: 'Photographiez et documentez l’état existant avant le début des travaux – cela vaut de l’or à chaque étape.' } },
 
-  /* 2. בונים בית פרטי – חכם, יעיל ונכון */
-  'private-home': { sections: [{
+  /* 2. איך בונים בית פרטי בצורה היעילה ביותר */
+  { slug: 'private-home',
+    icon: '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v12h14V9"/><path d="M10 21v-6h4v6"/>',
+    title: { he: 'איך בונים בית פרטי בצורה היעילה ביותר', en: 'How to build a private home in the most efficient way', ru: 'Как построить частный дом наиболее эффективно', fr: 'Comment construire une maison de la manière la plus efficace' },
+    teaser: { he: 'הדרך הקצרה מהחלום למפתח, צעד אחר צעד.', en: 'The short road from dream to key, step by step.', ru: 'Короткий путь от мечты до ключа, шаг за шагом.', fr: 'Le chemin le plus court du rêve à la clé, étape par étape.' },
     intro: { he: 'בית פרטי הוא פרויקט חיים – וכשמנהלים אותו נכון, החלום הופך למפתח בלי לאבד את הדרך.', en: 'A private home is a life project – and when it’s managed right, the dream becomes a key without losing your way.', ru: 'Частный дом — проект всей жизни, и при правильном управлении мечта превращается в ключ, не сбившись с пути.', fr: 'Une maison individuelle est le projet d’une vie – bien gérée, le rêve devient une clé sans perdre le cap.' },
-    points: [
+    bullets: [
       { he: 'התחילו בבדיקת זכויות הבנייה והתב"ע של המגרש.', en: 'Start by checking the plot’s building rights and zoning plan.', ru: 'Начните с проверки прав на застройку и градостроительного плана участка.', fr: 'Commencez par vérifier les droits à construire et le plan d’urbanisme du terrain.' },
       { he: 'צוות אחד שמתאם תכנון, הנדסה וביצוע חוסך פערים וטעויות יקרות.', en: 'One team coordinating design, engineering and execution saves gaps and costly mistakes.', ru: 'Одна команда, координирующая проектирование, инженерию и строительство, избавляет от нестыковок и дорогих ошибок.', fr: 'Une seule équipe qui coordonne conception, ingénierie et exécution évite les décalages et les erreurs coûteuses.' },
       { he: 'תוכניות מפורטות ומפרט טכני ברור = הצעות מחיר מדויקות.', en: 'Detailed plans and a clear technical specification = accurate quotes.', ru: 'Подробные чертежи и чёткая техническая спецификация = точные сметы.', fr: 'Des plans détaillés et un cahier des charges clair = des devis précis.' },
       { he: 'לוח זמנים עם אבני דרך מאפשר לכם לדעת בכל רגע איפה הפרויקט עומד.', en: 'A timeline with milestones lets you know at any moment where the project stands.', ru: 'График с контрольными точками позволяет в любой момент знать, на каком этапе проект.', fr: 'Un calendrier avec des jalons vous permet de savoir à tout moment où en est le projet.' }
     ],
-    tip: { he: 'החלטות על מטבח, ריצוף ותאורה כדאי לקבל כבר בשלב התכנון – לא באמצע הבנייה.', en: 'Decisions on the kitchen, flooring and lighting are best made at the planning stage – not in the middle of construction.', ru: 'Решения о кухне, напольном покрытии и освещении лучше принимать на этапе проектирования, а не посреди стройки.', fr: 'Les choix de cuisine, de sols et d’éclairage se font dès la conception – pas en plein chantier.' }
-  }]},
+    tip: { he: 'החלטות על מטבח, ריצוף ותאורה כדאי לקבל כבר בשלב התכנון – לא באמצע הבנייה.', en: 'Decisions on the kitchen, flooring and lighting are best made at the planning stage – not in the middle of construction.', ru: 'Решения о кухне, напольном покрытии и освещении лучше принимать на этапе проектирования, а не посреди стройки.', fr: 'Les choix de cuisine, de sols et d’éclairage se font dès la conception – pas en plein chantier.' } },
 
-  /* 3. שומרים על המבנה מפני מזג האוויר */
-  'weather': { sections: [{
+  /* 3. מדוע חשוב לשמור על מבנה מפני מזג האוויר והנזקים שנגרמים מחוסר שמירה */
+  { slug: 'weather',
+    icon: '<path d="M12 3a9 9 0 0 1 9 9H3a9 9 0 0 1 9-9z"/><path d="M12 12v7a2 2 0 0 1-4 0"/><path d="M12 1.5V3"/>',
+    title: { he: 'מדוע חשוב לשמור על מבנה מפני מזג האוויר והנזקים שנגרמים מחוסר שמירה', en: 'Why protect a building from the weather and from the damage caused by neglect', ru: 'Почему важно защищать здание от непогоды и от ущерба из-за отсутствия ухода', fr: 'Pourquoi protéger un bâtiment des intempéries et des dégâts dus au manque d’entretien' },
+    teaser: { he: 'איטום, בידוד ותחזוקה מונעת – כי נזק קטן היום הוא הוצאה גדולה מחר.', en: 'Sealing, insulation and preventive maintenance – because small damage today is a big expense tomorrow.', ru: 'Гидроизоляция, утепление и профилактика — ведь маленькое повреждение сегодня — большие расходы завтра.', fr: 'Étanchéité, isolation et entretien préventif – car un petit dégât aujourd’hui est une grosse dépense demain.' },
     intro: { he: 'גשם, שמש ורוח עובדים על המבנה שלכם כל יום. מי שמקדים – חוסך.', en: 'Rain, sun and wind work on your building every day. Acting early saves money.', ru: 'Дождь, солнце и ветер воздействуют на ваше здание каждый день. Кто действует заранее — экономит.', fr: 'Pluie, soleil et vent agissent sur votre bâtiment chaque jour. Anticiper, c’est économiser.' },
-    points: [
+    bullets: [
       { he: 'איטום גגות ומרפסות הוא קו ההגנה הראשון מפני רטיבות ועובש.', en: 'Waterproofing roofs and balconies is the first line of defense against damp and mold.', ru: 'Гидроизоляция крыш и балконов — первая линия защиты от сырости и плесени.', fr: 'L’étanchéité des toits et des balcons est la première ligne de défense contre l’humidité et les moisissures.' },
       { he: 'סדקים קטנים בחזית הם הזמנה לחדירת מים – מטפלים בהם מוקדם.', en: 'Small cracks in the facade invite water in – treat them early.', ru: 'Мелкие трещины на фасаде — приглашение для воды; устраняйте их вовремя.', fr: 'Les petites fissures en façade laissent entrer l’eau – traitez-les tôt.' },
       { he: 'בידוד נכון שומר על נוחות בבית ומוריד את חשבון החשמל.', en: 'Proper insulation keeps the home comfortable and lowers the electricity bill.', ru: 'Правильная теплоизоляция сохраняет комфорт в доме и снижает счета за электричество.', fr: 'Une bonne isolation garde la maison confortable et réduit la facture d’électricité.' },
       { he: 'בדיקה לפני החורף שווה יותר מתיקון אחריו.', en: 'An inspection before winter is worth more than a repair after it.', ru: 'Проверка перед зимой стоит больше, чем ремонт после неё.', fr: 'Une inspection avant l’hiver vaut mieux qu’une réparation après.' }
     ],
-    tip: { he: 'קבעו בדיקת איטום תקופתית פעם בשנה, רגע לפני עונת הגשמים.', en: 'Schedule a waterproofing inspection once a year, just before the rainy season.', ru: 'Назначайте проверку гидроизоляции раз в год, прямо перед сезоном дождей.', fr: 'Programmez un contrôle d’étanchéité une fois par an, juste avant la saison des pluies.' }
-  }]},
+    tip: { he: 'קבעו בדיקת איטום תקופתית פעם בשנה, רגע לפני עונת הגשמים.', en: 'Schedule a waterproofing inspection once a year, just before the rainy season.', ru: 'Назначайте проверку гидроизоляции раз в год, прямо перед сезоном дождей.', fr: 'Programmez un contrôle d’étanchéité une fois par an, juste avant la saison des pluies.' } },
 
-  /* 4. תכנון תקציב בלי הפתעות */
-  'budget': { sections: [{
+  /* 4. איך מתכננים תקציב ומה חשוב לדעת */
+  { slug: 'budget',
+    icon: '<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8"/><path d="M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h.01M8 18.5h.01M12 18.5h.01M16 18.5h.01"/>',
+    title: { he: 'איך מתכננים תקציב ומה חשוב לדעת', en: 'How to plan a budget and what to know', ru: 'Как спланировать бюджет и что важно знать', fr: 'Comment planifier un budget et ce qu’il faut savoir' },
+    teaser: { he: 'איך בונים תקציב מציאותי, משאירים מקום לבלתי צפוי ושומרים על שליטה.', en: 'How to build a realistic budget, leave room for the unexpected and stay in control.', ru: 'Как составить реалистичный бюджет, оставить место для непредвиденного и сохранить контроль.', fr: 'Comment bâtir un budget réaliste, prévoir l’imprévu et garder le contrôle.' },
     intro: { he: 'תקציב טוב הוא לא רק מספר – הוא תוכנית שמשאירה אתכם בשליטה מההתחלה ועד המסירה.', en: 'A good budget isn’t just a number – it’s a plan that keeps you in control from start to handover.', ru: 'Хороший бюджет — это не просто число, а план, который держит всё под вашим контролем от начала до сдачи.', fr: 'Un bon budget n’est pas qu’un chiffre – c’est un plan qui vous garde maître du projet du début à la livraison.' },
-    points: [
+    bullets: [
       { he: 'פרקו את התקציב לפי שלבים: תכנון, שלד, מערכות, גמר ומוצרים נלווים.', en: 'Break the budget into stages: planning, structure, systems, finishing and complementary products.', ru: 'Разбейте бюджет по этапам: проектирование, каркас, инженерные системы, отделка и сопутствующие товары.', fr: 'Découpez le budget par étapes : conception, gros œuvre, réseaux, finitions et produits complémentaires.' },
       { he: 'השוו הצעות מחיר לפי אותו מפרט בדיוק – אחרת משווים תפוחים לתפוזים.', en: 'Compare quotes against exactly the same specification – otherwise you’re comparing apples to oranges.', ru: 'Сравнивайте сметы строго по одной и той же спецификации — иначе вы сравниваете яблоки с апельсинами.', fr: 'Comparez les devis sur exactement le même cahier des charges – sinon on compare des pommes et des oranges.' },
       { he: 'הגדירו מראש רזרבה לבלתי צפוי.', en: 'Set a reserve for the unexpected in advance.', ru: 'Заранее заложите резерв на непредвиденное.', fr: 'Prévoyez d’avance une réserve pour les imprévus.' },
       { he: 'עקבו אחרי ההוצאות לאורך הדרך, לא רק בסוף.', en: 'Track expenses along the way, not just at the end.', ru: 'Отслеживайте расходы по ходу работ, а не только в конце.', fr: 'Suivez les dépenses tout au long du projet, pas seulement à la fin.' }
     ],
-    tip: { he: '"הכי זול" בהתחלה יוצא לא פעם "הכי יקר" בסוף – בחרו לפי איכות ואחריות.', en: '"The cheapest" at the start often turns out "the most expensive" in the end – choose by quality and warranty.', ru: '«Самое дешёвое» в начале нередко оказывается «самым дорогим» в конце — выбирайте по качеству и гарантии.', fr: '« Le moins cher » au départ finit souvent « le plus cher » à l’arrivée – choisissez la qualité et la garantie.' }
-  }]},
+    tip: { he: '"הכי זול" בהתחלה יוצא לא פעם "הכי יקר" בסוף – בחרו לפי איכות ואחריות.', en: '"The cheapest" at the start often turns out "the most expensive" in the end – choose by quality and warranty.', ru: '«Самое дешёвое» в начале нередко оказывается «самым дорогим» в конце — выбирайте по качеству и гарантии.', fr: '« Le moins cher » au départ finit souvent « le plus cher » à l’arrivée – choisissez la qualité et la garantie.' } },
 
-  /* 5. מבנה מסוכן ומבנה לשימור — שני מקטעים */
-  'dangerous': { sections: [{
-    title: { he: 'מבנה מסוכן', en: 'Dangerous buildings', ru: 'Опасное здание', fr: 'Bâtiment dangereux' },
+  /* 5. מבנה מסוכן – מה חשוב לדעת */
+  { slug: 'dangerous',
+    icon: '<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+    title: { he: 'מבנה מסוכן – מה חשוב לדעת', en: 'Dangerous buildings – what to know', ru: 'Опасное здание — что важно знать', fr: 'Bâtiment dangereux – ce qu’il faut savoir' },
+    teaser: { he: 'סימני אזהרה, חובות הבעלים ומתי חייבים לפנות לאיש מקצוע מיד.', en: 'Warning signs, owners’ duties and when you must call a professional right away.', ru: 'Тревожные признаки, обязанности владельца и когда нужно срочно звать специалиста.', fr: 'Signes d’alerte, obligations du propriétaire et quand appeler un professionnel sans attendre.' },
     intro: { he: 'סדק, שקיעה או בטון מתפורר הם לא רק בעיה אסתטית – לפעמים הם סימן אזהרה.', en: 'A crack, subsidence or crumbling concrete isn’t just a cosmetic issue – sometimes it’s a warning sign.', ru: 'Трещина, просадка или крошащийся бетон — это не только эстетическая проблема, иногда это тревожный сигнал.', fr: 'Une fissure, un affaissement ou un béton qui s’effrite ne sont pas qu’un problème esthétique – c’est parfois un signal d’alerte.' },
-    points: [
+    bullets: [
       { he: 'סדקים מתרחבים, ברזל חשוף או רצפה ששוקעת – דורשים בדיקת מהנדס בהקדם.', en: 'Widening cracks, exposed rebar or a sinking floor – require an engineer’s inspection as soon as possible.', ru: 'Расширяющиеся трещины, оголённая арматура или проседающий пол требуют скорейшей проверки инженера.', fr: 'Fissures qui s’élargissent, ferraillage apparent ou sol qui s’affaisse – exigent au plus vite l’avis d’un ingénieur.' },
       { he: 'לבעלי המבנה יש אחריות לתחזוקה ולבטיחות הדיירים והעוברים.', en: 'Building owners are responsible for maintenance and for the safety of residents and passers-by.', ru: 'Владельцы здания отвечают за его содержание и безопасность жильцов и прохожих.', fr: 'Les propriétaires sont responsables de l’entretien et de la sécurité des résidents et des passants.' },
       { he: 'טיפול מוקדם זול ובטוח בהרבה מתיקון אחרי נזק.', en: 'Early treatment is far cheaper and safer than repairs after damage.', ru: 'Ранний ремонт гораздо дешевле и безопаснее, чем исправление последствий.', fr: 'Agir tôt est bien moins cher et plus sûr que réparer après les dégâts.' },
       { he: 'חיזוק מבנה נעשה לפי תכנון הנדסי בלבד.', en: 'Structural reinforcement is done only according to an engineering design.', ru: 'Усиление конструкций выполняется только по инженерному проекту.', fr: 'Le renforcement d’une structure se fait uniquement selon une étude d’ingénierie.' }
     ],
-    tip: { he: 'כשיש ספק – אין ספק. הזמינו בדיקה מקצועית לפני שמחכים לנזק.', en: 'When in doubt – there’s no doubt. Order a professional inspection before damage occurs.', ru: 'Если есть сомнения — сомнений нет. Закажите профессиональную проверку, не дожидаясь ущерба.', fr: 'Dans le doute, n’hésitez pas : faites faire une inspection professionnelle avant les dégâts.' }
-  }, {
-    title: { he: 'מבנה לשימור', en: 'Heritage buildings', ru: 'Здание под охраной', fr: 'Bâtiment classé' },
+    tip: { he: 'כשיש ספק – אין ספק. הזמינו בדיקה מקצועית לפני שמחכים לנזק.', en: 'When in doubt – there’s no doubt. Order a professional inspection before damage occurs.', ru: 'Если есть сомнения — сомнений нет. Закажите профессиональную проверку, не дожидаясь ущерба.', fr: 'Dans le doute, n’hésitez pas : faites faire une inspection professionnelle avant les dégâts.' } },
+
+  /* 6. מבנה לשימור – מה חשוב לדעת */
+  { slug: 'heritage',
+    icon: '<path d="M3 21h18"/><path d="M5 21V10M9.5 21V10M14.5 21V10M19 21V10"/><path d="M2 10h20L12 3z"/>',
+    title: { he: 'מבנה לשימור – מה חשוב לדעת', en: 'Heritage buildings – what to know', ru: 'Здание под охраной — что важно знать', fr: 'Bâtiment classé – ce qu’il faut savoir' },
+    teaser: { he: 'איך משדרגים מבנה היסטורי ושומרים על הנשמה שלו – לפי החוק.', en: 'How to upgrade a historic building and keep its soul – by the law.', ru: 'Как модернизировать историческое здание и сохранить его душу — по закону.', fr: 'Comment rénover un bâtiment historique en préservant son âme – selon la loi.' },
     intro: { he: 'למבנה לשימור יש היסטוריה ונשמה – והשדרוג שלו דורש רגישות, ידע ותכנון מדויק.', en: 'A heritage building has history and soul – and upgrading it takes sensitivity, knowledge and precise planning.', ru: 'У здания под охраной есть история и душа — и его модернизация требует деликатности, знаний и точного планирования.', fr: 'Un bâtiment classé a une histoire et une âme – sa rénovation exige délicatesse, savoir-faire et une planification précise.' },
-    points: [
+    bullets: [
       { he: 'כל שינוי כפוף להנחיות השימור של הרשות המקומית.', en: 'Every change is subject to the local authority’s preservation guidelines.', ru: 'Любые изменения подчиняются требованиям местных властей по охране памятников.', fr: 'Toute modification est soumise aux directives de conservation de la municipalité.' },
       { he: 'חומרים ושיטות עבודה צריכים להתאים לאופי המקורי של המבנה.', en: 'Materials and work methods must suit the building’s original character.', ru: 'Материалы и методы работ должны соответствовать исходному характеру здания.', fr: 'Les matériaux et les méthodes doivent respecter le caractère d’origine du bâtiment.' },
       { he: 'תיעוד ותכנון מוקדם מקצרים את תהליך האישורים.', en: 'Early documentation and planning shorten the approval process.', ru: 'Ранняя документация и планирование сокращают процесс согласований.', fr: 'Une documentation et une planification précoces raccourcissent les autorisations.' },
       { he: 'אפשר לשלב מערכות מודרניות בלי לפגוע בערך ההיסטורי.', en: 'Modern systems can be integrated without harming the historic value.', ru: 'Современные системы можно встроить, не нарушая историческую ценность.', fr: 'On peut intégrer des équipements modernes sans nuire à la valeur historique.' }
     ],
-    tip: { he: 'צוות שמכיר עבודות שיקום ושימור חוסך לכם חודשים של התכתבויות.', en: 'A team experienced in restoration and preservation saves you months of correspondence.', ru: 'Команда с опытом реставрации и сохранения зданий избавит вас от месяцев переписки.', fr: 'Une équipe rompue à la restauration et à la conservation vous épargne des mois de correspondance.' }
-  }]},
+    tip: { he: 'צוות שמכיר עבודות שיקום ושימור חוסך לכם חודשים של התכתבויות.', en: 'A team experienced in restoration and preservation saves you months of correspondence.', ru: 'Команда с опытом реставрации и сохранения зданий избавит вас от месяцев переписки.', fr: 'Une équipe rompue à la restauration et à la conservation vous épargne des mois de correspondance.' } },
 
-  /* 6. תחזוקה שוטפת – ככה שומרים על הערך */
-  'maintenance': { sections: [{
+  /* 7. תחזוקה שוטפת ומה חשוב */
+  { slug: 'maintenance',
+    icon: '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="m9 16 2 2 4-4"/>',
+    title: { he: 'תחזוקה שוטפת ומה חשוב', en: 'Routine maintenance and what matters', ru: 'Регулярное обслуживание и что важно', fr: 'L’entretien courant et ce qui compte' },
+    teaser: { he: 'מה בודקים, מתי ולמה – לבית שנשאר כמו חדש.', en: 'What to check, when and why – for a home that stays like new.', ru: 'Что проверять, когда и зачем — чтобы дом оставался как новый.', fr: 'Quoi vérifier, quand et pourquoi – pour une maison qui reste comme neuve.' },
     intro: { he: 'מבנה מתוחזק שומר על הערך שלו – ועל השקט שלכם.', en: 'A well-maintained building keeps its value – and your peace of mind.', ru: 'Ухоженное здание сохраняет свою ценность — и ваше спокойствие.', fr: 'Un bâtiment bien entretenu garde sa valeur – et votre tranquillité.' },
-    points: [
+    bullets: [
       { he: 'בדיקות תקופתיות למערכות חשמל, אינסטלציה, מיזוג ואיטום.', en: 'Periodic checks of electrical, plumbing, air-conditioning and waterproofing systems.', ru: 'Периодические проверки электрики, сантехники, кондиционирования и гидроизоляции.', fr: 'Contrôles réguliers de l’électricité, de la plomberie, de la climatisation et de l’étanchéité.' },
       { he: 'ניקוי מרזבים ונקזים לפני החורף מונע הצפות ורטיבות.', en: 'Cleaning gutters and drains before winter prevents flooding and damp.', ru: 'Чистка водостоков и сливов перед зимой предотвращает затопления и сырость.', fr: 'Nettoyer gouttières et évacuations avant l’hiver évite inondations et humidité.' },
       { he: 'טיפול מיידי בתקלות קטנות מונע תקלות גדולות.', en: 'Fixing small faults right away prevents big ones.', ru: 'Немедленное устранение мелких неисправностей предотвращает крупные.', fr: 'Régler tout de suite les petites pannes évite les grosses.' },
       { he: 'תיק מבנה מסודר עם כל המסמכים והאחריות חוסך זמן בכל פנייה.', en: 'An organized building file with all documents and warranties saves time on every request.', ru: 'Аккуратное досье здания со всеми документами и гарантиями экономит время при каждом обращении.', fr: 'Un dossier du bâtiment bien tenu, avec documents et garanties, fait gagner du temps à chaque démarche.' }
     ],
-    tip: { he: 'מנוי שירות ואחזקה שומר על המבנה במצב מעולה – בלי שתצטרכו לזכור כלום.', en: 'A service and maintenance plan keeps the building in excellent shape – without you having to remember a thing.', ru: 'Абонемент на обслуживание держит здание в отличном состоянии — и вам не нужно ничего помнить.', fr: 'Un contrat d’entretien garde le bâtiment en excellent état – sans que vous ayez à y penser.' }
-  }]},
+    tip: { he: 'מנוי שירות ואחזקה שומר על המבנה במצב מעולה – בלי שתצטרכו לזכור כלום.', en: 'A service and maintenance plan keeps the building in excellent shape – without you having to remember a thing.', ru: 'Абонемент на обслуживание держит здание в отличном состоянии — и вам не нужно ничего помнить.', fr: 'Un contrat d’entretien garde le bâtiment en excellent état – sans que vous ayez à y penser.' } },
 
-  /* 7. בטיחות בעבודה – לפני הכל */
-  'safety': { sections: [{
+  /* 8. בטיחות בעבודה */
+  { slug: 'safety',
+    icon: '<path d="M2 18a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1z"/><path d="M10 15V6.5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1V15"/><path d="M4 15v-3a6 6 0 0 1 6-6"/><path d="M14 6a6 6 0 0 1 6 6v3"/>',
+    title: { he: 'בטיחות בעבודה', en: 'Safety at work', ru: 'Безопасность труда', fr: 'La sécurité au travail' },
+    teaser: { he: 'הכללים שמגנים על העובדים, על הדיירים ועל הפרויקט.', en: 'The rules that protect the workers, the residents and the project.', ru: 'Правила, которые защищают рабочих, жильцов и проект.', fr: 'Les règles qui protègent les ouvriers, les résidents et le projet.' },
     intro: { he: 'באתר בנייה, בטיחות היא לא סעיף בחוזה – היא הבסיס לכל יום עבודה.', en: 'On a construction site, safety isn’t a clause in the contract – it’s the foundation of every working day.', ru: 'На стройке безопасность — не пункт договора, а основа каждого рабочего дня.', fr: 'Sur un chantier, la sécurité n’est pas une clause du contrat – c’est la base de chaque journée de travail.' },
-    points: [
+    bullets: [
       { he: 'גידור ושילוט האתר מגנים על העובדים, על הדיירים ועל העוברים ושבים.', en: 'Fencing and signage protect the workers, the residents and passers-by.', ru: 'Ограждение и знаки на площадке защищают рабочих, жильцов и прохожих.', fr: 'Clôtures et signalisation protègent les ouvriers, les résidents et les passants.' },
       { he: 'עבודה בגובה רק עם ציוד מתאים ובעלי מקצוע מוסמכים.', en: 'Work at height only with proper equipment and certified professionals.', ru: 'Работы на высоте — только с подходящим снаряжением и сертифицированными специалистами.', fr: 'Travail en hauteur uniquement avec l’équipement adapté et des professionnels certifiés.' },
       { he: 'מנהל עבודה רשום אחראי על הבטיחות באתר.', en: 'A registered site manager is responsible for safety on site.', ru: 'Зарегистрированный прораб отвечает за безопасность на площадке.', fr: 'Un chef de chantier agréé est responsable de la sécurité sur le site.' },
       { he: 'מצלמות ובקרה באתר מוסיפות שכבת ביטחון ושקיפות.', en: 'Cameras and monitoring on site add a layer of security and transparency.', ru: 'Камеры и контроль на площадке добавляют безопасности и прозрачности.', fr: 'Caméras et surveillance sur le chantier ajoutent sécurité et transparence.' }
     ],
-    tip: { he: 'אצלנו כל פרויקט מרושת במצלמות אבטחה 24/7 עוד לפני תחילת העבודות.', en: 'With us, every project is covered by 24/7 security cameras even before work begins.', ru: 'У нас каждый проект оснащается камерами наблюдения 24/7 ещё до начала работ.', fr: 'Chez nous, chaque projet est équipé de caméras de sécurité 24h/24 avant même le début des travaux.' }
-  }]},
+    tip: { he: 'אצלנו כל פרויקט מרושת במצלמות אבטחה 24/7 עוד לפני תחילת העבודות.', en: 'With us, every project is covered by 24/7 security cameras even before work begins.', ru: 'У нас каждый проект оснащается камерами наблюдения 24/7 ещё до начала работ.', fr: 'Chez nous, chaque projet est équipé de caméras de sécurité 24h/24 avant même le début des travaux.' } },
 
-  /* 8. בחירת קבלן ובעלי מקצוע */
-  'contractor': { sections: [{
+  /* 9. בחירת קבלן ובעלי מקצוע */
+  { slug: 'contractor',
+    icon: '<circle cx="9" cy="7" r="4"/><path d="M2 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/><path d="m16 11 2 2 4-4"/>',
+    title: { he: 'בחירת קבלן ובעלי מקצוע', en: 'Choosing a contractor and professionals', ru: 'Выбор подрядчика и мастеров', fr: 'Choisir un entrepreneur et des artisans' },
+    teaser: { he: 'השאלות הנכונות, הבדיקות שחובה לעשות והסימנים שכדאי לשים לב אליהם.', en: 'The right questions, the must-do checks and the signs worth noticing.', ru: 'Правильные вопросы, обязательные проверки и признаки, на которые стоит обратить внимание.', fr: 'Les bonnes questions, les vérifications indispensables et les signes à surveiller.' },
     intro: { he: 'הבחירה הנכונה של קבלן היא ההחלטה החשובה ביותר בפרויקט.', en: 'Choosing the right contractor is the most important decision in the project.', ru: 'Правильный выбор подрядчика — самое важное решение в проекте.', fr: 'Bien choisir son entrepreneur est la décision la plus importante du projet.' },
-    points: [
+    bullets: [
       { he: 'בדקו רישיון, ביטוח וניסיון בפרויקטים דומים.', en: 'Check licensing, insurance and experience with similar projects.', ru: 'Проверьте лицензию, страховку и опыт в похожих проектах.', fr: 'Vérifiez la licence, l’assurance et l’expérience sur des projets similaires.' },
       { he: 'בקשו לראות עבודות קודמות ולדבר עם לקוחות.', en: 'Ask to see previous work and talk to clients.', ru: 'Попросите показать прошлые работы и поговорите с клиентами.', fr: 'Demandez à voir des réalisations et à parler à d’anciens clients.' },
       { he: 'חוזה מפורט עם מפרט, לוחות זמנים ותנאי אחריות – חובה.', en: 'A detailed contract with specifications, timelines and warranty terms – a must.', ru: 'Подробный договор со спецификацией, сроками и условиями гарантии обязателен.', fr: 'Un contrat détaillé avec cahier des charges, délais et garanties – indispensable.' },
       { he: 'זמינות ותקשורת שוטפת חשובות לא פחות מהמחיר.', en: 'Availability and ongoing communication matter as much as the price.', ru: 'Доступность и постоянная связь важны не меньше цены.', fr: 'La disponibilité et une communication suivie comptent autant que le prix.' }
     ],
-    tip: { he: 'עבודה מול גוף אחד שמתאם את כל בעלי המקצוע חוסכת לכם את "הריצות" בין קבלנים.', en: 'Working with one body that coordinates all the professionals saves you running around between contractors.', ru: 'Работа с одной компанией, координирующей всех специалистов, избавит вас от беготни между подрядчиками.', fr: 'Un interlocuteur unique qui coordonne tous les corps de métier vous évite de courir entre les entrepreneurs.' }
-  }]},
+    tip: { he: 'עבודה מול גוף אחד שמתאם את כל בעלי המקצוע חוסכת לכם את "הריצות" בין קבלנים.', en: 'Working with one body that coordinates all the professionals saves you running around between contractors.', ru: 'Работа с одной компанией, координирующей всех специалистов, избавит вас от беготни между подрядчиками.', fr: 'Un interlocuteur unique qui coordonne tous les corps de métier vous évite de courir entre les entrepreneurs.' } },
 
-  /* 9. בחירת מוצרים נלווים לפרויקט */
-  'products': { sections: [{
+  /* 10. בחירת מוצרים נלווים לפרויקט ואיך בוחרים */
+  { slug: 'products',
+    icon: '<path d="M12 22a10 10 0 1 1 10-10c0 2.8-2.2 4-4 4h-2a2 2 0 0 0-1.5 3.3A1.6 1.6 0 0 1 12 22z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="10.5" cy="7" r="1"/><circle cx="15" cy="7.5" r="1"/>',
+    title: { he: 'בחירת מוצרים נלווים לפרויקט ואיך בוחרים', en: 'Choosing complementary products for the project – and how', ru: 'Выбор сопутствующих товаров для проекта и как выбирать', fr: 'Choisir les produits complémentaires du projet – et comment' },
+    teaser: { he: 'ריצוף, מטבח, תאורה ודלתות – איך בוחרים נכון, יפה ומשתלם.', en: 'Flooring, kitchen, lighting and doors – how to choose right, beautiful and worthwhile.', ru: 'Плитка, кухня, освещение и двери — как выбрать правильно, красиво и выгодно.', fr: 'Sols, cuisine, éclairage et portes – bien choisir, beau et rentable.' },
     intro: { he: 'ריצוף, מטבח, תאורה ודלתות – הבחירות האלה הן מה שהופך מבנה לבית.', en: 'Flooring, kitchen, lighting and doors – these choices are what turn a building into a home.', ru: 'Плитка, кухня, освещение и двери — именно этот выбор превращает здание в дом.', fr: 'Sols, cuisine, éclairage et portes – ce sont ces choix qui font d’un bâtiment un foyer.' },
-    points: [
+    bullets: [
       { he: 'בחרו מוצרים שמתאימים לסגנון, לשימוש היומיומי ולתקציב.', en: 'Choose products that suit your style, daily use and budget.', ru: 'Выбирайте товары, подходящие вашему стилю, повседневному использованию и бюджету.', fr: 'Choisissez des produits adaptés à votre style, à l’usage quotidien et au budget.' },
       { he: 'שימו לב לאחריות, לזמינות חלפים ולזמני אספקה.', en: 'Pay attention to warranty, spare-part availability and delivery times.', ru: 'Обращайте внимание на гарантию, наличие запчастей и сроки поставки.', fr: 'Faites attention à la garantie, à la disponibilité des pièces et aux délais de livraison.' },
       { he: 'קבלו החלטות מוקדם כדי לא לעכב את הביצוע.', en: 'Decide early so as not to delay the work.', ru: 'Принимайте решения заранее, чтобы не задерживать работы.', fr: 'Décidez tôt pour ne pas retarder les travaux.' },
       { he: 'ראו ומששו את המוצרים לפני שמזמינים – תמונה לא תמיד מספרת הכל.', en: 'See and touch the products before ordering – a picture doesn’t always tell the whole story.', ru: 'Посмотрите и потрогайте товары до заказа — фото не всегда говорит всё.', fr: 'Voyez et touchez les produits avant de commander – une photo ne dit pas tout.' }
     ],
-    tip: { he: 'באולם התצוגה שלנו (בקרוב...) תוכלו לבחור הכל במקום אחד, עם ליווי אישי.', en: 'In our showroom (coming soon...) you’ll be able to choose everything in one place, with personal guidance.', ru: 'В нашем выставочном зале (скоро...) вы сможете выбрать всё в одном месте с личным сопровождением.', fr: 'Dans notre showroom (bientôt...) vous pourrez tout choisir au même endroit, avec un accompagnement personnalisé.' }
-  }]},
+    tip: { he: 'באולם התצוגה שלנו (בקרוב...) תוכלו לבחור הכל במקום אחד, עם ליווי אישי.', en: 'In our showroom (coming soon...) you’ll be able to choose everything in one place, with personal guidance.', ru: 'В нашем выставочном зале (скоро...) вы сможете выбрать всё в одном месте с личным сопровождением.', fr: 'Dans notre showroom (bientôt...) vous pourrez tout choisir au même endroit, avec un accompagnement personnalisé.' } },
 
-  /* 10. ליקויי בנייה ותכנון נכון — שני מקטעים */
-  'defects': { sections: [{
+  /* 11. ליקויי בנייה וטיפול בהם */
+  { slug: 'defects',
+    icon: '<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/><path d="M10 6.5 12 9.5l-2 2 2 2.5"/>',
     title: { he: 'ליקויי בנייה וטיפול בהם', en: 'Construction defects and how to handle them', ru: 'Строительные дефекты и их устранение', fr: 'Les malfaçons et leur traitement' },
+    teaser: { he: 'מסדקים ועד רטיבות: מה הזכויות שלכם ואיך מתקנים נכון.', en: 'From cracks to damp: what your rights are and how to fix it right.', ru: 'От трещин до сырости: каковы ваши права и как правильно всё исправить.', fr: 'Des fissures à l’humidité : vos droits et comment bien réparer.' },
     intro: { he: 'רטיבות, סדקים או ריצוף שקוע – ליקוי בנייה מטפלים בו נכון, ולא מחכים שיחמיר.', en: 'Damp, cracks or sunken flooring – a construction defect should be handled properly, not left to get worse.', ru: 'Сырость, трещины или просевшая плитка — дефект нужно устранять правильно и не ждать, пока станет хуже.', fr: 'Humidité, fissures ou carrelage affaissé – une malfaçon se traite correctement, sans attendre qu’elle s’aggrave.' },
-    points: [
+    bullets: [
       { he: 'תעדו את הליקוי בתמונות ובתאריכים.', en: 'Document the defect with photos and dates.', ru: 'Задокументируйте дефект фотографиями с датами.', fr: 'Documentez la malfaçon avec photos et dates.' },
       { he: 'בדיקת מהנדס או בודק מוסמך מגדירה את הבעיה והפתרון.', en: 'An inspection by an engineer or certified inspector defines the problem and the solution.', ru: 'Проверка инженера или сертифицированного эксперта определяет проблему и решение.', fr: 'L’expertise d’un ingénieur ou d’un inspecteur agréé définit le problème et la solution.' },
       { he: 'בדירה חדשה – בדקו את תקופת הבדק והאחריות שלכם.', en: 'In a new apartment – check your inspection and warranty period.', ru: 'В новой квартире проверьте гарантийный срок и период устранения дефектов.', fr: 'Dans un logement neuf – vérifiez votre période de garantie et de parfait achèvement.' },
       { he: 'תיקון שורש הבעיה חשוב יותר מ"איפור" מהיר.', en: 'Fixing the root of the problem matters more than a quick cosmetic fix.', ru: 'Устранить причину проблемы важнее, чем быстро «замаскировать» её.', fr: 'Traiter la cause compte plus qu’un « maquillage » rapide.' }
     ],
-    tip: { he: 'אנחנו מאתרים את מקור הבעיה – ומתקנים אותה פעם אחת ולתמיד.', en: 'We find the source of the problem – and fix it once and for all.', ru: 'Мы находим источник проблемы — и устраняем его раз и навсегда.', fr: 'Nous trouvons la source du problème – et la réglons une fois pour toutes.' }
-  }, {
-    title: { he: 'למה לתכנן כל פרויקט נכון', en: 'Why plan every project properly', ru: 'Почему каждый проект нужно правильно планировать', fr: 'Pourquoi bien planifier chaque projet' },
+    tip: { he: 'אנחנו מאתרים את מקור הבעיה – ומתקנים אותה פעם אחת ולתמיד.', en: 'We find the source of the problem – and fix it once and for all.', ru: 'Мы находим источник проблемы — и устраняем его раз и навсегда.', fr: 'Nous trouvons la source du problème – et la réglons une fois pour toutes.' } },
+
+  /* 12. מדוע צריך לתכנן כל פרויקט בצורה נכונה ומה הסיכונים שלא כדאי לקחת */
+  { slug: 'planning',
+    icon: '<path d="M3 17 17 3l4 4L7 21H3z"/><path d="m7 13 2 2M10 10l2 2M13 7l2 2"/>',
+    title: { he: 'מדוע צריך לתכנן כל פרויקט בצורה נכונה ומה הסיכונים שלא כדאי לקחת', en: 'Why every project must be planned properly – and the risks not worth taking', ru: 'Почему каждый проект нужно правильно планировать и какие риски не стоит брать', fr: 'Pourquoi bien planifier chaque projet – et les risques à ne pas prendre' },
+    teaser: { he: 'תכנון נכון מההתחלה חוסך זמן, כסף ועצבים.', en: 'Planning right from the start saves time, money and nerves.', ru: 'Правильное планирование с самого начала экономит время, деньги и нервы.', fr: 'Bien planifier dès le départ fait gagner du temps, de l’argent et des nerfs.' },
     intro: { he: 'כל שעה של תכנון חוסכת ימים של תיקונים.', en: 'Every hour of planning saves days of repairs.', ru: 'Каждый час планирования экономит дни исправлений.', fr: 'Chaque heure de planification épargne des jours de réparations.' },
-    points: [
+    bullets: [
       { he: 'בלי תכנון – שינויים באמצע הדרך מייקרים ומעכבים.', en: 'Without planning – changes midway raise costs and cause delays.', ru: 'Без планирования изменения по ходу работ удорожают и затягивают проект.', fr: 'Sans planification – les changements en cours de route coûtent cher et retardent.' },
       { he: 'תיאום בין אדריכל, מהנדס וקבלן מונע טעויות ביצוע.', en: 'Coordination between architect, engineer and contractor prevents execution errors.', ru: 'Согласованность архитектора, инженера и подрядчика предотвращает ошибки исполнения.', fr: 'La coordination entre architecte, ingénieur et entrepreneur évite les erreurs d’exécution.' },
       { he: 'תכנון נכון כולל גם עמידה בתקנים ובדרישות הרשויות.', en: 'Proper planning also means meeting standards and authority requirements.', ru: 'Правильное планирование включает и соответствие нормам и требованиям властей.', fr: 'Bien planifier, c’est aussi respecter les normes et les exigences des autorités.' },
       { he: 'לוח זמנים ותקציב מבוססים נותנים לכם ודאות.', en: 'A well-founded timeline and budget give you certainty.', ru: 'Обоснованные график и бюджет дают вам уверенность.', fr: 'Un calendrier et un budget solides vous apportent de la certitude.' }
     ],
-    tip: { he: 'תכנון נכון, חיסכון מוכח – זה העיקרון שמנחה אותנו בכל פרויקט.', en: 'Right planning, proven savings – that’s the principle guiding us in every project.', ru: 'Правильное планирование — доказанная экономия: этот принцип ведёт нас в каждом проекте.', fr: 'Bonne planification, économies prouvées – c’est le principe qui nous guide dans chaque projet.' }
-  }]}
-};
+    tip: { he: 'תכנון נכון, חיסכון מוכח – זה העיקרון שמנחה אותנו בכל פרויקט.', en: 'Right planning, proven savings – that’s the principle guiding us in every project.', ru: 'Правильное планирование — доказанная экономия: этот принцип ведёт нас в каждом проекте.', fr: 'Bonne planification, économies prouvées – c’est le principe qui nous guide dans chaque projet.' } }
+];

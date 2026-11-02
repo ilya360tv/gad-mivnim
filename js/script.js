@@ -1442,18 +1442,49 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ---------------------------------------------------------------
-     7ג) #info — 10 כרטיסי נושאים. לחיצה (או Enter/Space) פותחת חלון באותו עיצוב וגודל כמו חלון השותפים:
-         כותרת + אייקון + משפט + תוכן. התוכן מ-js/info-data.js (window.INFO_DATA) לפי data-slug.
+     7ג) #info — 12 כרטיסי נושאים. לחיצה (או Enter/Space) פותחת חלון באותו עיצוב וגודל כמו חלון השותפים:
+         כותרת + אייקון + משפט + תוכן. הכרטיסים והתוכן נבנים מ-js/info-data.js (window.INFO_DATA) — המקור היחיד.
      --------------------------------------------------------------- */
   var icSec = document.getElementById('info');
   var icGrid = icSec ? icSec.querySelector('.info-cards') : null;
-  var ICDATA = window.INFO_DATA || {};
+  var ICDATA = window.INFO_DATA || [];
   if (icGrid) {
     var IT = function (key, fallback) {
       var lang = document.documentElement.getAttribute('lang') || 'he';
       var e = window.GAD_T && window.GAD_T[key];
       return (e && e[lang]) || fallback;
     };
+    var IL = function (o) {
+      var lang = document.documentElement.getAttribute('lang') || 'he';
+      return !o ? '' : (typeof o === 'string' ? o : (o[lang] || o.he || ''));
+    };
+    var icFind = function (slug) {
+      for (var i = 0; i < ICDATA.length; i++) { if (ICDATA[i].slug === slug) { return ICDATA[i]; } }
+      return null;
+    };
+    // הרשת המקורית: כרטיס לכל נושא, בסדר של INFO_DATA
+    ICDATA.forEach(function (d) {
+      var c = document.createElement('div');
+      c.className = 'info-card';
+      c.setAttribute('data-slug', d.slug);
+      c.setAttribute('role', 'button');
+      c.setAttribute('tabindex', '0');
+      c.innerHTML = '<strong><span></span></strong>' +
+        '<div class="info-card__icon"><svg viewBox="0 0 24 24" aria-hidden="true">' + d.icon + '</svg></div>' +
+        '<span class="info-card__teaser"></span>';
+      icGrid.appendChild(c);
+    });
+    // טקסט הכרטיסים לפי השפה הנוכחית
+    var icFill = function () {
+      icGrid.querySelectorAll('.info-card[data-slug]').forEach(function (c) {
+        var d = icFind(c.getAttribute('data-slug'));
+        if (!d) { return; }
+        c.querySelector('strong > span').textContent = IL(d.title);
+        c.querySelector('.info-card__teaser').textContent = IL(d.teaser);
+        c.setAttribute('title', IL(d.title));             // הכותרת המלאה (בכרטיס היא נחתכת אחרי 2 שורות)
+      });
+    };
+    icFill();
     var icm = document.createElement('div');
     icm.className = 'proj-modal pt-modal ic-modal';
     icm.hidden = true;
@@ -1482,42 +1513,37 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var renderInfo = function () {
       if (!icCard) { return; }
-      var slug = icCard.getAttribute('data-slug');
-      var src = icGrid.querySelector('.info-card[data-slug="' + slug + '"]') || icCard;   // הטקסט המתורגם תמיד מהרשת המקורית
-      var d = ICDATA[slug] || {};
-      var lang = document.documentElement.getAttribute('lang') || 'he';
-      var L = function (o) { return !o ? '' : (typeof o === 'string' ? o : (o[lang] || o.he || '')); };
+      var d = icFind(icCard.getAttribute('data-slug')) || {};
       var el = function (tag, cls, text) { var n = document.createElement(tag); if (cls) { n.className = cls; } if (text) { n.textContent = text; } return n; };
-      icName.textContent = src.querySelector('strong').textContent;
-      icTag.textContent = src.querySelector('.info-card__teaser').textContent;
-      icIcon.innerHTML = src.querySelector('.info-card__icon').innerHTML;
-      // תוכן: לכל מקטע — כותרת (כשיש כמה), פתיחה, "מה חשוב לדעת" (נקודות תכלת), תיבת "טיפ GAD MIVNIM"
-      var secs = d.sections || [];
+      icName.textContent = IL(d.title);
+      icTag.textContent = IL(d.teaser);
+      icIcon.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true">' + (d.icon || '') + '</svg>';
+      // תוכן: פתיחה, "מה חשוב לדעת" (נקודות תכלת), תיבת "טיפ GAD MIVNIM"
+      var has = !!(d.intro || (d.bullets && d.bullets.length) || d.tip);
       icContent.innerHTML = '';
-      icContent.classList.toggle('is-soon', !secs.length);
-      icContent.classList.toggle('is-rich', !!secs.length);
-      if (!secs.length) { icContent.textContent = L(d.content) || IT('pt_content_soon', 'תוכן יתווסף בקרוב'); }
-      secs.forEach(function (s) {
+      icContent.classList.toggle('is-soon', !has);
+      icContent.classList.toggle('is-rich', has);
+      if (!has) { icContent.textContent = IT('pt_content_soon', 'תוכן יתווסף בקרוב'); }
+      else {
         var sec = el('section', 'ic-sec');
-        if (s.title) { sec.appendChild(el('h3', 'ic-sec__title', L(s.title))); }
-        if (s.intro) { sec.appendChild(el('p', 'ic-sec__intro', L(s.intro))); }
-        if (s.points && s.points.length) {
+        if (d.intro) { sec.appendChild(el('p', 'ic-sec__intro', IL(d.intro))); }
+        if (d.bullets && d.bullets.length) {
           sec.appendChild(el('h4', 'ic-sec__know', IT('ic_know', 'מה חשוב לדעת')));
           var ul = el('ul', 'ic-sec__list');
-          s.points.forEach(function (pt) { ul.appendChild(el('li', '', L(pt))); });
+          d.bullets.forEach(function (pt) { ul.appendChild(el('li', '', IL(pt))); });
           sec.appendChild(ul);
         }
-        if (s.tip) {
+        if (d.tip) {
           var tip = el('div', 'ic-tip');
           var head = el('span', 'ic-tip__head');
           head.appendChild(el('span', 'ic-tip__icon', '✦'));
           head.appendChild(document.createTextNode(' ' + IT('ic_tip', 'טיפ GAD MIVNIM')));
           tip.appendChild(head);
-          tip.appendChild(el('p', 'ic-tip__text', L(s.tip)));
+          tip.appendChild(el('p', 'ic-tip__text', IL(d.tip)));
           sec.appendChild(tip);
         }
         icContent.appendChild(sec);
-      });
+      }
       icCta.textContent = IT('ic_cta', 'דברו איתנו ←');
       icX.setAttribute('aria-label', IT('pm_close', 'סגירה'));
     };
@@ -1588,7 +1614,6 @@ document.addEventListener('DOMContentLoaded', function () {
         for (var r = 0; r < reps; r++) {
           icqSrc.forEach(function (c) {
             var n = c.cloneNode(true);
-            n.querySelectorAll('[data-i18n]').forEach(function (el) { el.removeAttribute('data-i18n'); });   // התרגום כותב רק לרשת המקורית
             if (!(firstReal && r === 0)) { n.setAttribute('aria-hidden', 'true'); n.setAttribute('tabindex', '-1'); }
             f.appendChild(n);
           });
@@ -1625,7 +1650,8 @@ document.addEventListener('DOMContentLoaded', function () {
         var cur = document.documentElement.getAttribute('lang') || 'he';
         if (cur === icqLang) { return; }
         icqLang = cur;
-        icqBuild();                                       // החלפת שפה: הפס נבנה מחדש מהרשת המתורגמת
+        icFill();                                         // החלפת שפה: הכרטיסים מתורגמים מ-INFO_DATA,
+        icqBuild();                                       // והפס נבנה מחדש מהרשת המתורגמת
         if (!icm.hidden) { renderInfo(); }
       }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
     }
