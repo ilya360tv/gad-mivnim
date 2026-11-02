@@ -7063,136 +7063,93 @@ html.a11y-no-motion #gallery .gal-grid.is-replaced { display: flex; }
 .lightbox-cap { color: #e6edf3; font-size: 1.05rem; font-weight: 600; text-align: center; }
 .lightbox-fig .lightbox-img { max-height: calc(85vh - 50px); }
 
-/* ----- #podcast — "האזינו וצפו": כותרת רגילה + פס נע של אריחי פרקים (אותו מנוע) + חלון פרק.
-         צבעים: כותרות לבנות, הדגשות בתכלת #38bdf8 בלבד. ----- */
-#podcast { --pc-lb: #38bdf8; --pc-dim: #9aa6b2; }
+/* ----- #podcast — כותרת ממורכזת + תמונת הגיטרות (בינונית) עם ▶ → חלון הפודקאסט:
+         נגן וידאו 16:9 + פרטי הפרק + רשימת פרקים (טקסט בלבד). הדגשות בתכלת #38bdf8 בלבד. ----- */
+#podcast, .pod-modal { --pc-lb: #38bdf8; --pc-dim: #9aa6b2; }   /* החלון נוסף ל-body — מחוץ ל-#podcast */
 
-/* פס אריחי הפרקים — אותו מנוע ואותה התנהגות כמו #info */
-.pod-wrap { margin-top: 28px; }
-.pod-marquee { display: none; }
-.has-js #podcast .pod-marquee.is-on {
+/* מרכוז הכותרת — גובר על שכבת "RIGHT-ALIGNED HEADINGS" (כמו #tenders / #app) */
+html[dir] body #podcast .section-eyebrow,
+html[dir] body #podcast .section-title {
   display: block;
-  direction: ltr;
-  overflow: hidden;
-  padding: 10px 0 14px;
-  cursor: grab;
-  touch-action: pan-y;
-  -webkit-user-select: none;
-          user-select: none;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
-          mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+  width: auto;
+  max-width: 900px;
+  text-align: center !important;
+  margin-inline: auto !important;
 }
-#podcast .pod-marquee.is-dragging { cursor: grabbing; }
-#podcast .pod-marquee .ic-track { align-items: center; }
-.pod-marquee svg { pointer-events: none; }
-.pod-eps { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
-.has-js #podcast .pod-eps.is-replaced { display: none; }
-html.a11y-no-motion #podcast .pod-marquee.is-on { display: none; }
-html.a11y-no-motion #podcast .pod-eps.is-replaced { display: flex; }
 
-/* אריח פרק — תמונה קטנה מרובעת (כמו אריחי הלוגואים ב-#projects) */
-.pod-tile {
+/* תמונת הפודקאסט */
+.pod-cover { display: flex; flex-direction: column; align-items: center; gap: 14px; margin-top: 28px; }
+.pod-cover__media {
   position: relative;
-  direction: rtl;
-  flex: 0 0 auto;
-  width: 170px;
-  height: 170px;
+  display: block;
+  width: 480px;
+  max-width: 100%;
+  padding: 0;
   overflow: hidden;
-  border: 1px solid rgba(56, 189, 248, .2);
+  border: 0;
   border-radius: 16px;
   background: #12151a;
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, .45), 0 18px 44px rgba(0, 0, 0, .4);
   cursor: pointer;
-  outline: none;
-  transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+  transition: box-shadow .3s ease;
 }
-.pod-tile__img { display: block; width: 100%; height: 100%; object-fit: cover; -webkit-user-drag: none; }
-.pod-tile::after {                                /* הכהיה רכה בתחתית — לקריאות הכותרת */
-  content: "";
+.pod-cover__media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; transition: transform .5s ease; }
+.pod-cover__media::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(11, 13, 16, .05), rgba(11, 13, 16, .45)); pointer-events: none; }
+.pod-cover__play {
   position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(11, 13, 16, .15) 0%, rgba(11, 13, 16, 0) 35%, rgba(11, 13, 16, .55) 62%, rgba(11, 13, 16, .92) 100%);
-  pointer-events: none;
-}
-.pod-tile:hover,
-.pod-tile:focus-visible { border-color: var(--pc-lb); box-shadow: 0 0 0 2px rgba(56, 189, 248, .55), 0 10px 24px rgba(0, 0, 0, .4); transform: scale(1.04); }
-.pod-tile__chip {
-  position: absolute;
-  inset-block-start: 8px;
-  inset-inline-start: 8px;
-  z-index: 1;
-  padding: 3px 8px;
-  border: 1px solid rgba(56, 189, 248, .55);
-  border-radius: 999px;
-  background: rgba(11, 13, 16, .72);
-  color: var(--pc-lb);
-  font-size: .7rem;
-  font-weight: 700;
-  line-height: 1.2;
-}
-.pod-tile__play {
-  position: absolute;
-  top: 42%;
+  top: 50%;
   left: 50%;
   z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
-  border: 1.5px solid rgba(255, 255, 255, .8);
+  width: 74px;
+  height: 74px;
+  border: 2px solid var(--pc-lb);
   border-radius: 50%;
-  background: rgba(11, 13, 16, .4);
+  background: rgba(11, 13, 16, .55);
+  box-shadow: 0 0 22px rgba(56, 189, 248, .35);
   transform: translate(-50%, -50%);
-  transition: background .25s ease, border-color .25s ease, box-shadow .25s ease;
+  transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
 }
-.pod-tile__play svg { width: 15px; height: 15px; fill: #fff; transform: translateX(1px); }
-.pod-tile:hover .pod-tile__play,
-.pod-tile:focus-visible .pod-tile__play { border-color: var(--pc-lb); background: var(--pc-lb); box-shadow: 0 0 18px rgba(56, 189, 248, .7); }
-.pod-tile:hover .pod-tile__play svg,
-.pod-tile:focus-visible .pod-tile__play svg { fill: #0b0d10; }
-.pod-tile__title {
-  position: absolute;
-  inset-inline: 10px;
-  bottom: 9px;
-  z-index: 1;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-          line-clamp: 2;
-  overflow: hidden;
-  color: #fff;
-  font-size: .78rem;
-  font-weight: 700;
-  line-height: 1.3;
-  text-align: start;
-  text-shadow: 0 1px 6px rgba(0, 0, 0, .5);
-}
-#podcast .pod-marquee .ic-track .pod-tile { margin-inline-end: 14px; }
-.pod-eps { gap: 14px; }
+.pod-cover__play svg { width: 30px; height: 30px; fill: var(--pc-lb); transform: translateX(2px); }
+.pod-cover__media:hover,
+.pod-cover__media:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--pc-lb), 0 18px 44px rgba(0, 0, 0, .4); }
+.pod-cover__media:hover img { transform: scale(1.03); }
+.pod-cover__media:hover .pod-cover__play,
+.pod-cover__media:focus-visible .pod-cover__play { background: rgba(56, 189, 248, .2); box-shadow: 0 0 0 6px rgba(56, 189, 248, .18), 0 0 44px rgba(56, 189, 248, .65); transform: translate(-50%, -50%) scale(1.06); }
+.pod-cover__sub { margin: 0; color: var(--pc-dim); font-size: .95rem; text-align: center; }
 
-/* חלון הפרק — תמונה 16:9 עם ▶ גדול (וידאו / שמע / "בקרוב"), ואחריה הפרטים */
-.pod-modal { --pc-lb: #38bdf8; --pc-dim: #9aa6b2; }   /* החלון נוסף ל-body — מחוץ ל-#podcast */
-.pod-modal .pt-modal__box { text-align: start; }
-.pod-modal .pt-modal__box > :not(.proj-modal__x):not(.ic-modal__cta) { align-self: stretch; }
-.pod-mmedia {
+/* חלון הפודקאסט — רוחב 760, נגן למעלה, רשימה שנגללת בתוך החלון */
+.pod-modal .pt-modal__box {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 760px;
+  max-width: calc(100vw - 32px);
+  height: 88vh;
+  max-height: 88vh;
+  overflow: hidden;
+  text-align: start;
+}
+.pod-vp {
   position: relative;
   flex: none;
   aspect-ratio: 16 / 9;
-  margin-top: 40px;
+  max-height: 46vh;
+  margin-top: 44px;
   overflow: hidden;
   border: 1px solid rgba(56, 189, 248, .25);
   border-radius: 14px;
-  background: #0b0d10;
+  background: radial-gradient(ellipse at center, #141a22, #05070a 75%);
 }
-.pod-mmedia__img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.pod-mmedia::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(11, 13, 16, .1), rgba(11, 13, 16, .55)); pointer-events: none; }
-.pod-mmedia__video { position: absolute; inset: 0; z-index: 3; display: none; background: #000; }
-.pod-mmedia__video iframe,
-.pod-mmedia__video video { display: block; width: 100%; height: 100%; border: 0; }
-.pod-mmedia.is-video .pod-mmedia__video { display: block; }
-.pod-mmedia.is-video .pod-mmedia__play,
-.pod-mmedia.is-video .pod-mmedia__note { display: none; }
-.pod-mmedia__play {
+.pod-vp__media { position: absolute; inset: 0; z-index: 3; display: none; background: #000; }
+.pod-vp__media iframe,
+.pod-vp__media video { display: block; width: 100%; height: 100%; border: 0; }
+.pod-vp.is-playing .pod-vp__media { display: block; }
+.pod-vp.is-playing .pod-vp__play,
+.pod-vp.is-playing .pod-vp__note { display: none; }
+.pod-vp__play {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -7200,61 +7157,86 @@ html.a11y-no-motion #podcast .pod-eps.is-replaced { display: flex; }
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 70px;
-  height: 70px;
+  width: 72px;
+  height: 72px;
   padding: 0;
   border: 2px solid var(--pc-lb);
   border-radius: 50%;
-  background: rgba(11, 13, 16, .55);
-  box-shadow: 0 0 22px rgba(56, 189, 248, .35);
+  background: rgba(56, 189, 248, .08);
+  box-shadow: 0 0 22px rgba(56, 189, 248, .3);
   cursor: pointer;
   transform: translate(-50%, -50%);
   transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
 }
-.pod-mmedia__play svg { width: 28px; height: 28px; fill: var(--pc-lb); transform: translateX(2px); }
-.pod-mmedia__play:hover,
-.pod-mmedia__play:focus-visible { outline: none; background: rgba(56, 189, 248, .2); box-shadow: 0 0 0 5px rgba(56, 189, 248, .18), 0 0 40px rgba(56, 189, 248, .6); transform: translate(-50%, -50%) scale(1.06); }
-.pod-mmedia__note {
+.pod-vp__play svg { width: 28px; height: 28px; fill: var(--pc-lb); transform: translateX(2px); }
+.pod-vp__play:hover,
+.pod-vp__play:focus-visible { outline: none; background: rgba(56, 189, 248, .2); box-shadow: 0 0 0 5px rgba(56, 189, 248, .18), 0 0 40px rgba(56, 189, 248, .6); transform: translate(-50%, -50%) scale(1.06); }
+.pod-vp__note {
   position: absolute;
-  bottom: 12px;
+  top: calc(50% + 52px);
   left: 50%;
   z-index: 2;
   margin: 0;
-  padding: 5px 12px;
-  border: 1px solid rgba(56, 189, 248, .35);
-  border-radius: 999px;
-  background: rgba(11, 13, 16, .7);
   color: #dff3fd;
-  font-size: .8rem;
+  font-size: .9rem;
   font-weight: 600;
   white-space: nowrap;
   transform: translateX(-50%);
 }
-.pod-mmedia__note.is-pulse { animation: podPulse .7s ease; }
-@keyframes podPulse { 40% { border-color: var(--pc-lb); box-shadow: 0 0 18px rgba(56, 189, 248, .55); } }
-.pod-mplayer { display: flex; align-items: center; gap: 12px; margin-top: 12px; padding: 10px 14px; border: 1px solid rgba(56, 189, 248, .22); border-radius: 12px; background: #12151a; }
-.pod-mplayer[hidden] { display: none; }
-.pod-mplayer__btn { flex: none; display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; padding: 0; border: 0; border-radius: 50%; background: var(--pc-lb); cursor: pointer; }
-.pod-mplayer__btn svg { width: 16px; height: 16px; fill: #0b0d10; }
-.pod-mplayer__btn:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
-.pod-mplayer__bar { position: relative; flex: 1; height: 5px; border-radius: 999px; background: rgba(255, 255, 255, .14); cursor: pointer; }
-.pod-mplayer__fill { position: absolute; inset-block: 0; inset-inline-start: 0; width: 0; border-radius: inherit; background: var(--pc-lb); }
-.pod-mplayer__time { direction: ltr; color: var(--pc-dim); font-size: .78rem; font-variant-numeric: tabular-nums; }
-.pod-mmeta { display: block; margin-top: 16px; color: var(--pc-lb); font-size: .85rem; font-weight: 600; }
-.pod-mtitle { margin: 6px 0 4px; color: var(--pc-lb); font-size: 1.3rem; font-weight: 800; line-height: 1.3; }
-.pod-mguest { display: block; color: var(--pc-dim); font-size: .9rem; }
-.pod-mdesc { margin: 14px 0; color: #e6e9ec; line-height: 1.65; }
-.pod-min { margin: 0 0 8px; color: #fff; font-size: .95rem; font-weight: 700; }
-.pod-mlist { margin-bottom: 18px; }
-.pod-modal .ic-modal__cta { display: flex; margin-inline: auto; }
+.pod-vp__note.is-pulse { animation: podPulse .7s ease; }
+@keyframes podPulse { 40% { color: var(--pc-lb); text-shadow: 0 0 14px rgba(56, 189, 248, .7); } }
+.pod-info { flex: none; display: flex; flex-direction: column; gap: 4px; margin-top: 14px; }
+.pod-info__title { margin: 0; color: var(--pc-lb); font-size: 1.25rem; font-weight: 800; line-height: 1.3; }
+.pod-info__meta { color: #e6edf3; font-size: .85rem; font-weight: 600; }
+.pod-info__guest { color: var(--pc-dim); font-size: .88rem; }
+.pod-info__desc { margin: 6px 0 0; color: #dfe6ec; font-size: .92rem; line-height: 1.6; }
+.pod-list__head { flex: none; margin: 16px 0 8px; color: #fff; font-size: .95rem; font-weight: 700; }
+.pod-list {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 0 0 0 4px;
+  overflow-y: auto;
+  list-style: none;
+  border-top: 1px solid rgba(56, 189, 248, .14);
+  scrollbar-color: rgba(56, 189, 248, .35) transparent;
+}
+.pod-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, .06);
+  border-inline-start: 3px solid transparent;
+  background: transparent;
+  color: #dfe6ec;
+  font: inherit;
+  font-size: .92rem;
+  text-align: start;
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease;
+}
+.pod-row:hover { background: rgba(56, 189, 248, .06); }
+.pod-row:focus-visible { outline: 2px solid var(--pc-lb); outline-offset: -2px; }
+.pod-row__n { flex: none; min-width: 4.6em; color: var(--pc-dim); font-size: .82rem; font-weight: 600; }
+.pod-row__t { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.pod-row__m { flex: none; color: var(--pc-dim); font-size: .8rem; }
+.pod-row.is-active { border-inline-start-color: var(--pc-lb); background: rgba(56, 189, 248, .1); color: var(--pc-lb); font-weight: 700; }
+.pod-row.is-active .pod-row__n,
+.pod-row.is-active .pod-row__m { color: var(--pc-lb); }
 
-/* מובייל: אריחי פרק 130×130 */
 @media (max-width: 767.98px) {
-  .pod-tile { width: 130px; height: 130px; border-radius: 14px; }
-  .pod-tile__chip { font-size: .64rem; padding: 2px 7px; }
-  .pod-tile__play { width: 32px; height: 32px; }
-  .pod-tile__play svg { width: 13px; height: 13px; }
-  .pod-tile__title { font-size: .7rem; inset-inline: 8px; bottom: 7px; }
-  .pod-mmedia__play { width: 58px; height: 58px; }
-  .has-js #podcast .pod-marquee.is-on { -webkit-mask-image: none; mask-image: none; }
+  .pod-cover__media { width: 100%; max-width: 340px; }
+  .pod-cover__play { width: 58px; height: 58px; }
+  .pod-cover__play svg { width: 24px; height: 24px; }
+  .pod-cover__sub { font-size: .88rem; }
+  .pod-modal .pt-modal__box { height: 86vh; max-height: 86vh; }
+  .pod-vp { margin-top: 48px; }
+  .pod-vp__play { width: 56px; height: 56px; }
+  .pod-vp__play svg { width: 22px; height: 22px; }
+  .pod-vp__note { top: calc(50% + 40px); font-size: .8rem; }
+  .pod-info__title { font-size: 1.1rem; }
+  .pod-row { gap: 8px; padding: 9px 8px; font-size: .86rem; }
 }
