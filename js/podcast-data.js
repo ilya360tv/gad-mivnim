@@ -17,7 +17,14 @@ window.PODCAST_UI = {
   soon:  { he: 'הפרק יעלה בקרוב', en: 'Episode coming soon', ru: 'Выпуск скоро выйдет', fr: 'Épisode bientôt disponible' },
   play:  { he: 'השמעה', en: 'Play', ru: 'Воспроизвести', fr: 'Lecture' },
   pause: { he: 'השהיה', en: 'Pause', ru: 'Пауза', fr: 'Pause' },
-  strip: { he: 'פרקי הפודקאסט', en: 'Podcast episodes', ru: 'Выпуски подкаста', fr: 'Épisodes du podcast' }
+  strip: { he: 'פרקי הפודקאסט', en: 'Podcast episodes', ru: 'Выпуски подкаста', fr: 'Épisodes du podcast' },
+  // כותרת התוכנית (hero)
+  title:   { he: 'אנשים משתפים', en: 'People Share', ru: 'Люди делятся', fr: 'Les gens partagent' },
+  tagline: { he: 'שיחות על בנייה, עיצוב והחיים שבין לבין – מפי אנשי המקצוע של GAD MIVNIM', en: 'Conversations about building, design and the life in between – from the professionals of GAD MIVNIM', ru: 'Разговоры о строительстве, дизайне и жизни между ними — от специалистов GAD MIVNIM', fr: 'Des conversations sur la construction, le design et la vie entre les deux – par les professionnels de GAD MIVNIM' },
+  latest:  { he: 'האזינו לפרק האחרון', en: 'Listen to the latest episode', ru: 'Слушать последний выпуск', fr: 'Écouter le dernier épisode' },
+  count:   { he: '{n} פרקים', en: '{n} episodes', ru: '{n} выпусков', fr: '{n} épisodes' },
+  lang:    { he: 'עברית', en: 'Hebrew', ru: 'Иврит', fr: 'Hébreu' },
+  speed:   { he: 'מהירות השמעה', en: 'Playback speed', ru: 'Скорость воспроизведения', fr: 'Vitesse de lecture' }
 };
 
 window.PODCAST_DATA = [

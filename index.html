@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Gveret+Levin&family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 
   <!-- העיצוב שלנו -->
-  <link rel="stylesheet" href="css/style.css?v=20261102pc">
+  <link rel="stylesheet" href="css/style.css?v=20261102p2">
 </head>
 <body>
 
@@ -490,21 +490,24 @@
   <!-- ===== פודקאסט — אנשים משתפים ===== -->
   <section id="podcast" class="section podcast">
     <div class="container">
-      <span class="section-eyebrow reveal" data-i18n="nav_podcast">פודקאסט</span>
-      <!-- פודקאסט "אנשים משתפים" — עם התמונה מהמסמך + תגית בקרוב -->
-      <div class="podcast-banner reveal">
-        <div class="podcast-media">
-          <img src="images/image3.png" alt="פודקאסט | אנשים משתפים" loading="lazy" decoding="async">
-        </div>
-        <div class="podcast-text">
-          <h3 data-i18n="hero_podcast">פודקאסט | אנשים משתפים</h3>
+      <!-- פודקאסט "אנשים משתפים" — כותרת תוכנית (עטיפה + פרטים) + פס פרקים + חלון פרק; הכל מ-js/podcast-data.js -->
+      <div class="pod-hero reveal">
+        <img class="pod-hero__cover" src="images/image3.png" alt="פודקאסט | אנשים משתפים" width="200" height="200" loading="lazy" decoding="async">
+        <div class="pod-hero__body">
+          <span class="pod-hero__eyebrow" data-i18n="nav_podcast">פודקאסט</span>
+          <h2 class="pod-hero__title" data-pod="title">אנשים משתפים</h2>
+          <p class="pod-hero__tagline" data-pod="tagline">שיחות על בנייה, עיצוב והחיים שבין לבין – מפי אנשי המקצוע של GAD MIVNIM</p>
+          <div class="pod-hero__actions">
+            <button type="button" class="pod-hero__play" data-ep-open="1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg><span data-pod="latest">האזינו לפרק האחרון</span></button>
+            <span class="pod-hero__chip" data-pod="count">10 פרקים</span>
+            <span class="pod-hero__chip" data-pod="lang">עברית</span>
+          </div>
         </div>
       </div>
 
-      <!-- פרקי הפודקאסט — פס נע של כרטיסים + חלון פרק; נבנים מ-js/podcast-data.js (המקור היחיד) -->
       <div class="pod-wrap">
         <div class="ic-marquee pod-marquee" role="region" aria-label="פרקי הפודקאסט" hidden><div class="ic-track"></div></div>
-        <div class="info-cards pod-cards"></div>
+        <div class="pod-eps"></div>
       </div>
     </div>
   </section>
@@ -837,8 +840,8 @@
   <script src="js/careers-data.js?v=2"></script>
   <script src="js/partners-data.js?v=3"></script>
   <script src="js/info-data.js?v=6"></script>
-  <script src="js/podcast-data.js?v=1"></script>
-  <script src="js/script.js?v=20261102pc"></script>
+  <script src="js/podcast-data.js?v=2"></script>
+  <script src="js/script.js?v=20261102p2"></script>
   <script src="js/a11y.js?v=20261030cv"></script>
 
 </body>
