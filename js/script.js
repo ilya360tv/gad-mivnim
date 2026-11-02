@@ -1782,7 +1782,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ---------------------------------------------------------------
-     7ד) #podcast — תמונת הגיטרות עם ▶ + פס נע של אריחי פרקים (כולם עם תמונת הגיטרות).
+     7ד) #podcast — תמונת הגיטרות עם ▶ + פס נע של כרטיסי פרקים בסגנון כרטיסי #partners (כולם עם תמונת הגיטרות).
          לחיצה פותחת את חלון הפודקאסט: נגן 16:9 (הפרק הנבחר) + פרטי הפרק + רשימת כל הפרקים (טקסט, גלילה בתוך החלון).
          הכל מ-js/podcast-data.js — המקור היחיד. התמונה הגדולה פותחת את פרק 1, אריח — את הפרק שלו.
          video: YouTube / Vimeo (הטמעה במצב פרטיות) או קובץ mp4; אחרת audio; בלי שניהם = "הפרק יעלה בקרוב".
@@ -1952,7 +1952,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     pcOpenBtn.addEventListener('click', function () { pcOpen(PCDATA[0], pcOpenBtn); });
 
-    // ----- אריחי הפרקים: תמונת הגיטרות + "פרק N" + ▶ + כותרת (הרשת המקורית; הפס משכפל אותה) -----
+    // ----- כרטיסי הפרקים — אותו רכיב כמו כרטיסי #partners: כותרת (+ "פרק N") / תמונת הגיטרות עם ▶ / אורח · דקות
+    //       (הרשת המקורית; הפס משכפל אותה) -----
     var pcGrid = pcSec.querySelector('.pod-eps');
     var pcFind = function (n) {
       for (var i = 0; i < PCDATA.length; i++) { if (String(PCDATA[i].n) === String(n)) { return PCDATA[i]; } }
@@ -1961,24 +1962,24 @@ document.addEventListener('DOMContentLoaded', function () {
     if (pcGrid) {
       PCDATA.forEach(function (d) {
         var c = document.createElement('div');
-        c.className = 'pod-tile';
+        c.className = 'partner-chip pod-card';
         c.setAttribute('data-ep', d.n);
         c.setAttribute('role', 'button');
         c.setAttribute('tabindex', '0');
         c.innerHTML =
-          '<img class="pod-tile__img" src="' + PC_IMG + '" alt="" loading="lazy" decoding="async" draggable="false">' +
-          '<span class="pod-tile__chip"></span>' +
-          '<span class="pod-tile__play">' + PC_PLAY + '</span>' +
-          '<strong class="pod-tile__title"></strong>';
+          '<strong><span class="pod-card__title"><span class="pod-card__chip"></span> <span class="pod-card__t"></span></span></strong>' +
+          '<div class="partner-photo"><img src="' + PC_IMG + '" alt="" loading="lazy" decoding="async" draggable="false">' +
+            '<span class="pod-card__play">' + PC_PLAY + '</span></div>' +
+          '<span class="partner-slogan"></span>';
         pcGrid.appendChild(c);
       });
       pcSec.addEventListener('click', function (e) {
-        var c = e.target.closest ? e.target.closest('.pod-tile[data-ep]') : null;
+        var c = e.target.closest ? e.target.closest('.pod-card[data-ep]') : null;
         if (c) { e.preventDefault(); pcOpen(pcFind(c.getAttribute('data-ep')), c); }
       });
       pcSec.addEventListener('keydown', function (e) {
         if (e.key !== 'Enter' && e.key !== ' ') { return; }
-        var c = e.target.closest ? e.target.closest('.pod-tile[data-ep]') : null;
+        var c = e.target.closest ? e.target.closest('.pod-card[data-ep]') : null;
         if (c && e.target === c) { e.preventDefault(); pcOpen(pcFind(c.getAttribute('data-ep')), c); }
       });
     }
@@ -1992,23 +1993,24 @@ document.addEventListener('DOMContentLoaded', function () {
       if (sub) { sub.textContent = PL(PCUI.eyebrow) + ' · ' + PL(PCUI.count).replace('{n}', PCDATA.length); }
       pcOpenBtn.setAttribute('aria-label', PL(PCUI.play) + ' – ' + PL(PCUI.eyebrow));
       if (pcGrid) {
-        pcGrid.querySelectorAll('.pod-tile[data-ep]').forEach(function (c) {
+        pcGrid.querySelectorAll('.pod-card[data-ep]').forEach(function (c) {
           var d = pcFind(c.getAttribute('data-ep'));
           if (!d) { return; }
-          c.querySelector('.pod-tile__chip').textContent = PL(PCUI.ep) + ' ' + d.n;
-          c.querySelector('.pod-tile__title').textContent = PL(d.title);
+          c.querySelector('.pod-card__chip').textContent = PL(PCUI.ep) + ' ' + d.n;
+          c.querySelector('.pod-card__t').textContent = PL(d.title);
+          c.querySelector('.partner-slogan').textContent = PL(d.guest) + ' · ' + pcMin(d);
           c.setAttribute('aria-label', pcMetaTxt(d) + ' – ' + PL(d.title));
         });
       }
     };
     pcFill();
 
-    /* ----- פס נע של האריחים — אותו מנוע (initMarquee) ואותה בנייה כמו ב-#info ----- */
+    /* ----- פס נע של הכרטיסים — אותו מנוע (initMarquee) ואותו רוחב כרטיס כמו בפס של #partners ----- */
     var pcqBox = pcSec.querySelector('.pod-marquee');
-    var pcqTrack = pcqBox ? pcqBox.querySelector('.ic-track') : null;
+    var pcqTrack = pcqBox ? pcqBox.querySelector('.pt-track') : null;
     var pcqBuild = function () {};
     if (pcGrid && pcqBox && pcqTrack) {
-      var pcqSrc = Array.prototype.slice.call(pcGrid.querySelectorAll('.pod-tile'));
+      var pcqSrc = Array.prototype.slice.call(pcGrid.querySelectorAll('.pod-card'));
       var pcqE = initMarquee(pcqBox, pcqTrack, {
         isPaused: function () {
           if (!pcm.hidden) { return true; }                                                    // החלון פתוח
@@ -2028,16 +2030,25 @@ document.addEventListener('DOMContentLoaded', function () {
         return f;
       };
       pcqBuild = function () {
-        pcqTrack.innerHTML = '';
-        pcqTrack.appendChild(pcqSet(1, false));
-        var first = pcqTrack.children[0], second = pcqTrack.children[1];
-        var step = (second && first) ? Math.abs(second.offsetLeft - first.offsetLeft) : 184;
-        var vw = pcqBox.clientWidth || window.innerWidth;
+        // רוחב כרטיס — אותה נוסחה כמו בפס של #partners: דסקטופ 5 בשורה, טאבלט 2 (עד 900px), מובייל 240
+        var iw = window.innerWidth, gap = 16;
+        var vw = pcqBox.clientWidth || iw;
+        var cardW = iw < 768 ? 240
+          : iw < 1024 ? Math.round((Math.min(vw, 900) - 20) / 2)
+          : Math.round((vw - 4 * gap) / 5);
+        pcqBox.style.setProperty('--pt-card-w', cardW + 'px');
+        pcqBox.style.setProperty('--pt-card-gap', gap + 'px');
+        var step = cardW + gap;
         var reps = Math.max(1, Math.ceil((vw + step) / (step * pcqSrc.length)));
         pcqTrack.innerHTML = '';
         pcqTrack.appendChild(pcqSet(reps, true));
         pcqTrack.appendChild(pcqSet(reps, false));
         pcqE.measure(reps * pcqSrc.length);
+        // כל אזורי הכותרת בגובה הכותרת הגבוהה ביותר — התמונות על קו אחד (כמו ב-#partners)
+        pcqBox.style.removeProperty('--pt-title-h');
+        var h = 0;
+        pcqTrack.querySelectorAll('.pod-card strong').forEach(function (t) { h = Math.max(h, t.offsetHeight); });
+        if (h) { pcqBox.style.setProperty('--pt-title-h', h + 'px'); }
       };
       pcqBox.setAttribute('aria-label', PL(PCUI.strip));
       pcqBox.hidden = false;
