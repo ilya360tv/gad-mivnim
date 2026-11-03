@@ -30,3 +30,6 @@ _hostshot.html
 
 # תמונות מקור לכרטיסי השותפים — האתר משתמש רק ב-images/partners
 /תמנות שותפים/
+
+.vercel
+.env*
