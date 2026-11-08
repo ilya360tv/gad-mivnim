@@ -150,9 +150,26 @@
     });
   }
 
+  // הגירה חד-פעמית: נתונים ישנים בדפדפן בלי קבלן הדוגמה GM-1000 (או בלי hash לסיסמה שלו) — משלימים אותו
+  function ensureSeedContractor() {
+    var all = read(K.applicants, []);
+    var seedUser = all.filter(function (a) { return (a.userCode || '').toUpperCase() === 'GM-1000'; })[0];
+    if (seedUser && seedUser.passwordHash) { return Promise.resolve(); }
+    return hash('1234').then(function (h) {
+      all = read(K.applicants, []);
+      if (seedUser) {
+        all.forEach(function (a) { if (a.id === seedUser.id) { a.passwordHash = h; } });
+      } else {
+        all.push({ id: 'a_seed2', fullName: 'דוד כהן (דוגמה)', phone: '05X-XXXXXXX', field: 'קבלן ראשי', createdAt: nowIso(),
+          status: 'approved', userCode: 'GM-1000', passwordHash: h, subscription: 'active' });
+      }
+      write(K.applicants, all);
+    }, function () {});
+  }
+
   var readyPromise = null;
   function ready() {
-    if (!readyPromise) { readyPromise = read(K.seeded, null) ? Promise.resolve() : seed(); }
+    if (!readyPromise) { readyPromise = read(K.seeded, null) ? ensureSeedContractor() : seed(); }
     return readyPromise;
   }
 

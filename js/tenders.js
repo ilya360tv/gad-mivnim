@@ -263,15 +263,13 @@
 
   function sizeCard() {
     var col = desktopMq.matches ? navColumn() : null;
-    loginCard.style.height = col ? Math.round(col.bottom - col.top) + 'px' : '';
-    // מסך נמוך (עמודת גלולות קצרה): ריווחים צפופים יותר כדי שכל התוכן ייכנס בכרטיס
-    // ושלב שני (is-tighter) — רק אם עדיין חסר מקום (למשל כשהודעת השגיאה מוצגת): שורת "הדגמה" מוסתרת זמנית
-    loginCard.classList.remove('is-tight', 'is-tighter');
-    var over = function () { return loginCard.scrollHeight > loginCard.clientHeight + 1; };
-    if (col && !loginCard.hidden && over()) {
-      loginCard.classList.add('is-tight');
-      if (over()) { loginCard.classList.add('is-tighter'); }
-    }
+    var target = col ? Math.round(col.bottom - col.top) : 0;
+    // גובה מינימלי (לא קבוע): הכרטיס גדל אם התוכן צריך יותר — שום דבר לא נחתך או גולש החוצה
+    loginCard.style.height = '';
+    loginCard.style.minHeight = target ? target + 'px' : '';
+    // מסך נמוך (עמודת גלולות קצרה): קודם ריווחים צפופים יותר כדי להישאר בגובה העמודה
+    loginCard.classList.remove('is-tight');
+    if (target && !loginCard.hidden && loginCard.offsetHeight > target + 1) { loginCard.classList.add('is-tight'); }
   }
 
   var docTop = function (el) {

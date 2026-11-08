@@ -7702,8 +7702,6 @@ html[dir] body #tenders:not(.is-members) .tn-demo-note { font-size: .85rem; }
   html[dir] body #tenders:not(.is-members) .tn-login.is-tight .tn-login-head { margin-bottom: 0; }
   html[dir] body #tenders:not(.is-members) .tn-login.is-tight .tn-members-only { line-height: 1.45; }
   html[dir] body #tenders:not(.is-members) .tn-login.is-tight .tn-demo-note { margin-top: -4px; }
-  html[dir] body #tenders:not(.is-members) .tn-login.is-tighter .tn-demo-note { display: none; }
-  html[dir] body #tenders:not(.is-members) .tn-login.is-tighter .tn-login-error { padding: 6px 10px; font-size: .82rem; line-height: 1.35; }
 }
 
 /* טאבלט / טלפון: הטקסט קודם (לימין), כרטיס הכניסה מתחתיו — ברוחב מלא עד 420px, ממורכז */
@@ -7727,6 +7725,9 @@ html[dir] body #tenders:not(.is-members) .tn-demo-note { font-size: .85rem; }
   border-radius: 10px;
 }
 .tn-login-error[hidden] { display: none; }
+/* הודעת השגיאה בתוך הכרטיס, 10px מתחת לכפתור (הרווח בקבוצה: 16px רגיל / 10px במצב צפוף) */
+.tn-login-btn + .tn-login-error { margin-top: -6px; }
+html[dir] body #tenders .tn-login.is-tight .tn-login-btn + .tn-login-error { margin-top: 0; }
 .tn-login-btn:disabled { opacity: .7; cursor: progress; }
 
 .tn-card-desc { margin: 0; font-size: .92rem; line-height: 1.55; color: #aab3bd; }
