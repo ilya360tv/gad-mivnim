@@ -7402,3 +7402,250 @@ html[dir] body #podcast .pt-track .partner-chip strong { min-height: var(--pt-ti
   /* כמו #partners במובייל: בלי mask (מונע גלילה "תקועה") */
   .has-js #podcast .pod-marquee.is-on { -webkit-mask-image: none; mask-image: none; }
 }
+
+/* ==========================================================================
+   #tenders — כניסת מנויים + אזור קבלני הבית (הדגמת עיצוב, js/tenders.js).
+   טופס "הצטרפות כקבלן בית" נמצא ב-#careers (.cj-card) — בסוף הבלוק
+   ========================================================================== */
+#tenders .tn-login[hidden],
+#tenders .tn-members[hidden],
+#tenders .tn-field[hidden] { display: none; }
+
+/* כרטיס הכניסה — 460px, באותו סגנון של כרטיס הטופס */
+html[dir] body #tenders .careers-form-card.tn-login { max-width: 460px; margin-top: 0; }
+@media (min-width: 1024px) {
+  html[dir] body #tenders .careers-form-card.tn-login { padding: 28px 32px; }
+}
+html[dir] body #tenders .tn-login-form { display: flex; flex-direction: column; gap: 16px; }
+.tn-login-head { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+.tn-lock {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  color: var(--lb);
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, .55), 0 0 16px var(--lb-glow);
+}
+.tn-login-title { font-size: 1.2rem; font-weight: 700; color: #ffffff; }
+
+/* סיסמה + עין */
+.tn-pass { position: relative; }
+html[dir] body #tenders .tn-pass input { padding-inline-end: 52px; }
+.tn-eye {
+  position: absolute;
+  top: 50%;
+  inset-inline-end: 6px;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #aab3bd;
+  cursor: pointer;
+}
+.tn-eye:hover { color: var(--lb); }
+.tn-eye:focus-visible { outline: 2px solid var(--lb); outline-offset: 2px; }
+.tn-eye .tn-eye-off,
+.tn-eye.is-shown .tn-eye-on { display: none; }
+.tn-eye.is-shown .tn-eye-off { display: block; }
+
+.tn-forgot-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: -4px; }
+.tn-forgot {
+  padding: 2px 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: .9rem;
+  color: var(--lb);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.tn-forgot:hover { color: var(--lb-hover); }
+.tn-forgot:focus-visible { outline: 2px solid var(--lb); outline-offset: 3px; border-radius: 4px; }
+.tn-forgot-note {
+  font-size: .8rem;
+  color: #aab3bd;
+  padding: 2px 10px;
+  border: 1px solid #323b45;
+  border-radius: 999px;
+}
+html[dir] body #tenders .tn-login-btn { align-self: stretch; width: 100%; margin-top: 4px; text-align: center; }
+.tn-members-only { margin: 0; font-size: .86rem; line-height: 1.55; color: #aab3bd; text-align: center; }
+.tn-join-link,
+.cj-login-link {
+  color: var(--lb);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+.tn-join-link:hover,
+.cj-login-link:hover { color: var(--lb-hover); }
+.tn-join-link:focus-visible,
+.cj-login-link:focus-visible { outline: 2px solid var(--lb); outline-offset: 3px; border-radius: 4px; }
+.tn-demo-note { margin: -8px 0 0; font-size: .82rem; color: #7d8792; text-align: center; }
+
+/* אזור המנויים */
+.tn-members { max-width: 1000px; margin-inline: auto; }
+.tn-members:focus { outline: none; }
+.tn-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  padding: 16px 20px;
+  background: var(--surface);
+  border-radius: 16px;
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, .35), 0 0 22px rgba(56, 189, 248, .1);
+}
+.tn-hello { margin: 0; font-size: 1.1rem; font-weight: 700; color: #ffffff; }
+.tn-id-chip {
+  display: inline-flex;
+  gap: 6px;
+  padding: 4px 12px;
+  font-size: .88rem;
+  color: var(--lb);
+  background: var(--lb-bg);
+  border: 1px solid rgba(56, 189, 248, .55);
+  border-radius: 999px;
+}
+.tn-active-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  font-size: .88rem;
+  font-weight: 500;
+  color: #5eead4;
+  background: rgba(45, 212, 191, .1);
+  border: 1px solid rgba(45, 212, 191, .55);
+  border-radius: 999px;
+}
+.tn-active-chip::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #2dd4bf; box-shadow: 0 0 8px rgba(45, 212, 191, .8); }
+.tn-logout {
+  margin-inline-start: auto;
+  min-height: 40px;
+  padding: 0 20px;
+  font: inherit;
+  font-size: .92rem;
+  font-weight: 700;
+  color: var(--lb);
+  background: transparent;
+  border: 2px solid var(--lb);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease;
+}
+.tn-logout:hover { background: var(--lb); color: #0a0c0e; }
+.tn-logout:focus-visible { outline: 3px solid #ffffff; outline-offset: 3px; }
+
+.tn-list-title { margin: 28px 0 14px; font-size: 1.45rem; font-weight: 700; color: #ffffff; text-align: center; }
+.tn-list-title:focus { outline: none; }
+.tn-list-title:focus-visible { outline: 2px solid var(--lb); outline-offset: 4px; border-radius: 4px; }
+
+/* פילטרים — גלולות כמו לשוניות המגזר */
+.tn-filters { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; padding: 6px 4px 10px; }
+html[dir] body #tenders .tn-filters .tn-filter { flex: 0 0 auto; padding-inline: 16px; white-space: nowrap; }
+
+.tn-field { margin-top: 26px; }
+.tn-field-title { margin: 0 0 12px; font-size: 1.15rem; font-weight: 700; color: var(--lb); }
+.tn-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+
+.tn-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px 20px 18px;
+  background: var(--surface);
+  border-radius: 16px;
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, .35), 0 0 22px rgba(56, 189, 248, .12), 0 14px 34px rgba(0, 0, 0, .45);
+  transition: box-shadow .25s ease;
+}
+.tn-card:hover { box-shadow: 0 0 0 1px rgba(56, 189, 248, .8), 0 0 26px var(--lb-glow), 0 18px 40px rgba(0, 0, 0, .5); }
+.tn-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.tn-card-name { margin: 0; font-size: 1.05rem; font-weight: 700; line-height: 1.4; color: #ffffff; }
+.tn-status {
+  flex: none;
+  padding: 3px 12px;
+  font-size: .8rem;
+  font-weight: 700;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.tn-status.is-open { color: #5eead4; background: rgba(45, 212, 191, .1); border: 1px solid rgba(45, 212, 191, .55); }
+.tn-status.is-soon { color: #fbbf24; background: rgba(251, 191, 36, .1); border: 1px solid rgba(251, 191, 36, .6); }
+.tn-card-place { display: flex; align-items: center; gap: 6px; margin: 0; font-size: .92rem; color: #aab3bd; }
+.tn-card-place svg { flex: none; color: var(--lb); }
+.tn-dates { display: grid; gap: 4px; margin: 0 0 4px; font-size: .92rem; }
+.tn-dates > div { display: flex; flex-wrap: wrap; gap: 6px; }
+.tn-dates dt { color: #aab3bd; font-weight: 400; }
+.tn-dates dd { margin: 0; color: var(--ink-soft); font-weight: 500; }
+.tn-apply { align-self: flex-start; min-height: 44px; padding: 0 22px; gap: 8px; font-family: inherit; background: transparent; cursor: pointer; }
+html[dir="ltr"] .tn-arrow { display: inline-block; transform: scaleX(-1); }
+
+.tn-empty {
+  margin: 0;
+  padding: 18px 20px;
+  font-size: .95rem;
+  color: #7d8792;
+  text-align: center;
+  border: 1px dashed #323b45;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .02);
+}
+
+/* הודעה קטנה ("הגשת המועמדות תתאפשר...") */
+.tn-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 1200;
+  max-width: calc(100vw - 32px);
+  margin: 0;
+  padding: 12px 22px;
+  font-size: .95rem;
+  font-weight: 500;
+  color: #0a0c0e;
+  text-align: center;
+  background: var(--lb);
+  border-radius: 999px;
+  box-shadow: 0 10px 28px var(--lb-glow);
+  transform: translate(-50%, 16px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease, visibility 0s linear .2s;
+}
+.tn-toast.is-on { opacity: 1; visibility: visible; transform: translate(-50%, 0); transition: opacity .2s ease, transform .2s ease; }
+
+@media (max-width: 767.98px) {
+  .tn-grid { grid-template-columns: 1fr; }
+  .tn-filters {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin-inline: -16px;
+    padding-inline: 16px;
+  }
+  .tn-filters::-webkit-scrollbar { display: none; }
+  .tn-bar { padding: 14px 16px; }
+  .tn-logout { margin-inline-start: 0; }
+  .tn-card { padding: 18px 16px 16px; }
+  .tn-apply { align-self: stretch; justify-content: center; }
+  .tn-toast { bottom: 88px; border-radius: 16px; }
+}
+
+/* ----- #careers: "הצטרפות כקבלן בית" מתחת ל-4 כרטיסי התפקידים (הטופס שעבר מ-#tenders) ----- */
+#careers .cj-card { max-width: 760px; }
+.cj-title { margin: 0 0 8px; font-size: 1.35rem; font-weight: 700; color: #ffffff; }
+.cj-text { margin: 0 0 22px; color: #aab3bd; line-height: 1.6; }
+.cj-after { margin: -4px 0 0; font-size: .88rem; line-height: 1.6; color: #aab3bd; }

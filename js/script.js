@@ -928,7 +928,7 @@ document.addEventListener('DOMContentLoaded', function () {
          ממורכז אנכית במסך כשהוא נכנס בו; אחרת — צמוד למעלה עם 16px. גם בטעינה ישירה עם #tenders / #app.
          המדידה לפי offsetTop (בלי transform של אנימציות ה-reveal).
      --------------------------------------------------------------- */
-  var CENTER_BLOCKS = { tenders: '.careers-form-card', app: '.plans-grid' };
+  var CENTER_BLOCKS = { tenders: '.tn-stage', app: '.plans-grid' };   // tn-stage = כרטיס הכניסה / אזור המנויים
   var docTop = function (el) {
     var y = 0;
     for (; el; el = el.offsetParent) { y += el.offsetTop; }
