@@ -6123,9 +6123,8 @@ html[dir] body #app .plans-grid {
 @media (min-width: 1024px) {
   html[dir] body #tenders,
   html[dir] body #app { padding-block: 48px; }
-  html[dir] body #tenders .section-eyebrow,
+  /* #tenders — הכותרות כמו בשאר הסקשנים (בלי דריסות גודל/ריווח) */
   html[dir] body #app .section-eyebrow { margin-top: 0; margin-bottom: 10px; }
-  html[dir] body #tenders .section-title,
   html[dir] body #app .section-title { font-size: clamp(1.8rem, 2.6vw, 2.6rem); margin-top: 0; margin-bottom: 12px; }
   html[dir] body #tenders .section-lead,
   html[dir] body #app .section-lead { margin-top: 0; margin-bottom: 28px; }
@@ -7673,10 +7672,13 @@ html[dir] body #tenders:not(.is-members) .tn-intro .section-lead { margin-bottom
 #tenders.is-members .tn-perks { display: none; }
 
 /* כרטיס הכניסה — קומפקטי */
-html[dir] body #tenders:not(.is-members) .careers-form-card.tn-login { width: 100%; padding: 28px; }
-html[dir] body #tenders:not(.is-members) .tn-login-title { font-size: 1.15rem; }
-html[dir] body #tenders:not(.is-members) .tn-login .form-field input { box-sizing: border-box; height: 50px; padding-block: 0; }
-html[dir] body #tenders:not(.is-members) .tn-login-btn { height: 52px; min-height: 0; padding-block: 0; }
+html[dir] body #tenders:not(.is-members) .careers-form-card.tn-login { width: 100%; padding: 24px; }
+html[dir] body #tenders:not(.is-members) .tn-login-title { font-size: 1.05rem; }
+html[dir] body #tenders:not(.is-members) .tn-login .form-field label { font-size: .95rem; }
+html[dir] body #tenders:not(.is-members) .tn-login .form-field input { box-sizing: border-box; height: 46px; padding-block: 0; }
+html[dir] body #tenders:not(.is-members) .tn-login-btn { height: 48px; min-height: 0; padding-block: 0; }
+html[dir] body #tenders:not(.is-members) .tn-members-only,
+html[dir] body #tenders:not(.is-members) .tn-demo-note { font-size: .85rem; }
 
 /* דסקטופ: שורה אחת, 1100px, מרווח 56px, שתי העמודות ממורכזות אנכית זו לזו */
 @media (min-width: 1024px) {
@@ -7688,20 +7690,16 @@ html[dir] body #tenders:not(.is-members) .tn-login-btn { height: 52px; min-heigh
     max-width: 1100px;
     margin-inline: auto;
   }
-  html[dir] body #tenders:not(.is-members) .tn-intro .section-title { font-size: clamp(1.9rem, 3.6vw, 2.7rem); }
   html[dir] body #tenders:not(.is-members) .careers-form-card.tn-login {
-    max-width: 400px;
+    max-width: 360px;
     margin: 0 !important;
-    justify-self: end;                    /* RTL: לקצה השמאלי של אזור התוכן */
   }
-  html[dir] body #tenders:not(.is-members) .tn-stage { display: flex; justify-content: flex-end; }
+  /* הכרטיס ממורכז בעמודה השמאלית (רווח שווה משני הצדדים) */
+  html[dir] body #tenders:not(.is-members) .tn-stage { display: flex; justify-content: center; }
 }
 
 /* טאבלט / טלפון: הטקסט קודם (לימין), כרטיס הכניסה מתחתיו — ברוחב מלא עד 420px, ממורכז */
 @media (max-width: 1023.98px) {
   html[dir] body #tenders:not(.is-members) .tn-intro { margin-bottom: 26px; }
   html[dir] body #tenders:not(.is-members) .careers-form-card.tn-login { max-width: 420px; margin-top: 0; }
-}
-@media (max-width: 640px) {
-  html[dir] body #tenders:not(.is-members) .careers-form-card.tn-login { padding: 24px 20px; }
 }
