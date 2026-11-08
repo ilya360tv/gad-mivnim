@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GAD MIVNIM | גד מבנים — בכל מקום במפה</title>
+  <meta name="description" content="GAD MIVNIM (גד מבנים) — בכל מקום במפה. משנים את הדרך לבנייה נכונה !">
+
+  <!-- מסמן שיש JavaScript — מונע הבהוב באנימציות הגלילה -->
+  <script>document.documentElement.classList.add('has-js');</script>
+
+  <!-- פונט Rubik — תומך עברית, לטינית וקירילית (רוסית) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gveret+Levin&family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+  <!-- העיצוב שלנו -->
+  <link rel="stylesheet" href="css/style.css?v=20261108ad">
+  <!-- PWA — התקנה כאפליקציה -->
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0b0d10">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="GAD MIVNIM">
+  <script src="/js/pwa.js" defer></script>
+</head>
+<body>
+
+  <a class="skip-link" href="#main">דילוג לתוכן</a>
+
+  <!-- ===== Header / תפריט ניווט ===== -->
+  <header class="site-header">
+    <div class="container header-inner">
+
+      <!-- ימין ויזואלי: כפתור המבורגר — בכל הגדלים -->
+      <button class="nav-toggle" id="navToggle" type="button"
+              aria-label="Menu" aria-expanded="false" aria-controls="mainNav">
+        <span></span><span></span><span></span>
+      </button>
+
+      <!-- מרכז: הלוגו העגול — קישור לדף הבית -->
+      <a href="#hero" class="logo" aria-label="GAD MIVNIM — דף הבית">
+        <img src="images/gad_mivnim_logo.svg" alt="GAD MIVNIM" class="logo-img" decoding="async">
+      </a>
+
+      <!-- שמאל ויזואלי: שם המותג + בורר שפה -->
+      <div class="header-side">
+        <span class="logo-text">GAD MIVNIM</span>
+        <div class="lang-switch" id="langSwitch">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="true" aria-expanded="false">
+            <span class="flag flag-he" id="langFlag" aria-hidden="true"></span>
+            <span id="langLabel">עברית</span> <span class="lang-caret">▾</span>
+          </button>
+          <ul class="lang-menu" id="langMenu" hidden>
+            <li><button type="button" data-lang="he"><span class="flag flag-he" aria-hidden="true"></span> עברית</button></li>
+            <li><button type="button" data-lang="en"><span class="flag flag-en" aria-hidden="true"></span> English</button></li>
+            <li><button type="button" data-lang="ru"><span class="flag flag-ru" aria-hidden="true"></span> Русский</button></li>
+            <li><button type="button" data-lang="fr"><span class="flag flag-fr" aria-hidden="true"></span> Français</button></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ניווט — בסדר של מסמך המקור -->
+    <nav class="main-nav" id="mainNav" aria-label="Main menu">
+      <ul class="container">
+        <li><a href="#hero"        data-i18n="nav_home">דף הבית</a></li>
+        <li><a href="#about"       data-i18n="nav_about">אודות הקבוצה</a></li>
+        <li><a href="#services"    data-i18n="nav_services">השירותים שלנו</a></li>
+        <li><a href="#projects"    data-i18n="nav_projects">הפרויקטים שלנו</a></li>
+        <li><a href="#in-progress" data-i18n="nav_in_progress">פרויקטים בביצוע</a></li>
+        <li><a href="#teams"       data-i18n="nav_teams">הצוותים שלנו</a></li>
+        <li><a href="#partners"    data-i18n="nav_partners">השותפים שלנו</a></li>
+        <li><a href="#info"        data-i18n="nav_info">מידע לאזרח ולבונה</a></li>
+        <li><a href="#podcast"     data-i18n="nav_podcast">פודקאסט</a></li>
+        <li><a href="#gallery"     data-i18n="nav_gallery_short">גלריה / השראות</a></li>
+        <li><a href="#careers"     data-i18n="nav_careers">דרושים</a></li>
+        <li><a href="#tenders"     data-i18n="nav_tenders">מכרזים / מנויים</a></li>
+        <li><a href="#app"         data-i18n="nav_app">אפליקציה / מנויים</a></li>
+        <li><a href="#contact"     data-i18n="nav_contact">שירות לקוחות</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main">
+
+  <!-- ===== Hero ===== -->
+  <section id="hero" class="hero">
+    <video class="hero-video" autoplay muted loop playsinline preload="auto"
+           poster="images/hero-poster.jpg" aria-hidden="true">
+      <source src="images/hero.mp4" type="video/mp4">
+    </video>
+    <script>if (window.matchMedia('(max-width: 767px)').matches) { var hv = document.querySelector('.hero-video'); if (hv) { hv.pause(); hv.removeAttribute('autoplay'); hv.removeAttribute('preload'); while (hv.firstChild) { hv.removeChild(hv.firstChild); } hv.load(); hv.parentNode.removeChild(hv); } }</script>
+    <div class="hero-overlay"></div>
+    <div class="container hero-content">
+      <h1 class="hero-title hero-title--mq"><span class="hero-mq__src" data-i18n="hero_title"><img class="hero-title__logo" src="images/gad_mivnim_logo.svg" alt="GAD MIVNIM גד מבנים" width="256" height="256" decoding="async"> בכל מקום במפה</span><span class="hero-mq" aria-hidden="true"><span class="hero-mq__track"></span></span></h1>
+      <div class="hero-sub-block">
+        <p class="hero-badge-row"><span class="hero-badge"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c.7 4.9 2.4 6.6 7.3 7.3-4.9.7-6.6 2.4-7.3 7.3-.7-4.9-2.4-6.6-7.3-7.3 4.9-.7 6.6-2.4 7.3-7.3z"/></svg><span data-i18n="hero_soon">בקרוב</span></span></p>
+        <p class="hero-showroom reveal reveal-d2" data-i18n="hero_showroom">לרשותכם אולם תצוגה לתצוגות בנייה ועיצובים</p>
+      </div>
+      <p class="hero-location reveal reveal-d2" data-i18n="hero_location">הרצליה ישראל | HERZLIYA ISRAEL</p>
+    </div>
+  </section>
+
+  <!-- ===== אודות הקבוצה ===== -->
+  <section id="about" class="section about">
+    <div class="container">
+      <span class="section-eyebrow reveal" data-i18n="about_eyebrow">אודות הקבוצה</span>
+      <h2 class="section-title about-title reveal reveal-d1" data-i18n="about_title">מדוע נולד הרעיון לאחד את הבנייה והעיצובים לבית אחד ולקבוצה אחת שמנצחת על הכל !</h2>
+
+      <div class="about-grid">
+        <div class="about-text reveal reveal-d1">
+          <p data-i18n="ab2_p1"><bdi><span class="gad-sp">GAD</span> MIVNIM</bdi> היא קבוצת בנייה ועיצובים מבית <b class="w-b">"קבוצת בנהר בע"מ - יזמות והשקעות"</b> המשמשת כחברת בת ליזמות ביצוע ניהול פיקוח ותאום פרויקטים בבניה. <bdi><span class="gad-sp">GAD</span> MIVNIM</bdi> מלווה בעלי בתים, ועדי בתים, מוסדות ציבוריים ויזמים מהרעיון הראשוני ועד מסירת המפתח. משהו שהתחיל כחזון פשוט הפך לשיטת עבודה ומהפכה בענף הבניה. כל מה שבית צריך תחת קורת גג אחת.</p>
+          <p data-i18n="ab2_p2">מייסד הקבוצה והשותפים למלאכה מביאים איתם ניסיון רב שנים מאז <span class="yr-sp">1995</span> ועד היום שנבנה מתוך עשייה אמיתית בשטח, הכישורים והיכולות אשר אותם צברו. מתוך הניסיון הזה נולד חזון אחד לאחד את שירותי הבנייה והעיצובים תחת קורת גג אחת שמלווה את כל שלבי הפרויקט משלב הרעיון, דרך התכנון ההנדסי הבנייה ועד לשלב המפתח.</p>
+          <p data-i18n="ab2_p3">כך נולד הרעיון לאחד את הבנייה והעיצובים לבית אחד, שנותן מענה מלא לכל פרויקט.</p>
+          <h3 class="about-sub" data-i18n="ab2_h1">הערכים שלנו</h3>
+          <p data-i18n="ab2_p4">את ערכי היסוד, האיכות, המקצועיות והיחס המשפחתי והאישי, בחרנו כאבני היסוד של הקבוצה.</p>
+          <p data-i18n="ab2_p5">בחירתנו היא שותפות מלאה לקבלת תוצאות שלא פחות ממצוינות.</p>
+          <h3 class="about-sub" data-i18n="ab2_h2">השירותים שלנו | חטיבות הקובצה</h3>
+          <p data-i18n="ab2_p6"><bdi><span class="gad-sp">GAD</span> MIVNIM</bdi> מחלקת את שלבי הפרויקט בין חטיבות הקבוצה בהתאם לתחומי ההתמחות של כל חטיבה, במטרה להעניק לכל לקוח מענה מקצועי, יעיל ומדויק.</p>
+          <p data-i18n="ab2_p7">חלוקת העבודה מאפשרת ביצוע, ניהול, פיקוח ותיאום מיטביים לאורך כל שלבי הפרויקט, תוך התאמה מלאה לצורכי הלקוח, לאופי הפרויקט ולדרישותיו הייחודיות.</p>
+          <p data-i18n="ab2_p8">אנו משלבים את היכולות וההתמחויות של חטיבות הקבוצה ליצירת מעטפת מקצועית ומקיפה, המלווה את הפרויקט משלב התכנון ועד לביצוע.</p>
+          <p data-i18n="ab2_p9">באמצעות חלוקת אחריות מדויקת, ניהול מקצועי, פיקוח ותיאום בין כלל הגורמים, אנו מבטיחים תהליך עבודה מסודר, יעיל ומותאם לאופי הפרויקט ולצורכי הלקוח</p>
+          <p data-i18n="ab2_p10">בכל פרויקט, לכל שלב יש את המומחיות שלו.</p>
+          <p data-i18n="ab2_p11">הלקוח נהנה ממומחיות ייעודית בכל שלב, לצד ניהול מתואם ואחריות כוללת לאורך הפרויקט.</p>
+          <h3 class="about-sub" data-i18n="ab2_h3">אנשי מקצוע מהשורה הראשונה</h3>
+          <p data-i18n="ab2_p12">לרשות הקבוצה עומדים בעלי מקצוע וקבלנים משותפים מהשורה הראשונה ובעלי הסמכה כל אחד בתחמו אשר נבחרים בקפידה רבה וללא פשרות על שירות מסור, מקצועי אדיב ומשפחתי לכל לקוח.</p>
+          <p data-i18n="ab2_p13">כחברה וכקבוצה אנחנו תמיד לומדים ומיישמים תהליכים בענף הבנייה והעיצובים בארץ ובעולם</p>
+          <h3 class="about-sub" data-i18n="ab2_h4">השותפים שלנו</h3>
+          <p data-i18n="ab2_p14"><bdi><span class="gad-sp">GAD</span> MIVNIM</bdi> משתפת פעולה ושותפה עם חברות, ספקים ומותגים מהמובילים בישראל ובעולם במטרה להעניק ללקוחותיה מגוון רחב של פתרונות איכותיים ומתקדמים בתחומי הבנייה והעיצובים.</p>
+          <p data-i18n="ab2_p15">שיתופי פעולה אלו מאפשרים לנו להציג בפני לקוחותינו מבחר חומרים, מוצרים ופתרונות עיצוב מהשורה הראשונה, תוך הקפדה על איכות, חדשנות והתאמה מדויקת לצורכי הלקוח, לחזונו ולאופי הפרויקט.</p>
+          <p data-i18n="ab2_p16">הלקוח לא מקבל רק שירותי בנייה ועיצובים, אלא נהנה גם מהידע, מהמוצרים ומהפתרונות של רשת שותפים מקצועית, המאפשרת בחירה רחבה יותר ותוצאה איכותית ומותאמת אישית.</p>
+          <h3 class="about-sub" data-i18n="ab2_h5">אולם תצוגה - הכל במקום אחד ! (בקרוב ...)</h3>
+          <p data-i18n="ab2_p17">לרשות לקוחות <bdi><span class="gad-sp">GAD</span> MIVNIM</bdi> עומד אולם תצוגה לתצוגות בנייה ועיצובים הנותן את כל השירותים הרלוונטיים והשלבים אותם אתם הלקוחות צריכים. באולם התצוגה אתם תקבלו יחס אישי ומשפחתי, עמדת אירוח ותהנו מחוויית תצוגות וחידושים בענף הבנייה והעיצובים וממיטב המותגים המבולים בישראל ובעולם. תפגשו את מיטב בעלי המקצוע הנותן לכם הלקוחות את היוחלט להחליט מה הכי טוב עבורכם. שכך אין צורך להתרוצץ בין בעלי מקצוע, קבלנים, נותני שירותים וספקים שונים.</p>
+          <p data-i18n="ab2_p18">באולם התצוגה אתם תוכלו לבחור את המוצרים הנלווים והנדרשים לפרויקט שלכם.</p>
+          <h3 class="about-sub" data-i18n="ab2_h6">שקט נפשי לאורך כל הדרך</h3>
+          <p data-i18n="ab2_p19">מחלקה משפטית שמלווה כל פרויקט ודואגת להסכמים ברורים ולהגנה על הלקוח.</p>
+          <h4 class="about-sub about-sub--sm" data-i18n="ab2_s1">כשהכול מתוכנן מראש, הדרך לתוצאה ברורה יותר.</h4>
+          <p data-i18n="ab2_p20"><bdi><span class="gad-sp">GAD</span> MIVNIM</bdi> מקפידה על הכנת סט תוכניות עבודה מקיף ומדויק, הכולל מפרטיים טכניים ולוחות זמנים מוגדרים, תוך הקפדה על תאום בין כלל הגרומים המעורבים, במטרה להבטיח תהליך עבודה מסודר, יעיל ומבוקר משלב התכנון ועד להשלמת הפרויקט.</p>
+          <p data-i18n="ab2_p21">מערכות ניהול מתקדמות לביצוע ניהול פיקוח ותאום בין הלקוח ולאנשי הקשר המלווים את הפרויקט מתחילתו ועד סופו. אנשי הניהול, בעלי המקצוע וקבלני הביצוע, הספקים, וכל שאר השירותים להשלמת הפרויקט שלכם.</p>
+          <h4 class="about-sub about-sub--sm" data-i18n="ab2_s2">שקיפות מלאה, ביטחון ושליטה בכל שלב בפרויקט.</h4>
+          <p data-i18n="ab2_p22">כחלק מהמחויבות שלנו לשקיפות, לביטחון ולסטנדרט ביצוע גבוה, כל פרויקט מצויד ומרושת בטרם תחילת העבודות במערך מצלמות אבטחה הפועל 24/7 ומחוברות לחדרי הבקרה והאבטחה של החברה והקבוצה.</p>
+          <p data-i18n="ab2_p23">המערכות מאפשרות מעקב ותיעוד שוטף אחר התקדמות העבודות, משלב הביצוע הראשון ועד להשלמת הפרויקט. תוך הקפדה על שקיפות, סדר ובקרה מקצועית לכל אורך התהליך.</p>
+          <h4 class="about-sub about-sub--sm" data-i18n="ab2_s3">האחריות שלנו לא מסתיימת עם מסירת הפרויקט.</h4>
+          <p data-i18n="ab2_p24">ב - <bdi><span class="gad-sp">GAD</span> MIVNUM</bdi> אנו מאמינים ששירות מקצועי נמדד לא רק באיכות הביצוע, אלא גם בשקט הנפשי שמקבל הלקוח לאחר סיום העבודות. עם מסירת הפרויקט הלקוח מקבל תעודת אחריות מסודרת ושירותי בדק בית, בהתאם לתנאי האחריות ותקנון הפרויקט שנבנה עבורו.</p>
+          <p data-i18n="ab2_p25">כך אנו מבטיחים ללקוחותינו כתובת מקצועית ואחראית גם לאחר השלמת הפרויקט מתוך מחויבות לאיכות, לאמינות ושביעות רצון לאורך זמן.</p>
+          <p class="about-quote"><span class="about-mq__src" data-i18n="ab2_close"><span class="aq-l">בכל מקום במפה</span> <bdi><span class="gad-sp">GAD</span> MIVNIM</bdi> <span class="aq-l"><span class="aq-brush">משנים את הדרך לבניה נכונה !</span></span></span><span class="about-mq" aria-hidden="true"><span class="about-mq__track"></span></span></p>
+        </div>
+
+        <div class="about-media reveal reveal-d2">
+          <h3 class="about-media-title"><span class="about-hmq__src" data-i18n="ab2_media_title">מאז ועד היום...</span><span class="about-hmq" aria-hidden="true"><span class="about-hmq__track"></span></span></h3>
+          <div class="about-tiles">
+            <!-- "מאז" (ימין ב-RTL): אותה רצועה אנכית כמו "היום". הקבצים images/then/then-1.jpg … then-102.jpg -->
+            <div class="about-tile about-tile--reel" id="thenReel">
+              <div class="about-reel__src" data-src-base="images/then/then-" data-count="102">
+                <img src="images/then/then-1.jpg" alt="GAD MIVNIM" width="531" height="800" decoding="async" loading="lazy">
+              </div>
+              <div class="about-reel" aria-hidden="true"><div class="about-reel__track"></div></div>
+            </div>
+            <!-- "היום": חלון אנכי קבוע; התמונות רצות בו כלפי מעלה (js/script.js סעיף 15). להוספת תמונה — עוד <img> כאן -->
+            <div class="about-tile about-tile--reel" id="todayReel">
+              <div class="about-reel__src">
+                <img src="images/today/today-1.jpg" alt="GAD MIVNIM" width="600" height="600" decoding="async">
+                <img src="images/today/today-2.jpg" alt="GAD MIVNIM" width="600" height="600" decoding="async">
+                <img src="images/today/today-3.jpg" alt="GAD MIVNIM" width="600" height="600" decoding="async">
+                <img src="images/today/today-4.jpg" alt="GAD MIVNIM" width="600" height="600" decoding="async">
+                <img src="images/today/today-5.jpg" alt="GAD MIVNIM" width="600" height="600" decoding="async">
+                <img src="images/today/today-6.jpg" alt="GAD MIVNIM" width="600" height="600" decoding="async">
+                <img src="images/today/today-7.jpg" alt="GAD MIVNIM" width="600" height="600" decoding="async">
+                <img src="images/today/today-8.jpg" alt="GAD MIVNIM" width="600" height="600" decoding="async">
+                <img src="images/today/today-9.jpg" alt="GAD MIVNIM" width="600" height="600" decoding="async">
+                <img src="images/today/today-10.jpg" alt="GAD MIVNIM" width="600" height="600" decoding="async">
+                <img src="images/today/today-11.jpg" alt="GAD MIVNIM" width="600" height="600" decoding="async">
+                <img src="images/today/today-12.jpg" alt="GAD MIVNIM" width="600" height="600" decoding="async">
+                <img src="images/today/today-13.jpg" alt="GAD MIVNIM" width="600" height="600" decoding="async">
+                <img src="images/today/today-14.jpg" alt="GAD MIVNIM" width="600" height="600" decoding="async">
+              </div>
+              <div class="about-reel" aria-hidden="true"><div class="about-reel__track"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== השירותים שלנו ===== -->
+  <section id="services" class="section services">
+    <div class="container">
+      <span class="section-eyebrow reveal" data-i18n="svc_eyebrow">השירותים שלנו</span>
+      <h2 class="section-title reveal reveal-d1" data-i18n="svc_lead">רמת תכנון תיאום ניהול פיקוח וביצוע מהגבוהות ביותר !</h2>
+      <div class="badges-row reveal reveal-d2">
+        <span class="badge-chip" data-i18n="svc_b3">מתאמים לכם פרויקט מושלם</span>
+        <span class="badge-chip" data-i18n="svc_b4">חשיבה מחוץ לקופסא</span>
+        <span class="badge-chip" data-i18n="svc_b1">אבטחה סגורה במעגל סגור 24/7</span>
+      </div>
+
+      <!-- חטיבות השירותים — כל חטיבה בדף משלה -->
+      <div class="division-cards reveal-group">
+        <a class="card division-card" href="planning.html">
+          <div class="division-card-head"><h3 class="card-title" data-i18n="d1_title">חטיבת תכנון והנדסת בנייה</h3></div>
+          <div class="card-media"><img src="images/image7.jpeg" alt="" loading="lazy" decoding="async"></div>
+          <div class="card-body">
+            <p class="card-tagline" data-i18n="d1_slogan">תכנון נכון , חיסכון מוכח</p>
+          </div>
+        </a>
+        <a class="card division-card" href="construction.html">
+          <div class="division-card-head"><h3 class="card-title" data-i18n="d2_title">חטיבת בינוי ותשתיות</h3></div>
+          <div class="card-media"><img src="images/image28.jpeg" alt="" loading="lazy" decoding="async"></div>
+          <div class="card-body">
+            <p class="card-tagline" data-i18n="d2_slogan">בונים אתכם מבנה נכון</p>
+          </div>
+        </a>
+        <a class="card division-card" href="real-estate.html">
+          <div class="division-card-head"><h3 class="card-title" data-i18n="d3_title">חטיבת שותפויות נדל"ן</h3></div>
+          <div class="card-media"><img src="images/image36.png" alt="" loading="lazy" decoding="async"></div>
+          <div class="card-body">
+            <p class="card-tagline" data-i18n="d3_slogan">עושים שותפות מתוך כבוד הדדי וערכים משפחתיים</p>
+          </div>
+        </a>
+        <a class="card division-card" href="home-services.html">
+          <div class="division-card-head"><h3 class="card-title" data-i18n="d4_title">חטיבת השירותים שלנו</h3></div>
+          <div class="card-media"><img src="images/image39.jpeg" alt="" loading="lazy" decoding="async"></div>
+          <div class="card-body">
+            <p class="card-tagline" data-i18n="d4_slogan">שירות מכל הלב</p>
+          </div>
+        </a>
+        <a class="card division-card" href="special.html">
+          <div class="division-card-head"><h3 class="card-title" data-i18n="d5_title">חטיבת המיוחדים שלנו</h3></div>
+          <div class="card-media"><img src="images/image54.jpeg" alt="" loading="lazy" decoding="async"></div>
+          <div class="card-body">
+            <p class="card-tagline" data-i18n="d5_slogan">מובילים שינוי למבנה שלכם !</p>
+          </div>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== הפרויקטים שלנו ===== -->
+  <section id="projects" class="section projects">
+    <div class="container">
+      <h2 class="section-eyebrow reveal" data-i18n="proj_eyebrow">הפרויקטים שלנו</h2>
+      <div class="sector-tabs" role="tablist" aria-label="הפרויקטים שלנו">
+        <button type="button" class="sector-tab is-active" role="tab" id="tabAll" data-sector="all" aria-selected="true" tabindex="0" data-i18n="sector_all">כל המגזרים</button>
+        <button type="button" class="sector-tab" role="tab" id="tabPrivate" data-sector="private" aria-selected="false" tabindex="-1" data-i18n="sector_private">מגזר פרטי</button>
+        <button type="button" class="sector-tab" role="tab" id="tabBizPrivate" data-sector="business-private" aria-selected="false" tabindex="-1" data-i18n="sector_biz_private">מגזר עסקי פרטי</button>
+        <button type="button" class="sector-tab" role="tab" id="tabBizPublic" data-sector="business-public" aria-selected="false" tabindex="-1" data-i18n="sector_biz_public">מגזר עסקי ציבורי</button>
+      </div>
+
+      <div class="projects-stage" role="tabpanel" aria-labelledby="tabAll">
+      <div class="marquee" role="region" aria-label="הפרויקטים שלנו" hidden>
+        <div class="marquee-track"></div>
+      </div>
+
+      <div class="projects-grid reveal-group">
+        <button type="button" class="project-item client-logo" data-client="crowne-plaza-tel-aviv" aria-haspopup="dialog">
+          <img src="images/clients/crowne-plaza.png" alt="מלון קראון פלאזה תל אביב" loading="lazy" decoding="async">
+        </button>
+        <button type="button" class="project-item client-logo" data-client="crowne-plaza-jerusalem" aria-haspopup="dialog">
+          <img src="images/clients/crowne-plaza.png" alt="מלון קראון פלאזה ירושלים" loading="lazy" decoding="async">
+        </button>
+        <button type="button" class="project-item client-logo" data-client="shalom-hotel" aria-haspopup="dialog">
+          <img src="images/clients/shalom-hotel.png" alt="מלון שלום ירושלים" loading="lazy" decoding="async">
+        </button>
+        <button type="button" class="project-item client-logo" data-client="dana-david" aria-haspopup="dialog">
+          <img src="images/clients/dana-david.png" alt="דנה דוד" loading="lazy" decoding="async">
+        </button>
+        <button type="button" class="project-item client-logo" data-client="nofei-yerushalayim" aria-haspopup="dialog">
+          <img src="images/clients/nofei-yerushalayim.png" alt="בית אבות נופי ירושלים" loading="lazy" decoding="async">
+        </button>
+        <button type="button" class="project-item client-logo" data-client="agnon-house" aria-haspopup="dialog">
+          <img src="images/clients/agnon-house.png" alt="בית ש&quot;י עגנון ירושלים" loading="lazy" decoding="async">
+        </button>
+        <button type="button" class="project-item client-logo" data-client="yahad" aria-haspopup="dialog">
+          <img src="images/clients/yahad.png" alt="יחד - מועדון צרכנות לרופאים" loading="lazy" decoding="async">
+        </button>
+        <button type="button" class="project-item client-logo" data-client="africa-israel" aria-haspopup="dialog">
+          <img src="images/clients/africa-israel.png" alt="אפריקה ישראל" loading="lazy" decoding="async">
+        </button>
+        <button type="button" class="project-item client-logo" data-client="matnasim" aria-haspopup="dialog">
+          <img src="images/clients/matnasim.png" alt="החברה למתנ&quot;סים" loading="lazy" decoding="async">
+        </button>
+        <button type="button" class="project-item client-logo" data-client="neve-ilan" aria-haspopup="dialog">
+          <img src="images/clients/neve-ilan.png" alt="מלון נווה אילן ירושלים" loading="lazy" decoding="async">
+        </button>
+        <button type="button" class="project-item client-logo" data-client="justice-ministry" aria-haspopup="dialog">
+          <img src="images/clients/justice-ministry.png" alt="משרד המשפטים מחוז ירושלים" loading="lazy" decoding="async">
+        </button>
+        <button type="button" class="project-item client-logo" data-client="jerusalem" aria-haspopup="dialog">
+          <img src="images/clients/jerusalem.png" alt="עיריית ירושלים" loading="lazy" decoding="async">
+        </button>
+        <button type="button" class="project-item client-logo" data-client="sweet-home" aria-haspopup="dialog">
+          <img src="images/clients/sweet-home.png" alt="Sweet Home, רמת השרון" loading="lazy" decoding="async">
+        </button>
+        <button type="button" class="project-item client-logo" data-client="klalit" aria-haspopup="dialog">
+          <img src="images/clients/klalit.png" alt="קופת חולים כללית / שטראוס ירושלים" loading="lazy" decoding="async">
+        </button>
+        <button type="button" class="project-item client-logo" data-client="harel" aria-haspopup="dialog">
+          <img src="images/clients/harel.png" alt="קניון הראל" loading="lazy" decoding="async">
+        </button>
+        <button type="button" class="project-item client-logo client-logo--text" data-client="migdal-ir-yerushalayim" aria-haspopup="dialog" aria-label="בניין מגדל העיר ירושלים">
+          <span class="project-media"><span class="logo-name" aria-hidden="true">בניין מגדל העיר ירושלים</span></span>
+        </button>
+        <button type="button" class="project-item client-logo client-logo--text" data-client="tzur-hadassah-house" aria-haspopup="dialog" aria-label="בית פרטי צור הדסה">
+          <span class="project-media"><span class="logo-name" aria-hidden="true">בית פרטי צור הדסה</span></span>
+        </button>
+        <button type="button" class="project-item client-logo client-logo--text" data-client="malha-house" aria-haspopup="dialog" aria-label="בית פרטי מלחה ירושלים">
+          <span class="project-media"><span class="logo-name" aria-hidden="true">בית פרטי מלחה ירושלים</span></span>
+        </button>
+        <button type="button" class="project-item client-logo client-logo--text" data-client="gan-beitar-illit" aria-haspopup="dialog" aria-label="גן ילדים ביתר עילית">
+          <span class="project-media"><span class="logo-name" aria-hidden="true">גן ילדים ביתר עילית</span></span>
+        </button>
+      </div>
+        <p class="projects-empty" data-i18n="proj_sector_soon" hidden>פרויקטים במגזר זה יתווספו בקרוב</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== פרויקטים בביצוע ===== -->
+  <section id="in-progress" class="section in-progress">
+    <div class="container">
+      <span class="section-eyebrow reveal" data-i18n="nav_in_progress">פרויקטים בביצוע</span>
+      <h2 class="section-title reveal reveal-d1" data-i18n="ip_title2">מה אנחנו בונים עכשיו</h2>
+      <p class="section-lead reveal reveal-d2" data-i18n="ip_lead">פרויקטים שנמצאים כעת בעבודה - מתעדכן באופן שוטף</p>
+
+      <div class="ip-marquee" role="region" aria-label="פרויקטים בביצוע" hidden>
+        <div class="ip-track"></div>
+      </div>
+
+      <div class="progress-grid reveal-group">
+        <article class="progress-card" role="button" tabindex="0" data-client="in-progress-1" aria-haspopup="dialog">
+          <div class="progress-media">
+            <img src="images/image27.jpeg" alt="" loading="lazy" decoding="async">
+            <span class="status-badge" data-i18n="ip_status">בביצוע</span>
+          </div>
+          <div class="progress-body">
+            <h3 class="progress-name"><span data-placeholder data-i18n="ip_name">שם הפרויקט</span></h3>
+            <p class="progress-loc"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg><span data-placeholder data-i18n="ip_loc">מיקום</span></p>
+            <div class="progress-meta"><span data-i18n="ip_progress">התקדמות</span><strong>40%</strong></div>
+            <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="40" aria-label="התקדמות הפרויקט"><span class="progress-fill" style="--p:40%"></span></div>
+          </div>
+        </article>
+        <article class="progress-card" role="button" tabindex="0" data-client="in-progress-2" aria-haspopup="dialog">
+          <div class="progress-media">
+            <img src="images/image31.jpeg" alt="" loading="lazy" decoding="async">
+            <span class="status-badge" data-i18n="ip_status">בביצוע</span>
+          </div>
+          <div class="progress-body">
+            <h3 class="progress-name"><span data-placeholder data-i18n="ip_name">שם הפרויקט</span></h3>
+            <p class="progress-loc"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg><span data-placeholder data-i18n="ip_loc">מיקום</span></p>
+            <div class="progress-meta"><span data-i18n="ip_progress">התקדמות</span><strong>65%</strong></div>
+            <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="65" aria-label="התקדמות הפרויקט"><span class="progress-fill" style="--p:65%"></span></div>
+          </div>
+        </article>
+        <article class="progress-card" role="button" tabindex="0" data-client="in-progress-3" aria-haspopup="dialog">
+          <div class="progress-media">
+            <img src="images/image89.jpeg" alt="" loading="lazy" decoding="async">
+            <span class="status-badge" data-i18n="ip_status">בביצוע</span>
+          </div>
+          <div class="progress-body">
+            <h3 class="progress-name"><span data-placeholder data-i18n="ip_name">שם הפרויקט</span></h3>
+            <p class="progress-loc"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg><span data-placeholder data-i18n="ip_loc">מיקום</span></p>
+            <div class="progress-meta"><span data-i18n="ip_progress">התקדמות</span><strong>85%</strong></div>
+            <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="85" aria-label="התקדמות הפרויקט"><span class="progress-fill" style="--p:85%"></span></div>
+          </div>
+        </article>
+        <article class="progress-card" role="button" tabindex="0" data-client="in-progress-4" aria-haspopup="dialog">
+          <div class="progress-media">
+            <img src="images/image28.jpeg" alt="" loading="lazy" decoding="async">
+            <span class="status-badge" data-i18n="ip_status">בביצוע</span>
+          </div>
+          <div class="progress-body">
+            <h3 class="progress-name"><span data-placeholder data-i18n="ip_name">שם הפרויקט</span></h3>
+            <p class="progress-loc"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg><span data-placeholder data-i18n="ip_loc">מיקום</span></p>
+            <div class="progress-meta"><span data-i18n="ip_progress">התקדמות</span><strong>25%</strong></div>
+            <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="25" aria-label="התקדמות הפרויקט"><span class="progress-fill" style="--p:25%"></span></div>
+          </div>
+        </article>
+        <article class="progress-card" role="button" tabindex="0" data-client="in-progress-5" aria-haspopup="dialog">
+          <div class="progress-media">
+            <img src="images/image29.jpeg" alt="" loading="lazy" decoding="async">
+            <span class="status-badge" data-i18n="ip_status">בביצוע</span>
+          </div>
+          <div class="progress-body">
+            <h3 class="progress-name"><span data-placeholder data-i18n="ip_name">שם הפרויקט</span></h3>
+            <p class="progress-loc"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg><span data-placeholder data-i18n="ip_loc">מיקום</span></p>
+            <div class="progress-meta"><span data-i18n="ip_progress">התקדמות</span><strong>55%</strong></div>
+            <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="55" aria-label="התקדמות הפרויקט"><span class="progress-fill" style="--p:55%"></span></div>
+          </div>
+        </article>
+        <article class="progress-card" role="button" tabindex="0" data-client="in-progress-6" aria-haspopup="dialog">
+          <div class="progress-media">
+            <img src="images/image33.jpeg" alt="" loading="lazy" decoding="async">
+            <span class="status-badge" data-i18n="ip_status">בביצוע</span>
+          </div>
+          <div class="progress-body">
+            <h3 class="progress-name"><span data-placeholder data-i18n="ip_name">שם הפרויקט</span></h3>
+            <p class="progress-loc"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg><span data-placeholder data-i18n="ip_loc">מיקום</span></p>
+            <div class="progress-meta"><span data-i18n="ip_progress">התקדמות</span><strong>90%</strong></div>
+            <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="90" aria-label="התקדמות הפרויקט"><span class="progress-fill" style="--p:90%"></span></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== חטיבת הצוותים שלנו ===== -->
+  <section id="teams" class="section teams">
+    <div class="container">
+      <div class="teams-grid">
+        <div class="teams-media reveal">
+          <!-- שלושה אריחים (RTL: הנהלה / אנשי משרד / אנשי שטח); שורה ראשונה = כותרות, שנייה = האריחים. להחליף placeholder בתמונה: <div class="teams-tile"><img src="images/…" alt="GAD MIVNIM" loading="lazy" decoding="async"></div> -->
+          <div class="teams-tiles">
+            <h3 class="teams-tile-title" data-i18n="tm_h1">הנהלה</h3>
+            <h3 class="teams-tile-title" data-i18n="tm_h2">אנשי משרד</h3>
+            <h3 class="teams-tile-title" data-i18n="tm_h3">אנשי שטח</h3>
+            <div class="teams-tile about-tile--soon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.6-2.4h6.8L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.6"/></svg>
+              <span data-i18n="ab2_media_soon">תמונה תתווסף בקרוב</span>
+            </div>
+            <div class="teams-tile about-tile--soon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.6-2.4h6.8L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.6"/></svg>
+              <span data-i18n="ab2_media_soon">תמונה תתווסף בקרוב</span>
+            </div>
+            <div class="teams-tile">
+              <img src="images/image10.jpeg" alt="GAD MIVNIM" loading="lazy" decoding="async">
+            </div>
+          </div>
+        </div>
+        <div class="teams-text reveal reveal-d1">
+          <span class="section-eyebrow" data-i18n="nav_teams">הצוותים שלנו</span>
+          <p class="teams-slogan" data-i18n="teams_slogan">מצוינות ללא פשרות</p>
+          <ul class="teams-list">
+            <li data-i18n="teams_l1">קבלני בית משותפים</li>
+            <li data-i18n="teams_l2">אמינות ומקצועיות ללא פשרות</li>
+            <li data-i18n="teams_l3">קבלנים מוסמכים</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== חטיבת השותפים שלנו ===== -->
+  <section id="partners" class="section partners">
+    <div class="container">
+      <span class="section-eyebrow reveal" data-i18n="partners_eyebrow">השותפים שלנו</span>
+      <h2 class="section-title reveal reveal-d1"><span data-i18n="partners_sub">המותגים והחברות המובלים בישראל</span></h2>
+      <div class="badges-row reveal reveal-d2">
+        <span class="badge-chip" data-i18n="partners_badge">המותגים המובלים</span>
+        <span class="badge-chip" data-i18n="partners_lead">בית טוב זה משפחה</span>
+      </div>
+
+      <div class="pt-marquee" role="region" aria-label="השותפים שלנו" hidden>
+        <div class="pt-track"></div>
+      </div>
+
+      <div class="partners-grid reveal-group">
+        <div class="partner-chip" data-slug="kitchens" role="button" tabindex="0"><strong data-i18n="pt1">מטבחים</strong><div class="partner-photo"><img src="images/partners/kitchens.jpg" alt="מטבחים" loading="lazy" decoding="async"></div><span class="partner-slogan" data-i18n="pt1s">המטבח זה הלב של הבית</span></div>
+        <div class="partner-chip" data-slug="carpentry" role="button" tabindex="0"><strong data-i18n="pt2">נגרות בהתאמה אישית</strong><div class="partner-photo"><img src="images/partners/carpentry.jpg" alt="נגרות בהתאמה אישית" loading="lazy" decoding="async"></div><span class="partner-slogan" data-i18n="pt2s">יוצרים אתכם אומנות חדשה</span></div>
+        <div class="partner-chip" data-slug="furniture" role="button" tabindex="0"><strong data-i18n="pt3">רהיטים מעוצבים</strong><div class="partner-photo"><img src="images/partners/furniture.jpg" alt="רהיטים מעוצבים" loading="lazy" decoding="async"></div><span class="partner-slogan" data-i18n="pt3s">מצאתי את הרהיט החדש שלי</span></div>
+        <div class="partner-chip" data-slug="tiles" role="button" tabindex="0"><strong data-i18n="pt4">ריצוף וחיפויים</strong><div class="partner-photo"><img src="images/partners/tiles.jpg" alt="ריצוף וחיפויים" loading="lazy" decoding="async"></div><span class="partner-slogan" data-i18n="pt4s">בחירה נכונה משנה את סגנון הבית והמבנה שלנו</span></div>
+        <div class="partner-chip" data-slug="countertops" role="button" tabindex="0"><strong data-i18n="pt5">משטחים</strong><div class="partner-photo"><img src="images/partners/countertops.jpg" alt="משטחים" loading="lazy" decoding="async"></div><span class="partner-slogan is-soon" data-i18n="pt_slogan_soon">סלוגן יתווסף בקרוב</span></div>
+        <div class="partner-chip" data-slug="parquet" role="button" tabindex="0"><strong data-i18n="pt6">פרקטיים</strong><div class="partner-photo"><img src="images/partners/parquet.jpg" alt="פרקטיים" loading="lazy" decoding="async"></div><span class="partner-slogan is-soon" data-i18n="pt_slogan_soon">סלוגן יתווסף בקרוב</span></div>
+        <div class="partner-chip" data-slug="paints" role="button" tabindex="0"><strong data-i18n="pt7">צבעיים וציפויים</strong><div class="partner-photo"><img src="images/partners/paints.jpg" alt="צבעיים וציפויים" loading="lazy" decoding="async"></div><span class="partner-slogan is-soon" data-i18n="pt_slogan_soon">סלוגן יתווסף בקרוב</span></div>
+        <div class="partner-chip" data-slug="sanitary" role="button" tabindex="0"><strong data-i18n="pt8">כלים סניטריים</strong><div class="partner-photo"><img src="images/partners/sanitary.jpg" alt="כלים סניטריים" loading="lazy" decoding="async"></div><span class="partner-slogan is-soon" data-i18n="pt_slogan_soon">סלוגן יתווסף בקרוב</span></div>
+        <div class="partner-chip" data-slug="bath" role="button" tabindex="0"><strong data-i18n="pt9">ריהוט ואביזרי אמבטיה</strong><div class="partner-photo"><img src="images/partners/bath.jpg" alt="ריהוט ואביזרי אמבטיה" loading="lazy" decoding="async"></div><span class="partner-slogan is-soon" data-i18n="pt_slogan_soon">סלוגן יתווסף בקרוב</span></div>
+        <div class="partner-chip" data-slug="lighting" role="button" tabindex="0"><strong data-i18n="pt10">תאורה</strong><div class="partner-photo"><img src="images/partners/lighting.jpg" alt="תאורה" loading="lazy" decoding="async"></div><span class="partner-slogan" data-i18n="pt10s">אור מביא אור</span></div>
+        <div class="partner-chip" data-slug="interior-doors" role="button" tabindex="0"><strong data-i18n="pt11">דלתות פנים</strong><div class="partner-photo"><img src="images/partners/interior-doors.jpg" alt="דלתות פנים" loading="lazy" decoding="async"></div><span class="partner-slogan is-soon" data-i18n="pt_slogan_soon">סלוגן יתווסף בקרוב</span></div>
+        <div class="partner-chip" data-slug="entry-doors" role="button" tabindex="0"><strong data-i18n="pt12">דלתות כניסה</strong><div class="partner-photo"><img src="images/partners/entry-doors.jpg" alt="דלתות כניסה" loading="lazy" decoding="async"></div><span class="partner-slogan is-soon" data-i18n="pt_slogan_soon">סלוגן יתווסף בקרוב</span></div>
+        <div class="partner-chip" data-slug="gates" role="button" tabindex="0"><strong data-i18n="pt13">שערים וגדרות</strong><div class="partner-photo"><img src="images/partners/gates.jpg" alt="שערים וגדרות" loading="lazy" decoding="async"></div><span class="partner-slogan is-soon" data-i18n="pt_slogan_soon">סלוגן יתווסף בקרוב</span></div>
+        <div class="partner-chip" data-slug="glazing" role="button" tabindex="0"><strong data-i18n="pt14">זגגות בנייה</strong><div class="partner-photo"><img src="images/partners/glazing.jpg" alt="זגגות בנייה" loading="lazy" decoding="async"></div><span class="partner-slogan is-soon" data-i18n="pt_slogan_soon">סלוגן יתווסף בקרוב</span></div>
+        <div class="partner-chip" data-slug="metalwork" role="button" tabindex="0"><strong data-i18n="pt15">מסגרות בנייה</strong><div class="partner-photo"><img src="images/partners/metalwork.jpg" alt="מסגרות בנייה" loading="lazy" decoding="async"></div><span class="partner-slogan is-soon" data-i18n="pt_slogan_soon">סלוגן יתווסף בקרוב</span></div>
+        <div class="partner-chip" data-slug="aluminum" role="button" tabindex="0"><strong data-i18n="pt16">אלומיניום</strong><div class="partner-photo"><img src="images/partners/aluminum.jpg" alt="אלומיניום" loading="lazy" decoding="async"></div><span class="partner-slogan is-soon" data-i18n="pt_slogan_soon">סלוגן יתווסף בקרוב</span></div>
+        <div class="partner-chip" data-slug="hardware" role="button" tabindex="0"><strong data-i18n="pt17">פרזול</strong><div class="partner-photo"><img src="images/partners/hardware.jpg" alt="פרזול" loading="lazy" decoding="async"></div><span class="partner-slogan is-soon" data-i18n="pt_slogan_soon">סלוגן יתווסף בקרוב</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== מידע לאזרח ולבונה ===== -->
+  <section id="info" class="section info">
+    <div class="container">
+      <span class="section-eyebrow reveal" data-i18n="info_title">מידע לאזרח ולבונה</span>
+      <h2 class="section-title info-title reveal reveal-d1"><span class="info-mq__src"><span data-i18n="info_l1">עם קצת ידע והכוונה נכונה</span> <span data-i18n="info_l2">כל אחד יכול לבנות את מבנה חיו !</span> <span class="info-brush" data-i18n="info_l3">חשבנו בשבילכם על הכל...</span></span><span class="info-mq" aria-hidden="true"><span class="info-mq__track"></span></span></h2>
+
+      <!-- כרטיסי הנושאים — נבנים מ-js/info-data.js (המקור היחיד); אותו גודל ומראה כמו כרטיסי #partners; לחיצה פותחת חלון -->
+      <div class="info-cards-wrap">
+        <div class="ic-marquee" role="region" aria-label="מידע לאזרח ולבונה" hidden>
+          <div class="ic-track"></div>
+        </div>
+        <div class="info-cards"></div>
+      </div>
+
+
+    </div>
+  </section>
+
+  <!-- ===== פודקאסט — אנשים משתפים ===== -->
+  <section id="podcast" class="section podcast">
+    <div class="container">
+      <!-- פודקאסט "אנשים משתפים" — שורת כותרת (כמו הבאנר המקורי): תמונת הגיטרות מימין (בגודל אזור התמונה של כרטיסי הפרקים) + הכותרת משמאלה;
+           לחיצה על התמונה פותחת את חלון הפודקאסט על פרק 1. מתחת: פס כרטיסי הפרקים. הכל מ-js/podcast-data.js -->
+      <div class="pod-head reveal">
+        <button type="button" class="pod-head__media" aria-haspopup="dialog">
+          <img src="images/image3.png" alt="פודקאסט | אנשים משתפים" loading="lazy" decoding="async">
+          <span class="pod-head__play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg></span>
+        </button>
+        <div class="pod-head__text">
+          <span class="section-eyebrow" data-pod="eyebrow">פודקאסט | אנשים משתפים</span>
+          <h2 class="section-title" data-pod="watch">האזינו וצפו בפרק הראשון...</h2>
+          <p class="pod-head__count">20 פרקים</p>
+        </div>
+      </div>
+
+      <!-- כל הפרקים — כרטיסים בסגנון כרטיסי #partners, בפס נע (כולם עם תמונת הגיטרות); לחיצה פותחת את החלון על הפרק -->
+      <div class="pod-wrap">
+        <div class="pt-marquee pod-marquee" role="region" aria-label="פרקי הפודקאסט" hidden><div class="pt-track"></div></div>
+        <div class="pod-eps"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== גלריה בנייה ועיצובים ===== -->
+  <section id="gallery" class="section gallery">
+    <div class="container">
+      <span class="section-eyebrow reveal" data-i18n="gal_title">גלריה / השראות</span>
+
+      <!-- שני פסים נעים מתמונות הפרויקטים האמיתיים — נבנים מ-js/projects-data.js (המקור היחיד) -->
+      <div class="gal-strips">
+        <div class="gal-marquee" data-row="1" role="region" aria-label="גלריה / השראות" hidden><div class="gal-track"></div></div>
+        <div class="gal-marquee" data-row="2" role="region" aria-label="גלריה / השראות" hidden><div class="gal-track"></div></div>
+        <div class="gal-grid"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== דרושים ===== -->
+  <section id="careers" class="section careers">
+    <div class="container">
+      <span class="section-eyebrow reveal" data-i18n="nav_careers">דרושים</span>
+      <h2 class="section-title reveal reveal-d1" data-i18n="car_title">בואו לבנות איתנו</h2>
+      <p class="section-lead reveal reveal-d2" data-i18n="car_lead">אנחנו תמיד מחפשים אנשי מקצוע איכותיים להצטרף למשפחת GAD MIVNIM</p>
+
+      <div class="careers-grid reveal-group">
+        <article class="role-card">
+          <span class="role-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"/><path d="M5 20v-6a7 7 0 0 1 14 0v6"/><path d="M12 7V4"/><path d="M9 4h6"/></svg></span>
+          <h3 data-i18n="car_r1">מנהלי עבודה</h3>
+          <p data-i18n="car_r1s">אחראים על השטח, על לוח הזמנים ועל האיכות</p>
+          <button type="button" class="role-btn" data-role="r1" aria-haspopup="dialog"><span data-i18n="car_more">לפרטים</span><svg class="role-btn__arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M19 12H5"/><path d="m11 18-6-6 6-6"/></svg></button>
+        </article>
+        <article class="role-card">
+          <span class="role-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg></span>
+          <h3 data-i18n="car_r2">קבלני משנה ובעלי מקצוע</h3>
+          <p data-i18n="car_r2s">בעלי מקצוע מנוסים לעבודה משותפת לאורך זמן</p>
+          <button type="button" class="role-btn" data-role="r2" aria-haspopup="dialog"><span data-i18n="car_more">לפרטים</span><svg class="role-btn__arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M19 12H5"/><path d="m11 18-6-6 6-6"/></svg></button>
+        </article>
+        <article class="role-card">
+          <span class="role-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5z"/><path d="M7 10.5V16c0 1.5 2.2 3 5 3s5-1.5 5-3v-5.5"/><path d="M21 8v6"/></svg></span>
+          <h3 data-i18n="car_r3">מהנדסים ואדריכלים</h3>
+          <p data-i18n="car_r3s">תכנון והנדסה ברמה הגבוהה ביותר</p>
+          <button type="button" class="role-btn" data-role="r3" aria-haspopup="dialog"><span data-i18n="car_more">לפרטים</span><svg class="role-btn__arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M19 12H5"/><path d="m11 18-6-6 6-6"/></svg></button>
+        </article>
+        <article class="role-card">
+          <span class="role-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="M8 14h4"/><path d="M8 17h8"/></svg></span>
+          <h3 data-i18n="car_r4">אנשי משרד ושירות</h3>
+          <p data-i18n="car_r4s">שירות אישי וחם לכל לקוח</p>
+          <button type="button" class="role-btn" data-role="r4" aria-haspopup="dialog"><span data-i18n="car_more">לפרטים</span><svg class="role-btn__arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M19 12H5"/><path d="m11 18-6-6 6-6"/></svg></button>
+        </article>
+      </div>
+
+      <!-- הצטרפות כקבלן בית (עבר מ-#tenders) — הדגמה: הודעת הצלחה, בלי שרת -->
+      <div class="careers-form-card cj-card reveal" id="careersJoin">
+        <h3 class="cj-title" data-i18n="cj_title">הצטרפות כקבלן בית</h3>
+        <p class="cj-text" data-i18n="cj_text">קבלנים, חברות ובעלי מקצוע מוסמכים מוזמנים להצטרף למאגר קבלני הבית של GAD MIVNIM. ההצטרפות מוגבלת ובאישור החברה בלבד.</p>
+        <form id="tendersForm" class="contact-form" novalidate>
+          <div class="form-field">
+            <label for="tenderName" data-i18n="car_f_name">שם מלא</label>
+            <input type="text" id="tenderName" name="tenderName" autocomplete="name" data-i18n-ph="car_f_name" placeholder="שם מלא" required>
+          </div>
+          <div class="form-field">
+            <label for="tenderPhone" data-i18n="f_phone">טלפון</label>
+            <input type="tel" id="tenderPhone" name="tenderPhone" autocomplete="tel" placeholder="05X-XXXXXXX" required>
+          </div>
+          <div class="form-field">
+            <label for="tenderField" data-i18n="tn_f_field">תחום מקצועי</label>
+            <select id="tenderField" name="tenderField" required>
+              <option value="" data-i18n="car_f_pick">בחרו תחום</option>
+              <option value="main" data-i18n="tn_o1">קבלן ראשי</option>
+              <option value="sub" data-i18n="tn_o2">קבלן משנה</option>
+              <option value="supplier" data-i18n="tn_o3">ספק חומרים</option>
+              <option value="arch" data-i18n="tn_o4">אדריכלות והנדסה</option>
+              <option value="interior" data-i18n="tn_o5">עיצוב פנים</option>
+              <option value="systems" data-i18n="tn_o6">מערכות (חשמל / אינסטלציה / מיזוג)</option>
+              <option value="other" data-i18n="tn_o7">אחר</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary form-submit" data-i18n="cj_submit">הגשת בקשת הצטרפות</button>
+          <p class="cj-after"><span data-i18n="cj_after">לאחר אישור הבקשה תקבלו מספר קבלן וסיסמה לכניסה לאזור המכרזים</span> <a href="#tenders" class="cj-login-link" data-i18n="cj_login_link">כבר מנויים? לכניסה ←</a></p>
+          <p class="form-success" id="tendersSuccess" role="status" data-i18n="tn_success" hidden>נרשמתם בהצלחה! נעדכן אתכם על מכרזים חדשים בתחום שלכם.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== מכרזים / מנויים — הרשמה לעדכונים על מכרזים ===== -->
+  <section id="tenders" class="section tenders">
+    <div class="container">
+      <!-- כניסה: שתי עמודות — טקסט מימין, כרטיס הכניסה משמאל (≥1024). אחרי הכניסה (.is-members) — הפריסה הממורכזת -->
+      <span class="section-eyebrow reveal" data-i18n="nav_tenders">מכרזים / מנויים</span>
+      <div class="tn-layout">
+      <div class="tn-intro">
+        <h2 class="section-title reveal reveal-d1" data-i18n="tn_title">אזור קבלני הבית</h2>
+        <p class="section-lead reveal reveal-d2" data-i18n="tn_lead">הכניסה לקבלני הבית של GAD MIVNIM בלבד – מנויים פעילים עם קוד משתמש</p>
+        <ul class="plan-list tn-perks">
+          <li data-i18n="tn_perk1">מכרזים לפי תחומים</li>
+          <li data-i18n="tn_perk2">מועדי פתיחה והגשה</li>
+          <li data-i18n="tn_perk3">הגשת מועמדות מהירה</li>
+        </ul>
+      </div>
+
+      <div class="tn-stage">
+        <!-- כניסת מנויים — הדגמה: כל קלט "נכנס", הסיסמה לא נשמרת בשום מקום. אין מכרזים לפני הכניסה -->
+        <div class="careers-form-card tn-login" id="tnLogin">
+          <form class="contact-form tn-login-form" id="tnLoginForm" novalidate autocomplete="off">
+            <div class="tn-login-head">
+              <span class="tn-lock" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+              <h3 class="tn-login-title" data-i18n="tn_login_title">כניסה לאזור קבלני הבית</h3>
+            </div>
+            <div class="tn-login-fields">
+            <div class="form-field">
+              <label for="tnUser" data-i18n="tn_login_user">קוד משתמש</label>
+              <input type="text" id="tnUser" name="tnUser" autocomplete="off">
+            </div>
+            <div class="form-field">
+              <label for="tnPass" data-i18n="tn_login_pass">סיסמה</label>
+              <div class="tn-pass">
+                <input type="password" id="tnPass" autocomplete="off">
+                <button type="button" class="tn-eye" id="tnEye" aria-controls="tnPass" aria-pressed="false" aria-label="הצגת סיסמה">
+                  <svg class="tn-eye-on" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg class="tn-eye-off" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.4 10.4 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.6 6.6C3.8 8.4 2 12 2 12s3.5 7 10 7c1.8 0 3.4-.5 4.7-1.3"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="tn-forgot-row">
+              <button type="button" class="tn-forgot" id="tnForgot" aria-controls="tnForgotNote" aria-expanded="false" data-i18n="tn_forgot">שכחתי סיסמה</button>
+              <span class="tn-forgot-note" id="tnForgotNote" role="status" data-i18n="tn_demo_only" hidden>הדגמה בלבד</span>
+            </div>
+            </div>
+            <div class="tn-login-foot">
+            <button type="submit" class="btn btn-primary form-submit tn-login-btn" data-i18n="tn_login_btn">כניסה</button>
+            <p class="tn-login-error" id="tnLoginError" role="alert" data-i18n="tn_login_error" hidden>קוד משתמש או סיסמה שגויים, או שהמנוי אינו פעיל</p>
+            <p class="tn-members-only"><span data-i18n="tn_members_only">הכניסה לקבלני בית מנויים בלבד. קבלן שאינו מנוי – ניתן להגיש בקשת הצטרפות בעמוד הדרושים.</span> <a href="#careers" class="tn-join-link" data-i18n="tn_join_link">להצטרפות ←</a></p>
+            <p class="tn-demo-note" data-i18n="tn_demo_note">הדגמה – המערכת תחובר בהמשך</p>
+            </div>
+          </form>
+        </div>
+
+        <!-- אזור המנויים — מוצג אחרי כניסה מוצלחת; מכרזים שפורסמו מ-js/demo-store.js (מצב הדגמה, localStorage) -->
+        <div class="tn-members" id="tnMembers" hidden>
+          <div class="tn-bar">
+            <p class="tn-hello" data-i18n="tn_hello">שלום, קבלן בית</p>
+            <span class="tn-id-chip"><span data-i18n="tn_contractor_no">קוד משתמש:</span> <bdi id="tnUserCode">GM-0000</bdi></span>
+            <span class="tn-active-chip" data-i18n="tn_active">מנוי פעיל</span>
+            <button type="button" class="tn-logout" id="tnLogout" data-i18n="tn_logout">יציאה</button>
+          </div>
+          <h3 class="tn-list-title" id="tnListTitle" tabindex="-1" data-i18n="tn_list_title">רשימת מכרזים</h3>
+          <div class="tn-filters" id="tnFilters" role="group" aria-label="סינון לפי תחום"></div>
+          <div class="tn-list" id="tnList"></div>
+        </div>
+      </div>
+      </div>
+
+      <p class="tn-toast" id="tnToast" role="status" aria-live="polite"></p>
+
+      <!-- הגשת מועמדות — חלון קטן עם הערה (לא חובה); נשמר במערכת ההדגמה -->
+      <div class="tn-modal" id="tnApplyModal" hidden>
+        <div class="tn-modal-backdrop" data-close></div>
+        <div class="tn-modal-box careers-form-card" role="dialog" aria-modal="true" aria-labelledby="tnApplyTitle">
+          <form id="tnApplyForm" class="tn-modal-form">
+            <h3 class="tn-modal-title" id="tnApplyTitle" data-i18n="tn_apply">הגשת מועמדות</h3>
+            <p class="tn-modal-tender" id="tnApplyTender"></p>
+            <div class="form-field">
+              <label for="tnApplyNote" data-i18n="tn_apply_note">הערה (לא חובה)</label>
+              <textarea id="tnApplyNote" rows="3" maxlength="500"></textarea>
+            </div>
+            <div class="tn-modal-actions">
+              <button type="submit" class="btn btn-primary form-submit" data-i18n="tn_apply_send">שליחת מועמדות</button>
+              <button type="button" class="tn-logout" data-close data-i18n="tn_cancel">ביטול</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== אפליקציה / מנויים — מסלולי שירות ואחזקה ===== -->
+  <section id="app" class="section app-plans">
+    <div class="container">
+      <span class="section-eyebrow reveal" data-i18n="nav_app">אפליקציה / מנויים</span>
+      <h2 class="section-title reveal reveal-d1" data-i18n="ap_title">מנויי שירות ואחזקה</h2>
+      <p class="section-lead reveal reveal-d2" data-i18n="ap_lead">שקט נפשי גם אחרי המסירה — בחרו את מסלול השירות המתאים לכם</p>
+
+      <div class="plans-grid reveal-group">
+        <article class="role-card plan-card">
+          <h3 data-i18n="ap_p1">בסיסי</h3>
+          <p class="plan-price" data-i18n="ap_price">המחיר יותאם לנכס</p>
+          <ul class="plan-list">
+            <li data-i18n="ap_p1_l1">בדק בית שנתי</li>
+            <li data-i18n="ap_p1_l2">מוקד שירות בשעות העבודה</li>
+            <li data-i18n="ap_p1_l3">טיפול בתקלות דחופות</li>
+          </ul>
+          <a href="#contact" class="plan-btn" data-i18n="ap_btn">לפרטים</a>
+        </article>
+        <article class="role-card plan-card">
+          <h3 data-i18n="ap_p2">מורחב</h3>
+          <p class="plan-price" data-i18n="ap_price">המחיר יותאם לנכס</p>
+          <ul class="plan-list">
+            <li data-i18n="ap_p2_l1">שתי ביקורות בשנה</li>
+            <li data-i18n="ap_p2_l2">מוקד שירות מורחב</li>
+            <li data-i18n="ap_p2_l3">אחזקה שוטפת של מערכות</li>
+            <li data-i18n="ap_p2_l4">עדיפות בטיפול</li>
+          </ul>
+          <a href="#contact" class="plan-btn" data-i18n="ap_btn">לפרטים</a>
+        </article>
+        <article class="role-card plan-card">
+          <h3 data-i18n="ap_p3">פרימיום</h3>
+          <p class="plan-price" data-i18n="ap_price">המחיר יותאם לנכס</p>
+          <ul class="plan-list">
+            <li data-i18n="ap_p3_l1">ביקורות רבעוניות</li>
+            <li data-i18n="ap_p3_l2">מוקד שירות 24/7</li>
+            <li data-i18n="ap_p3_l3">אחזקה מלאה למבני מגורים ומסחר</li>
+            <li data-i18n="ap_p3_l4">מנהל לקוח אישי</li>
+          </ul>
+          <a href="#contact" class="plan-btn" data-i18n="ap_btn">לפרטים</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== צור קשר — קוד משתמש ===== -->
+  <section id="contact" class="section contact">
+    <div class="container">
+      <span class="section-eyebrow reveal" data-i18n="nav_contact">שירות לקוחות</span>
+      <h2 class="section-title contact-title reveal reveal-d1" data-i18n="ct_title">המבנה שלכם שווה הרבה... והוא רק שלכם !</h2>
+
+      <div class="contact-grid">
+        <div class="contact-card reveal">
+          <form id="contactForm" class="contact-form" novalidate>
+            <div class="form-row">
+              <div class="form-field">
+                <label for="firstName" data-i18n="f_first">שם</label>
+                <input type="text" id="firstName" name="firstName" autocomplete="given-name" data-i18n-ph="f_first" placeholder="שם" required>
+              </div>
+              <div class="form-field">
+                <label for="lastName" data-i18n="f_last">משפחה</label>
+                <input type="text" id="lastName" name="lastName" autocomplete="family-name" data-i18n-ph="f_last" placeholder="משפחה" required>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label for="phone" data-i18n="f_phone">טלפון</label>
+              <input type="tel" id="phone" name="phone" autocomplete="tel" placeholder="00000000" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary form-submit" data-i18n="f_submit">שלח</button>
+
+            <p class="form-success" id="formSuccess" role="status" data-i18n="f_success" hidden>
+              קוד המשתמש בדרך אליכם..     תודה שבחרתם לצפות באתר הבית שלנו
+            </p>
+          </form>
+        </div>
+
+        <div class="contact-info reveal reveal-d1">
+          <a class="phone-big" href="tel:00000000" dir="ltr">
+            <span class="phone-big-icon" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
+            <span class="phone-big-num">0 0 0 0 0 0 0 0</span>
+          </a>
+          <div class="contact-map">
+            <iframe
+              src="https://www.google.com/maps?q=Herzliya,Israel&output=embed"
+              title="Herzliya map"
+              width="100%" height="100%"
+              style="border:0;"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"></iframe>
+            <button type="button" class="map-activate" id="mapActivate"><span data-i18n="map_tap">הקישו להפעלת המפה</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Lightbox (הגדלת תמונה) ===== -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <button class="lightbox-close" id="lightboxClose" aria-label="Close">&times;</button>
+    <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="Previous">&#8250;</button>
+    <figure class="lightbox-fig"><img class="lightbox-img" id="lightboxImg" src="" alt=""><figcaption class="lightbox-cap" id="lightboxCap" hidden></figcaption></figure>
+    <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Next">&#8249;</button>
+  </div>
+
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+
+      <div class="footer-brand">
+        <img src="images/gad_mivnim_logo.svg" alt="GAD MIVNIM" class="footer-logo" loading="lazy" decoding="async">
+        <p class="footer-line1" data-i18n="footer_l1">מקווים שהנהנתם לצפות באתר הבית שלנו</p>
+        <p class="footer-line2" data-i18n="footer_l2">נשמח לראותם בין קהל לקוחותינו וממשפחת <bdi>G A D MIVNIM</bdi> בכל מקום במפה</p>
+      </div>
+
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="#hero"     data-i18n="nav_home">דף הבית</a>
+        <a href="#about"    data-i18n="about_eyebrow">אודות הקבוצה</a>
+        <a href="#services" data-i18n="nav_services">השירותים שלנו</a>
+        <a href="#projects" data-i18n="nav_projects">הפרויקטים שלנו</a>
+        <a href="#gallery"  data-i18n="nav_gallery">גלריה בנייה ועיצובים</a>
+        <a href="#contact"  data-i18n="nav_contact">שירות לקוחות</a>
+        <a href="#" class="js-a11y-statement">הצהרת נגישות</a>
+      </nav>
+
+      <p class="footer-copy" data-i18n="footer_copy">*** כל הזכויות שמורת לחברת גד מבנים בע"מ ואין לאף אדם או גוף כלשהו לעשות שום שימוש במוצג באתר לשום עניין ודבר.</p>
+
+    </div>
+  </footer>
+
+  <!-- כפתור חזרה למעלה -->
+  <button class="back-top" id="backTop" type="button" aria-label="Back to top"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg></button>
+
+  <!-- ===== תוסף נגישות ===== -->
+  <button class="a11y-fab" id="a11yFab" type="button"
+          aria-label="פתיחת תפריט נגישות" aria-haspopup="dialog"
+          aria-expanded="false" aria-controls="a11yPanel">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+      <circle cx="12" cy="3.6" r="2.1"/>
+      <path d="M20 7.2c-.3-.9-1.2-1.3-2.1-1.1l-3.8.9c-1.4.3-2.8.3-4.2 0l-3.8-.9C5.2 5.9 4.3 6.3 4 7.2c-.3.9.2 1.8 1.1 2l3.4.8v2.2l-1.7 6.1c-.3.9.3 1.9 1.2 2.1.9.3 1.9-.3 2.1-1.2l1.5-4.7h.8l1.5 4.7c.2.9 1.2 1.5 2.1 1.2.9-.2 1.5-1.2 1.2-2.1l-1.7-6.1V10l3.4-.8c.9-.2 1.4-1.1 1.1-2z"/>
+    </svg>
+  </button>
+
+  <!-- פאנל הנגישות -->
+  <div class="a11y-panel" id="a11yPanel" role="dialog" aria-modal="true"
+       aria-labelledby="a11yPanelTitle" aria-hidden="true" dir="rtl" lang="he">
+    <div class="a11y-panel__head">
+      <h2 id="a11yPanelTitle">תפריט נגישות</h2>
+      <button class="a11y-close" id="a11yClose" type="button" aria-label="סגירת תפריט נגישות">✕</button>
+    </div>
+    <div class="a11y-panel__body">
+
+      <div class="a11y-row">
+        <span class="a11y-row__label">גודל טקסט</span>
+        <div class="a11y-stepper" role="group" aria-label="שינוי גודל טקסט">
+          <button type="button" id="a11yTextMinus" aria-label="הקטנת טקסט">A−</button>
+          <span class="a11y-step-val" id="a11yTextVal" aria-live="polite" aria-label="גודל נוכחי">100%</span>
+          <button type="button" id="a11yTextPlus" aria-label="הגדלת טקסט">A+</button>
+        </div>
+      </div>
+
+      <button class="a11y-toggle" type="button" data-a11y="contrast" aria-pressed="false">
+        <span class="a11y-toggle__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3v18" fill="currentColor" stroke="none"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none"/></svg></span>
+        <span>ניגודיות גבוהה</span>
+      </button>
+
+      <button class="a11y-toggle" type="button" data-a11y="grayscale" aria-pressed="false">
+        <span class="a11y-toggle__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 12h18M12 3v18"/></svg></span>
+        <span>גווני אפור</span>
+      </button>
+
+      <button class="a11y-toggle" type="button" data-a11y="links" aria-pressed="false">
+        <span class="a11y-toggle__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg></span>
+        <span>הדגשת קישורים</span>
+      </button>
+
+      <button class="a11y-toggle" type="button" data-a11y="readable" aria-pressed="false">
+        <span class="a11y-toggle__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7V5h16v2M9 5v14M7 19h4"/></svg></span>
+        <span>פונט קריא</span>
+      </button>
+
+      <button class="a11y-toggle" type="button" data-a11y="motion" aria-pressed="false">
+        <span class="a11y-toggle__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><rect x="9" y="9" width="6" height="6" fill="currentColor" stroke="none"/></svg></span>
+        <span>עצירת אנימציות</span>
+      </button>
+
+      <button class="a11y-toggle" type="button" data-a11y="cursor" aria-pressed="false">
+        <span class="a11y-toggle__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><path d="M5 3v15l4-4 3 6 2-1-3-6h6z"/></svg></span>
+        <span>סמן גדול</span>
+      </button>
+
+      <button class="a11y-reset a11y-undo" id="a11yUndo" type="button" disabled>↩ חזרה לשלב הקודם</button>
+      <button class="a11y-reset" id="a11yReset" type="button">איפוס — חזרה להגדרות המקוריות</button>
+      <a href="#" class="a11y-statement-link js-a11y-statement">הצהרת נגישות</a>
+    </div>
+  </div>
+
+  <!-- מודאל הצהרת נגישות -->
+  <div class="a11y-modal" id="a11yStatementModal" role="dialog" aria-modal="true"
+       aria-labelledby="a11yStmtTitle" aria-hidden="true" dir="rtl" lang="he">
+    <div class="a11y-modal__box">
+      <button class="a11y-modal__close" id="a11yStmtClose" type="button" aria-label="סגירת ההצהרה">✕</button>
+      <h2 id="a11yStmtTitle">הצהרת נגישות</h2>
+      <div class="a11y-modal__content">
+        <p>חברת <strong>גד מבנים בע"מ</strong> רואה חשיבות רבה במתן שירות שוויוני לכלל הלקוחות ובשיפור השירות הניתן לאנשים עם מוגבלות. אנו משקיעים מאמצים ומשאבים רבים בהנגשת אתר האינטרנט שלנו, מתוך אמונה שלכל אדם מגיעה הזכות לחיות בשוויון, בכבוד, בנוחות ובעצמאות.</p>
+        <p>אתר זה עומד בדרישות תקנות שוויון זכויות לאנשים עם מוגבלות (התאמות נגישות לשירות), התשע"ג-2013, והונגש בהתאם לתקן הישראלי <strong>ת"י 5568</strong> לנגישות תכני אינטרנט ברמת AA, המבוסס על הנחיות <strong>WCAG 2.0</strong> של ארגון W3C.</p>
+        <p>באתר מוטמע תפריט נגישות המאפשר, בין היתר:</p>
+        <ul>
+          <li>הגדלה והקטנה של גודל הטקסט</li>
+          <li>הפעלת ניגודיות גבוהה וגווני אפור</li>
+          <li>הדגשת קישורים ומעבר לפונט קריא</li>
+          <li>עצירת אנימציות ותנועה באתר</li>
+          <li>הגדלת סמן העכבר</li>
+          <li>ניווט מלא באמצעות מקלדת</li>
+        </ul>
+        <p>אנו ממשיכים במאמצים לשפר את נגישות האתר כחלק ממחויבותנו לאפשר שימוש בו עבור כלל האוכלוסייה, לרבות אנשים עם מוגבלות.</p>
+        <p><strong>נתקלתם בבעיית נגישות?</strong> נשמח לקבל את פנייתכם. ניתן ליצור עמנו קשר באמצעות <a href="#contact" class="js-a11y-close-to-contact">טופס יצירת הקשר</a> באתר, ואנו נטפל בפנייה בהקדם האפשרי.</p>
+        <p style="color:#6b7280;font-size:.85rem;">הצהרת נגישות זו עודכנה בחודש יולי 2026.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- הסקריפטים שלנו -->
+  <!-- Netlify Forms: עותק סטטי חבוי של טופס "הגשת מועמדות" (הטופס האמיתי נבנה ב-JS בחלון התפקיד) — כדי ש-Netlify יזהה אותו בפריסה -->
+  <form name="careers-application" method="POST" action="/" data-netlify="true" netlify-honeypot="bot-field" enctype="multipart/form-data" hidden>
+    <input type="text" name="name">
+    <input type="tel" name="phone">
+    <input type="text" name="role">
+    <input type="file" name="cv">
+    <input type="text" name="bot-field">
+  </form>
+
+  <script src="js/i18n.js?v=20261108ad"></script>
+  <script src="js/premium.js?v=20261030cv"></script>
+  <script src="js/projects-data.js?v=1"></script>
+  <script src="js/in-progress-data.js?v=1"></script>
+  <script src="js/careers-data.js?v=2"></script>
+  <script src="js/partners-data.js?v=3"></script>
+  <script src="js/info-data.js?v=6"></script>
+  <script src="js/podcast-data.js?v=7"></script>
+  <script src="js/tenders-data.js?v=1"></script>
+  <script src="js/demo-store.js?v=1"></script>
+  <script src="js/tenders.js?v=2"></script>
+  <script src="js/script.js?v=20261108ad"></script>
+  <script src="js/a11y.js?v=20261030cv"></script>
+
+</body>
+</html>

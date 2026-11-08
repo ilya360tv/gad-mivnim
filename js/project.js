@@ -1,7 +1,7 @@
 /* ==========================================================================
    GAD MIVNIM — דף פרויקט / לקוח (project.js)
    נטען ב-project.html?client=<slug> וממלא את הדף מתוך js/projects-data.js.
-   slug לא מוכר -> חזרה ל-index.html#projects.
+   slug לא מוכר -> חזרה ל-projects.html.
    עברית = המקור; en / ru / fr נלקחים מ-i18n של הלקוח ומתעדכנים בהחלפת שפה.
    ========================================================================== */
 
@@ -13,7 +13,7 @@
 
   var d = Object.prototype.hasOwnProperty.call(DATA, slug) ? DATA[slug] : null;
   if (!d) {
-    window.location.replace('index.html#projects');
+    window.location.replace('projects.html');
     return;
   }
 

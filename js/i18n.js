@@ -418,7 +418,10 @@
     html.setAttribute('lang', lang);
     html.setAttribute('dir', DIR[lang]);
     var titleKey = html.getAttribute('data-title-key');
-    document.title = (titleKey && T[titleKey] && T[titleKey][lang]) || DOC_TITLE[lang];
+    var pageTitle = titleKey && T[titleKey] && T[titleKey][lang];
+    // עמודים נפרדים (data-title-brand): "<שם העמוד> | GAD MIVNIM" בכל שפה
+    if (pageTitle && html.hasAttribute('data-title-brand')) { pageTitle = pageTitle.replace(/<[^>]+>/g, '') + ' | GAD MIVNIM'; }
+    document.title = pageTitle || DOC_TITLE[lang];
     if (window.GAD_PAGE_TITLE) { document.title = window.GAD_PAGE_TITLE; }
 
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
