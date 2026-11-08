@@ -77,3 +77,8 @@
 - לעבוד שלב-שלב ולהסביר למשתמש (מתחיל) מה נעשה בכל שלב, בעברית פשוטה.
 - אחרי כל שלב לוודא שהאתר נפתח תקין בדפדפן (לפתוח את index.html).
 - לא להמציא מספרי טלפון/כתובות אמיתיים — לשים placeholder ברור כמו 05X-XXXXXXX.
+
+## Deployment
+- Hosting = VERCEL ONLY. Never use, configure, deploy to, or test on Netlify (no netlify CLI, no netlify.toml/_headers changes, no Netlify URLs).
+- Deploy = git push origin main → Vercel auto-deploys.
+- Always verify on the Vercel URL with a hard reload.
