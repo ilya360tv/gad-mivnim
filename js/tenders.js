@@ -286,7 +286,8 @@
     if (section.classList.contains('is-members')) {            // אזור המנויים — הכותרת 16px מתחת לראש המסך
       return Math.max(0, docTop(section.querySelector('.section-eyebrow')) - 16);
     }
-    return Math.max(0, Math.round(docTop(loginCard) - col.top));
+    // מיקום מדויק (כולל שברי פיקסל) — לכרטיס ולהוריו אין transform של reveal
+    return Math.max(0, Math.round(window.scrollY + loginCard.getBoundingClientRect().top - col.top));
   }
 
   function alignToNav(behavior) {

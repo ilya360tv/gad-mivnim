@@ -6083,7 +6083,6 @@ body .plan-card .plan-price { margin: -4px 0 6px; font-size: .9rem; color: var(-
 }
 
 /* ----- #tenders ו-#app: הכותרות, שורת ההסבר והתוכן ממורכזים על קו המרכז של אזור התוכן (בין עמודות הצד) ----- */
-#tenders .section-eyebrow,
 #tenders .section-title,
 #tenders .section-lead,
 #app .section-eyebrow,
@@ -6099,7 +6098,6 @@ body .plan-card .plan-price { margin: -4px 0 6px; font-size: .9rem; color: var(-
    FINAL — #tenders ו-#app ממורכזים (גובר על שכבת "RIGHT-ALIGNED HEADINGS" ועל .section-eyebrow { margin-inline: 0 }).
    קו המרכז = מרכז ה-container, שסימטרי (24px ריפוד לכל צד) ויושב באמצע האזור שבין עמודות הצד.
    ========================================================================== */
-html[dir] body #tenders .section-eyebrow,
 html[dir] body #tenders .section-title,
 html[dir] body #tenders .section-lead,
 html[dir] body #app .section-eyebrow,
@@ -7656,13 +7654,6 @@ html[dir="ltr"] .tn-arrow { display: inline-block; transform: scaleX(-1); }
    #tenders — מצב כניסה (לפני login): שתי עמודות — טקסט מימין, כרטיס כניסה קומפקטי משמאל.
    גובר על כללי המירכוז של #tenders (שנשארים לאזור המנויים, .is-members). js/tenders.js מוסיף/מסיר is-members.
    ========================================================================== */
-html[dir] body #tenders:not(.is-members) .tn-intro .section-eyebrow {
-  display: flex;
-  width: fit-content;
-  max-width: none;
-  margin-inline: 0 !important;
-  text-align: start !important;
-}
 html[dir] body #tenders:not(.is-members) .tn-intro .section-title,
 html[dir] body #tenders:not(.is-members) .tn-intro .section-lead {
   max-width: none;
