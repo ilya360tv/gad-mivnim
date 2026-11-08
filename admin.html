@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>מערכת ניהול (הדגמה) | GAD MIVNIM</title>
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#0b0d10">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/admin.css?v=1">
+</head>
+<body>
+
+  <!-- מצב הדגמה — בכל מסך -->
+  <div class="demo-banner" role="note">מצב הדגמה – הנתונים נשמרים בדפדפן זה בלבד ואינם מערכת אמיתית</div>
+
+  <!-- ===== כניסת מנהל (הדגמה) ===== -->
+  <main class="adm-login" id="admLogin" hidden>
+    <form class="adm-card adm-login-card" id="admLoginForm" novalidate autocomplete="off">
+      <img src="images/gad_mivnim_logo.svg" alt="GAD MIVNIM" class="adm-login-logo" width="88" height="88">
+      <h1 class="adm-login-title">כניסה למערכת הניהול</h1>
+      <div class="adm-field">
+        <label for="admUser">שם משתמש</label>
+        <input type="text" id="admUser" autocomplete="off">
+      </div>
+      <div class="adm-field">
+        <label for="admPass">סיסמה</label>
+        <input type="password" id="admPass" autocomplete="off">
+      </div>
+      <button type="submit" class="adm-btn adm-btn-primary adm-btn-block">כניסה</button>
+      <p class="adm-error" id="admLoginError" role="alert" hidden>שם משתמש או סיסמה שגויים</p>
+      <p class="adm-note">הדגמה בלבד – בגרסה האמיתית תהיה הזדהות מאובטחת</p>
+    </form>
+  </main>
+
+  <!-- ===== מערכת הניהול ===== -->
+  <div class="adm-app" id="admApp" hidden>
+    <aside class="adm-side">
+      <div class="adm-brand">
+        <img src="images/gad_mivnim_logo.svg" alt="" width="44" height="44">
+        <div>
+          <strong>GAD MIVNIM</strong>
+          <span>מערכת ניהול · הדגמה</span>
+        </div>
+      </div>
+      <nav class="adm-nav" aria-label="תפריט ניהול">
+        <button type="button" data-view="dashboard" class="is-active" aria-current="page">לוח בקרה</button>
+        <button type="button" data-view="tenders">מכרזים</button>
+        <button type="button" data-view="applicants">בקשות הצטרפות <span class="adm-badge" id="admPendingBadge" hidden></span></button>
+        <button type="button" data-view="applications">מועמדויות</button>
+        <button type="button" data-view="settings">הגדרות הדגמה</button>
+      </nav>
+    </aside>
+
+    <div class="adm-main">
+      <header class="adm-top">
+        <h1 class="adm-view-title" id="admViewTitle" tabindex="-1">לוח בקרה</h1>
+        <div class="adm-top-actions">
+          <a href="index.html#tenders" class="adm-link" target="_blank" rel="noopener">לאתר ←</a>
+          <button type="button" class="adm-btn adm-btn-ghost" id="admLogout">יציאה</button>
+        </div>
+      </header>
+      <div class="adm-content" id="admContent"></div>
+    </div>
+  </div>
+
+  <!-- חלון כללי (טפסים / אישורים) -->
+  <div class="adm-modal" id="admModal" hidden>
+    <div class="adm-modal-backdrop" data-close></div>
+    <div class="adm-modal-box adm-card" role="dialog" aria-modal="true" aria-labelledby="admModalTitle">
+      <button type="button" class="adm-modal-x" data-close aria-label="סגירה">×</button>
+      <h2 class="adm-modal-title" id="admModalTitle"></h2>
+      <div id="admModalBody"></div>
+    </div>
+  </div>
+
+  <p class="adm-toast" id="admToast" role="status" aria-live="polite"></p>
+
+  <script src="js/tenders-data.js?v=1"></script>
+  <script src="js/demo-store.js?v=1"></script>
+  <script src="js/admin.js?v=1"></script>
+</body>
+</html>

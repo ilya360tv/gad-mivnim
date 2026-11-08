@@ -874,7 +874,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // מכרזים / מנויים — הרשמה לעדכונים: אותה התנהגות (הודעת הצלחה + איפוס, בלי שרת)
+  // #careers — "הצטרפות כקבלן בית": הבקשה נשמרת במערכת ההדגמה (js/demo-store.js, localStorage) כממתינה לאישור
   var tendersForm    = document.getElementById('tendersForm');
   var tendersSuccess = document.getElementById('tendersSuccess');
   if (tendersForm && tendersSuccess) {
@@ -883,6 +883,18 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!tendersForm.checkValidity()) {
         tendersForm.reportValidity();
         return;
+      }
+      if (window.demoStore) {
+        var opt = tendersForm.tenderField.options[tendersForm.tenderField.selectedIndex];
+        var key = opt && opt.getAttribute('data-i18n');
+        var fieldHe = (key && window.GAD_T && window.GAD_T[key] && window.GAD_T[key].he) || (opt ? opt.textContent : '');
+        var applicant = {
+          fullName: tendersForm.tenderName.value.trim(),
+          phone: tendersForm.tenderPhone.value.trim(),
+          field: fieldHe,
+          status: 'pending'
+        };
+        window.demoStore.ready().then(function () { window.demoStore.applicants.add(applicant); });
       }
       tendersSuccess.hidden = false;
       tendersForm.reset();

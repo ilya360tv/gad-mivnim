@@ -1,14 +1,15 @@
 /* ==========================================================================
    GAD MIVNIM — #tenders: כניסת מנויים → אזור קבלני הבית ורשימת מכרזים (tenders.js)
-   *** הדגמת עיצוב בלבד *** — אין שרת, אין אימות, אין בקשות רשת ואין שמירה
-   (לא localStorage, לא cookies). כל קלט "נכנס"; הסיסמה מתנקה מיד ולא נשמרת.
+   *** מצב הדגמה *** — הנתונים מגיעים מ-js/demo-store.js (localStorage של הדפדפן הזה בלבד):
+   כניסה = קוד משתמש של קבלן מאושר עם מנוי פעיל + סיסמה (בדיקת SHA-256). אין שרת ואין בקשות רשת.
+   הסיסמה לא נשמרת בשום מקום; רק קוד המשתמש נשמר ב-sessionStorage עד "יציאה" / סגירת הדפדפן.
    הטקסטים מתורגמים דרך data-i18n (js/i18n.js), כך שהחלפת שפה מעדכנת גם את הרשימה.
    ========================================================================== */
 
 (function () {
   var section = document.getElementById('tenders');
-  var data    = window.TENDERS_DEMO;
-  if (!section || !data) { return; }
+  var store   = window.demoStore;
+  if (!section || !store) { return; }
 
   var T = window.GAD_T || {};
   var lang = function () { return document.documentElement.getAttribute('lang') || 'he'; };
@@ -22,8 +23,12 @@
   var eye       = document.getElementById('tnEye');
   var forgot    = document.getElementById('tnForgot');
   var forgotNote = document.getElementById('tnForgotNote');
+  var loginError = document.getElementById('tnLoginError');
+  var loginBtn  = loginForm.querySelector('.tn-login-btn');
   var members   = document.getElementById('tnMembers');
   var listTitle = document.getElementById('tnListTitle');
+  var codeChip  = document.getElementById('tnUserCode');
+  var currentCode = null;
 
   function setEyeLabel() {
     var shown = passInput.type === 'text';
@@ -42,33 +47,56 @@
     forgot.setAttribute('aria-expanded', forgotNote.hidden ? 'false' : 'true');
   });
 
+  function showError(on) {
+    loginError.hidden = !on;
+    sizeCard();                                   // ההודעה מוסיפה גובה — בדיקת התאמה מחדש
+  }
+
+  function enterMembers(code, focus) {
+    currentCode = code;
+    codeChip.textContent = code;
+    renderMembers();
+    loginCard.hidden = true;
+    members.hidden = false;
+    section.classList.add('is-members');          // הפריסה הממורכזת של אזור המנויים (במקום שתי העמודות)
+    if (focus) { listTitle.focus({ preventScroll: true }); }
+  }
+
   loginForm.addEventListener('submit', function (e) {
     e.preventDefault();
-    // הדגמה: כל ערך "נכנס". הסיסמה לא נשמרת — מנקים מיד
-    passInput.value = '';
+    var code = userInput.value.trim().toUpperCase();
+    var pass = passInput.value;
+    passInput.value = '';                         // הסיסמה לא נשמרת — מנקים מיד
     passInput.type = 'password';
     setEyeLabel();
     forgotNote.hidden = true;
     forgot.setAttribute('aria-expanded', 'false');
-    renderMembers();
-    loginCard.hidden = true;
-    members.hidden = false;
-    section.classList.add('is-members');      // הפריסה הממורכזת של אזור המנויים (במקום שתי העמודות)
-    listTitle.focus({ preventScroll: true });
+    loginBtn.disabled = true;
+    store.ready().then(function () { return store.verifyLogin(code, pass); }).then(function (user) {
+      loginBtn.disabled = false;
+      if (!user) { showError(true); passInput.focus(); return; }
+      showError(false);
+      store.session.set(user.userCode);
+      enterMembers(user.userCode, true);
+    });
   });
 
   document.getElementById('tnLogout').addEventListener('click', function () {
+    store.session.clear();
+    currentCode = null;
     members.hidden = true;
     loginCard.hidden = false;
     section.classList.remove('is-members');
     userInput.value = '';
+    sizeCard();
     userInput.focus();
   });
 
-  /* ---------- 2) אזור המנויים: פילטרים + רשימת מכרזים לפי תחום ---------- */
+  /* ---------- 2) אזור המנויים: פילטרים + מכרזים שפורסמו, לפי תחום ---------- */
   var filtersEl = document.getElementById('tnFilters');
   var listEl    = document.getElementById('tnList');
   var SOON_DAYS = 7;
+  var activeFilter = 'all';
   var ICON_PIN = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>';
 
   var esc = function (s) {
@@ -77,41 +105,60 @@
   var i18nSpan = function (key, cls) {
     return '<span' + (cls ? ' class="' + cls + '"' : '') + ' data-i18n="' + key + '">' + t(key) + '</span>';
   };
-  var dateIn = function (days) {
-    var d = new Date();
-    d.setHours(0, 0, 0, 0);
-    d.setDate(d.getDate() + days);
-    var p = function (n) { return (n < 10 ? '0' : '') + n; };
-    return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear();
+  var fmtDate = function (iso) {                  // YYYY-MM-DD → DD/MM/YYYY
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || '');
+    return m ? m[3] + '/' + m[2] + '/' + m[1] : '';
+  };
+  var daysLeft = function (iso) {
+    var d = new Date(iso + 'T00:00:00'), now = new Date();
+    now.setHours(0, 0, 0, 0);
+    return Math.round((d - now) / 86400000);
   };
 
   function cardHtml(td) {
-    var soon = td.closeIn <= SOON_DAYS;
+    var soon = daysLeft(td.deadline) <= SOON_DAYS;
+    var applied = currentCode && store.applications.has(td.id, currentCode);
     return '<article class="tn-card">' +
         '<div class="tn-card-top">' +
-          '<h5 class="tn-card-name">' + esc(td.name) + '</h5>' +
+          '<h5 class="tn-card-name">' + esc(td.title) + '</h5>' +
           i18nSpan(soon ? 'tn_st_soon' : 'tn_st_open', 'tn-status ' + (soon ? 'is-soon' : 'is-open')) +
         '</div>' +
-        '<p class="tn-card-place">' + ICON_PIN + '<span>' + esc(td.place) + '</span></p>' +
+        '<p class="tn-card-place">' + ICON_PIN + '<span>' + esc(td.location) + '</span></p>' +
+        (td.description ? '<p class="tn-card-desc">' + esc(td.description) + '</p>' : '') +
         '<dl class="tn-dates">' +
-          '<div><dt data-i18n="tn_open_date">' + t('tn_open_date') + '</dt><dd><bdi>' + dateIn(td.openIn) + '</bdi></dd></div>' +
-          '<div><dt data-i18n="tn_deadline">' + t('tn_deadline') + '</dt><dd><bdi>' + dateIn(td.closeIn) + '</bdi></dd></div>' +
+          '<div><dt data-i18n="tn_open_date">' + t('tn_open_date') + '</dt><dd><bdi>' + fmtDate(td.openDate) + '</bdi></dd></div>' +
+          '<div><dt data-i18n="tn_deadline">' + t('tn_deadline') + '</dt><dd><bdi>' + fmtDate(td.deadline) + '</bdi></dd></div>' +
         '</dl>' +
-        '<button type="button" class="plan-btn tn-apply">' + i18nSpan('tn_apply') + ' <span class="tn-arrow" aria-hidden="true">←</span></button>' +
+        (applied
+          ? i18nSpan('tn_applied', 'tn-applied')
+          : '<button type="button" class="plan-btn tn-apply" data-id="' + esc(td.id) + '">' + i18nSpan('tn_apply') + ' <span class="tn-arrow" aria-hidden="true">←</span></button>') +
       '</article>';
   }
 
+  function applyFilter() {
+    filtersEl.querySelectorAll('.tn-filter').forEach(function (b) {
+      var on = b.getAttribute('data-field') === activeFilter;
+      b.classList.toggle('is-active', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    listEl.querySelectorAll('.tn-field').forEach(function (blk) {
+      blk.hidden = activeFilter !== 'all' && blk.getAttribute('data-field') !== activeFilter;
+    });
+  }
+
   function renderMembers() {
-    var chips = [{ id: 'all', key: 'tn_fld_all' }].concat(data.fields);
+    var fields = store.FIELDS;
+    var published = store.tenders.published();
+    var chips = [{ id: 'all', key: 'tn_fld_all' }].concat(fields);
     filtersEl.setAttribute('aria-label', t('tn_filter_label'));
     filtersEl.innerHTML = chips.map(function (f) {
-      var on = f.id === 'all';
-      return '<button type="button" class="sector-tab tn-filter' + (on ? ' is-active' : '') + '" data-field="' + f.id +
-        '" aria-pressed="' + on + '" data-i18n="' + f.key + '">' + t(f.key) + '</button>';
+      return '<button type="button" class="sector-tab tn-filter" data-field="' + f.id +
+        '" aria-pressed="false" data-i18n="' + f.key + '">' + t(f.key) + '</button>';
     }).join('');
 
-    listEl.innerHTML = data.fields.map(function (f) {
-      var items = data.tenders.filter(function (td) { return td.field === f.id; });
+    listEl.innerHTML = fields.map(function (f) {
+      var items = published.filter(function (td) { return td.field === f.name; })
+        .sort(function (a, b) { return (a.deadline || '').localeCompare(b.deadline || ''); });
       var body = items.length
         ? '<div class="tn-grid">' + items.map(cardHtml).join('') + '</div>'
         : '<p class="tn-empty" data-i18n="tn_empty">' + t('tn_empty') + '</p>';
@@ -119,31 +166,86 @@
         '<h4 class="tn-field-title" id="tnFld-' + f.id + '" data-i18n="' + f.key + '">' + t(f.key) + '</h4>' + body +
       '</section>';
     }).join('');
+    applyFilter();
   }
 
   filtersEl.addEventListener('click', function (e) {
     var btn = e.target.closest('.tn-filter');
     if (!btn) { return; }
-    var id = btn.getAttribute('data-field');
-    filtersEl.querySelectorAll('.tn-filter').forEach(function (b) {
-      var on = b === btn;
-      b.classList.toggle('is-active', on);
-      b.setAttribute('aria-pressed', on ? 'true' : 'false');
-    });
-    listEl.querySelectorAll('.tn-field').forEach(function (blk) {
-      blk.hidden = id !== 'all' && blk.getAttribute('data-field') !== id;
-    });
+    activeFilter = btn.getAttribute('data-field');
+    applyFilter();
   });
 
-  /* ---------- 3) "הגשת מועמדות" — הודעה קטנה (aria-live) ---------- */
+  /* ---------- 3) "הגשת מועמדות" — חלון קטן עם הערה (לא חובה) → נשמר במערכת ההדגמה + הודעה ---------- */
   var toast = document.getElementById('tnToast');
+  var toastKey = 'tn_applied_toast';
   var toastTimer;
-  listEl.addEventListener('click', function (e) {
-    if (!e.target.closest('.tn-apply')) { return; }
-    toast.textContent = t('tn_toast');
+  function showToast(key) {
+    toastKey = key;
+    toast.textContent = t(key);
     toast.classList.add('is-on');
     clearTimeout(toastTimer);
     toastTimer = setTimeout(function () { toast.classList.remove('is-on'); }, 3500);
+  }
+
+  var modal     = document.getElementById('tnApplyModal');
+  var modalForm = document.getElementById('tnApplyForm');
+  var modalName = document.getElementById('tnApplyTender');
+  var noteInput = document.getElementById('tnApplyNote');
+  var modalTender = null, modalOpener = null;
+
+  function openModal(tenderId, opener) {
+    var td = store.tenders.get(tenderId);
+    if (!td || !currentCode) { return; }
+    modalTender = td;
+    modalOpener = opener;
+    modalName.textContent = td.title;
+    noteInput.value = '';
+    modal.hidden = false;
+    noteInput.focus();
+  }
+  function closeModal() {
+    modal.hidden = true;
+    modalTender = null;
+    if (modalOpener && document.body.contains(modalOpener)) { modalOpener.focus(); }
+  }
+
+  listEl.addEventListener('click', function (e) {
+    var btn = e.target.closest('.tn-apply');
+    if (btn) { openModal(btn.getAttribute('data-id'), btn); }
+  });
+  modalForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!modalTender || !currentCode) { closeModal(); return; }
+    if (!store.applications.has(modalTender.id, currentCode)) {
+      store.applications.add({ tenderId: modalTender.id, userCode: currentCode, note: noteInput.value.trim() });
+    }
+    modalOpener = null;
+    closeModal();
+    renderMembers();
+    showToast('tn_applied_toast');
+  });
+  modal.querySelectorAll('[data-close]').forEach(function (b) { b.addEventListener('click', closeModal); });
+  modal.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { closeModal(); return; }
+    if (e.key !== 'Tab') { return; }               // מלכודת פוקוס בתוך החלון
+    var f = modal.querySelectorAll('textarea, button');
+    var first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+
+  // שינוי נתונים בלשונית אחרת (למשל מכרז חדש במערכת הניהול) — רענון הרשימה
+  window.addEventListener('storage', function (e) {
+    if (e.key && e.key.indexOf(store.PREFIX) === 0 && !members.hidden) { renderMembers(); }
+  });
+
+  // כניסה שמורה (sessionStorage) — רק אם הקבלן עדיין מאושר עם מנוי פעיל
+  store.ready().then(function () {
+    var code = store.session.get();
+    var user = code && store.applicants.findByCode(code);
+    if (user && user.status === 'approved' && user.subscription === 'active') { enterMembers(user.userCode, false); }
+    else if (code) { store.session.clear(); }
   });
 
   /* ---------- 4) דסקטופ (≥1024): גובה כרטיס הכניסה = עמודת הגלולות השמאלית (מהגלולה הראשונה ועד האחרונה);
@@ -163,8 +265,13 @@
     var col = desktopMq.matches ? navColumn() : null;
     loginCard.style.height = col ? Math.round(col.bottom - col.top) + 'px' : '';
     // מסך נמוך (עמודת גלולות קצרה): ריווחים צפופים יותר כדי שכל התוכן ייכנס בכרטיס
-    loginCard.classList.remove('is-tight');
-    if (col && !loginCard.hidden && loginCard.scrollHeight > loginCard.clientHeight + 1) { loginCard.classList.add('is-tight'); }
+    // ושלב שני (is-tighter) — רק אם עדיין חסר מקום (למשל כשהודעת השגיאה מוצגת): שורת "הדגמה" מוסתרת זמנית
+    loginCard.classList.remove('is-tight', 'is-tighter');
+    var over = function () { return loginCard.scrollHeight > loginCard.clientHeight + 1; };
+    if (col && !loginCard.hidden && over()) {
+      loginCard.classList.add('is-tight');
+      if (over()) { loginCard.classList.add('is-tighter'); }
+    }
   }
 
   var docTop = function (el) {
@@ -226,7 +333,7 @@
     new MutationObserver(function () {
       setEyeLabel();
       filtersEl.setAttribute('aria-label', t('tn_filter_label'));
-      if (toast.classList.contains('is-on')) { toast.textContent = t('tn_toast'); }
+      if (toast.classList.contains('is-on')) { toast.textContent = t(toastKey); }
       sizeCard();                                                // גלולות הצד משתנות עם השפה
     }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
   }

@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Gveret+Levin&family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 
   <!-- העיצוב שלנו -->
-  <link rel="stylesheet" href="css/style.css?v=20261108tn">
+  <link rel="stylesheet" href="css/style.css?v=20261108ad">
   <!-- PWA — התקנה כאפליקציה -->
   <link rel="manifest" href="/manifest.webmanifest">
   <meta name="theme-color" content="#0b0d10">
@@ -651,17 +651,18 @@
             </div>
             <div class="tn-login-foot">
             <button type="submit" class="btn btn-primary form-submit tn-login-btn" data-i18n="tn_login_btn">כניסה</button>
+            <p class="tn-login-error" id="tnLoginError" role="alert" data-i18n="tn_login_error" hidden>קוד משתמש או סיסמה שגויים, או שהמנוי אינו פעיל</p>
             <p class="tn-members-only"><span data-i18n="tn_members_only">הכניסה לקבלני בית מנויים בלבד. קבלן שאינו מנוי – ניתן להגיש בקשת הצטרפות בעמוד הדרושים.</span> <a href="#careers" class="tn-join-link" data-i18n="tn_join_link">להצטרפות ←</a></p>
             <p class="tn-demo-note" data-i18n="tn_demo_note">הדגמה – המערכת תחובר בהמשך</p>
             </div>
           </form>
         </div>
 
-        <!-- אזור המנויים — מוצג אחרי "כניסה"; הרשימה נבנית מ-js/tenders-data.js (נתוני הדגמה) -->
+        <!-- אזור המנויים — מוצג אחרי כניסה מוצלחת; מכרזים שפורסמו מ-js/demo-store.js (מצב הדגמה, localStorage) -->
         <div class="tn-members" id="tnMembers" hidden>
           <div class="tn-bar">
             <p class="tn-hello" data-i18n="tn_hello">שלום, קבלן בית</p>
-            <span class="tn-id-chip"><span data-i18n="tn_contractor_no">קוד משתמש:</span> <bdi>GM-0000</bdi></span>
+            <span class="tn-id-chip"><span data-i18n="tn_contractor_no">קוד משתמש:</span> <bdi id="tnUserCode">GM-0000</bdi></span>
             <span class="tn-active-chip" data-i18n="tn_active">מנוי פעיל</span>
             <button type="button" class="tn-logout" id="tnLogout" data-i18n="tn_logout">יציאה</button>
           </div>
@@ -673,6 +674,25 @@
       </div>
 
       <p class="tn-toast" id="tnToast" role="status" aria-live="polite"></p>
+
+      <!-- הגשת מועמדות — חלון קטן עם הערה (לא חובה); נשמר במערכת ההדגמה -->
+      <div class="tn-modal" id="tnApplyModal" hidden>
+        <div class="tn-modal-backdrop" data-close></div>
+        <div class="tn-modal-box careers-form-card" role="dialog" aria-modal="true" aria-labelledby="tnApplyTitle">
+          <form id="tnApplyForm" class="tn-modal-form">
+            <h3 class="tn-modal-title" id="tnApplyTitle" data-i18n="tn_apply">הגשת מועמדות</h3>
+            <p class="tn-modal-tender" id="tnApplyTender"></p>
+            <div class="form-field">
+              <label for="tnApplyNote" data-i18n="tn_apply_note">הערה (לא חובה)</label>
+              <textarea id="tnApplyNote" rows="3" maxlength="500"></textarea>
+            </div>
+            <div class="tn-modal-actions">
+              <button type="submit" class="btn btn-primary form-submit" data-i18n="tn_apply_send">שליחת מועמדות</button>
+              <button type="button" class="tn-logout" data-close data-i18n="tn_cancel">ביטול</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -910,7 +930,7 @@
     <input type="text" name="bot-field">
   </form>
 
-  <script src="js/i18n.js?v=20261108tn"></script>
+  <script src="js/i18n.js?v=20261108ad"></script>
   <script src="js/premium.js?v=20261030cv"></script>
   <script src="js/projects-data.js?v=1"></script>
   <script src="js/in-progress-data.js?v=1"></script>
@@ -919,8 +939,9 @@
   <script src="js/info-data.js?v=6"></script>
   <script src="js/podcast-data.js?v=7"></script>
   <script src="js/tenders-data.js?v=1"></script>
-  <script src="js/tenders.js?v=1"></script>
-  <script src="js/script.js?v=20261108tn"></script>
+  <script src="js/demo-store.js?v=1"></script>
+  <script src="js/tenders.js?v=2"></script>
+  <script src="js/script.js?v=20261108ad"></script>
   <script src="js/a11y.js?v=20261030cv"></script>
 
 </body>

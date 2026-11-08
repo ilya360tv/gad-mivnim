@@ -7711,10 +7711,72 @@ html[dir] body #tenders:not(.is-members) .tn-demo-note { font-size: .85rem; }
   html[dir] body #tenders:not(.is-members) .tn-login.is-tight .tn-login-head { margin-bottom: 0; }
   html[dir] body #tenders:not(.is-members) .tn-login.is-tight .tn-members-only { line-height: 1.45; }
   html[dir] body #tenders:not(.is-members) .tn-login.is-tight .tn-demo-note { margin-top: -4px; }
+  html[dir] body #tenders:not(.is-members) .tn-login.is-tighter .tn-demo-note { display: none; }
+  html[dir] body #tenders:not(.is-members) .tn-login.is-tighter .tn-login-error { padding: 6px 10px; font-size: .82rem; line-height: 1.35; }
 }
 
 /* טאבלט / טלפון: הטקסט קודם (לימין), כרטיס הכניסה מתחתיו — ברוחב מלא עד 420px, ממורכז */
 @media (max-width: 1023.98px) {
   html[dir] body #tenders:not(.is-members) .tn-intro { margin-bottom: 26px; }
   html[dir] body #tenders:not(.is-members) .careers-form-card.tn-login { max-width: 420px; margin-top: 0; }
+}
+
+/* ==========================================================================
+   #tenders — מצב הדגמה מחובר ל-js/demo-store.js: שגיאת כניסה, "הוגשה מועמדות ✓", חלון הגשת מועמדות
+   ========================================================================== */
+.tn-login-error {
+  margin: 0;
+  padding: 10px 12px;
+  font-size: .88rem;
+  line-height: 1.45;
+  color: #fca5a5;
+  text-align: center;
+  background: rgba(248, 113, 113, .1);
+  border: 1px solid rgba(248, 113, 113, .5);
+  border-radius: 10px;
+}
+.tn-login-error[hidden] { display: none; }
+.tn-login-btn:disabled { opacity: .7; cursor: progress; }
+
+.tn-card-desc { margin: 0; font-size: .92rem; line-height: 1.55; color: #aab3bd; }
+.tn-applied {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 18px;
+  font-size: .95rem;
+  font-weight: 700;
+  color: #5eead4;
+  background: rgba(45, 212, 191, .1);
+  border: 1px solid rgba(45, 212, 191, .55);
+  border-radius: 999px;
+}
+
+.tn-modal { position: fixed; inset: 0; z-index: 1300; display: grid; place-items: center; padding: 16px; }
+.tn-modal[hidden] { display: none; }
+.tn-modal-backdrop { position: absolute; inset: 0; background: rgba(5, 7, 10, .72); }
+html[dir] body #tenders .tn-modal-box { position: relative; width: 100%; max-width: 460px; margin: 0 !important; padding: 26px 24px; }
+.tn-modal-form { display: flex; flex-direction: column; gap: 14px; }
+.tn-modal-title { margin: 0; font-size: 1.2rem; font-weight: 700; color: #ffffff; }
+.tn-modal-tender { margin: -6px 0 0; color: var(--lb); font-weight: 500; }
+.tn-modal .form-field textarea {
+  width: 100%;
+  min-height: 96px;
+  padding: 12px 14px;
+  font: inherit;
+  color: #ffffff;
+  background: #0e1216;
+  border: 2px solid #323b45;
+  border-radius: 10px;
+  resize: vertical;
+}
+.tn-modal .form-field textarea:focus { outline: none; border-color: var(--lb); }
+.tn-modal .form-field textarea:focus-visible { outline: 2px solid var(--lb); outline-offset: 3px; }
+.tn-modal-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.tn-modal-actions .form-submit { margin: 0; }
+html[dir] body #tenders .tn-modal-actions .tn-logout { margin-inline-start: 0; }
+@media (max-width: 767.98px) {
+  .tn-applied { align-self: stretch; justify-content: center; }
+  .tn-modal-actions > * { flex: 1 1 100%; }
 }
