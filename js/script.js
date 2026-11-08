@@ -928,7 +928,7 @@ document.addEventListener('DOMContentLoaded', function () {
          ממורכז אנכית במסך כשהוא נכנס בו; אחרת — צמוד למעלה עם 16px. גם בטעינה ישירה עם #tenders / #app.
          המדידה לפי offsetTop (בלי transform של אנימציות ה-reveal).
      --------------------------------------------------------------- */
-  var CENTER_BLOCKS = { tenders: '.tn-stage', app: '.plans-grid' };   // tn-stage = כרטיס הכניסה / אזור המנויים
+  var CENTER_BLOCKS = { app: '.plans-grid' };   // #tenders — הגלילה מנוהלת ב-js/tenders.js (כרטיס הכניסה מול גלולות הצד)
   var docTop = function (el) {
     var y = 0;
     for (; el; el = el.offsetParent) { y += el.offsetTop; }
@@ -955,7 +955,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if ('onscrollend' in window) { window.addEventListener('scrollend', fix, { once: true }); }
     setTimeout(fix, 1500);
   };
-  document.querySelectorAll('a[href="#tenders"], a[href="#app"]').forEach(function (link) {
+  document.querySelectorAll('a[href="#app"]').forEach(function (link) {
     link.addEventListener('click', function (e) {
       if (!desktopMq.matches) { return; }                          // טלפון/טאבלט — גלילה רגילה לעוגן
       e.preventDefault();

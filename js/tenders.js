@@ -146,13 +146,88 @@
     toastTimer = setTimeout(function () { toast.classList.remove('is-on'); }, 3500);
   });
 
-  /* ---------- 4) החלפת שפה: תוויות שאינן data-i18n (aria-label) ---------- */
+  /* ---------- 4) דסקטופ (≥1024): גובה כרטיס הכניסה = עמודת הגלולות השמאלית (מהגלולה הראשונה ועד האחרונה);
+                 לחיצה על "מכרזים / מנויים" גוללת כך שראש הכרטיס נוחת בגובה הגלולה הראשונה.
+                 הגלולות קבועות במסך — המיקום שלהן לא משתנה בגלילה. מתחת ל-1024 — כרטיס רגיל ---------- */
+  var desktopMq = window.matchMedia('(min-width: 1024px)');
+
+  function navColumn() {
+    var rects = Array.prototype.slice.call(document.querySelectorAll('.site-header .main-nav a'))
+      .map(function (a) { return a.getBoundingClientRect(); })
+      .filter(function (r) { return r.width > 0 && r.right < window.innerWidth / 2; })
+      .sort(function (a, b) { return a.top - b.top; });
+    return rects.length > 1 ? { top: rects[0].top, bottom: rects[rects.length - 1].bottom } : null;
+  }
+
+  function sizeCard() {
+    var col = desktopMq.matches ? navColumn() : null;
+    loginCard.style.height = col ? Math.round(col.bottom - col.top) + 'px' : '';
+    // מסך נמוך (עמודת גלולות קצרה): ריווחים צפופים יותר כדי שכל התוכן ייכנס בכרטיס
+    loginCard.classList.remove('is-tight');
+    if (col && !loginCard.hidden && loginCard.scrollHeight > loginCard.clientHeight + 1) { loginCard.classList.add('is-tight'); }
+  }
+
+  var docTop = function (el) {
+    var y = 0;
+    for (; el; el = el.offsetParent) { y += el.offsetTop; }   // בלי transform של אנימציות ה-reveal
+    return y;
+  };
+
+  function scrollTarget() {
+    var col = navColumn();
+    if (!col) { return null; }
+    if (section.classList.contains('is-members')) {            // אזור המנויים — הכותרת 16px מתחת לראש המסך
+      return Math.max(0, docTop(section.querySelector('.section-eyebrow')) - 16);
+    }
+    return Math.max(0, Math.round(docTop(loginCard) - col.top));
+  }
+
+  function alignToNav(behavior) {
+    sizeCard();
+    var y = scrollTarget();
+    if (y === null) { return; }
+    window.scrollTo({ top: y, behavior: behavior });
+    // תמונות lazy מעל עשויות לשנות גובה בזמן הגלילה — תיקון קטן בסופה
+    var fix = function () {
+      var y2 = scrollTarget();
+      if (y2 !== null && Math.abs(y2 - window.scrollY) > 1) { window.scrollTo({ top: y2, behavior: 'instant' }); }
+    };
+    if ('onscrollend' in window) { window.addEventListener('scrollend', fix, { once: true }); }
+    setTimeout(fix, 1500);
+  }
+
+  document.querySelectorAll('a[href="#tenders"]').forEach(function (link) {
+    link.addEventListener('click', function (e) {
+      if (!desktopMq.matches) { return; }                        // טלפון/טאבלט — גלילה רגילה לעוגן
+      e.preventDefault();
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      alignToNav(reduce ? 'auto' : 'smooth');
+      if (history.replaceState) { history.replaceState(null, '', '#tenders'); }
+    });
+  });
+
+  sizeCard();
+  var lastW = window.innerWidth;
+  window.addEventListener('resize', function () {
+    if (window.innerWidth === lastW) { return; }
+    lastW = window.innerWidth;
+    sizeCard();
+  });
+  if (document.fonts && document.fonts.ready) { document.fonts.ready.then(sizeCard); }
+  if (location.hash === '#tenders' && desktopMq.matches) {         // טעינה ישירה עם #tenders
+    var alignOnLoad = function () { alignToNav('instant'); };
+    window.addEventListener('load', function () { setTimeout(alignOnLoad, 60); });
+    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(alignOnLoad); }
+  }
+
+  /* ---------- 5) החלפת שפה: תוויות שאינן data-i18n (aria-label) ---------- */
   setEyeLabel();
   if ('MutationObserver' in window) {
     new MutationObserver(function () {
       setEyeLabel();
       filtersEl.setAttribute('aria-label', t('tn_filter_label'));
       if (toast.classList.contains('is-on')) { toast.textContent = t('tn_toast'); }
+      sizeCard();                                                // גלולות הצד משתנות עם השפה
     }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
   }
 })();
