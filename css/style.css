@@ -7772,3 +7772,24 @@ html[dir] body #tenders .tn-modal-actions .tn-logout { margin-inline-start: 0; }
   .tn-applied { align-self: stretch; justify-content: center; }
   .tn-modal-actions > * { flex: 1 1 100%; }
 }
+
+/* ==========================================================================
+   עמודים נפרדים (body.page-split — נוצרים ב-tools/build-pages.js מתוך src/site.html):
+   הסקשן בראש העמוד, הפוטר בתחתית המסך כשהתוכן קצר (הגלילה רק אם התוכן ארוך מהמסך),
+   כניסה עדינה של התוכן, ואנימציית הכניסה של עמודות הצד רק בביקור הראשון בסשן (html.nav-seen).
+   ========================================================================== */
+body.page-split { display: flex; flex-direction: column; min-height: 100vh; }
+body.page-split > main { flex: 1 0 auto; }
+
+/* fill-mode: backwards — אחרי הסיום לא נשאר opacity על main (בלי stacking context שילכוד חלונות קופצים) */
+@keyframes pageFadeIn { from { opacity: 0; } }
+@media (prefers-reduced-motion: no-preference) {
+  body.page-split > main { animation: pageFadeIn .4s ease-out backwards; }
+}
+html.a11y-no-motion body.page-split > main { animation: none !important; }
+
+@media (min-width: 1024px) {
+  html.nav-seen .site-header .logo,
+  html.nav-seen .site-header .header-side,
+  html.nav-seen body .site-header .main-nav ul li a { animation: none !important; }
+}

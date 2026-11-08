@@ -3,13 +3,14 @@
    תמונות, אייקונים ופונטים: מהמטמון מיד + רענון ברקע, עם הגבלת כמות.
    לא נוגעים בטפסים (POST), וידאו, iframes חיצוניים, אנליטיקס, /.netlify/ ו-/_vercel/. */
 
-var VERSION = 'gad-v1-20261108';
+var VERSION = 'gad-v2-20261108';
 var SHELL_CACHE = VERSION + '-shell';
 var PAGES_CACHE = VERSION + '-pages';
 var ASSETS_CACHE = VERSION + '-assets';
 var MAX_ASSETS = 150;
 var MAX_PAGES = 60;
 
+// מעטפת האפליקציה: דף הבית + הדף הלא-מקוון + הקוד המשותף לכל העמודים (שאר העמודים נשמרים במטמון בביקור)
 var SHELL = [
   '/',
   '/index.html',

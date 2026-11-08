@@ -127,77 +127,9 @@
     }
 
     /* ---------------------------------------------------------------
-       3.4) Scrollspy — סימון הסקשן הנוכחי בתפריט (nav-state-active)
+       3.4) הגלולה הפעילה בתפריט — לפי העמוד (class="is-current" ב-HTML, נוצר ב-tools/build-pages.js).
+            אין יותר scrollspy: כל גלולה פותחת עמוד נפרד.
        --------------------------------------------------------------- */
-    var navLinks = document.querySelectorAll('.main-nav a[href^="#"]');
-
-    if (navLinks.length) {
-      var linkById = {};
-      navLinks.forEach(function (link) {
-        linkById[link.getAttribute('href').slice(1)] = link;
-      });
-
-      // כל היעדים שקיימים בדף (גם סקשנים שאינם בתפריט — כדי לנקות סימון ישן)
-      var spyIds = ['hero', 'about', 'services', 'projects', 'in-progress', 'teams',
-                    'partners', 'info', 'podcast', 'gallery', 'careers',
-                    'tenders', 'app', 'contact'];
-      var spyTargets = spyIds.map(function (id) { return document.getElementById(id); })
-                             .filter(Boolean);
-      var currentLink = null;
-
-      var setCurrent = function (link) {
-        if (link === currentLink) { return; }
-        navLinks.forEach(function (l) {
-          l.classList.remove('is-current');
-          l.removeAttribute('aria-current');
-        });
-        if (link) {
-          link.classList.add('is-current');
-          link.setAttribute('aria-current', 'location');
-        }
-        currentLink = link;
-      };
-
-      // לחיצה על גלולה (או טעינה עם #עוגן): הגלולה נשארת מסומנת עד שהמשתמש גולל בעצמו —
-      // בלי "קפיצות" בזמן הגלילה האוטומטית (למשל #tenders / #app שממורכזים במסך, ראו script.js 6ב)
-      var spyLocked = false;
-      var lockSpy = function (link) { setCurrent(link); spyLocked = true; };
-      var unlockSpy = function () { spyLocked = false; };
-      navLinks.forEach(function (link) {
-        link.addEventListener('click', function () {
-          if (!link.hasAttribute('data-soon')) { lockSpy(link); }
-        });
-      });
-      ['wheel', 'touchstart', 'keydown', 'mousedown'].forEach(function (ev) {
-        window.addEventListener(ev, function (e) {
-          if (ev === 'mousedown' && e.target.closest && e.target.closest('.main-nav')) { return; }
-          unlockSpy();
-        }, { passive: true });
-      });
-
-      var spyTicking = false;
-      var updateSpy = function () {
-        spyTicking = false;
-        if (spyLocked) { return; }
-        // קו הבדיקה במסך — עד 200px מלמעלה, כדי שגם סקשן נמוך (#podcast) יסומן אחרי קפיצה אליו
-        var probe = Math.min(window.innerHeight * 0.35, 200);
-        var atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
-        var best = null, bestTop = -Infinity;
-        spyTargets.forEach(function (el) {
-          var top = el.getBoundingClientRect().top;
-          if (top <= probe && top > bestTop) { best = el; bestTop = top; }
-        });
-        if (atBottom && linkById.contact) { setCurrent(linkById.contact); return; }
-        setCurrent(best ? (linkById[best.id] || null) : null);
-      };
-      var queueSpy = function () {
-        if (!spyTicking) { spyTicking = true; requestAnimationFrame(updateSpy); }
-      };
-      window.addEventListener('scroll', queueSpy, { passive: true });
-      window.addEventListener('resize', queueSpy);
-      updateSpy();
-      if (linkById[location.hash.slice(1)]) { lockSpy(linkById[location.hash.slice(1)]); }
-    }
 
     /* ---------------------------------------------------------------
        3.5) כפתור "חזרה למעלה" — מופיע אחרי גלילה, נוח לקהל מבוגר

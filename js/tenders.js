@@ -320,7 +320,8 @@
     sizeCard();
   });
   if (document.fonts && document.fonts.ready) { document.fonts.ready.then(sizeCard); }
-  if (location.hash === '#tenders' && desktopMq.matches) {         // טעינה ישירה עם #tenders
+  var onTendersPage = document.body.getAttribute('data-page') === 'tenders';
+  if ((onTendersPage || location.hash === '#tenders') && desktopMq.matches) {   // עמוד המכרזים (או #tenders): הכרטיס מול הגלולה הראשונה
     var alignOnLoad = function () { alignToNav('instant'); };
     window.addEventListener('load', function () { setTimeout(alignOnLoad, 60); });
     if (document.fonts && document.fonts.ready) { document.fonts.ready.then(alignOnLoad); }

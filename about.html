@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl" data-title-key="nav_about" data-title-brand>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>אודות הקבוצה | GAD MIVNIM</title>
+  <meta name="description" content="אודות GAD MIVNIM (גד מבנים) — מסורת משפחתית, איכות, מקצועיות ויחס אישי. מדוע נולד הרעיון לאחד את הבנייה והעיצובים לבית אחד.">
+  <link rel="canonical" href="https://gad-mivnim.vercel.app/about.html">
+
+  <!-- מסמן שיש JavaScript — מונע הבהוב באנימציות הגלילה -->
+  <script>document.documentElement.classList.add('has-js');</script>
+  <script>try{if(sessionStorage.getItem('gm:navSeen')){document.documentElement.classList.add('nav-seen');}else{sessionStorage.setItem('gm:navSeen','1');}}catch(e){}</script>
+
+  <!-- פונט Rubik — תומך עברית, לטינית וקירילית (רוסית) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gveret+Levin&family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+  <!-- העיצוב שלנו -->
+  <link rel="stylesheet" href="css/style.css?v=20261108ad">
+  <!-- PWA — התקנה כאפליקציה -->
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0b0d10">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="GAD MIVNIM">
+  <script src="/js/pwa.js" defer></script>
+</head>
+<body class="page-split" data-page="about">
+
+  <a class="skip-link" href="#main">דילוג לתוכן</a>
+
+  <!-- ===== Header / תפריט ניווט ===== -->
+  <header class="site-header">
+    <div class="container header-inner">
+
+      <!-- ימין ויזואלי: כפתור המבורגר — בכל הגדלים -->
+      <button class="nav-toggle" id="navToggle" type="button"
+              aria-label="Menu" aria-expanded="false" aria-controls="mainNav">
+        <span></span><span></span><span></span>
+      </button>
+
+      <!-- מרכז: הלוגו העגול — קישור לדף הבית -->
+      <a href="index.html" class="logo" aria-label="GAD MIVNIM — דף הבית">
+        <img src="images/gad_mivnim_logo.svg" alt="GAD MIVNIM" class="logo-img" decoding="async">
+      </a>
+
+      <!-- שמאל ויזואלי: שם המותג + בורר שפה -->
+      <div class="header-side">
+        <span class="logo-text">GAD MIVNIM</span>
+        <div class="lang-switch" id="langSwitch">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="true" aria-expanded="false">
+            <span class="flag flag-he" id="langFlag" aria-hidden="true"></span>
+            <span id="langLabel">עברית</span> <span class="lang-caret">▾</span>
+          </button>
+          <ul class="lang-menu" id="langMenu" hidden>
+            <li><button type="button" data-lang="he"><span class="flag flag-he" aria-hidden="true"></span> עברית</button></li>
+            <li><button type="button" data-lang="en"><span class="flag flag-en" aria-hidden="true"></span> English</button></li>
+            <li><button type="button" data-lang="ru"><span class="flag flag-ru" aria-hidden="true"></span> Русский</button></li>
+            <li><button type="button" data-lang="fr"><span class="flag flag-fr" aria-hidden="true"></span> Français</button></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ניווט — בסדר של מסמך המקור -->
+    <nav class="main-nav" id="mainNav" aria-label="Main menu">
+      <ul class="container">
+        <li><a href="index.html"        data-i18n="nav_home">דף הבית</a></li>
+        <li><a href="about.html" class="is-current" aria-current="page"       data-i18n="nav_about">אודות הקבוצה</a></li>
+        <li><a href="services.html"    data-i18n="nav_services">השירותים שלנו</a></li>
+        <li><a href="projects.html"    data-i18n="nav_projects">הפרויקטים שלנו</a></li>
+        <li><a href="in-progress.html" data-i18n="nav_in_progress">פרויקטים בביצוע</a></li>
+        <li><a href="teams.html"       data-i18n="nav_teams">הצוותים שלנו</a></li>
+        <li><a href="partners.html"    data-i18n="nav_partners">השותפים שלנו</a></li>
+        <li><a href="info.html"        data-i18n="nav_info">מידע לאזרח ולבונה</a></li>
+        <li><a href="podcast.html"     data-i18n="nav_podcast">פודקאסט</a></li>
+        <li><a href="gallery.html"     data-i18n="nav_gallery_short">גלריה / השראות</a></li>
+        <li><a href="careers.html"     data-i18n="nav_careers">דרושים</a></li>
+        <li><a href="tenders.html"     data-i18n="nav_tenders">מכרזים / מנויים</a></li>
+        <li><a href="app.html"         data-i18n="nav_app">אפליקציה / מנויים</a></li>
+        <li><a href="contact.html"     data-i18n="nav_contact">שירות לקוחות</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main">
+
+  <!-- ===== אודות הקבוצה ===== -->
+  <section id="about" class="section about">
+    <div class="container">
+      <span class="section-eyebrow reveal" data-i18n="about_eyebrow">אודות הקבוצה</span>
+      <h1 class="section-title about-title reveal reveal-d1" data-i18n="about_title">מדוע נולד הרעיון לאחד את הבנייה והעיצובים לבית אחד ולקבוצה אחת שמנצחת על הכל !</h1>
+
+      <div class="about-grid">
+        <div class="about-text reveal reveal-d1">
+          <p data-i18n="ab2_p1"><bdi><span class="gad-sp">GAD</span> MIVNIM</bdi> היא קבוצת בנייה ועיצובים מבית <b class="w-b">"קבוצת בנהר בע"מ - יזמות והשקעות"</b> המשמשת כחברת בת ליזמות ביצוע ניהול פיקוח ותאום פרויקטים בבניה. <bdi><span class="gad-sp">GAD</span> MIVNIM</bdi> מלווה בעלי בתים, ועדי בתים, מוסדות ציבוריים ויזמים מהרעיון הראשוני ועד מסירת המפתח. משהו שהתחיל כחזון פשוט הפך לשיטת עבודה ומהפכה בענף הבניה. כל מה שבית צריך תחת קורת גג אחת.</p>
+          <p data-i18n="ab2_p2">מייסד הקבוצה והשותפים למלאכה מביאים איתם ניסיון רב שנים מאז <span class="yr-sp">1995</span> ועד היום שנבנה מתוך עשייה אמיתית בשטח, הכישורים והיכולות אשר אותם צברו. מתוך הניסיון הזה נולד חזון אחד לאחד את שירותי הבנייה והעיצובים תחת קורת גג אחת שמלווה את כל שלבי הפרויקט משלב הרעיון, דרך התכנון ההנדסי הבנייה ועד לשלב המפתח.</p>
+          <p data-i18n="ab2_p3">כך נולד הרעיון לאחד את הבנייה והעיצובים לבית אחד, שנותן מענה מלא לכל פרויקט.</p>
+          <h3 class="about-sub" data-i18n="ab2_h1">הערכים שלנו</h3>
+          <p data-i18n="ab2_p4">את ערכי היסוד, האיכות, המקצועיות והיחס המשפחתי והאישי, בחרנו כאבני היסוד של הקבוצה.</p>
+          <p data-i18n="ab2_p5">בחירתנו היא שותפות מלאה לקבלת תוצאות שלא פחות ממצוינות.</p>
+          <h3 class="about-sub" data-i18n="ab2_h2">השירותים שלנו | חטיבות הקובצה</h3>
+          <p data-i18n="ab2_p6"><bdi><span class="gad-sp">GAD</span> MIVNIM</bdi> מחלקת את שלבי הפרויקט בין חטיבות הקבוצה בהתאם לתחומי ההתמחות של כל חטיבה, במטרה להעניק לכל לקוח מענה מקצועי, יעיל ומדויק.</p>
+          <p data-i18n="ab2_p7">חלוקת העבודה מאפשרת ביצוע, ניהול, פיקוח ותיאום מיטביים לאורך כל שלבי הפרויקט, תוך התאמה מלאה לצורכי הלקוח, לאופי הפרויקט ולדרישותיו הייחודיות.</p>
+          <p data-i18n="ab2_p8">אנו משלבים את היכולות וההתמחויות של חטיבות הקבוצה ליצירת מעטפת מקצועית ומקיפה, המלווה את הפרויקט משלב התכנון ועד לביצוע.</p>
+          <p data-i18n="ab2_p9">באמצעות חלוקת אחריות מדויקת, ניהול מקצועי, פיקוח ותיאום בין כלל הגורמים, אנו מבטיחים תהליך עבודה מסודר, יעיל ומותאם לאופי הפרויקט ולצורכי הלקוח</p>
+          <p data-i18n="ab2_p10">בכל פרויקט, לכל שלב יש את המומחיות שלו.</p>
+          <p data-i18n="ab2_p11">הלקוח נהנה ממומחיות ייעודית בכל שלב, לצד ניהול מתואם ואחריות כוללת לאורך הפרויקט.</p>
+          <h3 class="about-sub" data-i18n="ab2_h3">אנשי מקצוע מהשורה הראשונה</h3>
+          <p data-i18n="ab2_p12">לרשות הקבוצה עומדים בעלי מקצוע וקבלנים משותפים מהשורה הראשונה ובעלי הסמכה כל אחד בתחמו אשר נבחרים בקפידה רבה וללא פשרות על שירות מסור, מקצועי אדיב ומשפחתי לכל לקוח.</p>
+          <p data-i18n="ab2_p13">כחברה וכקבוצה אנחנו תמיד לומדים ומיישמים תהליכים בענף הבנייה והעיצובים בארץ ובעולם</p>
+          <h3 class="about-sub" data-i18n="ab2_h4">השותפים שלנו</h3>
+          <p data-i18n="ab2_p14"><bdi><span class="gad-sp">GAD</span> MIVNIM</bdi> משתפת פעולה ושותפה עם חברות, ספקים ומותגים מהמובילים בישראל ובעולם במטרה להעניק ללקוחותיה מגוון רחב של פתרונות איכותיים ומתקדמים בתחומי הבנייה והעיצובים.</p>
+          <p data-i18n="ab2_p15">שיתופי פעולה אלו מאפשרים לנו להציג בפני לקוחותינו מבחר חומרים, מוצרים ופתרונות עיצוב מהשורה הראשונה, תוך הקפדה על איכות, חדשנות והתאמה מדויקת לצורכי הלקוח, לחזונו ולאופי הפרויקט.</p>
+          <p data-i18n="ab2_p16">הלקוח לא מקבל רק שירותי בנייה ועיצובים, אלא נהנה גם מהידע, מהמוצרים ומהפתרונות של רשת שותפים מקצועית, המאפשרת בחירה רחבה יותר ותוצאה איכותית ומותאמת אישית.</p>
+          <h3 class="about-sub" data-i18n="ab2_h5">אולם תצוגה - הכל במקום אחד ! (בקרוב ...)</h3>
+          <p data-i18n="ab2_p17">לרשות לקוחות <bdi><span class="gad-sp">GAD</span> MIVNIM</bdi> עומד אולם תצוגה לתצוגות בנייה ועיצובים הנותן את כל השירותים הרלוונטיים והשלבים אותם אתם הלקוחות צריכים. באולם התצוגה אתם תקבלו יחס אישי ומשפחתי, עמדת אירוח ותהנו מחוויית תצוגות וחידושים בענף הבנייה והעיצובים וממיטב המותגים המבולים בישראל ובעולם. תפגשו את מיטב בעלי המקצוע הנותן לכם הלקוחות את היוחלט להחליט מה הכי טוב עבורכם. שכך אין צורך להתרוצץ בין בעלי מקצוע, קבלנים, נותני שירותים וספקים שונים.</p>
+          <p data-i18n="ab2_p18">באולם התצוגה אתם תוכלו לבחור את המוצרים הנלווים והנדרשים לפרויקט שלכם.</p>
+          <h3 class="about-sub" data-i18n="ab2_h6">שקט נפשי לאורך כל הדרך</h3>
+          <p data-i18n="ab2_p19">מחלקה משפטית שמלווה כל פרויקט ודואגת להסכמים ברורים ולהגנה על הלקוח.</p>
+          <h4 class="about-sub about-sub--sm" data-i18n="ab2_s1">כשהכול מתוכנן מראש, הדרך לתוצאה ברורה יותר.</h4>
+          <p data-i18n="ab2_p20"><bdi><span class="gad-sp">GAD</span> MIVNIM</bdi> מקפידה על הכנת סט תוכניות עבודה מקיף ומדויק, הכולל מפרטיים טכניים ולוחות זמנים מוגדרים, תוך הקפדה על תאום בין כלל הגרומים המעורבים, במטרה להבטיח תהליך עבודה מסודר, יעיל ומבוקר משלב התכנון ועד להשלמת הפרויקט.</p>
+          <p data-i18n="ab2_p21">מערכות ניהול מתקדמות לביצוע ניהול פיקוח ותאום בין הלקוח ולאנשי הקשר המלווים את הפרויקט מתחילתו ועד סופו. אנשי הניהול, בעלי המקצוע וקבלני הביצוע, הספקים, וכל שאר השירותים להשלמת הפרויקט שלכם.</p>
+          <h4 class="about-sub about-sub--sm" data-i18n="ab2_s2">שקיפות מלאה, ביטחון ושליטה בכל שלב בפרויקט.</h4>
+          <p data-i18n="ab2_p22">כחלק מהמחויבות שלנו לשקיפות, לביטחון ולסטנדרט ביצוע גבוה, כל פרויקט מצויד ומרושת בטרם תחילת העבודות במערך מצלמות אבטחה הפועל 24/7 ומחוברות לחדרי הבקרה והאבטחה של החברה והקבוצה.</p>
+          <p data-i18n="ab2_p23">המערכות מאפשרות מעקב ותיעוד שוטף אחר התקדמות העבודות, משלב הביצוע הראשון ועד להשלמת הפרויקט. תוך הקפדה על שקיפות, סדר ובקרה מקצועית לכל אורך התהליך.</p>
+          <h4 class="about-sub about-sub--sm" data-i18n="ab2_s3">האחריות שלנו לא מסתיימת עם מסירת הפרויקט.</h4>
+          <p data-i18n="ab2_p24">ב - <bdi><span class="gad-sp">GAD</span> MIVNUM</bdi> אנו מאמינים ששירות מקצועי נמדד לא רק באיכות הביצוע, אלא גם בשקט הנפשי שמקבל הלקוח לאחר סיום העבודות. עם מסירת הפרויקט הלקוח מקבל תעודת אחריות מסודרת ושירותי בדק בית, בהתאם לתנאי האחריות ותקנון הפרויקט שנבנה עבורו.</p>
+          <p data-i18n="ab2_p25">כך אנו מבטיחים ללקוחותינו כתובת מקצועית ואחראית גם לאחר השלמת הפרויקט מתוך מחויבות לאיכות, לאמינות ושביעות רצון לאורך זמן.</p>
+          <p class="about-quote"><span class="about-mq__src" data-i18n="ab2_close"><span class="aq-l">בכל מקום במפה</span> <bdi><span class="gad-sp">GAD</span> MIVNIM</bdi> <span class="aq-l"><span class="aq-brush">משנים את הדרך לבניה נכונה !</span></span></span><span class="about-mq" aria-hidden="true"><span class="about-mq__track"></span></span></p>
+        </div>
+
+        <div class="about-media reveal reveal-d2">
+          <h3 class="about-media-title"><span class="about-hmq__src" data-i18n="ab2_media_title">מאז ועד היום...</span><span class="about-hmq" aria-hidden="true"><span class="about-hmq__track"></span></span></h3>
+          <div class="about-tiles">
+            <!-- "מאז" (ימין ב-RTL): אותה רצועה אנכית כמו "היום". הקבצים images/then/then-1.jpg … then-102.jpg -->
+            <div class="about-tile about-tile--reel" id="thenReel">
+              <div class="about-reel__src" data-src-base="images/then/then-" data-count="102">
+                <img src="images/then/then-1.jpg" alt="GAD MIVNIM" width="531" height="800" decoding="async" loading="lazy">
+              </div>
+              <div class="about-reel" aria-hidden="true"><div class="about-reel__track"></div></div>
+            </div>
+            <!-- "היום": חלון אנכי קבוע; התמונות רצות בו כלפי מעלה (js/script.js סעיף 15). להוספת תמונה — עוד <img> כאן -->
+            <div class="about-tile about-tile--reel" id="todayReel">
+              <div class="about-reel__src">
+                <img src="images/today/today-1.jpg" alt="GAD MIVNIM" width="600" height="600" decoding="async">
+                <img src="images/today/today-2.jpg" alt="GAD MIVNIM" width="600" height="600" decoding="async">
+                <img src="images/today/today-3.jpg" alt="GAD MIVNIM" width="600" height="600" decoding="async">
+                <img src="images/today/today-4.jpg" alt="GAD MIVNIM" width="600" height="600" decoding="async">
+                <img src="images/today/today-5.jpg" alt="GAD MIVNIM" width="600" height="600" decoding="async">
+                <img src="images/today/today-6.jpg" alt="GAD MIVNIM" width="600" height="600" decoding="async">
+                <img src="images/today/today-7.jpg" alt="GAD MIVNIM" width="600" height="600" decoding="async">
+                <img src="images/today/today-8.jpg" alt="GAD MIVNIM" width="600" height="600" decoding="async">
+                <img src="images/today/today-9.jpg" alt="GAD MIVNIM" width="600" height="600" decoding="async">
+                <img src="images/today/today-10.jpg" alt="GAD MIVNIM" width="600" height="600" decoding="async">
+                <img src="images/today/today-11.jpg" alt="GAD MIVNIM" width="600" height="600" decoding="async">
+                <img src="images/today/today-12.jpg" alt="GAD MIVNIM" width="600" height="600" decoding="async">
+                <img src="images/today/today-13.jpg" alt="GAD MIVNIM" width="600" height="600" decoding="async">
+                <img src="images/today/today-14.jpg" alt="GAD MIVNIM" width="600" height="600" decoding="async">
+              </div>
+              <div class="about-reel" aria-hidden="true"><div class="about-reel__track"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Lightbox (הגדלת תמונה) ===== -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <button class="lightbox-close" id="lightboxClose" aria-label="Close">&times;</button>
+    <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="Previous">&#8250;</button>
+    <figure class="lightbox-fig"><img class="lightbox-img" id="lightboxImg" src="" alt=""><figcaption class="lightbox-cap" id="lightboxCap" hidden></figcaption></figure>
+    <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Next">&#8249;</button>
+  </div>
+
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+
+      <div class="footer-brand">
+        <img src="images/gad_mivnim_logo.svg" alt="GAD MIVNIM" class="footer-logo" loading="lazy" decoding="async">
+        <p class="footer-line1" data-i18n="footer_l1">מקווים שהנהנתם לצפות באתר הבית שלנו</p>
+        <p class="footer-line2" data-i18n="footer_l2">נשמח לראותם בין קהל לקוחותינו וממשפחת <bdi>G A D MIVNIM</bdi> בכל מקום במפה</p>
+      </div>
+
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="index.html"     data-i18n="nav_home">דף הבית</a>
+        <a href="about.html"    data-i18n="about_eyebrow">אודות הקבוצה</a>
+        <a href="services.html" data-i18n="nav_services">השירותים שלנו</a>
+        <a href="projects.html" data-i18n="nav_projects">הפרויקטים שלנו</a>
+        <a href="gallery.html"  data-i18n="nav_gallery">גלריה בנייה ועיצובים</a>
+        <a href="contact.html"  data-i18n="nav_contact">שירות לקוחות</a>
+        <a href="#" class="js-a11y-statement">הצהרת נגישות</a>
+      </nav>
+
+      <p class="footer-copy" data-i18n="footer_copy">*** כל הזכויות שמורת לחברת גד מבנים בע"מ ואין לאף אדם או גוף כלשהו לעשות שום שימוש במוצג באתר לשום עניין ודבר.</p>
+
+    </div>
+  </footer>
+
+  <!-- כפתור חזרה למעלה -->
+  <button class="back-top" id="backTop" type="button" aria-label="Back to top"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg></button>
+
+  <!-- ===== תוסף נגישות ===== -->
+  <button class="a11y-fab" id="a11yFab" type="button"
+          aria-label="פתיחת תפריט נגישות" aria-haspopup="dialog"
+          aria-expanded="false" aria-controls="a11yPanel">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+      <circle cx="12" cy="3.6" r="2.1"/>
+      <path d="M20 7.2c-.3-.9-1.2-1.3-2.1-1.1l-3.8.9c-1.4.3-2.8.3-4.2 0l-3.8-.9C5.2 5.9 4.3 6.3 4 7.2c-.3.9.2 1.8 1.1 2l3.4.8v2.2l-1.7 6.1c-.3.9.3 1.9 1.2 2.1.9.3 1.9-.3 2.1-1.2l1.5-4.7h.8l1.5 4.7c.2.9 1.2 1.5 2.1 1.2.9-.2 1.5-1.2 1.2-2.1l-1.7-6.1V10l3.4-.8c.9-.2 1.4-1.1 1.1-2z"/>
+    </svg>
+  </button>
+
+  <!-- פאנל הנגישות -->
+  <div class="a11y-panel" id="a11yPanel" role="dialog" aria-modal="true"
+       aria-labelledby="a11yPanelTitle" aria-hidden="true" dir="rtl" lang="he">
+    <div class="a11y-panel__head">
+      <h2 id="a11yPanelTitle">תפריט נגישות</h2>
+      <button class="a11y-close" id="a11yClose" type="button" aria-label="סגירת תפריט נגישות">✕</button>
+    </div>
+    <div class="a11y-panel__body">
+
+      <div class="a11y-row">
+        <span class="a11y-row__label">גודל טקסט</span>
+        <div class="a11y-stepper" role="group" aria-label="שינוי גודל טקסט">
+          <button type="button" id="a11yTextMinus" aria-label="הקטנת טקסט">A−</button>
+          <span class="a11y-step-val" id="a11yTextVal" aria-live="polite" aria-label="גודל נוכחי">100%</span>
+          <button type="button" id="a11yTextPlus" aria-label="הגדלת טקסט">A+</button>
+        </div>
+      </div>
+
+      <button class="a11y-toggle" type="button" data-a11y="contrast" aria-pressed="false">
+        <span class="a11y-toggle__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3v18" fill="currentColor" stroke="none"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none"/></svg></span>
+        <span>ניגודיות גבוהה</span>
+      </button>
+
+      <button class="a11y-toggle" type="button" data-a11y="grayscale" aria-pressed="false">
+        <span class="a11y-toggle__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 12h18M12 3v18"/></svg></span>
+        <span>גווני אפור</span>
+      </button>
+
+      <button class="a11y-toggle" type="button" data-a11y="links" aria-pressed="false">
+        <span class="a11y-toggle__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg></span>
+        <span>הדגשת קישורים</span>
+      </button>
+
+      <button class="a11y-toggle" type="button" data-a11y="readable" aria-pressed="false">
+        <span class="a11y-toggle__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7V5h16v2M9 5v14M7 19h4"/></svg></span>
+        <span>פונט קריא</span>
+      </button>
+
+      <button class="a11y-toggle" type="button" data-a11y="motion" aria-pressed="false">
+        <span class="a11y-toggle__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><rect x="9" y="9" width="6" height="6" fill="currentColor" stroke="none"/></svg></span>
+        <span>עצירת אנימציות</span>
+      </button>
+
+      <button class="a11y-toggle" type="button" data-a11y="cursor" aria-pressed="false">
+        <span class="a11y-toggle__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><path d="M5 3v15l4-4 3 6 2-1-3-6h6z"/></svg></span>
+        <span>סמן גדול</span>
+      </button>
+
+      <button class="a11y-reset a11y-undo" id="a11yUndo" type="button" disabled>↩ חזרה לשלב הקודם</button>
+      <button class="a11y-reset" id="a11yReset" type="button">איפוס — חזרה להגדרות המקוריות</button>
+      <a href="#" class="a11y-statement-link js-a11y-statement">הצהרת נגישות</a>
+    </div>
+  </div>
+
+  <!-- מודאל הצהרת נגישות -->
+  <div class="a11y-modal" id="a11yStatementModal" role="dialog" aria-modal="true"
+       aria-labelledby="a11yStmtTitle" aria-hidden="true" dir="rtl" lang="he">
+    <div class="a11y-modal__box">
+      <button class="a11y-modal__close" id="a11yStmtClose" type="button" aria-label="סגירת ההצהרה">✕</button>
+      <h2 id="a11yStmtTitle">הצהרת נגישות</h2>
+      <div class="a11y-modal__content">
+        <p>חברת <strong>גד מבנים בע"מ</strong> רואה חשיבות רבה במתן שירות שוויוני לכלל הלקוחות ובשיפור השירות הניתן לאנשים עם מוגבלות. אנו משקיעים מאמצים ומשאבים רבים בהנגשת אתר האינטרנט שלנו, מתוך אמונה שלכל אדם מגיעה הזכות לחיות בשוויון, בכבוד, בנוחות ובעצמאות.</p>
+        <p>אתר זה עומד בדרישות תקנות שוויון זכויות לאנשים עם מוגבלות (התאמות נגישות לשירות), התשע"ג-2013, והונגש בהתאם לתקן הישראלי <strong>ת"י 5568</strong> לנגישות תכני אינטרנט ברמת AA, המבוסס על הנחיות <strong>WCAG 2.0</strong> של ארגון W3C.</p>
+        <p>באתר מוטמע תפריט נגישות המאפשר, בין היתר:</p>
+        <ul>
+          <li>הגדלה והקטנה של גודל הטקסט</li>
+          <li>הפעלת ניגודיות גבוהה וגווני אפור</li>
+          <li>הדגשת קישורים ומעבר לפונט קריא</li>
+          <li>עצירת אנימציות ותנועה באתר</li>
+          <li>הגדלת סמן העכבר</li>
+          <li>ניווט מלא באמצעות מקלדת</li>
+        </ul>
+        <p>אנו ממשיכים במאמצים לשפר את נגישות האתר כחלק ממחויבותנו לאפשר שימוש בו עבור כלל האוכלוסייה, לרבות אנשים עם מוגבלות.</p>
+        <p><strong>נתקלתם בבעיית נגישות?</strong> נשמח לקבל את פנייתכם. ניתן ליצור עמנו קשר באמצעות <a href="contact.html" class="js-a11y-close-to-contact">טופס יצירת הקשר</a> באתר, ואנו נטפל בפנייה בהקדם האפשרי.</p>
+        <p style="color:#6b7280;font-size:.85rem;">הצהרת נגישות זו עודכנה בחודש יולי 2026.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- הסקריפטים שלנו -->
+
+  <script src="js/i18n.js?v=20261108ad"></script>
+  <script src="js/premium.js?v=20261030cv"></script>
+  <script src="js/script.js?v=20261108ad"></script>
+  <script src="js/a11y.js?v=20261030cv"></script>
+</body>
+</html>
