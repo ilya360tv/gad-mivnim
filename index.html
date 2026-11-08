@@ -608,9 +608,18 @@
   <!-- ===== מכרזים / מנויים — הרשמה לעדכונים על מכרזים ===== -->
   <section id="tenders" class="section tenders">
     <div class="container">
-      <span class="section-eyebrow reveal" data-i18n="nav_tenders">מכרזים / מנויים</span>
-      <h2 class="section-title reveal reveal-d1" data-i18n="tn_title">אזור קבלני הבית</h2>
-      <p class="section-lead reveal reveal-d2" data-i18n="tn_lead">הכניסה לקבלני הבית של GAD MIVNIM בלבד – מנויים פעילים עם קוד משתמש</p>
+      <!-- כניסה: שתי עמודות — טקסט מימין, כרטיס הכניסה משמאל (≥1024). אחרי הכניסה (.is-members) — הפריסה הממורכזת -->
+      <div class="tn-layout">
+      <div class="tn-intro">
+        <span class="section-eyebrow reveal" data-i18n="nav_tenders">מכרזים / מנויים</span>
+        <h2 class="section-title reveal reveal-d1" data-i18n="tn_title">אזור קבלני הבית</h2>
+        <p class="section-lead reveal reveal-d2" data-i18n="tn_lead">הכניסה לקבלני הבית של GAD MIVNIM בלבד – מנויים פעילים עם קוד משתמש</p>
+        <ul class="plan-list tn-perks">
+          <li data-i18n="tn_perk1">מכרזים לפי תחומים</li>
+          <li data-i18n="tn_perk2">מועדי פתיחה והגשה</li>
+          <li data-i18n="tn_perk3">הגשת מועמדות מהירה</li>
+        </ul>
+      </div>
 
       <div class="tn-stage">
         <!-- כניסת מנויים — הדגמה: כל קלט "נכנס", הסיסמה לא נשמרת בשום מקום. אין מכרזים לפני הכניסה -->
@@ -656,6 +665,7 @@
           <div class="tn-filters" id="tnFilters" role="group" aria-label="סינון לפי תחום"></div>
           <div class="tn-list" id="tnList"></div>
         </div>
+      </div>
       </div>
 
       <p class="tn-toast" id="tnToast" role="status" aria-live="polite"></p>

@@ -53,12 +53,14 @@
     renderMembers();
     loginCard.hidden = true;
     members.hidden = false;
+    section.classList.add('is-members');      // הפריסה הממורכזת של אזור המנויים (במקום שתי העמודות)
     listTitle.focus({ preventScroll: true });
   });
 
   document.getElementById('tnLogout').addEventListener('click', function () {
     members.hidden = true;
     loginCard.hidden = false;
+    section.classList.remove('is-members');
     userInput.value = '';
     userInput.focus();
   });
