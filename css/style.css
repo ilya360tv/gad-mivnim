@@ -7793,3 +7793,81 @@ html.a11y-no-motion body.page-split > main { animation: none !important; }
   html.nav-seen .site-header .header-side,
   html.nav-seen body .site-header .main-nav ul li a { animation: none !important; }
 }
+
+/* ==========================================================================
+   #about — בלי גלילת עמוד במחשב (js/about.js): עמודת הטקסט המקורית נחתכת בגובה הפנוי
+   עם דהייה רכה (90px) לרקע הדף, ומתחתיה "המשך קריאה ←". לחיצה / Enter / Space — חלון קריאה.
+   טלפון/טאבלט (<1024): בלי שינוי.
+   ========================================================================== */
+@media (min-width: 1024px) {
+  html[dir] body #about.is-clamped { padding-bottom: 32px; }
+  #about.is-clamped .about-grid { row-gap: 12px; }
+  #about.is-clamped .about-text { position: relative; overflow: hidden; cursor: pointer; }
+  #about.is-clamped .about-text::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 90px;
+    background: linear-gradient(180deg, rgba(11, 13, 16, 0), #0b0d10);
+    pointer-events: none;
+  }
+  #about.is-clamped .about-text:focus { outline: none; }
+  #about.is-clamped .about-text:focus-visible { outline: 2px solid var(--lb); outline-offset: 6px; border-radius: 6px; }
+}
+.about-more-link {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 0;
+  font-family: inherit;
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--lb);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.about-more-link[hidden] { display: none; }
+.about-more-link:hover { color: var(--lb-hover); }
+.about-more-link:focus-visible { outline: 2px solid var(--lb); outline-offset: 4px; border-radius: 4px; }
+
+/* ----- חלון הקריאה (אותה משפחה כמו חלונות האתר: .proj-modal); העותק יושב בתוך #about — אותם צבעים/הדגשות ----- */
+.ab-read .ab-read__box {
+  width: 760px;
+  max-width: calc(100vw - 24px);
+  max-height: 86vh;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, .35), 0 24px 60px rgba(0, 0, 0, .6);
+}
+.ab-read__scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 32px; }
+.ab-read__scroll:focus { outline: none; }
+.ab-read__scroll:focus-visible { outline: 2px solid var(--lb); outline-offset: -4px; }
+.ab-read__title { margin: 0 0 14px; padding-inline-end: 48px; font-size: 1.2rem; font-weight: 700; line-height: 1.4; letter-spacing: .14em; color: #38bdf8; }
+#about .ab-read .about-text { max-width: none; }
+#about .ab-read .about-text > p,
+#about .ab-read .about-text h3.about-sub,
+#about .ab-read .about-text h4.about-sub--sm,
+#about .ab-read .about-text .about-quote { font-size: 1rem !important; line-height: 1.85 !important; }
+/* שורת הסיום — הטקסט עצמו (במקום הפס הנע), ממורכז */
+#about .ab-read .about-text .about-quote { overflow: visible; }
+#about .ab-read .about-mq__src {
+  position: static !important;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip: auto;
+  clip-path: none;
+  white-space: normal;
+  display: block;
+  text-align: center;
+}
+#about .ab-read .about-mq__src > * { display: inline-block; margin-inline: 12px; }
+@media (max-width: 767.98px) {
+  .ab-read__scroll { padding: 26px 22px; }
+}
