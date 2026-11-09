@@ -154,6 +154,10 @@
   function ensureSeedContractor() {
     var all = read(K.applicants, []);
     var seedUser = all.filter(function (a) { return (a.userCode || '').toUpperCase() === 'GM-1000'; })[0];
+    if (seedUser && !seedUser.fullName) {
+      all.forEach(function (a) { if (a.id === seedUser.id) { a.fullName = 'ישראל ישראלי'; } });
+      write(K.applicants, all);
+    }
     if (seedUser && seedUser.passwordHash) { return Promise.resolve(); }
     return hash('1234').then(function (h) {
       all = read(K.applicants, []);

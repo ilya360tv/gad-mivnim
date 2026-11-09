@@ -7506,6 +7506,10 @@ html[dir] body #tenders .tn-login-btn { align-self: stretch; width: 100%; margin
   box-shadow: 0 0 0 1px rgba(56, 189, 248, .35), 0 0 22px rgba(56, 189, 248, .1);
 }
 .tn-hello { margin: 0; font-size: 1.1rem; font-weight: 700; color: #ffffff; }
+.tn-hello-name { color: #ffffff; font-weight: 700; }
+.tn-hello-name[hidden] { display: none; }
+/* אחרי הכניסה: בלי הכותרת "אזור קבלני הבית" ובלי השורה שמתחתיה — העמוד מתחיל בשורת הברכה */
+#tenders.is-members .tn-intro { display: none; }
 .tn-id-chip {
   display: inline-flex;
   gap: 6px;

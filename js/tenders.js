@@ -28,6 +28,20 @@
   var members   = document.getElementById('tnMembers');
   var listTitle = document.getElementById('tnListTitle');
   var codeChip  = document.getElementById('tnUserCode');
+  // הברכה: "שלום, קבלן הבית" (מתורגם, data-i18n על ה-span) + שם הקבלן המחובר
+  var hello = members.querySelector('.tn-hello');
+  var helloName = document.createElement('strong');
+  helloName.className = 'tn-hello-name';
+  (function () {
+    var lead = document.createElement('span');
+    lead.setAttribute('data-i18n', hello.getAttribute('data-i18n'));
+    lead.innerHTML = hello.innerHTML;
+    hello.removeAttribute('data-i18n');
+    hello.innerHTML = '';
+    hello.appendChild(lead);
+    hello.appendChild(document.createTextNode(' '));
+    hello.appendChild(helloName);
+  })();
   var currentCode = null;
 
   function setEyeLabel() {
@@ -55,6 +69,11 @@
   function enterMembers(code, focus) {
     currentCode = code;
     codeChip.textContent = code;
+    var user = store.applicants.findByCode(code);
+    var name = user && user.fullName ? user.fullName.trim() : '';
+    helloName.innerHTML = '';
+    if (name) { var bd = document.createElement('bdi'); bd.textContent = name; helloName.appendChild(bd); }
+    helloName.hidden = !name;                    // בלי שם — רק "שלום, קבלן הבית"
     renderMembers();
     loginCard.hidden = true;
     members.hidden = false;

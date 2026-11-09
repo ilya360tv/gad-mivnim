@@ -97,7 +97,7 @@
     tn_demo_only: { he: 'הדגמה בלבד', ru: 'Только демонстрация', en: 'Demo only', fr: 'Démonstration uniquement' },
     tn_login_btn: { he: 'כניסה', ru: 'Войти', en: 'Sign in', fr: 'Se connecter' },
     tn_demo_note: { he: 'הדגמה – המערכת תחובר בהמשך', ru: 'Демонстрация – система будет подключена позже', en: 'Demo – the system will be connected later', fr: 'Démonstration – le système sera connecté prochainement' },
-    tn_hello: { he: 'שלום, קבלן בית', ru: 'Здравствуйте, подрядчик', en: 'Hello, home contractor', fr: 'Bonjour, entrepreneur' },
+    tn_hello: { he: 'שלום, קבלן הבית', ru: 'Здравствуйте, подрядчик', en: 'Hello, house contractor', fr: 'Bonjour, entrepreneur' },
     tn_contractor_no: { he: 'קוד משתמש:', ru: 'Код пользователя:', en: 'User code:', fr: 'Code utilisateur :' },
     tn_logout: { he: 'יציאה', ru: 'Выйти', en: 'Sign out', fr: 'Se déconnecter' },
     tn_list_title: { he: 'רשימת מכרזים', ru: 'Список тендеров', en: 'Tenders list', fr: 'Liste des appels d\'offres' },
