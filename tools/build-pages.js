@@ -16,14 +16,13 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
 const SITE = 'https://gad-mivnim.vercel.app/';
-// LF תמיד (גם אם git הוציא את הקבצים עם CRLF ב-Windows) — כל החיפושים בסקריפט מניחים \n
-const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8').replace(/\r\n/g, '\n');
+const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8');
 const write = (f, s) => fs.writeFileSync(path.join(ROOT, f), s, 'utf8');
 
 /* ---------- העמודים: קובץ ← סקשן ← גלולה ---------- */
 const PAGES = [
   { id: 'hero',        file: 'index.html',       nav: 'nav_home',          data: [] },
-  { id: 'about',       file: 'about.html',       nav: 'nav_about',         data: ['about'],
+  { id: 'about',       file: 'about.html',       nav: 'nav_about',         data: [],
     desc: 'אודות GAD MIVNIM (גד מבנים) — מסורת משפחתית, איכות, מקצועיות ויחס אישי. מדוע נולד הרעיון לאחד את הבנייה והעיצובים לבית אחד.' },
   { id: 'services',    file: 'services.html',    nav: 'nav_services',      data: [],
     desc: 'השירותים של GAD MIVNIM — תכנון והנדסה, בינוי ותשתיות, שותפויות נדל"ן ושירותי בנייה. רמת תכנון, ניהול וביצוע מהגבוהות ביותר.' },
