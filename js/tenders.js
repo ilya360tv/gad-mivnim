@@ -53,6 +53,7 @@
     wrap.appendChild(myFields);
   })();
   var currentUser = null;
+  try { Object.keys(sessionStorage).forEach(function (k) { if (k.indexOf(store.PREFIX + 'filter:') === 0) { sessionStorage.removeItem(k); } }); } catch (e) {}
   // התחומים שהקבלן רואה: "קבלן כללי" — כל תחומי המכרזים; אחרת — רק התחומים שלו (בסדר של הרשימה)
   function visibleFields() {
     if (!currentUser || store.isGeneral(currentUser)) { return store.TENDER_FIELDS; }
@@ -98,7 +99,6 @@
     codeChip.textContent = code;
     var user = store.applicants.findByCode(code);
     currentUser = user;
-    activeFilter = recallFilter();
     renderMyFields();
     var name = user && user.fullName ? user.fullName.trim() : '';
     helloName.innerHTML = '';
@@ -143,10 +143,8 @@
   });
 
   /* ---------- 2) אזור המנויים: פילטרים + מכרזים שפורסמו, לפי תחום ---------- */
-  var filtersEl = document.getElementById('tnFilters');
   var listEl    = document.getElementById('tnList');
   var SOON_DAYS = 7;
-  var activeFilter = 'all';
   var ICON_PIN = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>';
 
   var esc = function (s) {
@@ -185,40 +183,11 @@
       '</article>';
   }
 
-  // הבחירה האחרונה נשמרת לסשן בלבד (sessionStorage), לכל קבלן בנפרד
-  var filterKey = function () { return store.PREFIX + 'filter:' + (currentCode || ''); };
-  var rememberFilter = function () { try { sessionStorage.setItem(filterKey(), activeFilter); } catch (e) {} };
-  var recallFilter = function () { try { return sessionStorage.getItem(filterKey()) || 'all'; } catch (e) { return 'all'; } };
-  function applyFilter() {
-    var sel = filtersEl.querySelector('select');
-    if (sel) { sel.value = activeFilter; }
-    listEl.querySelectorAll('.tn-field').forEach(function (blk) {
-      blk.hidden = activeFilter !== 'all' && blk.getAttribute('data-field') !== activeFilter;
-    });
-  }
-
   function renderMembers() {
     var fields = visibleFields();
     var names = fields.map(function (f) { return f.name; });
     var published = store.tenders.published().filter(function (td) { return names.indexOf(td.field) !== -1; });
-    if (activeFilter !== 'all' && !fields.some(function (f) { return f.id === activeFilter; })) { activeFilter = 'all'; }
-    // בחירת תחום: רשימה נפתחת אחת (select). תחום יחיד — רק שם התחום ככותרת
-    filtersEl.setAttribute('aria-label', t('tn_filter_label'));
-    listEl.classList.toggle('is-single', fields.length === 1);
-    if (fields.length === 1) {
-      activeFilter = 'all';
-      filtersEl.innerHTML = '<h4 class="tn-one-field" data-i18n="' + fields[0].key + '">' + t(fields[0].key) + '</h4>';
-    } else {
-      var count = function (name) { return published.filter(function (td) { return td.field === name; }).length; };
-      var allKey = currentUser && !store.isGeneral(currentUser) ? 'tn_all_mine' : 'tn_all_fields_opt';
-      filtersEl.innerHTML =
-        '<label class="tn-pick-label" for="tnPick" data-i18n="tn_pick_field">' + t('tn_pick_field') + '</label>' +
-        '<span class="tn-pick"><select id="tnPick" class="tn-pick__select">' +
-          '<option value="all">' + esc(t(allKey)) + ' (' + published.length + ')</option>' +
-          fields.map(function (f) { return '<option value="' + f.id + '">' + esc(t(f.key)) + ' (' + count(f.name) + ')</option>'; }).join('') +
-        '</select></span>';
-    }
-
+    // בלי בחירת תחום: כל התחומים של הקבלן מוצגים ישר, בלוק לכל תחום (קבלן כללי — כל התחומים, אחד מתחת לשני)
     listEl.innerHTML = fields.map(function (f) {
       var items = published.filter(function (td) { return td.field === f.name; })
         .sort(function (a, b) { return (a.deadline || '').localeCompare(b.deadline || ''); });
@@ -229,15 +198,7 @@
         '<h4 class="tn-field-title" id="tnFld-' + f.id + '" data-i18n="' + f.key + '">' + t(f.key) + '</h4>' + body +
       '</section>';
     }).join('');
-    applyFilter();
   }
-
-  filtersEl.addEventListener('change', function (e) {
-    if (!e.target.matches('select')) { return; }
-    activeFilter = e.target.value;
-    rememberFilter();
-    applyFilter();
-  });
 
   /* ---------- 3) "הגשת מועמדות" — חלון קטן עם הערה (לא חובה) → נשמר במערכת ההדגמה + הודעה ---------- */
   var toast = document.getElementById('tnToast');
@@ -395,7 +356,6 @@
   if ('MutationObserver' in window) {
     new MutationObserver(function () {
       setEyeLabel();
-      filtersEl.setAttribute('aria-label', t('tn_filter_label'));
       if (!members.hidden) { renderMembers(); }
       if (toast.classList.contains('is-on')) { toast.textContent = t(toastKey); }
       sizeCard();                                                // גלולות הצד משתנות עם השפה

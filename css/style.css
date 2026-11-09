@@ -7555,46 +7555,6 @@ html[dir] body #tenders .tn-login-btn { align-self: stretch; width: 100%; margin
 .tn-list-title:focus-visible { outline: 2px solid var(--lb); outline-offset: 4px; border-radius: 4px; }
 
 /* פילטרים — גלולות כמו לשוניות המגזר */
-.tn-filters { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 4px 0 6px; }
-.tn-pick-label { font-size: .92rem; font-weight: 700; color: #ffffff; }
-.tn-pick { position: relative; display: block; width: 340px; max-width: 100%; }
-.tn-pick::after {                                   /* חץ (chevron) */
-  content: "";
-  position: absolute;
-  top: 50%;
-  inset-inline-end: 18px;
-  width: 9px;
-  height: 9px;
-  margin-top: -7px;
-  border-right: 2px solid var(--lb);        /* פיזי (לא inline) — החץ מצביע למטה בכל כיוון כתיבה */
-  border-bottom: 2px solid var(--lb);
-  transform: rotate(45deg);
-  pointer-events: none;
-}
-.tn-pick__select {
-  width: 100%;
-  min-height: 50px;
-  padding: 0 18px;
-  padding-inline-end: 46px;
-  font-family: inherit;
-  font-size: 1rem;
-  font-weight: 500;
-  color: #ffffff;
-  background: #0e1216;
-  border: 0;
-  border-radius: 14px;
-  box-shadow: 0 0 0 1.5px rgba(56, 189, 248, .6), 0 0 16px rgba(56, 189, 248, .14);
-  appearance: none;
-  -webkit-appearance: none;
-  cursor: pointer;
-  transition: box-shadow .2s ease;
-}
-.tn-pick__select:hover { box-shadow: 0 0 0 1.5px var(--lb), 0 0 20px var(--lb-glow); }
-.tn-pick__select:focus { outline: none; box-shadow: 0 0 0 2px var(--lb), 0 0 22px var(--lb-glow); }
-.tn-pick__select:focus-visible { outline: 3px solid #ffffff; outline-offset: 3px; }
-.tn-pick__select option { background: #12161b; color: #ffffff; }
-.tn-one-field { margin: 0; font-size: 1.15rem; font-weight: 700; color: var(--lb); }
-.tn-list.is-single .tn-field-title { display: none; }   /* תחום יחיד: שם התחום כבר מופיע ככותרת למעלה */
 
 .tn-field { margin-top: 26px; }
 .tn-field-title { margin: 0 0 12px; font-size: 1.15rem; font-weight: 700; color: var(--lb); }
@@ -7669,7 +7629,6 @@ html[dir="ltr"] .tn-arrow { display: inline-block; transform: scaleX(-1); }
 
 @media (max-width: 767.98px) {
   .tn-grid { grid-template-columns: 1fr; }
-  .tn-pick { width: 100%; }
   .tn-bar { padding: 14px 16px; }
   .tn-logout { margin-inline-start: 0; }
   .tn-card { padding: 18px 16px 16px; }
