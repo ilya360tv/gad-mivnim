@@ -205,8 +205,6 @@
     ab_read_full: { he: 'לקריאת הסיפור המלא ←', ru: 'Читать всю историю →', en: 'Read the full story →', fr: 'Lire toute l’histoire →' },
     ab_next:      { he: '← הנושא הבא', ru: 'Следующая тема →', en: 'Next topic →', fr: 'Sujet suivant →' },
     ab_prev:      { he: 'הנושא הקודם →', ru: '← Предыдущая тема', en: '← Previous topic', fr: '← Sujet précédent' },
-    ab_btn2:      { he: 'השירותים שלנו | חטיבות הקבוצה', ru: 'Наши услуги | Подразделения группы', en: 'Our services | The group’s divisions', fr: 'Nos services | Les divisions du groupe' },
-    ab_btn5:      { he: 'אולם תצוגה – הכל במקום אחד !', ru: 'Шоурум – всё в одном месте!', en: 'Showroom – everything in one place!', fr: 'Showroom – tout en un seul endroit !' },
     ab2_media_title: { he: 'מאז ועד היום...', ru: 'Тогда и сейчас...', en: 'Then and Now...', fr: "Hier et aujourd'hui..." },
     ab2_media_soon: { he: 'תמונה תתווסף בקרוב', ru: 'Фото скоро появится', en: 'Photo coming soon', fr: 'Photo bientôt disponible' },
     tm_h1: { he: 'הנהלה', ru: 'Руководство', en: 'Management', fr: 'Direction' },
