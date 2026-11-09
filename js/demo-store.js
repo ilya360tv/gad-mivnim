@@ -121,12 +121,16 @@
   var applicants = {
     list: applicantsCol.list, get: applicantsCol.get, update: applicantsCol.update,
     add: function (a) {
+      // type: "contractor" (קבלן בית — מאגר ומכרזים) או "team" (צוות בית — בלי מנוי ובלי גישה למכרזים)
+      var type = a.type === 'team' ? 'team' : 'contractor';
       var fields = normalizeFields(a.fields);
-      return applicantsCol.add({
-        id: uid('a_'), fullName: a.fullName || '', phone: a.phone || '', fields: fields, field: a.field || fields.join(', '),
+      var item = {
+        id: uid('a_'), type: type, fullName: a.fullName || '', phone: a.phone || '', fields: fields, field: a.field || fields.join(', '),
         createdAt: nowIso(), status: a.status || 'pending', userCode: a.userCode || '',
         passwordHash: a.passwordHash || '', subscription: a.subscription || 'none'
-      });
+      };
+      if (type === 'team') { item.years = a.years || ''; item.area = a.area || ''; }
+      return applicantsCol.add(item);
     },
     findByCode: function (code) {
       code = String(code || '').trim().toUpperCase();
@@ -245,7 +249,7 @@
   // קבלן: מאושר + מנוי פעיל + hash תואם → המועמד; אחרת null
   function verifyLogin(code, password) {
     var a = applicants.findByCode(code);
-    if (!a || a.status !== 'approved' || a.subscription !== 'active' || !a.passwordHash) { return Promise.resolve(null); }
+    if (!a || a.type === 'team' || a.status !== 'approved' || a.subscription !== 'active' || !a.passwordHash) { return Promise.resolve(null); }
     return hash(password).then(function (h) { return h === a.passwordHash ? a : null; }, function () { return null; });
   }
   function verifyAdmin(user, password) {

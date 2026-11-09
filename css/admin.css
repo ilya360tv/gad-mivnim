@@ -395,3 +395,7 @@ input[type="date"].adm-input { color-scheme: dark; }
 .adm-fpick__chip.is-off { cursor: not-allowed; }
 .adm-fpick__chip.is-off span { opacity: .4; }
 .adm-fpick__chip input:focus-visible + span { outline: 3px solid #ffffff; outline-offset: 2px; }
+
+/* ----- בקשת הצטרפות לצוות בית (type "team"): צ'יפ + ניסיון / אזור ----- */
+.adm-chip-team { color: #fbbf24; background: rgba(251, 191, 36, .1); border-color: rgba(251, 191, 36, .6); }
+.adm-team-meta { display: block; margin-top: 2px; font-size: .82rem; color: var(--muted); }

@@ -7917,3 +7917,53 @@ html.a11y-no-motion body.page-split > main { animation: none !important; }
 .tn-hello-wrap { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .tn-my-fields { margin: 0; font-size: .9rem; font-weight: 500; color: #aab3bd; }
 .tn-my-fields .tn-my-field { color: var(--lb); font-weight: 700; }
+
+/* ==========================================================================
+   #careers — שורה אחת של 5 כרטיסים אחידים (אותו רוחב/גובה/ריווח/רדיוס/אייקון/מסגרת/hover);
+   כל כרטיס פותח חלון. דסקטופ: 5 בשורה ברוחב התוכן; טאבלט: שורה נגללת לרוחב; טלפון: אחד בשורה.
+   ========================================================================== */
+#careers .careers-row {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(176px, 1fr));   /* רוחב מלא באותו גודל; תוכן צר מדי — גלילה לרוחב */
+  gap: 16px;
+  align-items: stretch;
+  overflow-x: auto;
+  padding: 10px 6px 34px;                 /* מקום לזוהר/צל הכרטיסים (overflow חותך), מקוזז בשוליים שליליים */
+  margin: 24px -6px -34px;
+}
+#careers .careers-row .role-card { box-sizing: border-box; min-width: 0; height: 100%; }
+#careers .careers-row .role-card h3,
+#careers .careers-row .role-card p { overflow-wrap: anywhere; }
+#careers .role-group {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  font-size: .75rem;
+  font-weight: 700;
+  line-height: 1.6;
+  color: var(--lb);
+  background: var(--lb-bg);
+  border: 1px solid rgba(56, 189, 248, .45);
+  border-radius: 999px;
+}
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  #careers .careers-row {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 240px;
+    overflow-x: auto;
+    padding: 4px 4px 12px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  #careers .careers-row .role-card { scroll-snap-align: start; }
+}
+@media (max-width: 767.98px) {
+  #careers .careers-row { grid-template-columns: 1fr; gap: 14px; }
+}
+
+/* חלונות 4–5 (צוות / קבלן בית) יושבים בתוך #careers — אותו מראה בדיוק כמו חלון התפקיד */
+#careers .cw-modal .role-modal__head .role-icon { width: 64px; height: 64px; margin: 0; }
+#careers .cw-modal .role-modal__head .role-icon svg { width: 30px; height: 30px; }
+#careers .cw-modal #tendersForm { margin-top: 18px; padding-top: 6px; border-top: 1px solid var(--line); }
+#careers .cw-modal .cj-after { margin: 0; text-align: center; }

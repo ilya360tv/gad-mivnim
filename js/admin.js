@@ -313,20 +313,22 @@
         '<th>שם</th><th>טלפון</th><th>תחומים</th><th>תאריך</th><th>סטטוס</th><th>קוד / מנוי</th><th>פעולות</th></tr></thead><tbody>' +
         rows.map(function (a) {
           var actions = '';
-          if (a.status !== 'approved') { actions += '<button type="button" class="adm-btn adm-btn-sm adm-btn-primary" data-aact="approve">אישור</button>'; }
+          var isTeam = a.type === 'team';
+          if (a.status !== 'approved') { actions += '<button type="button" class="adm-btn adm-btn-sm adm-btn-primary" data-aact="' + (isTeam ? 'approve-team' : 'approve') + '">אישור</button>'; }
           if (a.status === 'pending') { actions += '<button type="button" class="adm-btn adm-btn-sm adm-btn-danger" data-aact="reject">דחייה</button>'; }
-          if (a.status === 'approved') {
+          if (a.status === 'approved' && !isTeam) {
             actions += a.subscription === 'active'
               ? '<button type="button" class="adm-btn adm-btn-sm" data-aact="suspend">השעיית מנוי</button>'
               : '<button type="button" class="adm-btn adm-btn-sm" data-aact="activate">הפעלת מנוי</button>';
           }
           return '<tr data-id="' + esc(a.id) + '">' +
-            '<td data-label="שם"><strong>' + esc(a.fullName) + '</strong></td>' +
+            '<td data-label="שם"><strong>' + esc(a.fullName) + '</strong>' + (isTeam ? ' ' + chip('team', 'צוות') +
+              '<span class="adm-team-meta">' + esc((a.years ? 'ניסיון ' + a.years + ' שנים' : '') + (a.years && a.area ? ' · ' : '') + (a.area || '')) + '</span>' : '') + '</td>' +
             '<td data-label="טלפון"><bdi>' + esc(a.phone) + '</bdi></td>' +
             '<td data-label="תחומים">' + fieldChips(a) + '</td>' +
             '<td data-label="תאריך">' + fmtDate(a.createdAt) + '</td>' +
             '<td data-label="סטטוס">' + chip(a.status, APPLICANT_STATUS[a.status]) + '</td>' +
-            '<td data-label="קוד / מנוי">' + (a.userCode ? '<bdi>' + esc(a.userCode) + '</bdi> · ' + (a.subscription === 'active' ? chip('active', 'מנוי פעיל') : chip('none', 'לא פעיל')) : '—') + '</td>' +
+            '<td data-label="קוד / מנוי">' + (!isTeam && a.userCode ? '<bdi>' + esc(a.userCode) + '</bdi> · ' + (a.subscription === 'active' ? chip('active', 'מנוי פעיל') : chip('none', 'לא פעיל')) : '—') + '</td>' +
             '<td data-label="פעולות" class="adm-actions">' + actions + '</td></tr>';
         }).join('') + '</tbody></table></div>'
         : '<p class="adm-empty adm-card">אין בקשות בסטטוס זה</p>');
@@ -342,6 +344,7 @@
     if (!a) { return; }
     var act = b.getAttribute('data-aact');
     if (act === 'approve') { approveForm(a); return; }
+    if (act === 'approve-team') { store.applicants.update(id, { status: 'approved' }); toast('הבקשה לצוות אושרה'); }
     if (act === 'reject') {
       if (!window.confirm('לדחות את הבקשה של ' + a.fullName + '?')) { return; }
       store.applicants.update(id, { status: 'rejected', subscription: 'none' });

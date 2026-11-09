@@ -778,8 +778,16 @@ document.addEventListener('DOMContentLoaded', function () {
       rmX.setAttribute('aria-label', CT('pm_close', 'סגירה'));
     }
 
+    // קישור ישיר לחלון: careers.html#role-<slug> · #join-team · #join-contractor; סגירת החלון מוחקת את ה-hash
+    var ROLE_SLUG = { r4: 'office', r1: 'site-manager', r3: 'engineers' };
+    var setHash = function (h) {
+      if (!history.replaceState) { return; }
+      history.replaceState(null, '', location.pathname + location.search + (h ? '#' + h : ''));
+    };
+
     function openRole(role, from) {
       if (!CDATA.roles || !CDATA.roles[role]) { return; }
+      if (ROLE_SLUG[role]) { setHash('role-' + ROLE_SLUG[role]); }
       rmRole = role;
       rmFrom = from;
       rmStatus = null;
@@ -800,18 +808,147 @@ document.addEventListener('DOMContentLoaded', function () {
       rm.classList.remove('is-open');
       rm.hidden = true;
       document.documentElement.classList.remove('modal-open');
+      setHash('');
       if (rmFrom && rmFrom.focus) { rmFrom.focus(); }
       rmFrom = null;
     }
 
     // כל הכרטיס לחיץ; הכפתור "לפרטים" בתוכו הוא נקודת הכניסה למקלדת
-    careersSec.querySelectorAll('.role-card').forEach(function (card) {
+    careersSec.querySelectorAll('.role-card[data-role]').forEach(function (card) {
       var btn = card.querySelector('.role-btn');
-      if (btn && !card.hasAttribute('data-role')) { card.setAttribute('data-role', btn.getAttribute('data-role')); }
       card.addEventListener('click', function () {
         openRole(card.getAttribute('data-role'), btn || card);
       });
     });
+
+    /* ----- חלונות 4–5: "צוות בית משותף" / "קבלן בית משותף" (בתוך #careers ב-HTML, אותו עיצוב כמו חלון התפקיד) ----- */
+    var CW = { team: document.getElementById('joinTeamModal'), contractor: document.getElementById('joinContractorModal') };
+    var CW_HASH = { team: 'join-team', contractor: 'join-contractor' };
+    var cwOpen = null, cwFrom = null;
+    var DSC = window.demoStore;
+
+    // חלון הצוות: "דרישות" + "יתרון" — מתוכן התפקיד "קבלני משנה ובעלי מקצוע" (careers-data.js, r2), לפי השפה
+    var teamLists = CW.team ? CW.team.querySelector('[data-team-lists]') : null;
+    function renderTeamLists() {
+      if (!teamLists) { return; }
+      var all = CDATA.roles && CDATA.roles.r2;
+      var lang = document.documentElement.getAttribute('lang') || 'he';
+      var d = all ? (all[lang] || all.he) : null;
+      teamLists.innerHTML = '';
+      if (!d) { return; }
+      [['car_req', 'דרישות התפקיד', d.req], ['car_adv', 'יתרון', d.adv]].forEach(function (x) {
+        if (!x[2] || !x[2].length) { return; }
+        var h = document.createElement('h3'); h.className = 'role-modal__h'; h.textContent = CT(x[0], x[1]);
+        var ul = document.createElement('ul'); ul.className = 'role-modal__list';
+        x[2].forEach(function (t) { var li = document.createElement('li'); li.textContent = t; ul.appendChild(li); });
+        teamLists.appendChild(h); teamLists.appendChild(ul);
+      });
+    }
+    // תחום מקצועי (צוות): מרשימת התחומים היחידה — תחום אחד
+    var teamSel = document.getElementById('teamField');
+    if (teamSel && DSC) {
+      DSC.TENDER_FIELDS.forEach(function (f) {
+        var o = document.createElement('option');
+        o.value = f.name;
+        o.setAttribute('data-i18n', f.key);
+        o.textContent = CT(f.key, f.name);
+        teamSel.appendChild(o);
+      });
+    }
+
+    function cwShow(kind, from) {
+      var m = CW[kind];
+      if (!m) { return; }
+      if (cwOpen) { cwHide(true); }
+      cwOpen = kind;
+      cwFrom = from || null;
+      if (kind === 'team') { renderTeamLists(); }
+      m.querySelector('.proj-modal__x').setAttribute('aria-label', CT('pm_close', 'סגירה'));
+      var box = m.querySelector('.proj-modal__box');
+      box.scrollTop = 0;
+      m.hidden = false;
+      void m.offsetWidth;
+      m.classList.add('is-open');
+      document.documentElement.classList.add('modal-open');
+      box.focus({ preventScroll: true });
+      setHash(CW_HASH[kind]);
+    }
+    function cwHide(keepHash) {
+      var m = cwOpen && CW[cwOpen];
+      if (!m) { return; }
+      m.classList.remove('is-open');
+      m.hidden = true;
+      document.documentElement.classList.remove('modal-open');
+      cwOpen = null;
+      if (!keepHash) { setHash(''); }
+      if (cwFrom && cwFrom.focus) { cwFrom.focus({ preventScroll: true }); }
+      cwFrom = null;
+    }
+    careersSec.querySelectorAll('.role-card[data-window]').forEach(function (card) {
+      var btn = card.querySelector('.role-btn');
+      card.addEventListener('click', function () { cwShow(card.getAttribute('data-window'), btn || card); });
+    });
+    Object.keys(CW).forEach(function (k) {
+      if (!CW[k]) { return; }
+      CW[k].addEventListener('click', function (e) { if (e.target.closest('[data-cw-close]')) { cwHide(); } });
+    });
+    document.addEventListener('keydown', function (e) {
+      if (!cwOpen) { return; }
+      var m = CW[cwOpen];
+      if (e.key === 'Escape') { e.stopPropagation(); cwHide(); return; }
+      if (e.key !== 'Tab') { return; }                   // מלכודת פוקוס
+      var g = Array.prototype.filter.call(m.querySelectorAll('button, input:not([type="hidden"]), select, a[href]'),
+        function (el) { return !el.disabled && el.offsetParent !== null; });
+      if (!g.length) { return; }
+      var gf = g[0], gl = g[g.length - 1], box = m.querySelector('.proj-modal__box');
+      if (e.shiftKey && (document.activeElement === gf || document.activeElement === box)) { e.preventDefault(); gl.focus(); }
+      else if (!e.shiftKey && document.activeElement === gl) { e.preventDefault(); gf.focus(); }
+    }, true);
+    if ('MutationObserver' in window) {
+      new MutationObserver(function () { if (cwOpen === 'team') { renderTeamLists(); } })
+        .observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    }
+
+    // טופס הצוות — נשמר במערכת ההדגמה כ-type "team" (בלי מנוי, בלי גישה למכרזים)
+    var teamForm = document.getElementById('teamForm');
+    var teamOk = document.getElementById('teamSuccess');
+    if (teamForm) {
+      teamForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (!teamForm.checkValidity()) { teamForm.reportValidity(); return; }
+        if (DSC) {
+          var item = {
+            type: 'team',
+            fullName: document.getElementById('teamName').value.trim(),
+            phone: document.getElementById('teamPhone').value.trim(),
+            fields: [teamSel.value],
+            years: document.getElementById('teamYears').value,
+            area: document.getElementById('teamArea').value.trim(),
+            status: 'pending'
+          };
+          DSC.ready().then(function () { DSC.applicants.add(item); });
+        }
+        teamOk.hidden = false;
+        teamForm.reset();
+      });
+    }
+
+    // פתיחה לפי הכתובת (גם קישור "להצטרפות ←" מעמוד המכרזים)
+    var openFromHash = function () {
+      var h = location.hash.replace('#', '');
+      var target = h === 'join-team' || h === 'join-contractor' || /^role-/.test(h);
+      if (!target) { return; }
+      if (cwOpen) { cwHide(true); }                       // חלון אחר פתוח — נסגר קודם (בלי למחוק את ה-hash החדש)
+      if (!rm.hidden) { rm.classList.remove('is-open'); rm.hidden = true; document.documentElement.classList.remove('modal-open'); }
+      if (h === 'join-team') { cwShow('team'); return; }
+      if (h === 'join-contractor') { cwShow('contractor'); return; }
+      var m = /^role-(.+)$/.exec(h);
+      if (m) {
+        Object.keys(ROLE_SLUG).forEach(function (r) { if (ROLE_SLUG[r] === m[1]) { openRole(r, null); } });
+      }
+    };
+    openFromHash();
+    window.addEventListener('hashchange', openFromHash);
 
     rm.addEventListener('click', function (e) {
       if (e.target.closest && e.target.closest('[data-rm-close]')) { closeRole(); }
