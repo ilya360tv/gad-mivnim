@@ -214,3 +214,12 @@ create policy applicant_docs_storage_admin_update on storage.objects for update 
 drop policy if exists applicant_docs_storage_admin_delete on storage.objects;
 create policy applicant_docs_storage_admin_delete on storage.objects for delete to authenticated
   using (bucket_id = 'applicant-docs' and (select private.is_admin()));
+
+-- ============ STEP 3: user codes for the approval function (see migration 20261109130000) ============
+create or replace function public.next_user_code()
+returns text language sql volatile security definer set search_path = ''
+as $$
+  select 'GM-' || nextval('private.user_code_seq')::text;
+$$;
+revoke all on function public.next_user_code() from public, anon, authenticated;
+grant execute on function public.next_user_code() to service_role;
