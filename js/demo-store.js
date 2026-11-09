@@ -7,20 +7,46 @@
 
 (function () {
   var P = 'gmDemo:';
-  var K = { tenders: P + 'tenders', applicants: P + 'applicants', applications: P + 'applications', seeded: P + 'seeded' };
+  var K = { tenders: P + 'tenders', applicants: P + 'applicants', applications: P + 'applications', seeded: P + 'seeded', schema: P + 'schema' };
+  var SCHEMA = 2;                         // 2 = תחומים לקבלנים (fields) + רשימת התחומים המורחבת
   var SESSION = P + 'session';            // sessionStorage — קוד המשתמש המחובר באתר (לא סיסמה)
   var ADMIN_SESSION = P + 'admin';        // sessionStorage — כניסת מנהל הדגמה
 
-  // התחומים — סדר הבלוקים באתר; key = מפתח תרגום ב-i18n.js
+  // רשימת התחומים — מקור יחיד: טופס ההצטרפות (דרושים), טופס המכרז והטבלאות במערכת הניהול, הפילטרים באזור המנויים.
+  // הסדר = סדר הבלוקים באתר; key = מפתח תרגום ב-i18n.js. "קבלן כללי" — רק לקבלנים (רואה הכל), לא תחום של מכרז.
+  var GENERAL = 'קבלן כללי';
+  var MAX_FIELDS = 3;
   var FIELDS = [
-    { id: 'build',      name: 'בנייה',            key: 'tn_fld_build' },
-    { id: 'additions',  name: 'תוספות בנייה',     key: 'tn_fld_additions' },
-    { id: 'renovation', name: 'שיפוץ מבנים',      key: 'tn_fld_renovation' },
-    { id: 'plumbing',   name: 'אינסטלציה',        key: 'tn_fld_plumbing' },
-    { id: 'tama',       name: 'תמ"א',             key: 'tn_fld_tama' },
-    { id: 'envelope',   name: 'עבודות מעטפת',     key: 'tn_fld_envelope' },
-    { id: 'allworks',   name: 'כל עבודות המבנה',  key: 'tn_fld_allworks' }
+    { id: 'general',    name: GENERAL,             key: 'tn_fld_general' },
+    { id: 'build',      name: 'בנייה',             key: 'tn_fld_build' },
+    { id: 'additions',  name: 'תוספות בנייה',      key: 'tn_fld_additions' },
+    { id: 'renovation', name: 'שיפוץ מבנים',       key: 'tn_fld_renovation' },
+    { id: 'electric',   name: 'חשמל ותקשורת',      key: 'tn_fld_electric' },
+    { id: 'plumbing',   name: 'אינסטלציה וביוב',   key: 'tn_fld_plumbing' },
+    { id: 'sealing',    name: 'איטום ובידוד',      key: 'tn_fld_sealing' },
+    { id: 'envelope',   name: 'עבודות מעטפת',      key: 'tn_fld_envelope' },
+    { id: 'tama',       name: 'תמ"א',              key: 'tn_fld_tama' },
+    { id: 'drywall',    name: 'גבס ודקורציה',      key: 'tn_fld_drywall' },
+    { id: 'paint',      name: 'צבע וציפויים',      key: 'tn_fld_paint' },
+    { id: 'heights',    name: 'עבודות גובה',       key: 'tn_fld_heights' },
+    { id: 'garden',     name: 'גינון ופיתוח',      key: 'tn_fld_garden' },
+    { id: 'glazing',    name: 'אלומיניום וזגגות',  key: 'tn_fld_glazing' },
+    { id: 'metal',      name: 'מסגרות ושערים',     key: 'tn_fld_metal' },
+    { id: 'tiling',     name: 'ריצוף וחיפויים',    key: 'tn_fld_tiling' },
+    { id: 'allworks',   name: 'כל עבודות המבנה',   key: 'tn_fld_allworks' }
   ];
+  var TENDER_FIELDS = FIELDS.filter(function (f) { return f.name !== GENERAL; });
+  var RENAMED = { 'אינסטלציה': 'אינסטלציה וביוב' };   // שמות ישנים במכרזים שכבר שמורים בדפדפן
+
+  // התחומים של קבלן (מערך שמות). בלי תחומים (נתונים ישנים) = קבלן כללי
+  function fieldsOf(a) { return a && a.fields && a.fields.length ? a.fields : [GENERAL]; }
+  function isGeneral(a) { return fieldsOf(a).indexOf(GENERAL) !== -1; }
+  // הכלל: "קבלן כללי" לבד, או עד 3 תחומים — מחזיר רשימה מתוקנת (או ריקה אם אין בחירה)
+  function normalizeFields(list) {
+    var names = (list || []).filter(function (n) { return FIELDS.some(function (f) { return f.name === n; }); });
+    if (names.indexOf(GENERAL) !== -1) { return [GENERAL]; }
+    return FIELDS.filter(function (f) { return names.indexOf(f.name) !== -1; }).map(function (f) { return f.name; }).slice(0, MAX_FIELDS);
+  }
 
   // משתמש מנהל להדגמה: admin / admin1234 — נשמר כאן רק ה-hash
   var ADMIN_USER = 'admin';
@@ -95,8 +121,9 @@
   var applicants = {
     list: applicantsCol.list, get: applicantsCol.get, update: applicantsCol.update,
     add: function (a) {
+      var fields = normalizeFields(a.fields);
       return applicantsCol.add({
-        id: uid('a_'), fullName: a.fullName || '', phone: a.phone || '', field: a.field || '',
+        id: uid('a_'), fullName: a.fullName || '', phone: a.phone || '', fields: fields, field: a.field || fields.join(', '),
         createdAt: nowIso(), status: a.status || 'pending', userCode: a.userCode || '',
         passwordHash: a.passwordHash || '', subscription: a.subscription || 'none'
       });
@@ -126,59 +153,88 @@
     }
   };
 
-  /* ---------- נתוני פתיחה (פעם ראשונה): מכרזי הדוגמה + 2 מועמדים ---------- */
+  /* ---------- נתוני פתיחה (פעם ראשונה): מכרזי הדוגמה + מועמדים ---------- */
+  var nameOfId = {};
+  FIELDS.forEach(function (f) { nameOfId[f.id] = f.name; });
+  function sampleTender(s, i) {
+    return {
+      id: 't_seed' + (i + 1), title: s.name, field: nameOfId[s.field] || TENDER_FIELDS[0].name, location: s.place,
+      description: '', openDate: dateIn(s.openIn), deadline: dateIn(s.closeIn), status: 'published', createdAt: nowIso()
+    };
+  }
+  // קבלני הדוגמה: GM-1000 = קבלן כללי (רואה הכל), GM-1001 = חשמל ותקשורת. סיסמה להדגמה: 1234 (נשמר רק hash)
+  var SEED_PEOPLE = {
+    'GM-1000': { id: 'a_seed2', fullName: 'ישראל ישראלי', fields: [GENERAL] },
+    'GM-1001': { id: 'a_seed3', fullName: 'דני כהן', fields: ['חשמל ותקשורת'] }
+  };
+  function seedContractor(code, h) {
+    var p = SEED_PEOPLE[code];
+    return { id: p.id, fullName: p.fullName, phone: '05X-XXXXXXX', fields: p.fields.slice(), field: p.fields.join(', '),
+      createdAt: nowIso(), status: 'approved', userCode: code, passwordHash: h, subscription: 'active' };
+  }
+
   function seed() {
     var sample = (window.TENDERS_DEMO && window.TENDERS_DEMO.tenders) || [];
-    var nameOf = {};
-    FIELDS.forEach(function (f) { nameOf[f.id] = f.name; });
-    var list = sample.map(function (s, i) {
-      return {
-        id: 't_seed' + (i + 1), title: s.name, field: nameOf[s.field] || FIELDS[0].name, location: s.place,
-        description: '', openDate: dateIn(s.openIn), deadline: dateIn(s.closeIn), status: 'published', createdAt: nowIso()
-      };
-    });
-    write(K.tenders, list);
+    write(K.tenders, sample.map(sampleTender));
     write(K.applications, []);
     return hash('1234').catch(function () { return ''; }).then(function (h) {
       write(K.applicants, [
-        { id: 'a_seed1', fullName: 'יוסי לוי (דוגמה)', phone: '05X-XXXXXXX', field: 'קבלן משנה', createdAt: nowIso(),
+        { id: 'a_seed1', fullName: 'יוסי לוי (דוגמה)', phone: '05X-XXXXXXX', fields: ['בנייה'], field: 'בנייה', createdAt: nowIso(),
           status: 'pending', userCode: '', passwordHash: '', subscription: 'none' },
-        { id: 'a_seed2', fullName: 'דוד כהן (דוגמה)', phone: '05X-XXXXXXX', field: 'קבלן ראשי', createdAt: nowIso(),
-          status: 'approved', userCode: 'GM-1000', passwordHash: h, subscription: 'active' }
+        seedContractor('GM-1000', h),
+        seedContractor('GM-1001', h)
       ]);
+      write(K.schema, SCHEMA);
       write(K.seeded, nowIso());
     });
   }
 
-  // הגירה חד-פעמית: נתונים ישנים בדפדפן בלי קבלן הדוגמה GM-1000 (או בלי hash לסיסמה שלו) — משלימים אותו
-  function ensureSeedContractor() {
-    var all = read(K.applicants, []);
-    var seedUser = all.filter(function (a) { return (a.userCode || '').toUpperCase() === 'GM-1000'; })[0];
-    if (seedUser && !seedUser.fullName) {
-      all.forEach(function (a) { if (a.id === seedUser.id) { a.fullName = 'ישראל ישראלי'; } });
-      write(K.applicants, all);
-    }
-    if (seedUser && seedUser.passwordHash) { return Promise.resolve(); }
-    return hash('1234').then(function (h) {
-      all = read(K.applicants, []);
-      if (seedUser) {
-        all.forEach(function (a) { if (a.id === seedUser.id) { a.passwordHash = h; } });
-      } else {
-        all.push({ id: 'a_seed2', fullName: 'דוד כהן (דוגמה)', phone: '05X-XXXXXXX', field: 'קבלן ראשי', createdAt: nowIso(),
-          status: 'approved', userCode: 'GM-1000', passwordHash: h, subscription: 'active' });
+  // הגירה (נתונים שכבר שמורים בדפדפן מגרסה קודמת): שמות תחומים חדשים, מכרז חשמל לדוגמה,
+  // תחומים לכל מועמד (ישן = "קבלן כללי"), וקבלני הדוגמה GM-1000 / GM-1001 עם סיסמה 1234
+  function migrate() {
+    var oldSchema = read(K.schema, 1);
+    return hash('1234').catch(function () { return ''; }).then(function (h) {
+      var all = read(K.applicants, []);
+      if (oldSchema < SCHEMA) {
+        var tl = read(K.tenders, []);
+        tl.forEach(function (t) { if (RENAMED[t.field]) { t.field = RENAMED[t.field]; } });
+        var sample = (window.TENDERS_DEMO && window.TENDERS_DEMO.tenders) || [];
+        sample.forEach(function (s, i) {
+          var t = sampleTender(s, i);
+          var hasField = tl.some(function (x) { return x.field === t.field; });
+          if (!hasField && !tl.some(function (x) { return x.id === t.id; })) { tl.push(t); }
+        });
+        write(K.tenders, tl);
+        all.forEach(function (a) { if (!a.fields || !a.fields.length) { a.fields = [GENERAL]; } });
       }
+      Object.keys(SEED_PEOPLE).forEach(function (code) {
+        var p = SEED_PEOPLE[code];
+        var cur = all.filter(function (a) { return (a.userCode || '').toUpperCase() === code; })[0];
+        if (cur && cur.id !== p.id && oldSchema < SCHEMA && code !== 'GM-1000') {
+          // הקוד כבר ניתן בדפדפן הזה למישהו אחר — הוא מקבל את הקוד הפנוי הבא, והקוד נשמר לקבלן הדוגמה
+          var max = 1001;
+          all.forEach(function (a) { var m = /^GM-(\d+)$/.exec(a.userCode || ''); if (m) { max = Math.max(max, parseInt(m[1], 10)); } });
+          cur.userCode = 'GM-' + (max + 1);
+          cur = null;
+        }
+        if (!cur) { all.push(seedContractor(code, h)); return; }
+        if (oldSchema < SCHEMA) { cur.fullName = p.fullName; cur.fields = p.fields.slice(); cur.field = p.fields.join(', '); }
+        if (!cur.fullName) { cur.fullName = p.fullName; }
+        if (!cur.passwordHash) { cur.passwordHash = h; }
+      });
       write(K.applicants, all);
-    }, function () {});
+      write(K.schema, SCHEMA);
+    });
   }
 
   var readyPromise = null;
   function ready() {
-    if (!readyPromise) { readyPromise = read(K.seeded, null) ? ensureSeedContractor() : seed(); }
+    if (!readyPromise) { readyPromise = read(K.seeded, null) ? migrate() : seed(); }
     return readyPromise;
   }
 
   function reset() {
-    [K.tenders, K.applicants, K.applications, K.seeded].forEach(function (k) {
+    [K.tenders, K.applicants, K.applications, K.seeded, K.schema].forEach(function (k) {
       try { localStorage.removeItem(k); } catch (e) { delete mem[k]; }
     });
     readyPromise = null;
@@ -224,8 +280,9 @@
   }
 
   window.demoStore = {
-    PREFIX: P, FIELDS: FIELDS,
+    PREFIX: P, FIELDS: FIELDS, TENDER_FIELDS: TENDER_FIELDS, GENERAL: GENERAL, MAX_FIELDS: MAX_FIELDS,
     fieldByName: function (name) { return FIELDS.filter(function (f) { return f.name === name; })[0] || null; },
+    fieldsOf: fieldsOf, isGeneral: isGeneral, normalizeFields: normalizeFields,
     tenders: tenders, applicants: applicants, applications: applications,
     hash: hash, ready: ready, reset: reset, verifyLogin: verifyLogin, verifyAdmin: verifyAdmin,
     session: session, adminSession: adminSession, exportData: exportData

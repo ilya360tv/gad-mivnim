@@ -371,3 +371,27 @@ input[type="date"].adm-input { color-scheme: dark; }
   .adm-stats { grid-template-columns: 1fr 1fr; }
   .adm-top-actions { gap: 10px; }
 }
+
+/* ----- תחומי הקבלן: צ'יפים בטבלה + בוחר תחומים בחלון האישור (עד 3, או "קבלן כללי") ----- */
+.adm-fchips { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.adm-chip-field { color: var(--lb); background: var(--lb-bg); border-color: rgba(56, 189, 248, .55); }
+.adm-chip-general { color: var(--ok); background: rgba(45, 212, 191, .1); border-color: rgba(45, 212, 191, .55); }
+.adm-fpick { display: flex; flex-wrap: wrap; gap: 6px; }
+.adm-fpick__chip { position: relative; cursor: pointer; }
+.adm-fpick__chip input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+.adm-fpick__chip span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 4px 12px;
+  font-size: .85rem;
+  color: var(--lb);
+  border-radius: 999px;
+  box-shadow: 0 0 0 1.5px rgba(56, 189, 248, .55);
+}
+.adm-fpick__chip.is-on span { background: var(--lb); color: #0a0c0e; font-weight: 700; }
+.adm-fpick__chip.is-general span { color: var(--ok); box-shadow: 0 0 0 1.5px rgba(45, 212, 191, .7); }
+.adm-fpick__chip.is-general.is-on span { background: var(--ok); color: #0a0c0e; }
+.adm-fpick__chip.is-off { cursor: not-allowed; }
+.adm-fpick__chip.is-off span { opacity: .4; }
+.adm-fpick__chip input:focus-visible + span { outline: 3px solid #ffffff; outline-offset: 2px; }

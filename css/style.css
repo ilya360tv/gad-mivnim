@@ -7875,3 +7875,45 @@ html.a11y-no-motion body.page-split > main { animation: none !important; }
 @media (max-width: 767.98px) {
   .ab-read__scroll { padding: 26px 22px; }
 }
+
+/* ----- #careers "הצטרפות כקבלן בית": תחום מקצועי — צ'יפים (עד 3, או "קבלן כללי"); js/script.js ----- */
+.tn-fields { margin: 0; padding: 0; border: 0; min-width: 0; }
+.tn-fields legend { padding: 0; margin-bottom: 4px; font-weight: 700; font-size: .95rem; color: #ffffff; }
+.tn-fields-hint { margin: 0 0 8px; font-size: .82rem; color: #aab3bd; }
+.tn-field-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.tn-field-chip { position: relative; display: inline-flex; align-items: center; cursor: pointer; }
+.tn-field-chip input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+.tn-field-chip span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 6px 14px;
+  font-size: .88rem;
+  font-weight: 500;
+  color: var(--lb);
+  border-radius: 999px;
+  box-shadow: 0 0 0 1.5px rgba(56, 189, 248, .55);
+  transition: background .2s ease, color .2s ease, box-shadow .2s ease;
+}
+.tn-field-chip:hover span { box-shadow: 0 0 0 1.5px var(--lb), 0 0 14px var(--lb-glow); }
+.tn-field-chip.is-on span { background: var(--lb); color: #0a0c0e; font-weight: 700; }
+.tn-field-chip.is-general span { box-shadow: 0 0 0 1.5px rgba(94, 234, 212, .7); color: #5eead4; }
+.tn-field-chip.is-general.is-on span { background: #5eead4; color: #0a0c0e; }
+.tn-field-chip.is-off { cursor: not-allowed; }
+.tn-field-chip.is-off span { opacity: .4; }
+.tn-field-chip input:focus-visible + span { outline: 3px solid #ffffff; outline-offset: 2px; }
+.tn-fields-err {
+  margin: 8px 0 0;
+  padding: 8px 12px;
+  font-size: .86rem;
+  color: #fca5a5;
+  background: rgba(248, 113, 113, .1);
+  border: 1px solid rgba(248, 113, 113, .5);
+  border-radius: 10px;
+}
+.tn-fields-err[hidden] { display: none; }
+
+/* ----- #tenders אזור המנויים: "התחומים שלך: …" מתחת לברכה ----- */
+.tn-hello-wrap { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.tn-my-fields { margin: 0; font-size: .9rem; font-weight: 500; color: #aab3bd; }
+.tn-my-fields .tn-my-field { color: var(--lb); font-weight: 700; }

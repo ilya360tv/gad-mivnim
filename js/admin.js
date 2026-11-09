@@ -31,6 +31,35 @@
   var TENDER_STATUS = { draft: 'טיוטה', published: 'פורסם', closed: 'סגור' };
   var APPLICANT_STATUS = { pending: 'ממתין', approved: 'מאושר', rejected: 'נדחה' };
   var chip = function (cls, text) { return '<span class="adm-chip adm-chip-' + cls + '">' + esc(text) + '</span>'; };
+  // תחומי הקבלן כצ'יפים (מקור: store.fieldsOf — ישן בלי תחומים = קבלן כללי)
+  var fieldChips = function (a) {
+    return '<span class="adm-fchips">' + store.fieldsOf(a).map(function (n) { return chip(n === store.GENERAL ? 'general' : 'field', n); }).join('') + '</span>';
+  };
+  // בוחר תחומים (צ'קבוקסים) — מהרשימה היחידה ב-demo-store
+  var fieldPicker = function (selected) {
+    return '<div class="adm-fpick" data-fpick>' + store.FIELDS.map(function (f, i) {
+      var on = selected.indexOf(f.name) !== -1;
+      return '<label class="adm-fpick__chip' + (on ? ' is-on' : '') + (f.name === store.GENERAL ? ' is-general' : '') + '"><input type="checkbox" value="' + esc(f.name) + '"' + (on ? ' checked' : '') + '><span>' + esc(f.name) + '</span></label>';
+    }).join('') + '</div>';
+  };
+  var bindPicker = function (root) {
+    var boxes = Array.prototype.slice.call(root.querySelectorAll('input[type="checkbox"]'));
+    var sync = function (changed) {
+      if (changed && changed.checked) {
+        var gen = changed.value === store.GENERAL;
+        boxes.forEach(function (b) { if (b !== changed && (gen || b.value === store.GENERAL)) { b.checked = false; } });
+      }
+      var n = boxes.filter(function (b) { return b.checked && b.value !== store.GENERAL; }).length;
+      boxes.forEach(function (b) {
+        b.disabled = !b.checked && b.value !== store.GENERAL && n >= store.MAX_FIELDS;
+        b.parentNode.classList.toggle('is-on', b.checked);
+        b.parentNode.classList.toggle('is-off', b.disabled);
+      });
+    };
+    root.addEventListener('change', function (e) { if (e.target.matches('input[type="checkbox"]')) { sync(e.target); } });
+    sync(null);
+    return function () { return store.normalizeFields(boxes.filter(function (b) { return b.checked; }).map(function (b) { return b.value; })); };
+  };
 
   /* ---------- הודעה קטנה ---------- */
   var toastEl = $('admToast'), toastTimer;
@@ -151,7 +180,7 @@
       '<div class="adm-cols">' +
         '<div class="adm-card"><h2 class="adm-h2">הרשמות אחרונות</h2>' +
           (regs.length ? '<ul class="adm-list">' + regs.map(function (a) {
-            return '<li><strong>' + esc(a.fullName) + '</strong><span>' + esc(a.field) + ' · ' + fmtDate(a.createdAt) + '</span>' + chip(a.status, APPLICANT_STATUS[a.status]) + '</li>';
+            return '<li><strong>' + esc(a.fullName) + '</strong><span>' + esc(store.fieldsOf(a).join(', ')) + ' · ' + fmtDate(a.createdAt) + '</span>' + chip(a.status, APPLICANT_STATUS[a.status]) + '</li>';
           }).join('') + '</ul>' : '<p class="adm-empty">אין הרשמות עדיין</p>') + '</div>' +
         '<div class="adm-card"><h2 class="adm-h2">מועמדויות אחרונות</h2>' +
           (apps.length ? '<ul class="adm-list">' + apps.map(function (p) {
@@ -164,7 +193,7 @@
   /* ======================= 2) מכרזים ======================= */
   var tFilter = { q: '', field: '', status: '' };
   function renderTenders() {
-    var fieldOpts = store.FIELDS.map(function (f) { return '<option value="' + esc(f.name) + '"' + (tFilter.field === f.name ? ' selected' : '') + '>' + esc(f.name) + '</option>'; }).join('');
+    var fieldOpts = store.TENDER_FIELDS.map(function (f) { return '<option value="' + esc(f.name) + '"' + (tFilter.field === f.name ? ' selected' : '') + '>' + esc(f.name) + '</option>'; }).join('');
     var statusOpts = Object.keys(TENDER_STATUS).map(function (k) { return '<option value="' + k + '"' + (tFilter.status === k ? ' selected' : '') + '>' + TENDER_STATUS[k] + '</option>'; }).join('');
     var q = tFilter.q.trim().toLowerCase();
     var rows = store.tenders.list().filter(function (t) {
@@ -232,13 +261,13 @@
   });
 
   function tenderForm(t) {
-    var v = t || { title: '', field: store.FIELDS[0].name, location: '', description: '', openDate: todayIso(), deadline: '', status: 'draft' };
+    var v = t || { title: '', field: store.TENDER_FIELDS[0].name, location: '', description: '', openDate: todayIso(), deadline: '', status: 'draft' };
     openModal(t ? 'עריכת מכרז' : 'מכרז חדש',
       '<form id="tForm" class="adm-form" novalidate>' +
         '<div class="adm-field"><label for="fTitle">שם המכרז *</label><input id="fTitle" class="adm-input" required value="' + esc(v.title) + '"></div>' +
         '<div class="adm-row">' +
           '<div class="adm-field"><label for="fField">תחום *</label><select id="fField" class="adm-input">' +
-            store.FIELDS.map(function (f) { return '<option' + (f.name === v.field ? ' selected' : '') + '>' + esc(f.name) + '</option>'; }).join('') + '</select></div>' +
+            store.TENDER_FIELDS.map(function (f) { return '<option' + (f.name === v.field ? ' selected' : '') + '>' + esc(f.name) + '</option>'; }).join('') + '</select></div>' +
           '<div class="adm-field"><label for="fLoc">מיקום *</label><input id="fLoc" class="adm-input" required value="' + esc(v.location) + '"></div>' +
         '</div>' +
         '<div class="adm-field"><label for="fDesc">תיאור</label><textarea id="fDesc" class="adm-input" rows="3">' + esc(v.description) + '</textarea></div>' +
@@ -281,7 +310,7 @@
         return '<button type="button" class="adm-pill' + (aFilter === x[0] ? ' is-active' : '') + '" aria-pressed="' + (aFilter === x[0]) + '" data-af="' + x[0] + '">' + x[1] + '</button>';
       }).join('') + '</div><p class="adm-note adm-note-inline">תשלום יחובר בהמשך – בהדגמה האישור מפעיל מנוי מיד</p></div>' +
       (rows.length ? '<div class="adm-table-wrap"><table class="adm-table"><thead><tr>' +
-        '<th>שם</th><th>טלפון</th><th>תחום</th><th>תאריך</th><th>סטטוס</th><th>קוד / מנוי</th><th>פעולות</th></tr></thead><tbody>' +
+        '<th>שם</th><th>טלפון</th><th>תחומים</th><th>תאריך</th><th>סטטוס</th><th>קוד / מנוי</th><th>פעולות</th></tr></thead><tbody>' +
         rows.map(function (a) {
           var actions = '';
           if (a.status !== 'approved') { actions += '<button type="button" class="adm-btn adm-btn-sm adm-btn-primary" data-aact="approve">אישור</button>'; }
@@ -294,7 +323,7 @@
           return '<tr data-id="' + esc(a.id) + '">' +
             '<td data-label="שם"><strong>' + esc(a.fullName) + '</strong></td>' +
             '<td data-label="טלפון"><bdi>' + esc(a.phone) + '</bdi></td>' +
-            '<td data-label="תחום">' + esc(a.field) + '</td>' +
+            '<td data-label="תחומים">' + fieldChips(a) + '</td>' +
             '<td data-label="תאריך">' + fmtDate(a.createdAt) + '</td>' +
             '<td data-label="סטטוס">' + chip(a.status, APPLICANT_STATUS[a.status]) + '</td>' +
             '<td data-label="קוד / מנוי">' + (a.userCode ? '<bdi>' + esc(a.userCode) + '</bdi> · ' + (a.subscription === 'active' ? chip('active', 'מנוי פעיל') : chip('none', 'לא פעיל')) : '—') + '</td>' +
@@ -333,7 +362,9 @@
     var code = a.userCode || store.applicants.nextUserCode();
     openModal('אישור קבלן בית',
       '<form id="apForm" class="adm-form" novalidate>' +
-        '<p class="adm-modal-sub"><strong>' + esc(a.fullName) + '</strong> · ' + esc(a.field) + '</p>' +
+        '<p class="adm-modal-sub"><strong>' + esc(a.fullName) + '</strong></p>' +
+        '<div class="adm-field"><label>תחומים (עד 3, או "קבלן כללי" — כל התחומים)</label>' + fieldPicker(store.fieldsOf(a)) + '</div>' +
+        '<p class="adm-error" id="apFieldErr" role="alert" hidden>יש לבחור לפחות תחום אחד</p>' +
         '<div class="adm-field"><label>קוד משתמש שיוקצה</label><p class="adm-code"><bdi>' + esc(code) + '</bdi></p></div>' +
         '<div class="adm-field"><label for="apPass">סיסמה זמנית (לפחות 4 תווים)</label><input id="apPass" class="adm-input" autocomplete="off" value="' + randomPass() + '"></div>' +
         '<p class="adm-note">תשלום יחובר בהמשך – בהדגמה האישור מפעיל מנוי מיד. הסיסמה נשמרת כ-hash בלבד ותוצג פעם אחת.</p>' +
@@ -341,12 +372,16 @@
         '<div class="adm-form-actions"><button type="submit" class="adm-btn adm-btn-primary">אישור והפעלת מנוי</button>' +
         '<button type="button" class="adm-btn adm-btn-ghost" data-close>ביטול</button></div>' +
       '</form>');
+    var getFields = bindPicker($('apForm').querySelector('[data-fpick]'));
     $('apForm').addEventListener('submit', function (e) {
       e.preventDefault();
+      var fields = getFields();
+      $('apFieldErr').hidden = !!fields.length;
+      if (!fields.length) { return; }
       var pass = $('apPass').value.trim();
       if (pass.length < 4) { $('apErr').hidden = false; return; }
       store.hash(pass).then(function (h) {
-        store.applicants.update(a.id, { status: 'approved', userCode: code, passwordHash: h, subscription: 'active' });
+        store.applicants.update(a.id, { status: 'approved', userCode: code, passwordHash: h, subscription: 'active', fields: fields, field: fields.join(', ') });
         refresh();
         // מוצג פעם אחת בלבד — לא נשמר בשום מקום
         openModal('הקבלן אושר',

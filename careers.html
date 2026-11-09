@@ -137,19 +137,12 @@
             <label for="tenderPhone" data-i18n="f_phone">טלפון</label>
             <input type="tel" id="tenderPhone" name="tenderPhone" autocomplete="tel" placeholder="05X-XXXXXXX" required>
           </div>
-          <div class="form-field">
-            <label for="tenderField" data-i18n="tn_f_field">תחום מקצועי</label>
-            <select id="tenderField" name="tenderField" required>
-              <option value="" data-i18n="car_f_pick">בחרו תחום</option>
-              <option value="main" data-i18n="tn_o1">קבלן ראשי</option>
-              <option value="sub" data-i18n="tn_o2">קבלן משנה</option>
-              <option value="supplier" data-i18n="tn_o3">ספק חומרים</option>
-              <option value="arch" data-i18n="tn_o4">אדריכלות והנדסה</option>
-              <option value="interior" data-i18n="tn_o5">עיצוב פנים</option>
-              <option value="systems" data-i18n="tn_o6">מערכות (חשמל / אינסטלציה / מיזוג)</option>
-              <option value="other" data-i18n="tn_o7">אחר</option>
-            </select>
-          </div>
+          <fieldset class="form-field tn-fields" id="tenderFields" aria-describedby="tenderFieldsHint">
+            <legend data-i18n="tn_f_field">תחום מקצועי</legend>
+            <p class="tn-fields-hint" id="tenderFieldsHint" data-i18n="tn_f_fields_hint">עד 3 תחומים, או "קבלן כללי" (כל התחומים)</p>
+            <div class="tn-field-chips" data-field-chips></div>
+            <p class="tn-fields-err" id="tenderFieldsErr" role="alert" data-i18n="tn_f_fields_err" hidden>יש לבחור לפחות תחום אחד</p>
+          </fieldset>
           <button type="submit" class="btn btn-primary form-submit" data-i18n="cj_submit">הגשת בקשת הצטרפות</button>
           <p class="cj-after"><span data-i18n="cj_after">לאחר אישור הבקשה תקבלו מספר קבלן וסיסמה לכניסה לאזור המכרזים</span> <a href="tenders.html" class="cj-login-link" data-i18n="cj_login_link">כבר מנויים? לכניסה ←</a></p>
           <p class="form-success" id="tendersSuccess" role="status" data-i18n="tn_success" hidden>נרשמתם בהצלחה! נעדכן אתכם על מכרזים חדשים בתחום שלכם.</p>

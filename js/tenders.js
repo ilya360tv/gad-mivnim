@@ -42,6 +42,33 @@
     hello.appendChild(document.createTextNode(' '));
     hello.appendChild(helloName);
   })();
+  // "התחומים שלך: …" / "קבלן כללי – כל התחומים" — מתחת לברכה
+  var myFields = document.createElement('p');
+  myFields.className = 'tn-my-fields';
+  (function () {
+    var wrap = document.createElement('div');
+    wrap.className = 'tn-hello-wrap';
+    hello.parentNode.insertBefore(wrap, hello);
+    wrap.appendChild(hello);
+    wrap.appendChild(myFields);
+  })();
+  var currentUser = null;
+  // התחומים שהקבלן רואה: "קבלן כללי" — כל תחומי המכרזים; אחרת — רק התחומים שלו (בסדר של הרשימה)
+  function visibleFields() {
+    if (!currentUser || store.isGeneral(currentUser)) { return store.TENDER_FIELDS; }
+    var mine = store.fieldsOf(currentUser);
+    return store.TENDER_FIELDS.filter(function (f) { return mine.indexOf(f.name) !== -1; });
+  }
+  function renderMyFields() {
+    var span = function (key) { var n = document.createElement('span'); n.setAttribute('data-i18n', key); n.textContent = t(key); return n; };
+    myFields.innerHTML = '';
+    if (!currentUser || store.isGeneral(currentUser)) { myFields.appendChild(span('tn_all_fields')); return; }
+    myFields.appendChild(span('tn_my_fields'));
+    visibleFields().forEach(function (f, i) {
+      myFields.appendChild(document.createTextNode(i ? ', ' : ' '));
+      var b = span(f.key); b.className = 'tn-my-field'; myFields.appendChild(b);
+    });
+  }
   var currentCode = null;
 
   function setEyeLabel() {
@@ -70,6 +97,9 @@
     currentCode = code;
     codeChip.textContent = code;
     var user = store.applicants.findByCode(code);
+    currentUser = user;
+    activeFilter = 'all';
+    renderMyFields();
     var name = user && user.fullName ? user.fullName.trim() : '';
     helloName.innerHTML = '';
     if (name) { var bd = document.createElement('bdi'); bd.textContent = name; helloName.appendChild(bd); }
@@ -103,6 +133,7 @@
   document.getElementById('tnLogout').addEventListener('click', function () {
     store.session.clear();
     currentCode = null;
+    currentUser = null;
     members.hidden = true;
     loginCard.hidden = false;
     section.classList.remove('is-members');
@@ -166,8 +197,10 @@
   }
 
   function renderMembers() {
-    var fields = store.FIELDS;
-    var published = store.tenders.published();
+    var fields = visibleFields();
+    var names = fields.map(function (f) { return f.name; });
+    var published = store.tenders.published().filter(function (td) { return names.indexOf(td.field) !== -1; });
+    if (activeFilter !== 'all' && !fields.some(function (f) { return f.id === activeFilter; })) { activeFilter = 'all'; }
     var chips = [{ id: 'all', key: 'tn_fld_all' }].concat(fields);
     filtersEl.setAttribute('aria-label', t('tn_filter_label'));
     filtersEl.innerHTML = chips.map(function (f) {

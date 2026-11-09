@@ -874,30 +874,68 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // #careers — "הצטרפות כקבלן בית": הבקשה נשמרת במערכת ההדגמה (js/demo-store.js, localStorage) כממתינה לאישור
+  // #careers — "הצטרפות כקבלן בית": הבקשה נשמרת במערכת ההדגמה (js/demo-store.js, localStorage) כממתינה לאישור.
+  // תחום מקצועי: צ'יפים מרשימת התחומים היחידה (demoStore.FIELDS) — עד 3 תחומים, או "קבלן כללי" לבד (מנקה את השאר)
   var tendersForm    = document.getElementById('tendersForm');
   var tendersSuccess = document.getElementById('tendersSuccess');
+  var joinChips      = tendersForm ? tendersForm.querySelector('[data-field-chips]') : null;
+  var joinErr        = document.getElementById('tenderFieldsErr');
+  var DS = window.demoStore;
+  var fieldBoxes = function () { return joinChips ? Array.prototype.slice.call(joinChips.querySelectorAll('input[type="checkbox"]')) : []; };
+  var syncChips = function (changed) {
+    var boxes = fieldBoxes();
+    if (changed && changed.checked) {
+      var isGen = changed.value === DS.GENERAL;
+      boxes.forEach(function (b) { if (b !== changed && (isGen || b.value === DS.GENERAL)) { b.checked = false; } });
+    }
+    var n = boxes.filter(function (b) { return b.checked && b.value !== DS.GENERAL; }).length;
+    boxes.forEach(function (b) {
+      b.disabled = !b.checked && b.value !== DS.GENERAL && n >= DS.MAX_FIELDS;   // מקסימום 3 — השאר נעולים
+      b.parentNode.classList.toggle('is-on', b.checked);
+      b.parentNode.classList.toggle('is-off', b.disabled);
+    });
+    if (joinErr && boxes.some(function (b) { return b.checked; })) { joinErr.hidden = true; }
+  };
+  if (joinChips && DS) {
+    DS.FIELDS.forEach(function (f, i) {
+      var lab = document.createElement('label');
+      lab.className = 'tn-field-chip' + (f.name === DS.GENERAL ? ' is-general' : '');
+      lab.innerHTML = '<input type="checkbox" name="tenderFields" value="' + f.name.replace(/"/g, '&quot;') + '" id="tnf' + i + '">' +
+        '<span data-i18n="' + f.key + '"></span>';
+      lab.querySelector('span').textContent = (window.GAD_T && window.GAD_T[f.key] && window.GAD_T[f.key][document.documentElement.getAttribute('lang') || 'he']) || f.name;
+      joinChips.appendChild(lab);
+    });
+    joinChips.addEventListener('change', function (e) { if (e.target.matches('input[type="checkbox"]')) { syncChips(e.target); } });
+    syncChips(null);
+  }
   if (tendersForm && tendersSuccess) {
     tendersForm.addEventListener('submit', function (e) {
       e.preventDefault();
+      var picked = fieldBoxes().filter(function (b) { return b.checked; }).map(function (b) { return b.value; });
+      if (joinChips && !picked.length) {
+        if (joinErr) { joinErr.hidden = false; }
+        var first = fieldBoxes()[0];
+        if (!tendersForm.checkValidity()) { tendersForm.reportValidity(); } else if (first) { first.focus(); }
+        return;
+      }
       if (!tendersForm.checkValidity()) {
         tendersForm.reportValidity();
         return;
       }
-      if (window.demoStore) {
-        var opt = tendersForm.tenderField.options[tendersForm.tenderField.selectedIndex];
-        var key = opt && opt.getAttribute('data-i18n');
-        var fieldHe = (key && window.GAD_T && window.GAD_T[key] && window.GAD_T[key].he) || (opt ? opt.textContent : '');
+      if (DS) {
+        var fields = DS.normalizeFields(picked);
         var applicant = {
           fullName: tendersForm.tenderName.value.trim(),
           phone: tendersForm.tenderPhone.value.trim(),
-          field: fieldHe,
+          fields: fields,
+          field: fields.join(', '),
           status: 'pending'
         };
-        window.demoStore.ready().then(function () { window.demoStore.applicants.add(applicant); });
+        DS.ready().then(function () { DS.applicants.add(applicant); });
       }
       tendersSuccess.hidden = false;
       tendersForm.reset();
+      syncChips(null);
     });
   }
 
