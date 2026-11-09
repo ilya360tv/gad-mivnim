@@ -98,7 +98,7 @@
     codeChip.textContent = code;
     var user = store.applicants.findByCode(code);
     currentUser = user;
-    activeFilter = 'all';
+    activeFilter = recallFilter();
     renderMyFields();
     var name = user && user.fullName ? user.fullName.trim() : '';
     helloName.innerHTML = '';
@@ -185,12 +185,13 @@
       '</article>';
   }
 
+  // הבחירה האחרונה נשמרת לסשן בלבד (sessionStorage), לכל קבלן בנפרד
+  var filterKey = function () { return store.PREFIX + 'filter:' + (currentCode || ''); };
+  var rememberFilter = function () { try { sessionStorage.setItem(filterKey(), activeFilter); } catch (e) {} };
+  var recallFilter = function () { try { return sessionStorage.getItem(filterKey()) || 'all'; } catch (e) { return 'all'; } };
   function applyFilter() {
-    filtersEl.querySelectorAll('.tn-filter').forEach(function (b) {
-      var on = b.getAttribute('data-field') === activeFilter;
-      b.classList.toggle('is-active', on);
-      b.setAttribute('aria-pressed', on ? 'true' : 'false');
-    });
+    var sel = filtersEl.querySelector('select');
+    if (sel) { sel.value = activeFilter; }
     listEl.querySelectorAll('.tn-field').forEach(function (blk) {
       blk.hidden = activeFilter !== 'all' && blk.getAttribute('data-field') !== activeFilter;
     });
@@ -201,12 +202,22 @@
     var names = fields.map(function (f) { return f.name; });
     var published = store.tenders.published().filter(function (td) { return names.indexOf(td.field) !== -1; });
     if (activeFilter !== 'all' && !fields.some(function (f) { return f.id === activeFilter; })) { activeFilter = 'all'; }
-    var chips = [{ id: 'all', key: 'tn_fld_all' }].concat(fields);
+    // בחירת תחום: רשימה נפתחת אחת (select). תחום יחיד — רק שם התחום ככותרת
     filtersEl.setAttribute('aria-label', t('tn_filter_label'));
-    filtersEl.innerHTML = chips.map(function (f) {
-      return '<button type="button" class="sector-tab tn-filter" data-field="' + f.id +
-        '" aria-pressed="false" data-i18n="' + f.key + '">' + t(f.key) + '</button>';
-    }).join('');
+    listEl.classList.toggle('is-single', fields.length === 1);
+    if (fields.length === 1) {
+      activeFilter = 'all';
+      filtersEl.innerHTML = '<h4 class="tn-one-field" data-i18n="' + fields[0].key + '">' + t(fields[0].key) + '</h4>';
+    } else {
+      var count = function (name) { return published.filter(function (td) { return td.field === name; }).length; };
+      var allKey = currentUser && !store.isGeneral(currentUser) ? 'tn_all_mine' : 'tn_all_fields_opt';
+      filtersEl.innerHTML =
+        '<label class="tn-pick-label" for="tnPick" data-i18n="tn_pick_field">' + t('tn_pick_field') + '</label>' +
+        '<span class="tn-pick"><select id="tnPick" class="tn-pick__select">' +
+          '<option value="all">' + esc(t(allKey)) + ' (' + published.length + ')</option>' +
+          fields.map(function (f) { return '<option value="' + f.id + '">' + esc(t(f.key)) + ' (' + count(f.name) + ')</option>'; }).join('') +
+        '</select></span>';
+    }
 
     listEl.innerHTML = fields.map(function (f) {
       var items = published.filter(function (td) { return td.field === f.name; })
@@ -221,10 +232,10 @@
     applyFilter();
   }
 
-  filtersEl.addEventListener('click', function (e) {
-    var btn = e.target.closest('.tn-filter');
-    if (!btn) { return; }
-    activeFilter = btn.getAttribute('data-field');
+  filtersEl.addEventListener('change', function (e) {
+    if (!e.target.matches('select')) { return; }
+    activeFilter = e.target.value;
+    rememberFilter();
     applyFilter();
   });
 
@@ -385,6 +396,7 @@
     new MutationObserver(function () {
       setEyeLabel();
       filtersEl.setAttribute('aria-label', t('tn_filter_label'));
+      if (!members.hidden) { renderMembers(); }
       if (toast.classList.contains('is-on')) { toast.textContent = t(toastKey); }
       sizeCard();                                                // גלולות הצד משתנות עם השפה
     }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
