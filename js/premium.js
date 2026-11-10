@@ -32,13 +32,54 @@
       // ניגון בטוח (כל המכשירים): בטעינה ובמגע הראשון — יש דפדפני אנדרואיד שחוסמים ניגון אוטומטי עד אינטראקציה.
       // בלי כפתור Play: אם הניגון נחסם — נשאר הפוסטר. "עצירת אנימציות" בתפריט הנגישות — לא מנגנים.
       var heroOn = true;
+      var lastPlayErr = '';
       var tryPlay = function () {
         if (!heroOn || document.documentElement.classList.contains('a11y-no-motion')) { return; }
         try {
           var pr = heroVideo.play();
-          if (pr && pr.catch) { pr.catch(function () {}); }
-        } catch (e) {}
+          if (pr && pr.then) { pr.then(function () { lastPlayErr = ''; }, function (e) { lastPlayErr = (e && (e.name + ': ' + e.message)) || 'rejected'; }); }
+        } catch (e) { lastPlayErr = 'throw: ' + e.message; }
       };
+
+      // הקובץ הקל למובייל לא נטען / לא מפוענח במכשיר הזה → מעבר אוטומטי לסרטון הרגיל
+      var fellBack = false;
+      var fallback = function () {
+        if (fellBack || /hero\.mp4/.test(heroVideo.currentSrc || '')) { return; }
+        fellBack = true;
+        heroVideo.src = 'images/hero.mp4';
+        heroVideo.load();
+        tryPlay();
+      };
+      heroVideo.addEventListener('error', fallback, true);   // capture: גם שגיאות של <source>
+
+      // אבחון (רק בכתובת עם ?debugvideo): חלון קטן עם מצב הסרטון — לא מוצג למבקרים רגילים
+      if (/[?&]debugvideo\b/.test(location.search)) {
+        var dbg = document.createElement('pre');
+        dbg.style.cssText = 'position:fixed;inset:auto 8px 8px 8px;z-index:99999;margin:0;padding:10px;max-height:45vh;overflow:auto;background:rgba(0,0,0,.85);color:#7CFC00;font:12px/1.4 monospace;direction:ltr;text-align:left;white-space:pre-wrap;pointer-events:none;border-radius:8px';
+        document.body.appendChild(dbg);
+        var log = [];
+        ['loadstart', 'loadedmetadata', 'loadeddata', 'canplay', 'playing', 'pause', 'waiting', 'stalled', 'suspend', 'error'].forEach(function (ev) {
+          heroVideo.addEventListener(ev, function () { log.push(ev + '@' + (performance.now() / 1000).toFixed(1)); if (log.length > 14) { log.shift(); } }, true);
+        });
+        var show = function () {
+          var er = heroVideo.error;
+          dbg.textContent = [
+            'UA: ' + navigator.userAgent,
+            'width: ' + window.innerWidth + '  mobileMQ: ' + window.matchMedia('(max-width: 767px)').matches,
+            'src: ' + (heroVideo.currentSrc || '(none)').split('/').pop() + (fellBack ? '  (fallback)' : ''),
+            'readyState: ' + heroVideo.readyState + '  networkState: ' + heroVideo.networkState,
+            'paused: ' + heroVideo.paused + '  time: ' + heroVideo.currentTime.toFixed(2) + '  size: ' + heroVideo.videoWidth + 'x' + heroVideo.videoHeight,
+            'muted: ' + heroVideo.muted + '  autoplay: ' + heroVideo.autoplay + '  playsinline: ' + heroVideo.playsInline,
+            'error: ' + (er ? er.code + ' ' + (er.message || '') : 'none'),
+            'play(): ' + (lastPlayErr || 'ok/not tried'),
+            'no-motion: ' + document.documentElement.classList.contains('a11y-no-motion') + '  opacity: ' + getComputedStyle(heroVideo).opacity + '  display: ' + getComputedStyle(heroVideo).display,
+            'SW: ' + (navigator.serviceWorker && navigator.serviceWorker.controller ? 'active' : 'none') + '  build: 20261110c',
+            'events: ' + log.join(' ')
+          ].join('\n');
+        };
+        show();
+        setInterval(show, 500);
+      }
       tryPlay();
       window.addEventListener('load', tryPlay, { once: true });
       // רק אירועים שהדפדפן מחשיב "פעולת משתמש" (touchend / click / pointerup / keydown) מתירים play()
