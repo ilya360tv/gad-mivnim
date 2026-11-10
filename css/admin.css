@@ -18,7 +18,7 @@
   --ok: #5eead4;
   --warn: #fbbf24;
   --bad: #fca5a5;
-  --banner-h: 40px;
+  --banner-h: 0px;   /* אין באנר הדגמה — המערכת אמיתית */
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }

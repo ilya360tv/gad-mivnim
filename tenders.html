@@ -107,7 +107,7 @@
       </div>
 
       <div class="tn-stage">
-        <!-- כניסת מנויים — הדגמה: כל קלט "נכנס", הסיסמה לא נשמרת בשום מקום. אין מכרזים לפני הכניסה -->
+        <!-- כניסת מנויים — קוד משתמש + סיסמה (Supabase Auth, js/data-store.js). אין מכרזים לפני הכניסה -->
         <div class="careers-form-card tn-login" id="tnLogin">
           <form class="contact-form tn-login-form" id="tnLoginForm" novalidate autocomplete="off">
             <div class="tn-login-head">
@@ -131,19 +131,19 @@
             </div>
             <div class="tn-forgot-row">
               <button type="button" class="tn-forgot" id="tnForgot" aria-controls="tnForgotNote" aria-expanded="false" data-i18n="tn_forgot">שכחתי סיסמה</button>
-              <span class="tn-forgot-note" id="tnForgotNote" role="status" data-i18n="tn_demo_only" hidden>הדגמה בלבד</span>
+              <span class="tn-forgot-note" id="tnForgotNote" role="status" data-i18n="tn_forgot_help" hidden>לאיפוס הסיסמה פנו למשרד</span>
             </div>
             </div>
             <div class="tn-login-foot">
             <button type="submit" class="btn btn-primary form-submit tn-login-btn" data-i18n="tn_login_btn">כניסה</button>
             <p class="tn-login-error" id="tnLoginError" role="alert" data-i18n="tn_login_error" hidden>קוד משתמש או סיסמה שגויים, או שהמנוי אינו פעיל</p>
             <p class="tn-members-only"><span data-i18n="tn_members_only">הכניסה לקבלני בית מנויים בלבד. קבלן שאינו מנוי – ניתן להגיש בקשת הצטרפות בעמוד הדרושים.</span> <a href="careers.html#join-contractor" class="tn-join-link" data-i18n="tn_join_link">להצטרפות ←</a></p>
-            <p class="tn-demo-note" data-i18n="tn_demo_note">הדגמה – המערכת תחובר בהמשך</p>
+            <p class="tn-demo-note" data-i18n="tn_beta_note">המערכת בהרצה</p>
             </div>
           </form>
         </div>
 
-        <!-- אזור המנויים — מוצג אחרי כניסה מוצלחת; מכרזים שפורסמו מ-js/demo-store.js (מצב הדגמה, localStorage) -->
+        <!-- אזור המנויים — מוצג אחרי כניסה מוצלחת; המכרזים מגיעים מ-Supabase לפי ההרשאות (RLS) -->
         <div class="tn-members" id="tnMembers" hidden>
           <div class="tn-bar">
             <p class="tn-hello" data-i18n="tn_hello">שלום, קבלן בית</p>
@@ -159,7 +159,7 @@
 
       <p class="tn-toast" id="tnToast" role="status" aria-live="polite"></p>
 
-      <!-- הגשת מועמדות — חלון קטן עם הערה (לא חובה); נשמר במערכת ההדגמה -->
+      <!-- הגשת מועמדות — חלון קטן עם הערה (לא חובה); נשמר במסד הנתונים -->
       <div class="tn-modal" id="tnApplyModal" hidden>
         <div class="tn-modal-backdrop" data-close></div>
         <div class="tn-modal-box careers-form-card" role="dialog" aria-modal="true" aria-labelledby="tnApplyTitle">
@@ -306,8 +306,8 @@
 
   <script src="js/i18n.js?v=20261108ad"></script>
   <script src="js/premium.js?v=20261030cv"></script>
-  <script src="js/tenders-data.js?v=1"></script>
-  <script src="js/demo-store.js?v=1"></script>
+  <script src="js/supabase-config.js?v=1"></script>
+  <script src="js/data-store.js?v=1"></script>
   <script src="js/tenders.js?v=2"></script>
   <script src="js/script.js?v=20261108ad"></script>
   <script src="js/a11y.js?v=20261030cv"></script>

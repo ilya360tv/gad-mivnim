@@ -1,9 +1,10 @@
 /* GAD MIVNIM — Service Worker
    דפים, CSS ו-JS: קודם רשת (תמיד גרסה עדכנית), מטמון רק כשאין חיבור.
    תמונות, אייקונים ופונטים: מהמטמון מיד + רענון ברקע, עם הגבלת כמות.
-   לא נוגעים בטפסים (POST), וידאו, iframes חיצוניים, אנליטיקס, /.netlify/ ו-/_vercel/. */
+   לא נוגעים בטפסים (POST), וידאו, iframes חיצוניים, אנליטיקס, /.netlify/ ו-/_vercel/.
+   לעולם לא שומרים במטמון בקשות ל-Supabase (*.supabase.co), לספריית supabase-js (esm.sh) או ל-/api/* — נתונים אמיתיים ופרטיים. */
 
-var VERSION = 'gad-v2-20261108';
+var VERSION = 'gad-v3-20261110';
 var SHELL_CACHE = VERSION + '-shell';
 var PAGES_CACHE = VERSION + '-pages';
 var ASSETS_CACHE = VERSION + '-assets';
@@ -116,11 +117,13 @@ self.addEventListener('fetch', function (event) {
   var sameOrigin = url.origin === self.location.origin;
   var path = url.pathname;
 
+  if (/(^|\.)supabase\.co$/i.test(url.hostname) || url.hostname === 'esm.sh') return;   // נתונים / התחברות — תמיד רשת, בלי מטמון
   if (!sameOrigin) {
     if (FONT_HOSTS.indexOf(url.hostname) !== -1) event.respondWith(staleWhileRevalidate(event));
     return;                                    // YouTube / Vimeo / Maps / אנליטיקס — לא נוגעים
   }
 
+  if (path.indexOf('/api/') === 0) return;   // פונקציות השרת (Vercel) — בלי מטמון
   if (path.indexOf('/.netlify/') === 0 || path.indexOf('/_vercel/') === 0) return;
   if (path === '/sw.js') return;
   if (/\.(mp4|webm|mov|m4v|ogg|mp3)$/i.test(path)) return;

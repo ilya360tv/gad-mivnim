@@ -723,9 +723,10 @@ document.addEventListener('DOMContentLoaded', function () {
     function roleHe() { var e = window.GAD_T && window.GAD_T['car_' + rmRole]; return (e && e.he) || roleName(); }
     function showStatus() {
       rmOk.hidden = !rmStatus;
-      rmOk.classList.toggle('is-error', rmStatus === 'fail');
+      rmOk.classList.toggle('is-error', rmStatus === 'fail' || rmStatus === 'wait');
       if (rmStatus === 'ok') { rmOk.textContent = CT('car_thanks', THANKS).replace('{role}', roleName()); }
       else if (rmStatus === 'fail') { rmOk.textContent = CT('car_fail', 'השליחה נכשלה, נסו שוב.'); }
+      else if (rmStatus === 'wait') { rmOk.textContent = CT('car_wait', 'נא להמתין חצי דקה לפני שליחה נוספת'); }
     }
 
     function rmList(heading, items) {
@@ -825,7 +826,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var CW = { team: document.getElementById('joinTeamModal'), contractor: document.getElementById('joinContractorModal') };
     var CW_HASH = { team: 'join-team', contractor: 'join-contractor' };
     var cwOpen = null, cwFrom = null;
-    var DSC = window.demoStore;
+    var DSC = window.dataStore;
 
     // חלון הצוות: "דרישות" + "יתרון" — מתוכן התפקיד "קבלני משנה ובעלי מקצוע" (careers-data.js, r2), לפי השפה
     var teamLists = CW.team ? CW.team.querySelector('[data-team-lists]') : null;
@@ -909,27 +910,34 @@ document.addEventListener('DOMContentLoaded', function () {
         .observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
     }
 
-    // טופס הצוות — נשמר במערכת ההדגמה כ-type "team" (בלי מנוי, בלי גישה למכרזים)
+    // טופס הצוות — נשמר במסד הנתונים כ-type "team" (בלי מנוי, בלי גישה למכרזים)
     var teamForm = document.getElementById('teamForm');
     var teamOk = document.getElementById('teamSuccess');
     if (teamForm) {
+      var teamErr = formErrEl(teamOk);
       teamForm.addEventListener('submit', function (e) {
         e.preventDefault();
         if (!teamForm.checkValidity()) { teamForm.reportValidity(); return; }
-        if (DSC) {
-          var item = {
-            type: 'team',
-            fullName: document.getElementById('teamName').value.trim(),
-            phone: document.getElementById('teamPhone').value.trim(),
-            fields: [teamSel.value],
-            years: document.getElementById('teamYears').value,
-            area: document.getElementById('teamArea').value.trim(),
-            status: 'pending'
-          };
-          DSC.ready().then(function () { DSC.applicants.add(item); });
-        }
-        teamOk.hidden = false;
-        teamForm.reset();
+        teamOk.hidden = true;
+        showFormErr(teamErr, null);
+        if (isBot(teamForm)) { teamOk.hidden = false; teamForm.reset(); return; }
+        if (!DSC) { showFormErr(teamErr, 'car_fail'); return; }
+        var item = {
+          type: 'team',
+          fullName: document.getElementById('teamName').value.trim(),
+          phone: document.getElementById('teamPhone').value.trim(),
+          fields: [teamSel.value],
+          years: document.getElementById('teamYears').value,
+          area: document.getElementById('teamArea').value.trim()
+        };
+        var btn = teamForm.querySelector('.form-submit');
+        btn.disabled = true;
+        DSC.submitApplicant(item).then(function () {
+          teamOk.hidden = false;
+          teamForm.reset();
+        }, function (err) {
+          showFormErr(teamErr, err && err.message === 'rate' ? 'car_wait' : 'car_fail');
+        }).then(function () { btn.disabled = false; });
       });
     }
 
@@ -954,7 +962,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (e.target.closest && e.target.closest('[data-rm-close]')) { closeRole(); }
     });
 
-    // שליחה אמיתית ל-Netlify Forms (טופס careers-application; עותק סטטי חבוי ב-index.html לזיהוי בזמן הפריסה)
+    // שליחה למסד הנתונים (type "job" + קורות החיים לאחסון הפרטי; js/data-store.js)
     rmForm.addEventListener('submit', function (e) {
       e.preventDefault();
       if (!rmForm.checkValidity()) {
@@ -965,15 +973,23 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!(cvInput.files && cvInput.files[0])) { cvShowErr('car_cv_req'); cvInput.focus(); return; }
 
       rmRoleIn.value = roleHe();
-      var data = new FormData(rmForm);
       var label = rmSubmit.textContent;
       rmSubmit.disabled = true;
       rmSubmit.textContent = CT('car_sending', 'שולח…');
       rmStatus = null;
       showStatus();
-      fetch(rmForm.getAttribute('action') || '/', { method: 'POST', body: data })
-        .then(function (res) {
-          if (!res.ok) { throw new Error('HTTP ' + res.status); }
+      var sending = isBot(rmForm) ? Promise.resolve()
+        : !DSC ? Promise.reject(new Error('fail'))
+        : DSC.submitApplicant({
+            type: 'job',
+            roleSlug: ROLE_SLUG[rmRole] || rmRole,
+            fullName: rmForm.querySelector('#roleFormName').value.trim(),
+            phone: rmForm.querySelector('#roleFormPhone').value.trim(),
+            note: roleHe(),
+            files: [{ file: cvInput.files[0], docType: 'cv' }]
+          });
+      sending
+        .then(function () {
           rmForm.reset();
           cvShowErr(null);
           cvRender();
@@ -981,7 +997,7 @@ document.addEventListener('DOMContentLoaded', function () {
           rmRoleIn.value = roleHe();
           rmStatus = 'ok';
         })
-        .catch(function () { rmStatus = 'fail'; })
+        .catch(function (err) { rmStatus = err && err.message === 'rate' ? 'wait' : 'fail'; })
         .then(function () {
           rmSubmit.disabled = false;
           rmSubmit.textContent = label;
@@ -1011,13 +1027,88 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // #careers — "הצטרפות כקבלן בית": הבקשה נשמרת במערכת ההדגמה (js/demo-store.js, localStorage) כממתינה לאישור.
-  // תחום מקצועי: צ'יפים מרשימת התחומים היחידה (demoStore.FIELDS) — עד 3 תחומים, או "קבלן כללי" לבד (מנקה את השאר)
+  // טפסי ההצטרפות (#careers): הודעת שגיאה מתחת להודעת ההצלחה, באותו עיצוב כמו בחלון התפקיד; honeypot נגד ספאם
+  function gmT(key, fb) {
+    var e = window.GAD_T && window.GAD_T[key];
+    return (e && (e[document.documentElement.getAttribute('lang') || 'he'] || e.he)) || fb || '';
+  }
+  function formErrEl(okEl) {
+    var p = document.createElement('p');
+    p.className = 'form-success role-form__ok is-error';
+    p.setAttribute('role', 'alert');
+    p.hidden = true;
+    okEl.parentNode.insertBefore(p, okEl.nextSibling);
+    return p;
+  }
+  function showFormErr(el, key) {
+    el.hidden = !key;
+    if (key) { el.setAttribute('data-i18n', key); el.textContent = gmT(key); } else { el.removeAttribute('data-i18n'); }
+  }
+  function isBot(form) { var hp = form.querySelector('input[name="bot-field"]'); return !!(hp && hp.value); }
+
+  // #careers — "הצטרפות כקבלן בית": הבקשה נשמרת במסד הנתונים (js/data-store.js) כממתינה לאישור, עם מסמך (לא חובה).
+  // תחום מקצועי: צ'יפים מרשימת התחומים היחידה (dataStore.FIELDS) — עד 3 תחומים, או "קבלן כללי" לבד (מנקה את השאר)
   var tendersForm    = document.getElementById('tendersForm');
   var tendersSuccess = document.getElementById('tendersSuccess');
   var joinChips      = tendersForm ? tendersForm.querySelector('[data-field-chips]') : null;
   var joinErr        = document.getElementById('tenderFieldsErr');
-  var DS = window.demoStore;
+  var DS = window.dataStore;
+
+  // מסמך לקבלן: תיבת גרירה כמו בקורות החיים — PDF / JPG / PNG, עד 5MB, קובץ אחד
+  var docDrop = document.getElementById('cjDocDrop');
+  var docInput = docDrop ? docDrop.querySelector('.cv-drop__input') : null;
+  var docErrEl = document.getElementById('cjDocErr');
+  var DOC_ERR = { cj_doc_err_type: 'ניתן להעלות קבצי PDF, JPG או PNG בלבד', car_cv_err_size: 'הקובץ גדול מ-5MB' };
+  function docShowErr(key) {
+    if (!docErrEl) { return; }
+    docErrEl.hidden = !key;
+    if (key) { docErrEl.setAttribute('data-i18n', key); docErrEl.textContent = gmT(key, DOC_ERR[key]); } else { docErrEl.removeAttribute('data-i18n'); }
+    docDrop.classList.toggle('is-invalid', !!key);
+  }
+  function docRender() {
+    var f = docInput.files && docInput.files[0];
+    docDrop.classList.toggle('has-file', !!f);
+    docDrop.querySelector('.cv-drop__empty').hidden = !!f;
+    docDrop.querySelector('.cv-drop__file').hidden = !f;
+    if (f) {
+      docDrop.querySelector('.cv-drop__name').textContent = f.name;
+      docDrop.querySelector('.cv-drop__size').textContent = f.size < 1048576 ? Math.max(1, Math.round(f.size / 1024)) + ' KB' : (f.size / 1048576).toFixed(1) + ' MB';
+    }
+  }
+  function docCheck() {
+    var f = docInput.files && docInput.files[0];
+    var bad = f && DS ? DS.checkFile(f, ['pdf', 'jpg', 'jpeg', 'png']) : null;
+    if (bad) { docInput.value = ''; docShowErr(bad === 'size' ? 'car_cv_err_size' : 'cj_doc_err_type'); docRender(); return false; }
+    docShowErr(null);
+    docRender();
+    return true;
+  }
+  if (docDrop && docInput) {
+    var docX = docDrop.querySelector('.cv-drop__x');
+    docX.setAttribute('aria-label', gmT('car_cv_remove', 'הסרת הקובץ'));
+    docInput.addEventListener('change', docCheck);
+    docDrop.addEventListener('click', function (e) {
+      if (e.target.closest('.cv-drop__x') || e.target === docInput) { return; }
+      docInput.click();
+    });
+    docX.addEventListener('click', function () { docInput.value = ''; docShowErr(null); docRender(); docInput.focus(); });
+    ['dragenter', 'dragover'].forEach(function (ev) {
+      docDrop.addEventListener(ev, function (e) { e.preventDefault(); docDrop.classList.add('is-drag'); });
+    });
+    ['dragleave', 'dragend'].forEach(function (ev) {
+      docDrop.addEventListener(ev, function (e) { if (!docDrop.contains(e.relatedTarget)) { docDrop.classList.remove('is-drag'); } });
+    });
+    docDrop.addEventListener('drop', function (e) {
+      e.preventDefault();
+      docDrop.classList.remove('is-drag');
+      var files = e.dataTransfer && e.dataTransfer.files;
+      if (!files || !files.length) { return; }
+      var dt = new DataTransfer();
+      dt.items.add(files[0]);
+      docInput.files = dt.files;
+      docCheck();
+    });
+  }
   var fieldBoxes = function () { return joinChips ? Array.prototype.slice.call(joinChips.querySelectorAll('input[type="checkbox"]')) : []; };
   var syncChips = function (changed) {
     var boxes = fieldBoxes();
@@ -1046,6 +1137,7 @@ document.addEventListener('DOMContentLoaded', function () {
     syncChips(null);
   }
   if (tendersForm && tendersSuccess) {
+    var tendersErr = formErrEl(tendersSuccess);
     tendersForm.addEventListener('submit', function (e) {
       e.preventDefault();
       var picked = fieldBoxes().filter(function (b) { return b.checked; }).map(function (b) { return b.value; });
@@ -1059,20 +1151,29 @@ document.addEventListener('DOMContentLoaded', function () {
         tendersForm.reportValidity();
         return;
       }
-      if (DS) {
-        var fields = DS.normalizeFields(picked);
-        var applicant = {
-          fullName: tendersForm.tenderName.value.trim(),
-          phone: tendersForm.tenderPhone.value.trim(),
-          fields: fields,
-          field: fields.join(', '),
-          status: 'pending'
-        };
-        DS.ready().then(function () { DS.applicants.add(applicant); });
-      }
-      tendersSuccess.hidden = false;
-      tendersForm.reset();
-      syncChips(null);
+      if (docInput && !docCheck()) { docInput.focus(); return; }
+      var done = function () {
+        tendersSuccess.hidden = false;
+        tendersForm.reset();
+        if (docInput) { docInput.value = ''; docRender(); }
+        syncChips(null);
+      };
+      tendersSuccess.hidden = true;
+      showFormErr(tendersErr, null);
+      if (isBot(tendersForm)) { done(); return; }
+      if (!DS) { showFormErr(tendersErr, 'car_fail'); return; }
+      var doc = docInput && docInput.files && docInput.files[0];
+      var btn = tendersForm.querySelector('.form-submit');
+      btn.disabled = true;
+      DS.submitApplicant({
+        type: 'contractor',
+        fullName: tendersForm.tenderName.value.trim(),
+        phone: tendersForm.tenderPhone.value.trim(),
+        fields: DS.normalizeFields(picked),
+        files: doc ? [{ file: doc, docType: 'license' }] : []
+      }).then(done, function (err) {
+        showFormErr(tendersErr, err && err.message === 'rate' ? 'car_wait' : 'car_fail');
+      }).then(function () { btn.disabled = false; });
     });
   }
 
