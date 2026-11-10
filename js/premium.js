@@ -52,6 +52,23 @@
       };
       heroVideo.addEventListener('error', fallback, true);   // capture: גם שגיאות של <source>
 
+      // "שעון רץ אבל התמונה קפואה": יש מפענחי חומרה (למשל אנדרואיד 10) שמדווחים "מתנגן" בלי להציג פריימים חדשים.
+      // סופרים פריימים שהוצגו בפועל (requestVideoFrameCallback); אחרי ~3 שניות ניגון בלי פריימים → הסרטון הרגיל.
+      var presented = 0;
+      if (heroVideo.requestVideoFrameCallback) {
+        var onFrame = function () { presented++; heroVideo.requestVideoFrameCallback(onFrame); };
+        heroVideo.requestVideoFrameCallback(onFrame);
+        var lastT = -1, advSecs = 0, framesAtStart = 0;
+        var watchdog = setInterval(function () {
+          if (fellBack || presented - framesAtStart > 30) { clearInterval(watchdog); return; }   // תקין — מפסיקים לבדוק
+          var t = heroVideo.currentTime;
+          if (!heroVideo.paused && lastT >= 0 && t !== lastT) { advSecs++; } else if (heroVideo.paused) { framesAtStart = presented; advSecs = 0; }
+          lastT = t;
+          if (advSecs >= 3 && presented - framesAtStart < 5) { clearInterval(watchdog); fallback(); }
+        }, 1000);
+      }
+      if (/[?&]desktopvideo\b/.test(location.search)) { fallback(); }   // בדיקה ידנית: לכפות את הסרטון הרגיל
+
       // אבחון (רק בכתובת עם ?debugvideo): חלון קטן עם מצב הסרטון — לא מוצג למבקרים רגילים
       if (/[?&]debugvideo\b/.test(location.search)) {
         var dbg = document.createElement('pre');
@@ -61,8 +78,14 @@
         ['loadstart', 'loadedmetadata', 'loadeddata', 'canplay', 'playing', 'pause', 'waiting', 'stalled', 'suspend', 'error'].forEach(function (ev) {
           heroVideo.addEventListener(ev, function () { log.push(ev + '@' + (performance.now() / 1000).toFixed(1)); if (log.length > 14) { log.shift(); } }, true);
         });
+        var tlog = [];
+        var tick = setInterval(function () {        // יומן: שעון הסרטון + פריימים שהוצגו, כל שנייה ל-10 שניות
+          tlog.push(heroVideo.currentTime.toFixed(1) + '/' + presented);
+          if (tlog.length >= 10) { clearInterval(tick); }
+        }, 1000);
         var show = function () {
           var er = heroVideo.error;
+          var pq = heroVideo.getVideoPlaybackQuality ? heroVideo.getVideoPlaybackQuality() : null;
           dbg.textContent = [
             'UA: ' + navigator.userAgent,
             'width: ' + window.innerWidth + '  mobileMQ: ' + window.matchMedia('(max-width: 767px)').matches,
@@ -73,7 +96,9 @@
             'error: ' + (er ? er.code + ' ' + (er.message || '') : 'none'),
             'play(): ' + (lastPlayErr || 'ok/not tried'),
             'no-motion: ' + document.documentElement.classList.contains('a11y-no-motion') + '  opacity: ' + getComputedStyle(heroVideo).opacity + '  display: ' + getComputedStyle(heroVideo).display,
-            'SW: ' + (navigator.serviceWorker && navigator.serviceWorker.controller ? 'active' : 'none') + '  build: 20261110c',
+            'frames shown: ' + presented + (pq ? '  decoded: ' + pq.totalVideoFrames + '  dropped: ' + pq.droppedVideoFrames : ''),
+            'time/frames per sec: ' + tlog.join('  '),
+            'SW: ' + (navigator.serviceWorker && navigator.serviceWorker.controller ? 'active' : 'none') + '  build: 20261110d',
             'events: ' + log.join(' ')
           ].join('\n');
         };
