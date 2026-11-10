@@ -93,11 +93,12 @@
 
   <!-- ===== Hero ===== -->
   <section id="hero" class="hero">
-    <video class="hero-video" autoplay muted loop playsinline preload="auto"
+    <!-- מובייל (עד 767px): גרסה קלה לאורך (720px, H.264, בלי אודיו, ~1.4MB); דסקטופ: הסרטון המקורי. muted + playsinline = ניגון אוטומטי גם באייפון -->
+    <video class="hero-video" autoplay muted loop playsinline preload="metadata"
            poster="images/hero-poster.jpg" aria-hidden="true">
+      <source media="(max-width: 767px)" src="images/hero-mobile.mp4" type="video/mp4">
       <source src="images/hero.mp4" type="video/mp4">
     </video>
-    <script>if (window.matchMedia('(max-width: 767px)').matches) { var hv = document.querySelector('.hero-video'); if (hv) { hv.pause(); hv.removeAttribute('autoplay'); hv.removeAttribute('preload'); while (hv.firstChild) { hv.removeChild(hv.firstChild); } hv.load(); hv.parentNode.removeChild(hv); } }</script>
     <div class="hero-overlay"></div>
     <div class="container hero-content">
       <h1 class="hero-title hero-title--mq"><span class="hero-mq__src" data-i18n="hero_title"><img class="hero-title__logo" src="images/gad_mivnim_logo.svg" alt="GAD MIVNIM גד מבנים" width="256" height="256" decoding="async"> בכל מקום במפה</span><span class="hero-mq" aria-hidden="true"><span class="hero-mq__track"></span></span></h1>

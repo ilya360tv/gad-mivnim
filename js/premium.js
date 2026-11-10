@@ -29,13 +29,33 @@
         heroVideo.addEventListener('canplay', showVideo, { once: true });
       }
 
-      // דסקטופ: משהים את הסרטון כשה-Hero מחוץ למסך (חוסך מעבד)
+      // ניגון בטוח (כל המכשירים): בטעינה ובמגע הראשון — יש דפדפני אנדרואיד שחוסמים ניגון אוטומטי עד אינטראקציה.
+      // בלי כפתור Play: אם הניגון נחסם — נשאר הפוסטר. "עצירת אנימציות" בתפריט הנגישות — לא מנגנים.
+      var heroOn = true;
+      var tryPlay = function () {
+        if (!heroOn || document.documentElement.classList.contains('a11y-no-motion')) { return; }
+        try {
+          var pr = heroVideo.play();
+          if (pr && pr.catch) { pr.catch(function () {}); }
+        } catch (e) {}
+      };
+      tryPlay();
+      window.addEventListener('load', tryPlay, { once: true });
+      var firstTouch = function () {
+        tryPlay();
+        document.removeEventListener('touchstart', firstTouch);
+        document.removeEventListener('pointerdown', firstTouch);
+      };
+      document.addEventListener('touchstart', firstTouch, { passive: true });
+      document.addEventListener('pointerdown', firstTouch, { passive: true });
+
+      // משהים את הסרטון כשה-Hero מחוץ למסך (חוסך מעבד וסוללה) וממשיכים כשהוא חוזר
       if ('IntersectionObserver' in window) {
         var heroSec = document.getElementById('hero');
         new IntersectionObserver(function (entries) {
           if (document.documentElement.classList.contains('a11y-no-motion')) { return; }
-          var on = entries[entries.length - 1].isIntersecting;
-          if (on) { var pr = heroVideo.play(); if (pr && pr.catch) { pr.catch(function () {}); } }
+          heroOn = entries[entries.length - 1].isIntersecting;
+          if (heroOn) { tryPlay(); }
           else { heroVideo.pause(); }
         }).observe(heroSec || heroVideo);
       }
