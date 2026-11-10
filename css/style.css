@@ -7955,3 +7955,11 @@ html.a11y-no-motion body.page-split > main { animation: none !important; }
 #careers .cw-modal .role-modal__head .role-icon svg { width: 30px; height: 30px; }
 #careers .cw-modal #tendersForm { margin-top: 18px; padding-top: 6px; border-top: 1px solid var(--line); }
 #careers .cw-modal .cj-after { margin: 0; text-align: center; }
+
+
+/* מובייל: הסרטון הקל מתנגן (hero-mobile.mp4). בלי filter/will-change — ההבהרה "אפויה" בקובץ, הגלילה נשארת חלקה.
+   הסרטון מאחורי התוכן ולא תופס מגע. "עצירת אנימציות" — הסרטון מושהה ומוסתר, הפוסטר נראה */
+@media (max-width: 767px) {
+  .hero-video { filter: none; pointer-events: none; }
+  html.a11y-no-motion .hero-video { opacity: 0 !important; }
+}
