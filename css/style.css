@@ -7963,6 +7963,11 @@ html.a11y-no-motion body.page-split > main { animation: none !important; }
   /* נראה מההתחלה (בלי פייד מ-0): Safari באייפון לא מפעיל אוטומטית וידאו שקוף — עד הניגון מוצג ה-poster */
   .hero-video { filter: none; pointer-events: none; opacity: 1; transition: none; }
   html.a11y-no-motion .hero-video { opacity: 0 !important; }
+  /* canvas מעל הסרטון (js/premium.js): מצויר מכל פריים — עוקף שכבת וידאו "תקועה" בחלק ממכשירי אנדרואיד.
+     שקוף עד הפריים הראשון (רואים את הפוסטר/הסרטון מתחת) */
+  .hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; pointer-events: none; opacity: 0; }
+  .hero-canvas.is-ready { opacity: 1; }
+  html.a11y-no-motion .hero-canvas { opacity: 0 !important; }
 }
 /* אייפון: בלי כפתור Play מובנה מעל הסרטון (גם כשהניגון האוטומטי חסום) */
 .hero-video::-webkit-media-controls,
