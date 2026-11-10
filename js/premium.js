@@ -69,6 +69,44 @@
       }
       if (/[?&]desktopvideo\b/.test(location.search)) { fallback(); }   // בדיקה ידנית: לכפות את הסרטון הרגיל
 
+      // מובייל: ציור הפריימים על canvas מעל הסרטון. בכרום על חלק ממכשירי אנדרואיד שכבת הווידאו של המכשיר
+      // "נתקעת" על הפריים הראשון בזמן שהסרטון מתנגן — ה-canvas עוקף את השכבה הזו. (הסרטון עצמו נשאר מתחת, מתנגן.)
+      var canvasDraws = 0, canvasOn = false;
+      if (window.matchMedia('(max-width: 767px)').matches && !/[?&]nocanvas\b/.test(location.search)) {
+        var cv = document.createElement('canvas');
+        var c2d = cv.getContext && cv.getContext('2d', { alpha: false });
+        if (c2d) {
+          canvasOn = true;
+          cv.className = 'hero-canvas';
+          cv.setAttribute('aria-hidden', 'true');
+          heroVideo.parentNode.insertBefore(cv, heroVideo.nextSibling);
+          var sizeCanvas = function () {
+            var dpr = Math.min(window.devicePixelRatio || 1, 2);
+            var w = Math.round(cv.clientWidth * dpr), h = Math.round(cv.clientHeight * dpr);
+            if (w && h && (cv.width !== w || cv.height !== h)) { cv.width = w; cv.height = h; }
+          };
+          var draw = function () {
+            var vw = heroVideo.videoWidth, vh = heroVideo.videoHeight;
+            if (!vw || !vh || heroVideo.readyState < 2) { return; }
+            sizeCanvas();
+            var cw = cv.width, ch = cv.height;
+            var s = Math.max(cw / vw, ch / vh);                 // כמו object-fit: cover, ממורכז
+            var sw = cw / s, sh = ch / s;
+            try { c2d.drawImage(heroVideo, (vw - sw) / 2, (vh - sh) / 2, sw, sh, 0, 0, cw, ch); canvasDraws++; cv.classList.add('is-ready'); } catch (e) {}
+          };
+          if (heroVideo.requestVideoFrameCallback) {
+            var onDraw = function () { draw(); heroVideo.requestVideoFrameCallback(onDraw); };
+            heroVideo.requestVideoFrameCallback(onDraw);
+          } else {
+            var loop = function () { if (!heroVideo.paused) { draw(); } requestAnimationFrame(loop); };
+            requestAnimationFrame(loop);
+          }
+          heroVideo.addEventListener('loadeddata', draw);
+          heroVideo.addEventListener('seeked', draw);
+          window.addEventListener('resize', draw);
+        }
+      }
+
       // אבחון (רק בכתובת עם ?debugvideo): חלון קטן עם מצב הסרטון — לא מוצג למבקרים רגילים
       if (/[?&]debugvideo\b/.test(location.search)) {
         var dbg = document.createElement('pre');
@@ -96,9 +134,9 @@
             'error: ' + (er ? er.code + ' ' + (er.message || '') : 'none'),
             'play(): ' + (lastPlayErr || 'ok/not tried'),
             'no-motion: ' + document.documentElement.classList.contains('a11y-no-motion') + '  opacity: ' + getComputedStyle(heroVideo).opacity + '  display: ' + getComputedStyle(heroVideo).display,
-            'frames shown: ' + presented + (pq ? '  decoded: ' + pq.totalVideoFrames + '  dropped: ' + pq.droppedVideoFrames : ''),
+            'canvas: ' + (canvasOn ? 'on, draws ' + canvasDraws : 'off') + '  frames shown: ' + presented +(pq ? '  decoded: ' + pq.totalVideoFrames + '  dropped: ' + pq.droppedVideoFrames : ''),
             'time/frames per sec: ' + tlog.join('  '),
-            'SW: ' + (navigator.serviceWorker && navigator.serviceWorker.controller ? 'active' : 'none') + '  build: 20261110d',
+            'SW: ' + (navigator.serviceWorker && navigator.serviceWorker.controller ? 'active' : 'none') + '  build: 20261110e',
             'events: ' + log.join(' ')
           ].join('\n');
         };
