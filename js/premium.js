@@ -41,13 +41,16 @@
       };
       tryPlay();
       window.addEventListener('load', tryPlay, { once: true });
-      var firstTouch = function () {
-        tryPlay();
-        document.removeEventListener('touchstart', firstTouch);
-        document.removeEventListener('pointerdown', firstTouch);
-      };
-      document.addEventListener('touchstart', firstTouch, { passive: true });
-      document.addEventListener('pointerdown', firstTouch, { passive: true });
+      // רק אירועים שהדפדפן מחשיב "פעולת משתמש" (touchend / click / pointerup / keydown) מתירים play()
+      // כשהניגון האוטומטי חסום (למשל "מצב חיסכון בסוללה" באייפון). מאזינים עד שהסרטון באמת מתנגן.
+      var GESTURES = ['touchend', 'click', 'pointerup', 'keydown'];
+      var onGesture = function () { tryPlay(); };
+      GESTURES.forEach(function (ev) { document.addEventListener(ev, onGesture, { passive: true, capture: true }); });
+      heroVideo.addEventListener('playing', function () {
+        GESTURES.forEach(function (ev) { document.removeEventListener(ev, onGesture, { capture: true }); });
+      }, { once: true });
+      // חזרה לאפליקציה / ללשונית (iOS משהה וידאו ברקע)
+      document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { tryPlay(); } });
 
       // משהים את הסרטון כשה-Hero מחוץ למסך (חוסך מעבד וסוללה) וממשיכים כשהוא חוזר
       if ('IntersectionObserver' in window) {
