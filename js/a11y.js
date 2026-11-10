@@ -68,6 +68,8 @@
       if (state.motion) {
         try { video.pause(); } catch (e) {}
       } else {
+        video.muted = true;
+        video.playsInline = true;
         var pr = video.play();
         if (pr && pr.catch) { pr.catch(function () {}); }
       }

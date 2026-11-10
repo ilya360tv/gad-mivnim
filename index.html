@@ -18,7 +18,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Gveret+Levin&family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 
   <!-- העיצוב שלנו -->
-  <link rel="stylesheet" href="css/style.css?v=20261108ad">
+  <link rel="stylesheet" href="css/style.css?v=20261110f">
   <!-- PWA — התקנה כאפליקציה -->
   <link rel="manifest" href="/manifest.webmanifest">
   <meta name="theme-color" content="#0b0d10">
@@ -93,12 +93,22 @@
 
   <!-- ===== Hero ===== -->
   <section id="hero" class="hero">
-    <!-- מובייל (עד 767px): גרסה קלה לאורך (720px, H.264 Baseline, בלי אודיו, ~0.75MB); דסקטופ: הסרטון המקורי. muted + playsinline = ניגון אוטומטי גם באייפון -->
-    <video class="hero-video" autoplay muted loop playsinline preload="metadata"
-           poster="images/hero-poster.jpg" aria-hidden="true">
-      <source media="(max-width: 767px)" src="images/hero-mobile-v2.mp4" type="video/mp4">
-      <source src="images/hero.mp4" type="video/mp4">
-    </video>
+    <!-- מובייל (עד 767px): קובץ 9:16 נבחר ב-JS — Safari מתעלם מ-media על <source>. דסקטופ: hero.mp4 ללא שינוי. muted + playsinline = ניגון אוטומטי באייפון -->
+    <video class="hero-video" id="heroVideo" autoplay muted loop playsinline webkit-playsinline
+           preload="metadata" poster="images/hero-poster.jpg" aria-hidden="true"></video>
+    <script>
+    (function () {
+      var v = document.getElementById('heroVideo');
+      if (!v) return;
+      v.muted = true;
+      v.defaultMuted = true;
+      v.playsInline = true;
+      v.setAttribute('playsinline', '');
+      v.setAttribute('webkit-playsinline', '');
+      var mobile = window.matchMedia('(max-width: 767px)').matches;
+      v.src = mobile ? 'images/hero-mobile-v3.mp4' : 'images/hero.mp4';
+    })();
+    </script>
     <div class="hero-overlay"></div>
     <div class="container hero-content">
       <h1 class="hero-title hero-title--mq"><span class="hero-mq__src" data-i18n="hero_title"><img class="hero-title__logo" src="images/gad_mivnim_logo.svg" alt="GAD MIVNIM גד מבנים" width="256" height="256" decoding="async"> בכל מקום במפה</span><span class="hero-mq" aria-hidden="true"><span class="hero-mq__track"></span></span></h1>
@@ -235,8 +245,8 @@
   <!-- הסקריפטים שלנו -->
 
   <script src="js/i18n.js?v=20261108ad"></script>
-  <script src="js/premium.js?v=20261030cv"></script>
+  <script src="js/premium.js?v=20261110f"></script>
   <script src="js/script.js?v=20261108ad"></script>
-  <script src="js/a11y.js?v=20261030cv"></script>
+  <script src="js/a11y.js?v=20261110f"></script>
 </body>
 </html>

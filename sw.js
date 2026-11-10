@@ -3,7 +3,7 @@
    תמונות, אייקונים ופונטים: מהמטמון מיד + רענון ברקע, עם הגבלת כמות.
    לא נוגעים בטפסים (POST), וידאו, iframes חיצוניים, אנליטיקס, /.netlify/ ו-/_vercel/. */
 
-var VERSION = 'gad-v2-20261110e';
+var VERSION = 'gad-v2-20261110f';
 var SHELL_CACHE = VERSION + '-shell';
 var PAGES_CACHE = VERSION + '-pages';
 var ASSETS_CACHE = VERSION + '-assets';
