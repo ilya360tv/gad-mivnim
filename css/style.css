@@ -7960,6 +7960,11 @@ html.a11y-no-motion body.page-split > main { animation: none !important; }
 /* מובייל: הסרטון הקל מתנגן (hero-mobile.mp4). בלי filter/will-change — ההבהרה "אפויה" בקובץ, הגלילה נשארת חלקה.
    הסרטון מאחורי התוכן ולא תופס מגע. "עצירת אנימציות" — הסרטון מושהה ומוסתר, הפוסטר נראה */
 @media (max-width: 767px) {
-  .hero-video { filter: none; pointer-events: none; }
+  /* נראה מההתחלה (בלי פייד מ-0): Safari באייפון לא מפעיל אוטומטית וידאו שקוף — עד הניגון מוצג ה-poster */
+  .hero-video { filter: none; pointer-events: none; opacity: 1; transition: none; }
   html.a11y-no-motion .hero-video { opacity: 0 !important; }
 }
+/* אייפון: בלי כפתור Play מובנה מעל הסרטון (גם כשהניגון האוטומטי חסום) */
+.hero-video::-webkit-media-controls,
+.hero-video::-webkit-media-controls-start-playback-button,
+.hero-video::-webkit-media-controls-overlay-play-button { display: none !important; -webkit-appearance: none; }
