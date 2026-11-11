@@ -104,10 +104,11 @@
     if (a.tempPassword && pid && (approvedContractor || a.type === 'contractor' || a.type === 'team')) {
       tempByProfile[pid] = a.tempPassword;
       return '<div class="adm-temp" data-temp data-pid="' + esc(pid) + '">' +
-        '<span class="adm-temp-label">סיסמה זמנית:</span> ' +
-        '<bdi class="adm-temp-secret" data-secret data-shown="0">' + PASS_MASK + '</bdi>' +
-        '<button type="button" class="adm-icon-btn" data-eye aria-pressed="false" aria-label="הצגת סיסמה">' + EYE_ICON + '</button>' +
-        '<button type="button" class="adm-icon-btn" data-copy aria-label="העתקת הסיסמה">' + COPY_ICON + '</button>' +
+        '<div class="adm-temp-line">' +
+          '<bdi class="adm-temp-secret" data-secret data-shown="0">' + PASS_MASK + '</bdi>' +
+          '<button type="button" class="adm-icon-btn" data-eye aria-pressed="false" aria-label="הצגת סיסמה">' + EYE_ICON + '</button>' +
+          '<button type="button" class="adm-icon-btn" data-copy aria-label="העתקת הסיסמה">' + COPY_ICON + '</button>' +
+        '</div>' +
         chip('pending', 'טרם הוחלפה') +
       '</div>';
     }
@@ -150,7 +151,7 @@
   /* ---------- נתונים (נטענים מהשרת; הרינדור מהעותק האחרון) ---------- */
   var data = { tenders: [], applicants: [], applications: [] };
   var tempByProfile = {};
-  var PASS_MASK = '••••••••••••••';
+  var PASS_MASK = '••••••••';
   var loaded = false;
   function loadAll() {
     return Promise.all([store.tenders.list(), store.applicants.list(), store.applications.list()]).then(function (r) {
@@ -422,7 +423,7 @@
           }).join('') : '';
           var phone = String(a.phone || '').trim();
           var userCell = a.userCode
-            ? '<bdi>' + esc(a.userCode) + '</bdi> ' + (a.subscription === 'active' ? chip('active', 'מנוי פעיל') : chip('none', 'לא פעיל'))
+            ? '<div class="adm-user"><bdi>' + esc(a.userCode) + '</bdi>' + (a.subscription === 'active' ? chip('active', 'מנוי פעיל') : chip('none', 'לא פעיל')) + '</div>'
             : '';
           return '<tr data-id="' + esc(a.id) + '">' +
             '<td data-label="שם"><strong>' + esc(a.fullName || '—') + '</strong>' + typeChip + meta + '</td>' +
