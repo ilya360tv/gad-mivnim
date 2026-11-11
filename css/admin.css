@@ -378,7 +378,8 @@ input[type="date"].adm-input { color-scheme: dark; }
   .adm-table, .adm-table tbody, .adm-table tr, .adm-table td { display: block; width: 100%; }
   .adm-applicants { min-width: 0; }
   .adm-contact { flex: 1; min-width: 0; text-align: end; }
-  .adm-mail { text-align: end; }
+  .adm-contractors td[data-label="תחומים"] { flex-wrap: wrap; align-items: flex-start; }
+  .adm-contractors .adm-fchips { justify-content: flex-end; }
   .adm-table { background: transparent; }
   .adm-table thead { display: none; }
   .adm-table tr {
@@ -430,6 +431,15 @@ input[type="date"].adm-input { color-scheme: dark; }
 .adm-team-meta { display: block; margin-top: 2px; font-size: .82rem; color: var(--muted); }
 .adm-parts { margin: 6px 0 0; padding: 0; list-style: none; font-size: .75rem; line-height: 1.45; color: var(--muted); font-weight: 400; }
 .adm-parts li { overflow-wrap: anywhere; }
+.adm-contractors { width: 100%; table-layout: fixed; }
+.adm-contractors th:nth-child(1), .adm-contractors td:nth-child(1) { width: 20%; }
+.adm-contractors th:nth-child(2), .adm-contractors td:nth-child(2) { width: 14%; }
+.adm-contractors th:nth-child(3), .adm-contractors td:nth-child(3) { width: 16%; }
+.adm-contractors th:nth-child(4), .adm-contractors td:nth-child(4) { width: 24%; }
+.adm-contractors th:nth-child(5), .adm-contractors td:nth-child(5) { width: 26%; }
+.adm-contractors td, .adm-contractors th { overflow-wrap: anywhere; }
+.adm-contractors .adm-fchips { display: flex; flex-wrap: wrap; max-width: 100%; }
+.adm-count { margin: 0; color: var(--muted); font-size: .92rem; }
 
 /* ----- סיסמה זמנית בשורת הקבלן: מוסתרת עד לחיצה על העין, עם העתקה וצ'יפ "טרם הוחלפה" ----- */
 .adm-name { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
