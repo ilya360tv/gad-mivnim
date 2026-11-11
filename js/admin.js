@@ -100,9 +100,10 @@
   // סיסמה זמנית בשורה — הטקסט האמיתי נכנס ל-DOM רק אחרי לחיצה על העין
   function passwordBlock(a) {
     var approvedContractor = a.type === 'contractor' && a.status === 'approved' && a.profileId;
-    if (a.profileId && a.tempPassword && (approvedContractor || a.type === 'team')) {
-      tempByProfile[a.profileId] = a.tempPassword;
-      return '<div class="adm-temp" data-temp data-pid="' + esc(a.profileId) + '">' +
+    var pid = a.profileId || a.id;
+    if (a.tempPassword && pid && (approvedContractor || a.type === 'contractor' || a.type === 'team')) {
+      tempByProfile[pid] = a.tempPassword;
+      return '<div class="adm-temp" data-temp data-pid="' + esc(pid) + '">' +
         '<span class="adm-temp-label">סיסמה זמנית:</span> ' +
         '<bdi class="adm-temp-secret" data-secret data-shown="0">' + PASS_MASK + '</bdi>' +
         '<button type="button" class="adm-icon-btn" data-eye aria-pressed="false" aria-label="הצגת סיסמה">' + EYE_ICON + '</button>' +
@@ -112,6 +113,13 @@
     }
     if (approvedContractor) { return '<p class="adm-replaced">הסיסמה הוחלפה ע״י הקבלן</p>'; }
     return '';
+  }
+  function keepTemp(userCode, profileId, password) {
+    if (!password) { return; }
+    data.applicants.forEach(function (a) {
+      var same = (profileId && a.profileId === profileId) || (userCode && a.userCode === userCode);
+      if (same) { a.tempPassword = password; }
+    });
   }
 
   /* ---------- חלון כללי ---------- */
@@ -254,7 +262,7 @@
         '<div class="adm-card"><h2 class="adm-h2">הרשמות אחרונות</h2>' +
           (regs.length ? '<ul class="adm-list">' + regs.map(function (a) {
             var what = a.type === 'job' ? (a.note || 'משרה') : store.fieldsOf(a).join(', ');
-            return '<li><strong>' + esc(a.fullName) + '</strong><span>' + esc(what) + ' · ' + fmtDate(a.createdAt) + '</span>' + chip(a.status, APPLICANT_STATUS[a.status]) + '</li>';
+            return '<li><strong>' + esc(a.fullName) + '</strong><span>' + esc(what) + ' · ' + fmtDate(a.createdAt) + '</span>' + chip(a.status, APPLICANT_STATUS[a.status]) + passwordBlock(a) + '</li>';
           }).join('') + '</ul>' : '<p class="adm-empty">אין הרשמות עדיין</p>') + '</div>' +
         '<div class="adm-card"><h2 class="adm-h2">מועמדויות אחרונות</h2>' +
           (apps.length ? '<ul class="adm-list">' + apps.map(function (p) {
@@ -412,15 +420,13 @@
             return '<button type="button" class="adm-btn adm-btn-sm" data-doc="' + esc(d.path) + '">' + esc(DOC_TYPE[d.type] || 'מסמך') + ' ↓</button>';
           }).join(' ') : '<span class="adm-muted">—</span>';
           return '<tr data-id="' + esc(a.id) + '">' +
-            '<td data-label="שם"><strong>' + esc(a.fullName) + '</strong>' + typeChip + meta + '</td>' +
+            '<td data-label="שם"><div class="adm-name"><strong>' + esc(a.fullName) + '</strong>' + typeChip + meta + passHtml + '</div></td>' +
             '<td data-label="טלפון"><bdi>' + esc(a.phone) + '</bdi></td>' +
             '<td data-label="תחומים / תפקיד">' + fieldChips(a) + '</td>' +
             '<td data-label="תאריך">' + fmtDate(a.createdAt) + '</td>' +
             '<td data-label="סטטוס">' + chip(a.status, APPLICANT_STATUS[a.status] || a.status) + '</td>' +
-            '<td data-label="קוד / מנוי" class="adm-code">' + ((isContractor && a.userCode) || passHtml
-              ? '<div class="adm-code-cell">' +
-                ((isContractor && a.userCode) ? '<div><bdi>' + esc(a.userCode) + '</bdi> · ' + (a.subscription === 'active' ? chip('active', 'מנוי פעיל') : chip('none', 'לא פעיל')) + '</div>' : '') +
-                passHtml + '</div>'
+            '<td data-label="קוד / מנוי" class="adm-code">' + (isContractor && a.userCode
+              ? '<div><bdi>' + esc(a.userCode) + '</bdi> · ' + (a.subscription === 'active' ? chip('active', 'מנוי פעיל') : chip('none', 'לא פעיל')) + '</div>'
               : '—') + '</td>' +
             '<td data-label="מסמכים" class="adm-actions">' + docs + '</td>' +
             '<td data-label="פעולות" class="adm-actions">' + actions + '</td></tr>';
@@ -429,18 +435,6 @@
   }
 
   content.addEventListener('click', function (e) {
-    if (current !== 'applicants') { return; }
-    var pill = e.target.closest('[data-af]');
-    if (pill) { aFilter = pill.getAttribute('data-af'); renderApplicants(); return; }
-    var docBtn = e.target.closest('[data-doc]');
-    if (docBtn) {
-      docBtn.disabled = true;
-      store.applicants.docUrl(docBtn.getAttribute('data-doc')).then(function (url) {
-        docBtn.disabled = false;
-        location.href = url;                       // קישור חתום ל-5 דקות, הורדה (לא נפתח באתר)
-      }, function () { docBtn.disabled = false; toast('ההורדה נכשלה, נסו שוב'); });
-      return;
-    }
     var eye = e.target.closest('[data-eye]');
     if (eye) {
       var box = eye.closest('[data-temp]');
@@ -471,6 +465,18 @@
       copyText(value).then(function () { toast('הסיסמה הועתקה'); }, function () { toast('ההעתקה נכשלה, נסו שוב'); });
       return;
     }
+    if (current !== 'applicants') { return; }
+    var pill = e.target.closest('[data-af]');
+    if (pill) { aFilter = pill.getAttribute('data-af'); renderApplicants(); return; }
+    var docBtn = e.target.closest('[data-doc]');
+    if (docBtn) {
+      docBtn.disabled = true;
+      store.applicants.docUrl(docBtn.getAttribute('data-doc')).then(function (url) {
+        docBtn.disabled = false;
+        location.href = url;                       // קישור חתום ל-5 דקות, הורדה (לא נפתח באתר)
+      }, function () { docBtn.disabled = false; toast('ההורדה נכשלה, נסו שוב'); });
+      return;
+    }
     var b = e.target.closest('[data-aact]');
     if (!b) { return; }
     var id = b.closest('tr').getAttribute('data-id'), a = applicantById(id);
@@ -487,12 +493,21 @@
     if (act === 'activate') { job = store.applicants.subscription(a.profileId, 'activate'); msg = 'המנוי הופעל'; }
     if (act === 'reset') {
       if (!window.confirm('לאפס את הסיסמה של ' + a.fullName + '?\nהסיסמה הנוכחית תפסיק לעבוד, ותופיע סיסמה זמנית חדשה בשורה.')) { return; }
-      job = store.applicants.resetPassword(a.profileId);
+      job = store.applicants.resetPassword(a.profileId).then(function (res) {
+        if (res && res.tempPassword) { a.tempPassword = res.tempPassword; render(); }
+        return res;
+      });
       msg = 'הסיסמה אופסה. הסיסמה הזמנית החדשה מופיעה בשורה';
     }
     if (!job) { return; }
     b.disabled = true;
-    job.then(function () { toast(msg); return refresh(); }, function (err) {
+    job.then(function (res) {
+      toast(msg);
+      var code = res && res.userCode;
+      var pass = res && res.tempPassword;
+      var pid = a.profileId;
+      return refresh().then(function () { keepTemp(code, pid, pass); if (current === 'applicants' || current === 'dashboard') { render(); } });
+    }, function (err) {
       b.disabled = false;
       toast((err && APPROVE_ERR[err.message]) || 'הפעולה נכשלה, נסו שוב');
     });
@@ -530,11 +545,22 @@
       var btn = $('apForm').querySelector('button[type="submit"]');
       btn.disabled = true;
       store.applicants.approve(a.id, fields).then(function (res) {
-        refresh();
+        var code = res.userCode, pass = res.tempPassword;
+        a.status = 'approved';
+        a.userCode = code;
+        a.subscription = 'active';
+        a.profileStatus = 'approved';
+        a.tempPassword = pass;
+        aFilter = '';
+        if (current !== 'applicants') { go('applicants', false); }
+        render();
+        var row = content.querySelector('tr[data-id="' + a.id + '"]');
+        if (row && row.scrollIntoView) { row.scrollIntoView({ block: 'center' }); }
         openModal('הקבלן אושר',
-          '<p class="adm-once" id="apOnce">קוד: <bdi>' + esc(res.userCode) + '</bdi> · סיסמה זמנית: <bdi>' + esc(res.tempPassword) + '</bdi> – יש למסור לקבלן</p>' +
-          '<p class="adm-note">מסרו את הסיסמה לקבלן בערוץ בטוח (טלפון / פגישה). היא גם מוצגת בשורה עד שהוא יחליף אותה — אחר כך תופיע «הסיסמה הוחלפה ע״י הקבלן».</p>' +
+          '<p class="adm-once" id="apOnce">קוד: <bdi>' + esc(code) + '</bdi> · סיסמה זמנית: <bdi>' + esc(pass) + '</bdi> – יש למסור לקבלן</p>' +
+          '<p class="adm-note">מסרו את הסיסמה לקבלן בערוץ בטוח (טלפון / פגישה). היא גם מוצגת בשורה, מתחת לשם, עד שהוא יחליף אותה.</p>' +
           '<div class="adm-form-actions"><button type="button" class="adm-btn adm-btn-primary" data-close>סגירה</button></div>');
+        refresh().then(function () { keepTemp(code, a.profileId, pass); render(); });
         res = null;
       }, function (err) {
         btn.disabled = false;

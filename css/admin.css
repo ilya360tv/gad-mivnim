@@ -401,8 +401,18 @@ input[type="date"].adm-input { color-scheme: dark; }
 .adm-team-meta { display: block; margin-top: 2px; font-size: .82rem; color: var(--muted); }
 
 /* ----- סיסמה זמנית בשורת הקבלן: מוסתרת עד לחיצה על העין, עם העתקה וצ'יפ "טרם הוחלפה" ----- */
-.adm-code-cell { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
-.adm-temp { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.adm-name { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.adm-temp {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+  padding: 8px 10px;
+  background: rgba(56, 189, 248, .12);
+  border: 1px solid rgba(56, 189, 248, .55);
+  border-radius: 10px;
+}
 .adm-temp-label { font-weight: 700; color: #fff; }
 .adm-temp-secret { font-weight: 700; color: var(--lb); letter-spacing: .04em; white-space: nowrap; }
 .adm-icon-btn {
