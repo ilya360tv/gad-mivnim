@@ -394,6 +394,30 @@
     }
   };
 
+  /* ---------- קבלנים מאושרים (מנהל) ---------- */
+  var contractors = {
+    list: function () {
+      return client().then(function (sb) {
+        return sb.from('profiles').select('id, full_name, phone, email, fields, user_code, created_at')
+          .eq('role', 'contractor').eq('status', 'approved').order('full_name', { ascending: true })
+          .then(unwrap).then(function (rows) {
+            var mapped = (rows || []).map(function (r) {
+              return { id: r.id, fullName: r.full_name || '', phone: r.phone || '', email: r.email || '',
+                fields: r.fields && r.fields.length ? r.fields : [GENERAL], userCode: r.user_code || '', createdAt: r.created_at };
+            });
+            var missing = mapped.filter(function (c) { return !c.email; }).map(function (c) { return c.id; });
+            if (!missing.length) { return mapped; }
+            return sb.from('applicants').select('profile_id, email').in('profile_id', missing).then(unwrap).then(function (apps) {
+              var by = {};
+              (apps || []).forEach(function (a) { if (a && a.email && !by[a.profile_id]) { by[a.profile_id] = a.email; } });
+              mapped.forEach(function (c) { if (!c.email && by[c.id]) { c.email = by[c.id]; } });
+              return mapped;
+            }, function () { return mapped; });
+          });
+      });
+    }
+  };
+
   window.dataStore = {
     FIELDS: FIELDS, TENDER_FIELDS: TENDER_FIELDS, GENERAL: GENERAL, MAX_FIELDS: MAX_FIELDS, MAX_FILE: MAX_FILE,
     fieldByName: function (name) { return FIELDS.filter(function (f) { return f.name === name; })[0] || null; },
@@ -401,6 +425,6 @@
     checkFile: checkFile, rateLimited: rateLimited, submitApplicant: submitApplicant,
     signInContractor: signInContractor, currentContractor: currentContractor, signInAdmin: signInAdmin, currentAdmin: currentAdmin,
     signOut: signOut, changePassword: changePassword,
-    tenders: tenders, applications: applications, applicants: applicants
+    tenders: tenders, applications: applications, applicants: applicants, contractors: contractors
   };
 })();

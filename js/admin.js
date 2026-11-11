@@ -139,13 +139,13 @@
   });
 
   /* ---------- נתונים (נטענים מהשרת; הרינדור מהעותק האחרון) ---------- */
-  var data = { tenders: [], applicants: [], applications: [] };
+  var data = { tenders: [], applicants: [], applications: [], contractors: [] };
   var tempByProfile = {};
   var PASS_MASK = '••••••••';
   var loaded = false;
   function loadAll() {
-    return Promise.all([store.tenders.list(), store.applicants.list(), store.applications.list()]).then(function (r) {
-      data = { tenders: r[0], applicants: r[1], applications: r[2] };
+    return Promise.all([store.tenders.list(), store.applicants.list(), store.applications.list(), store.contractors.list()]).then(function (r) {
+      data = { tenders: r[0], applicants: r[1], applications: r[2], contractors: r[3] };
       loaded = true;
     });
   }
@@ -178,7 +178,7 @@
   });
   $('admLogout').addEventListener('click', function () {
     store.signOut();
-    data = { tenders: [], applicants: [], applications: [] };
+    data = { tenders: [], applicants: [], applications: [], contractors: [] };
     tempByProfile = {};
     loaded = false;
     history.replaceState(null, '', location.pathname);
@@ -190,6 +190,7 @@
     dashboard: { title: 'לוח בקרה', render: renderDashboard },
     tenders: { title: 'מכרזים', render: renderTenders },
     applicants: { title: 'בקשות הצטרפות', render: renderApplicants },
+    contractors: { title: 'קבלנים מאושרים', render: renderContractors },
     applications: { title: 'מועמדויות', render: renderApplications },
     settings: { title: 'הגדרות', render: renderSettings }
   };
@@ -567,6 +568,63 @@
         $('apErr').textContent = APPROVE_ERR[err && err.message] || 'האישור נכשל, נסו שוב';
         $('apErr').hidden = false;
       });
+    });
+  }
+
+  /* ======================= 3b) קבלנים מאושרים ======================= */
+  var cField = '';
+  var cQuery = '';
+  function renderContractors() {
+    var all = data.contractors || [];
+    var counts = {};
+    all.forEach(function (c) {
+      store.fieldsOf(c).forEach(function (name) { counts[name] = (counts[name] || 0) + 1; });
+    });
+    var fields = store.FIELDS.map(function (f) { return f.name; }).filter(function (name) { return counts[name]; });
+    var q = cQuery.trim().toLowerCase();
+    var rows = all.filter(function (c) {
+      if (cField && store.fieldsOf(c).indexOf(cField) === -1) { return false; }
+      if (!q) { return true; }
+      var phone = String(c.phone || '').replace(/\D/g, '');
+      var qDigits = q.replace(/\D/g, '');
+      return (c.fullName || '').toLowerCase().indexOf(q) !== -1 ||
+        (c.userCode || '').toLowerCase().indexOf(q) !== -1 ||
+        (c.phone || '').toLowerCase().indexOf(q) !== -1 ||
+        (qDigits && phone.indexOf(qDigits) !== -1);
+    });
+    var pills = '<button type="button" class="adm-pill' + (cField === '' ? ' is-active' : '') + '" aria-pressed="' + (cField === '') + '" data-cf="">הכל ' + all.length + '</button>' +
+      fields.map(function (name) {
+        return '<button type="button" class="adm-pill' + (cField === name ? ' is-active' : '') + '" aria-pressed="' + (cField === name) + '" data-cf="' + esc(name) + '">' + esc(name) + ' ' + counts[name] + '</button>';
+      }).join('');
+    content.innerHTML =
+      '<div class="adm-toolbar"><div class="adm-pills" role="group" aria-label="סינון לפי תחום">' + pills + '</div></div>' +
+      '<div class="adm-toolbar"><input type="search" id="cQ" class="adm-input" placeholder="חיפוש לפי שם, קוד או טלפון" aria-label="חיפוש לפי שם, קוד או טלפון" value="' + esc(cQuery) + '">' +
+      '<p class="adm-count">סה״כ ' + all.length + ' קבלנים מאושרים' + (cField || q ? ' · מוצגים ' + rows.length : '') + '</p></div>' +
+      (rows.length ? '<div class="adm-table-wrap"><table class="adm-table adm-contractors"><thead><tr>' +
+        '<th>שם</th><th>קוד</th><th>טלפון</th><th>אימייל</th><th>תחומים</th></tr></thead><tbody>' +
+        rows.map(function (c) {
+          var phone = String(c.phone || '').trim();
+          var mail = String(c.email || '').trim();
+          return '<tr>' +
+            '<td data-label="שם"><strong>' + esc(c.fullName || '—') + '</strong></td>' +
+            '<td data-label="קוד"><bdi>' + esc(c.userCode || '—') + '</bdi></td>' +
+            '<td data-label="טלפון">' + (phone ? '<bdi>' + esc(phone) + '</bdi>' : '<span class="adm-muted">—</span>') + '</td>' +
+            '<td data-label="אימייל">' + (mail ? '<bdi dir="ltr">' + esc(mail) + '</bdi>' : '<span class="adm-muted">—</span>') + '</td>' +
+            '<td data-label="תחומים">' + (fieldChips(c) || '<span class="adm-muted">—</span>') + '</td></tr>';
+        }).join('') + '</tbody></table></div>'
+        : '<p class="adm-empty adm-card">אין קבלנים מאושרים בסינון הזה</p>');
+    var search = $('cQ');
+    if (search) {
+      search.addEventListener('input', function (e) {
+        cQuery = e.target.value;
+        var pos = e.target.selectionStart;
+        renderContractors();
+        var el = $('cQ');
+        if (el) { el.focus(); if (pos != null) { el.setSelectionRange(pos, pos); } }
+      });
+    }
+    content.querySelectorAll('[data-cf]').forEach(function (btn) {
+      btn.addEventListener('click', function () { cField = btn.getAttribute('data-cf') || ''; renderContractors(); });
     });
   }
 
