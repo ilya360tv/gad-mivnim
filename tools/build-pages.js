@@ -145,12 +145,21 @@ const navTitle = (key) => {
   return m[1].trim();
 };
 
-// בלוק הסיום של הפוטר (לוגו עגול + "מקווים שהנהנתם..." + "נשמח לראותם...") — רק בעמוד שירות לקוחות (contact.html);
-// בשאר העמודים הפוטר בלעדיו (הקישורים וזכויות היוצרים נשארים כמו שהם)
+// בלוק הסיום של הפוטר (לוגו עגול + "מקווים שהנהנתם..." + "נשמח לראותם...")
+// ושורת "*** כל הזכויות שמורות..." — רק בעמוד שירות לקוחות (contact.html).
+// בשאר העמודים נשארים קישורי הפוטר, בלי שורת הזכויות.
 function withoutClosing(html) {
   const out = html.replace(/\n      <div class="footer-brand">[\s\S]*?\n      <\/div>\n/, '\n');
   if (out === html) { throw new Error('footer-brand block not found'); }
   return out;
+}
+function withoutRights(html) {
+  const out = html.replace(/\n      <p class="footer-copy"[\s\S]*?<\/p>\n/, '\n');
+  if (out === html) { throw new Error('footer-copy block not found'); }
+  return out;
+}
+function sharedFooter(html) {
+  return withoutRights(withoutClosing(html));
 }
 
 /* ---------- 14 העמודים ---------- */
@@ -166,7 +175,7 @@ PAGES.forEach((page) => {
       .replace(/<title>[^<]*<\/title>/, '<title>' + title + '</title>')
       .replace(/<meta name="description" content="[^"]*">/, '<meta name="description" content="' + page.desc.replace(/"/g, '&quot;') + '">\n  <link rel="canonical" href="' + SITE + page.file + '">');
   }
-  let post = page.id === 'contact' ? POST_MAIN : withoutClosing(POST_MAIN);   // בלוק הסיום — רק בעמוד שירות לקוחות
+  let post = page.id === 'contact' ? POST_MAIN : sharedFooter(POST_MAIN);   // בלוק הסיום ושורת הזכויות — רק בעמוד שירות לקוחות
   if (page.id !== 'careers') { post = post.replace(/\n  <!--[^\n]*-->\n  <form name="careers-application"[\s\S]*?<\/form>\n/, '\n').replace(/  <form name="careers-application"[\s\S]*?<\/form>\n/, ''); }
   const body = PRE_MAIN.replace(header, markCurrent(rewriteLinks(header), page.id)) + '\n\n' + promoteH1(SECTIONS[page.id], page.id) + MAIN_TAIL + post;
   const html = head + '</head>\n<body class="page-split" data-page="' + page.id + '">' + rewriteLinks(body) + scriptsFor(page) + '\n</body>\n</html>\n';
@@ -179,7 +188,7 @@ Object.keys(SUBPAGES).forEach((file) => {
   let s = read(file);
   const oldHeader = between(s, '<header class="site-header">', '</header>');
   const oldFooter = between(s, '<footer class="site-footer">', '</footer>');
-  s = s.replace(oldHeader, markCurrent(rewriteLinks(header), SUBPAGES[file])).replace(oldFooter, rewriteLinks(withoutClosing(footer)));
+  s = s.replace(oldHeader, markCurrent(rewriteLinks(header), SUBPAGES[file])).replace(oldFooter, rewriteLinks(sharedFooter(footer)));
   s = rewriteLinks(s);
   const h = s.indexOf('</head>');
   s = addNavSeen(s.slice(0, h)) + s.slice(h);
