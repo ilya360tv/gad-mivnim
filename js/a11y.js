@@ -266,4 +266,50 @@
   root.style.fontSize = (100 + state.text * STEP_PCT) + '%';
   for (var key in CLASS_MAP) { root.classList.toggle(CLASS_MAP[key], !!state[key]); }
 
+  /* כפתור הנגישות יושב מתחת לפריט "שירות לקוחות" וממורכז אליו.
+     אין כפתור צף נפרד לשירות לקוחות. בתפריט סגור בטלפון הפריט לא על המסך,
+     ואז הכפתור נשען למטה משמאל — מול "חזרה למעלה" שמימין. */
+  function placeA11yFab() {
+    var fab = document.getElementById('a11yFab');
+    if (!fab) return;
+    var link = document.querySelector('.main-nav a[data-i18n="nav_contact"]');
+    var nav = document.querySelector('.main-nav');
+    var navShown = true;
+    if (nav) {
+      var ns = getComputedStyle(nav);
+      navShown = ns.visibility !== 'hidden' && ns.display !== 'none';
+    }
+    var placed = false;
+    if (link && navShown) {
+      var r = link.getBoundingClientRect();
+      if (r.width > 8 && r.height > 8 && r.bottom > 0 && r.top < window.innerHeight) {
+        var size = fab.offsetWidth || 56;
+        var left = r.left + (r.width - size) / 2;
+        var top = r.bottom + 12;
+        left = Math.max(8, Math.min(left, window.innerWidth - size - 8));
+        if (top + size > window.innerHeight - 8) top = window.innerHeight - size - 8;
+        fab.style.setProperty('left', left + 'px', 'important');
+        fab.style.setProperty('top', top + 'px', 'important');
+        fab.style.setProperty('right', 'auto', 'important');
+        fab.style.setProperty('bottom', 'auto', 'important');
+        fab.style.setProperty('transform', 'none', 'important');
+        placed = true;
+      }
+    }
+    if (!placed) {
+      fab.style.setProperty('left', '16px', 'important');
+      fab.style.setProperty('right', 'auto', 'important');
+      fab.style.setProperty('top', 'auto', 'important');
+      fab.style.setProperty('bottom', '16px', 'important');
+      fab.style.setProperty('transform', 'none', 'important');
+    }
+  }
+  placeA11yFab();
+  window.addEventListener('resize', placeA11yFab);
+  window.addEventListener('load', placeA11yFab);
+  var navEl = document.querySelector('.main-nav');
+  if (navEl && 'MutationObserver' in window) {
+    new MutationObserver(placeA11yFab).observe(navEl, { attributes: true, attributeFilter: ['class'] });
+  }
+
 })();

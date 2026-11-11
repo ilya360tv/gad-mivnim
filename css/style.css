@@ -7972,23 +7972,12 @@ html.a11y-no-motion body.page-split > main { animation: none !important; }
 .hero-video::-webkit-media-controls-start-playback-button,
 .hero-video::-webkit-media-controls-overlay-play-button { display: none !important; -webkit-appearance: none; }
 
-/* כפתור הנגישות — צד שמאל, ממורכז אנכית. "חזרה למעלה" נשאר למטה מימין ולא חופף אותו. */
-.a11y-fab {
-  left: 16px !important;
-  right: auto !important;
-  top: 50% !important;
-  bottom: auto !important;
-  transform: translateY(-50%) !important;
-}
+/* אין כפתור צף של שירות לקוחות. המיקום המדויק מתחת לגלולה נקבע ב-js/a11y.js.
+   כאן רק מבטלים את העיגון הימני, והפאנל נפתח פנימה מהעמודה השמאלית. */
 @media (min-width: 1024px) {
-  .a11y-fab {
-    left: calc((var(--side-w) - 56px) / 2) !important;
-  }
   .a11y-panel {
     left: calc(var(--side-w) + 12px) !important;
     right: auto !important;
-    bottom: auto !important;
-    top: max(16px, calc(50vh - 220px));
-    transform-origin: center left;
+    transform-origin: bottom left;
   }
 }
