@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Gveret+Levin&family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 
   <!-- העיצוב שלנו -->
-  <link rel="stylesheet" href="css/style.css?v=20261111c">
+  <link rel="stylesheet" href="css/style.css?v=20261111i">
   <!-- PWA — התקנה כאפליקציה -->
   <link rel="manifest" href="/manifest.webmanifest">
   <meta name="theme-color" content="#0b0d10">
@@ -736,8 +736,18 @@
               </div>
             </div>
             <div class="tn-forgot-row">
-              <button type="button" class="tn-forgot" id="tnForgot" aria-controls="tnForgotNote" aria-expanded="false" data-i18n="tn_forgot">שכחתי סיסמה</button>
-              <span class="tn-forgot-note" id="tnForgotNote" role="status" data-i18n="tn_forgot_help" hidden>לאיפוס הסיסמה פנו למשרד</span>
+              <button type="button" class="tn-forgot" id="tnForgot" aria-controls="tnForgotBox" aria-expanded="false" data-i18n="tn_forgot">שכחתי סיסמה</button>
+            </div>
+            <div class="tn-forgot-box" id="tnForgotBox" hidden>
+              <div class="form-field">
+                <label for="tnForgotCode" data-i18n="tn_login_user">קוד משתמש</label>
+                <input type="text" id="tnForgotCode" name="tnForgotCode" autocomplete="off" dir="ltr" inputmode="text" autocapitalize="characters">
+              </div>
+              <button type="button" class="btn btn-primary form-submit tn-forgot-send" id="tnForgotSend" data-i18n="tn_forgot_send">שלחו לי סיסמה חדשה למייל</button>
+              <p class="tn-forgot-msg" id="tnForgotMsg" role="status" hidden>
+                <span data-i18n="tn_forgot_sent">אם הקוד קיים ויש לו מייל שמור, נשלחה אליו סיסמה זמנית</span>
+                <span data-i18n="tn_forgot_office">אם לא קיבלתם מייל, פנו למשרד</span>
+              </p>
             </div>
             </div>
             <div class="tn-login-foot">
@@ -1030,8 +1040,8 @@
   <script src="js/podcast-data.js?v=7"></script>
   <script src="js/tenders-data.js?v=1"></script>
   <script src="js/supabase-config.js?v=1"></script>
-  <script src="js/data-store.js?v=3"></script>
-  <script src="js/tenders.js?v=4"></script>
+  <script src="js/data-store.js?v=6"></script>
+  <script src="js/tenders.js?v=5"></script>
   <script src="js/about.js?v=2"></script>
   <script src="js/script.js?v=20261111email"></script>
   <script src="js/a11y.js?v=20261110f"></script>

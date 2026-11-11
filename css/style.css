@@ -7471,13 +7471,11 @@ html[dir] body #tenders .tn-pass input { padding-inline-end: 52px; }
 }
 .tn-forgot:hover { color: var(--lb-hover); }
 .tn-forgot:focus-visible { outline: 2px solid var(--lb); outline-offset: 3px; border-radius: 4px; }
-.tn-forgot-note {
-  font-size: .8rem;
-  color: #aab3bd;
-  padding: 2px 10px;
-  border: 1px solid #323b45;
-  border-radius: 999px;
-}
+.tn-forgot-box { display: flex; flex-direction: column; gap: 8px; }
+.tn-forgot-box[hidden] { display: none; }
+html[dir] body #tenders .tn-forgot-send { align-self: stretch; width: 100%; min-height: 44px; height: 44px; padding-block: 0; text-align: center; }
+.tn-forgot-msg { display: flex; flex-direction: column; gap: 4px; margin: 0; font-size: .82rem; line-height: 1.45; color: #d7dee6; text-align: start; }
+.tn-forgot-msg[hidden] { display: none; }
 html[dir] body #tenders .tn-login-btn { align-self: stretch; width: 100%; margin-top: 4px; text-align: center; }
 .tn-members-only { margin: 0; font-size: .86rem; line-height: 1.55; color: #aab3bd; text-align: center; }
 .tn-join-link,
