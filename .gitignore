@@ -34,5 +34,7 @@ _hostshot.html
 .vercel
 .env*
 
+node_modules/
+
 # Supabase CLI — קבצים מקומיים (קישור לפרויקט), לא נכנסים ל-git
 supabase/.temp/

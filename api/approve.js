@@ -10,6 +10,8 @@
    ========================================================================== */
 'use strict';
 const { sb, requireAdmin, normalizeFields, readBody, handler, httpError, UUID, GENERAL, tempPassword, saveTempPassword } = require('./_supabase');
+const { sendMail, isRealEmail } = require('./_mailer');
+const { approvedAccess } = require('./_email-templates');
 
 const EMAIL_DOMAIN = 'users.gad-mivnim.app';
 
@@ -19,7 +21,7 @@ module.exports = handler(async (req) => {
   const applicantId = String(body.applicantId || '');
   if (!UUID.test(applicantId)) { throw httpError(400, 'bad_applicant_id'); }
 
-  const rows = await sb('/rest/v1/applicants?select=id,type,full_name,phone,fields,status,profile_id&id=eq.' + applicantId);
+  const rows = await sb('/rest/v1/applicants?select=id,type,full_name,phone,email,fields,status,profile_id&id=eq.' + applicantId);
   const a = rows && rows[0];
   if (!a) { throw httpError(404, 'applicant_not_found'); }
   if (a.type !== 'contractor' && a.type !== 'team') { throw httpError(400, 'type_not_approvable'); }
@@ -71,6 +73,13 @@ module.exports = handler(async (req) => {
     try { await sb('/auth/v1/admin/users/' + userId, { method: 'DELETE' }); } catch (e2) { /* ignore */ }
     throw e;
   }
+
+  try {
+    if (isRealEmail(a.email)) {
+      const mail = approvedAccess(a.full_name, userCode, password);
+      await sendMail({ to: a.email, subject: mail.subject, html: mail.html, text: mail.text });
+    }
+  } catch (e) { /* דוא"ל לא חוסם את האישור */ }
 
   return { userCode: userCode, tempPassword: password, role: a.type === 'team' ? 'team' : 'contractor', fields: fields };
 });
