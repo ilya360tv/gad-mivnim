@@ -105,8 +105,33 @@
       fields: r.fields || [], years: r.experience_years == null ? '' : r.experience_years, area: r.work_area || '', note: r.note || '',
       status: r.status, createdAt: r.created_at, profileId: r.profile_id || null,
       userCode: p ? p.user_code || '' : '', subscription: p ? p.subscription : 'none', profileStatus: p ? p.status : '',
-      docs: (r.applicant_docs || []).map(function (d) { return { id: d.id, type: d.doc_type, path: d.storage_path, createdAt: d.created_at }; })
+      docs: (r.applicant_docs || []).map(function (d) {
+        return { id: d.id, type: d.doc_type, path: d.storage_path, createdAt: d.created_at, checked: !!d.checked_by_admin,
+          adminNote: d.admin_note || '', checkedBy: d.checked_by || '', checkedAt: d.checked_at || '', fileName: d.file_name || '', fileSize: d.file_size || 0 };
+      }),
+      // הסכם דיגיטלי (קבלן בית) — שדות שלב 1 + בדיקת המנהל
+      entityType: r.entity_type || '', idNumber: r.id_number || '', contactName: r.contact_name || '', contactRole: r.contact_role || '',
+      address: r.address || '', regions: r.regions || '', license: r.license_no || '', employees: r.employees == null ? '' : r.employees,
+      reviewChecks: r.review_checks || {}, reviewNotes: r.review_notes || '', reviewedBy: r.reviewed_by || '', reviewedAt: r.reviewed_at || '',
+      rejectReason: r.reject_reason || '', docsRequest: r.docs_request || '', statusChangedAt: r.status_changed_at || '',
+      agreement: agreementOut((r.agreement_acceptances || [])[0] || (r.agreement_acceptances && !Array.isArray(r.agreement_acceptances) ? r.agreement_acceptances : null)),
+      billing: subscriptionOut((r.subscriptions || [])[0] || (r.subscriptions && !Array.isArray(r.subscriptions) ? r.subscriptions : null))
     };
+  }
+  function agreementOut(g) {
+    if (!g) { return null; }
+    return { version: g.agreement_version, sha256: g.agreement_sha256, acceptedAt: g.accepted_at, signerName: g.signer_name, signerRole: g.signer_role || '',
+      city: g.signing_city || '', signaturePath: g.signature_path, pdfPath: g.pdf_path || '', ip: g.ip_address || '', userAgent: g.user_agent || '',
+      consents: { read: g.consent_read, fee: g.consent_review_fee, annual: g.consent_annual, confidentiality: g.consent_confidentiality, privacy: g.consent_privacy } };
+  }
+  function subscriptionOut(s2) {
+    if (!s2) { return null; }
+    var charges = (s2.charges || []).map(function (c) {
+      return { id: c.id, amount: Number(c.amount) || 0, kind: c.kind, installment: c.installment, status: c.status, dueAt: c.due_at || '', providerRef: c.provider_ref || '' };
+    }).sort(function (a, b) { return (a.installment || 0) - (b.installment || 0); });
+    var next = charges.filter(function (c) { return c.status === 'scheduled' || c.status === 'awaiting_provider'; })[0] || null;
+    return { id: s2.id, status: s2.status, monthlyAmount: Number(s2.monthly_amount) || 0, startedAt: s2.started_at || '', endsAt: s2.ends_at || '',
+      provider: s2.provider || '', charges: charges, nextCharge: next };
   }
 
   /* ---------- הגבלת קצב פשוטה (שליחה אחת ל-30 שניות מאותו דפדפן) ---------- */
@@ -358,7 +383,7 @@
       return client().then(function (sb) {
         return Promise.all([
           sb.from('applicants')
-            .select('*, profiles(user_code, status, subscription), applicant_docs(id, doc_type, storage_path, created_at)')
+            .select('*, profiles(user_code, status, subscription), applicant_docs(*), agreement_acceptances(*), subscriptions(*, charges(*))')
             .order('created_at', { ascending: false }),
           sb.from('temp_credentials').select('profile_id, temp_password')
         ]).then(function (res) {
@@ -387,11 +412,39 @@
     // השעיה / הפעלה של מנוי
     subscription: function (profileId, action) { return callApi('/api/suspend', { profileId: profileId, action: action }); },
     // קישור הורדה זמני (5 דקות) למסמך
-    docUrl: function (path) {
+    docUrl: function (path, view) {
       return client().then(function (sb) {
-        return sb.storage.from(BUCKET).createSignedUrl(path, 300, { download: true }).then(unwrap).then(function (d) { return d.signedUrl; });
+        return sb.storage.from(BUCKET).createSignedUrl(path, 300, view ? undefined : { download: true }).then(unwrap).then(function (d) { return d.signedUrl; });
       });
-    }
+    },
+    // בדיקת בקשת קבלן בית: in_review / pending_docs / reject / checks / doc
+    review: function (body) { return callApi('/api/review-application', body); },
+    // ניקוי קבצים יתומים (incoming/ ישנים מ-48 שעות בלי בקשה) — בטעינת מערכת הניהול
+    cleanupIncoming: function () { return callApi('/api/cleanup-incoming', {}); }
+  };
+
+  /* ---------- הצטרפות קבלן בית (אשף ההסכם) ----------
+     הקבצים עולים רק בהגשה הסופית, לנתיב זמני incoming/<מזהה>/ בבאקט הפרטי (לאורח מותר רק להעלות).
+     השמירה עצמה — בשרת (/api/submit-application): IP, זמן, SHA-256 של ההסכם, PDF חתום. */
+  var contractorJoin = {
+    upload: function (applicantId, docType, file) {
+      var ext = extOf(file.name);
+      if (['pdf', 'jpg', 'jpeg', 'png'].indexOf(ext) === -1 || file.size > MAX_FILE) { return Promise.reject(new Error('file')); }
+      var path = 'incoming/' + applicantId + '/' + docType + '-' + Date.now() + '.' + ext;
+      return client().then(function (sb) {
+        return sb.storage.from(BUCKET).upload(path, file, { contentType: MIME[ext], upsert: false }).then(unwrap).then(function () { return path; });
+      });
+    },
+    submit: function (payload) {
+      return fetch('/api/submit-application', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+        .then(function (res) {
+          return res.json().catch(function () { return {}; }).then(function (data) {
+            if (!res.ok) { var e = new Error(data.error || ('http_' + res.status)); e.status = res.status; throw e; }
+            return data;
+          });
+        });
+    },
+    uuid: uuid
   };
 
   window.dataStore = {
@@ -401,6 +454,6 @@
     checkFile: checkFile, rateLimited: rateLimited, submitApplicant: submitApplicant,
     signInContractor: signInContractor, currentContractor: currentContractor, signInAdmin: signInAdmin, currentAdmin: currentAdmin,
     signOut: signOut, changePassword: changePassword,
-    tenders: tenders, applications: applications, applicants: applicants
+    tenders: tenders, applications: applications, applicants: applicants, contractorJoin: contractorJoin
   };
 })();

@@ -12,6 +12,7 @@
 const { sb, requireAdmin, normalizeFields, readBody, handler, httpError, UUID, GENERAL, tempPassword, saveTempPassword } = require('./_supabase');
 const { sendMail, isRealEmail } = require('./_mailer');
 const { approvedAccess } = require('./_email-templates');
+const billing = require('./_billing');
 
 const EMAIL_DOMAIN = 'users.gad-mivnim.app';
 
@@ -26,6 +27,7 @@ module.exports = handler(async (req) => {
   if (!a) { throw httpError(404, 'applicant_not_found'); }
   if (a.type !== 'contractor' && a.type !== 'team') { throw httpError(400, 'type_not_approvable'); }
   if (a.status === 'approved' || a.profile_id) { throw httpError(409, 'already_approved'); }
+  if (a.status === 'rejected') { throw httpError(409, 'already_rejected'); }
 
   let fields = normalizeFields(Array.isArray(body.fields) && body.fields.length ? body.fields : a.fields);
   if (!fields.length) { fields = a.type === 'contractor' ? [GENERAL] : []; }
@@ -67,12 +69,18 @@ module.exports = handler(async (req) => {
     await sb('/rest/v1/applicants?id=eq.' + applicantId, {
       method: 'PATCH',
       headers: { Prefer: 'return=minimal' },
-      body: { status: 'approved', profile_id: userId, fields: fields.length ? fields : a.fields }
+      body: { status: 'approved', profile_id: userId, fields: fields.length ? fields : a.fields, status_changed_at: new Date().toISOString() }
     });
   } catch (e) {
     // לא משאירים משתמש "יתום" אם יצירת הפרופיל נכשלה
     try { await sb('/auth/v1/admin/users/' + userId, { method: 'DELETE' }); } catch (e2) { /* ignore */ }
     throw e;
+  }
+
+  // וו חיוב: מנוי פעיל ל-12 חודשים + 11 חיובים חודשיים מתוזמנים (רק לבקשות עם הסכם דיגיטלי)
+  let subscription = null, billingError = false;
+  if (a.type === 'contractor') {
+    try { subscription = await billing.onApprove(applicantId, userId); } catch (e) { billingError = true; }
   }
 
   try {
@@ -82,5 +90,5 @@ module.exports = handler(async (req) => {
     }
   } catch (e) { /* דוא"ל לא חוסם את האישור */ }
 
-  return { userCode: userCode, tempPassword: password, role: a.type === 'team' ? 'team' : 'contractor', fields: fields };
+  return { userCode: userCode, tempPassword: password, role: a.type === 'team' ? 'team' : 'contractor', fields: fields, subscription: subscription, billingError: billingError };
 });
