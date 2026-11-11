@@ -5,7 +5,7 @@
    2) סיסמה זמנית אקראית חדשה (14 תווים), auth.admin.updateUserById
    3) must_change_password = true (בכניסה הבאה הקבלן בוחר סיסמה)
    4) upsert ל-temp_credentials — אחרי עדכון ה-hash, כי הטריגר מוחק את השורה הקודמת
-   לא מחזיר את הסיסמה (היא נטענת לשורת המנהל דרך RLS) ולא כותב אותה ללוג.
+   לא כותב את הסיסמה ללוג. מחזיר אותה רק בתשובה למנהל, כדי שהשורה תתעדכן מיד.
    ========================================================================== */
 'use strict';
 const { sb, requireAdmin, readBody, handler, httpError, UUID, tempPassword, saveTempPassword } = require('./_supabase');
@@ -49,5 +49,5 @@ module.exports = handler(async (req) => {
     await saveTempPassword(profileId, password);
   }
 
-  return { profileId: profileId, reset: true };
+  return { profileId: profileId, reset: true, tempPassword: password };
 });
