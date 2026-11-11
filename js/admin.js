@@ -262,7 +262,7 @@
         '<div class="adm-card"><h2 class="adm-h2">הרשמות אחרונות</h2>' +
           (regs.length ? '<ul class="adm-list">' + regs.map(function (a) {
             var what = a.type === 'job' ? (a.note || 'משרה') : store.fieldsOf(a).join(', ');
-            return '<li><strong>' + esc(a.fullName) + '</strong><span>' + esc(what) + ' · ' + fmtDate(a.createdAt) + '</span>' + chip(a.status, APPLICANT_STATUS[a.status]) + passwordBlock(a) + '</li>';
+            return '<li><strong>' + esc(a.fullName) + '</strong><span>' + esc(what) + ' · ' + fmtDate(a.createdAt) + '</span>' + chip(a.status, APPLICANT_STATUS[a.status]) + '</li>';
           }).join('') + '</ul>' : '<p class="adm-empty">אין הרשמות עדיין</p>') + '</div>' +
         '<div class="adm-card"><h2 class="adm-h2">מועמדויות אחרונות</h2>' +
           (apps.length ? '<ul class="adm-list">' + apps.map(function (p) {
@@ -301,12 +301,12 @@
             '<td data-label="מועד אחרון">' + fmtDate(t.deadline) + '</td>' +
             '<td data-label="סטטוס">' + chip(t.status, TENDER_STATUS[t.status]) + '</td>' +
             '<td data-label="מועמדויות">' + n + '</td>' +
-            '<td data-label="פעולות" class="adm-actions">' +
+            '<td data-label="פעולות" class="adm-actions"><div class="adm-acts">' +
               '<button type="button" class="adm-btn adm-btn-sm" data-act="edit">עריכה</button>' +
               '<button type="button" class="adm-btn adm-btn-sm" data-act="toggle">' + (t.status === 'published' ? 'הסתרה' : 'פרסום') + '</button>' +
               '<button type="button" class="adm-btn adm-btn-sm" data-act="close"' + (t.status === 'closed' ? ' disabled' : '') + '>סגירה</button>' +
               '<button type="button" class="adm-btn adm-btn-sm adm-btn-danger" data-act="delete">מחיקה</button>' +
-            '</td></tr>';
+            '</div></td></tr>';
         }).join('') + '</tbody></table></div>'
         : '<p class="adm-empty adm-card">לא נמצאו מכרזים</p>');
 
@@ -400,11 +400,12 @@
       '<div class="adm-toolbar"><div class="adm-pills" role="group" aria-label="סינון לפי סטטוס">' + tabs.map(function (x) {
         return '<button type="button" class="adm-pill' + (aFilter === x[0] ? ' is-active' : '') + '" aria-pressed="' + (aFilter === x[0]) + '" data-af="' + x[0] + '">' + x[1] + '</button>';
       }).join('') + '</div><p class="adm-note adm-note-inline">תשלום יחובר בהמשך – האישור מפעיל מנוי מיד</p></div>' +
-      (rows.length ? '<div class="adm-table-wrap"><table class="adm-table"><thead><tr>' +
-        '<th>שם</th><th>טלפון</th><th>תחומים / תפקיד</th><th>תאריך</th><th>סטטוס</th><th>קוד / מנוי</th><th>מסמכים</th><th>פעולות</th></tr></thead><tbody>' +
+      (rows.length ? '<div class="adm-table-wrap"><table class="adm-table adm-applicants"><thead><tr>' +
+        '<th>שם</th><th>טלפון</th><th>תחומים / תפקיד</th><th>תאריך</th><th>סטטוס</th><th>שם משתמש</th><th>קוד כניסה</th><th>מסמכים</th><th>פעולות</th></tr></thead><tbody>' +
         rows.map(function (a) {
           var actions = '';
           var isContractor = a.type === 'contractor';
+          var em = '<span class="adm-muted">—</span>';
           if (a.status !== 'approved') { actions += '<button type="button" class="adm-btn adm-btn-sm adm-btn-primary" data-aact="' + (isContractor ? 'approve' : 'approve-simple') + '">אישור</button>'; }
           if (a.status === 'pending') { actions += '<button type="button" class="adm-btn adm-btn-sm adm-btn-danger" data-aact="reject">דחייה</button>'; }
           if (a.status === 'approved' && isContractor && a.profileId) {
@@ -413,23 +414,26 @@
               : '<button type="button" class="adm-btn adm-btn-sm" data-aact="activate">הפעלת מנוי</button>';
             actions += '<button type="button" class="adm-btn adm-btn-sm" data-aact="reset">איפוס סיסמה</button>';
           }
-          var passHtml = passwordBlock(a);
+          var passHtml = passwordBlock(a) || em;
           var typeChip = a.type === 'team' ? ' ' + chip('team', 'צוות') : a.type === 'job' ? ' ' + chip('team', 'משרה') : '';
           var meta = a.type === 'team' ? '<span class="adm-team-meta">' + esc((a.years !== '' ? 'ניסיון ' + a.years + ' שנים' : '') + (a.years !== '' && a.area ? ' · ' : '') + (a.area || '')) + '</span>' : '';
           var docs = a.docs.length ? a.docs.map(function (d) {
             return '<button type="button" class="adm-btn adm-btn-sm" data-doc="' + esc(d.path) + '">' + esc(DOC_TYPE[d.type] || 'מסמך') + ' ↓</button>';
-          }).join(' ') : '<span class="adm-muted">—</span>';
+          }).join('') : '';
+          var phone = String(a.phone || '').trim();
+          var userCell = a.userCode
+            ? '<bdi>' + esc(a.userCode) + '</bdi> ' + (a.subscription === 'active' ? chip('active', 'מנוי פעיל') : chip('none', 'לא פעיל'))
+            : '';
           return '<tr data-id="' + esc(a.id) + '">' +
-            '<td data-label="שם"><div class="adm-name"><strong>' + esc(a.fullName) + '</strong>' + typeChip + meta + passHtml + '</div></td>' +
-            '<td data-label="טלפון"><bdi>' + esc(a.phone) + '</bdi></td>' +
-            '<td data-label="תחומים / תפקיד">' + fieldChips(a) + '</td>' +
+            '<td data-label="שם"><strong>' + esc(a.fullName || '—') + '</strong>' + typeChip + meta + '</td>' +
+            '<td data-label="טלפון">' + (phone ? '<bdi>' + esc(phone) + '</bdi>' : em) + '</td>' +
+            '<td data-label="תחומים / תפקיד">' + (fieldChips(a) || em) + '</td>' +
             '<td data-label="תאריך">' + fmtDate(a.createdAt) + '</td>' +
-            '<td data-label="סטטוס">' + chip(a.status, APPLICANT_STATUS[a.status] || a.status) + '</td>' +
-            '<td data-label="קוד / מנוי" class="adm-code">' + (isContractor && a.userCode
-              ? '<div><bdi>' + esc(a.userCode) + '</bdi> · ' + (a.subscription === 'active' ? chip('active', 'מנוי פעיל') : chip('none', 'לא פעיל')) + '</div>'
-              : '—') + '</td>' +
-            '<td data-label="מסמכים" class="adm-actions">' + docs + '</td>' +
-            '<td data-label="פעולות" class="adm-actions">' + actions + '</td></tr>';
+            '<td data-label="סטטוס">' + (a.status ? chip(a.status, APPLICANT_STATUS[a.status] || a.status) : em) + '</td>' +
+            '<td data-label="שם משתמש">' + (userCell || em) + '</td>' +
+            '<td data-label="קוד כניסה">' + passHtml + '</td>' +
+            '<td data-label="מסמכים" class="adm-actions"><div class="adm-acts">' + (docs || em) + '</div></td>' +
+            '<td data-label="פעולות" class="adm-actions"><div class="adm-acts">' + (actions || em) + '</div></td></tr>';
         }).join('') + '</tbody></table></div>'
         : '<p class="adm-empty adm-card">אין בקשות בסטטוס זה</p>');
   }
