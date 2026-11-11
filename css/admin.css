@@ -247,7 +247,25 @@ input[type="date"].adm-input { color-scheme: dark; }
 
 /* טבלאות */
 .adm-table-wrap { overflow-x: auto; border-radius: 16px; box-shadow: 0 0 0 1px rgba(56, 189, 248, .25); }
-.adm-applicants { min-width: 1120px; }
+.adm-applicants { width: 100%; table-layout: fixed; }
+.adm-applicants th:nth-child(1), .adm-applicants td:nth-child(1) { width: 11%; }
+.adm-applicants th:nth-child(2), .adm-applicants td:nth-child(2) { width: 14%; }
+.adm-applicants th:nth-child(3), .adm-applicants td:nth-child(3) { width: 11%; }
+.adm-applicants th:nth-child(4), .adm-applicants td:nth-child(4) { width: 11%; }
+.adm-applicants th:nth-child(5), .adm-applicants td:nth-child(5) { width: 9%; }
+.adm-applicants th:nth-child(6), .adm-applicants td:nth-child(6) { width: 10%; }
+.adm-applicants th:nth-child(7), .adm-applicants td:nth-child(7) { width: 15%; }
+.adm-applicants th:nth-child(8), .adm-applicants td:nth-child(8) { width: 9%; }
+.adm-applicants th:nth-child(9), .adm-applicants td:nth-child(9) { width: 10%; }
+.adm-applicants th, .adm-applicants td { padding: 8px 4px; overflow-wrap: anywhere; }
+.adm-applicants td:nth-child(2) { white-space: nowrap; overflow-wrap: normal; font-size: .78rem; }
+.adm-applicants td:nth-child(4) { white-space: nowrap; overflow-wrap: normal; font-size: .82rem; }
+.adm-applicants .adm-chip { white-space: normal; max-width: 100%; padding-inline: 6px; text-align: center; justify-content: center; }
+.adm-applicants .adm-fchips { display: flex; flex-wrap: wrap; max-width: 100%; }
+.adm-applicants th { white-space: normal; }
+.adm-applicants .adm-acts { display: flex; flex-direction: column; align-items: stretch; gap: 4px; max-width: none; width: 100%; }
+.adm-applicants .adm-acts .adm-btn-sm { width: 100%; min-height: 28px; padding: 2px 6px; font-size: .74rem; white-space: normal; line-height: 1.2; }
+.adm-user { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
 .adm-group .adm-table-wrap { box-shadow: none; border: 1px solid var(--line); border-radius: 12px; }
 .adm-table { width: 100%; border-collapse: collapse; background: var(--surface); font-size: .93rem; }
 .adm-table th, .adm-table td { padding: 12px 14px; text-align: start; vertical-align: middle; border-bottom: 1px solid var(--line); }
@@ -321,8 +339,10 @@ input[type="date"].adm-input { color-scheme: dark; }
   .adm-toast, .adm-btn { transition: none; }
 }
 
-/* ----- טאבלט ----- */
-@media (max-width: 1199.98px) {
+/* ----- מסך בינוני: יותר מקום לטבלת הבקשות ----- */
+@media (max-width: 1279.98px) {
+  .adm-app { grid-template-columns: 196px minmax(0, 1fr); }
+  .adm-main { padding-inline: 14px; }
   .adm-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
@@ -407,24 +427,27 @@ input[type="date"].adm-input { color-scheme: dark; }
 /* ----- סיסמה זמנית בשורת הקבלן: מוסתרת עד לחיצה על העין, עם העתקה וצ'יפ "טרם הוחלפה" ----- */
 .adm-name { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
 .adm-temp {
-  display: inline-flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-  max-width: 280px;
-  padding: 6px 8px;
-  background: rgba(56, 189, 248, .12);
-  border: 1px solid rgba(56, 189, 248, .55);
-  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  width: 100%;
+  max-width: none;
+  padding: 0;
+  background: none;
+  border: 0;
 }
+.adm-temp-line { display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; }
+.adm-temp-secret { font-size: .8rem; letter-spacing: 0; }
 .adm-temp-label { font-weight: 700; color: #fff; }
 .adm-temp-secret { font-weight: 700; color: var(--lb); letter-spacing: .04em; white-space: nowrap; }
 .adm-icon-btn {
   display: inline-grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
+  width: 22px;
+  height: 22px;
   padding: 0;
+  flex: none;
   border-radius: 8px;
   border: 2px solid var(--lb);
   background: transparent;
@@ -436,7 +459,9 @@ input[type="date"].adm-input { color-scheme: dark; }
 .adm-icon-btn .adm-eye-off,
 .adm-icon-btn.is-shown .adm-eye-on { display: none; }
 .adm-icon-btn.is-shown .adm-eye-off { display: block; }
-.adm-replaced { margin: 0; font-size: .9rem; font-weight: 700; color: var(--ok); }
+.adm-replaced { margin: 0; font-size: .78rem; font-weight: 700; color: var(--ok); line-height: 1.35; }
 @media (max-width: 899.98px) {
   .adm-temp { max-width: none; }
+  .adm-applicants .adm-acts { flex-direction: row; width: auto; }
+  .adm-applicants .adm-acts .adm-btn-sm { width: auto; }
 }
