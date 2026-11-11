@@ -108,4 +108,32 @@ function adminRegistration(a) {
   };
 }
 
-module.exports = { registrationReceived, approvedAccess, passwordReset, newTender, adminRegistration, LOGIN, ADMIN };
+function participationNotice(who, tenderTitle) {
+  const name = who.full_name || who.fullName || '';
+  const title = tenderTitle || '';
+  return {
+    subject: 'הצעה מקבלן: ' + name + ' — ' + title,
+    text: 'הצעה מקבלן\nשם: ' + name + '\nקוד: ' + (who.user_code || '') + '\nטלפון: ' + (who.phone || '') + '\nאימייל: ' + (who.email || '') + '\nמכרז: ' + title + '\nhttps://gad-mivnim.vercel.app/admin.html#tenders',
+    html: layout('הצעה מקבלן',
+      '<p style="margin:0 0 8px;">שם: ' + esc(name || '—') + '</p>' +
+      '<p style="margin:0 0 8px;">קוד: <span dir="ltr">' + esc(who.user_code || '—') + '</span></p>' +
+      '<p style="margin:0 0 8px;">טלפון: <span dir="ltr">' + esc(who.phone || '—') + '</span></p>' +
+      '<p style="margin:0 0 8px;">אימייל: <span dir="ltr">' + esc(who.email || '—') + '</span></p>' +
+      '<p style="margin:0;">מכרז: ' + esc(title || '—') + '</p>' +
+      button('https://gad-mivnim.vercel.app/admin.html#tenders', 'למכרזים'))
+  };
+}
+
+function tenderSentSummary(title, count) {
+  const n = String(count || 0);
+  return {
+    subject: 'מכרז יצא לקבלנים: ' + (title || '') + ' (' + n + ')',
+    text: 'המכרז נשלח לקבלנים.\n' + (title || '') + '\nנמענים: ' + n + '\nhttps://gad-mivnim.vercel.app/admin.html#tenders',
+    html: layout('מכרז יצא לקבלנים',
+      '<p style="margin:0 0 8px;"><strong>' + esc(title || '—') + '</strong></p>' +
+      '<p style="margin:0;">נשלח אל ' + esc(n) + ' נמענים.</p>' +
+      button('https://gad-mivnim.vercel.app/admin.html#tenders', 'למכרזים'))
+  };
+}
+
+module.exports = { registrationReceived, approvedAccess, passwordReset, newTender, adminRegistration, participationNotice, tenderSentSummary, LOGIN, ADMIN };

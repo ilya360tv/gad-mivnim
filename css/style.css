@@ -7738,6 +7738,8 @@ html[dir] body #tenders .tn-login.is-tight .tn-login-btn + .tn-login-error { mar
   border: 1px solid rgba(45, 212, 191, .55);
   border-radius: 999px;
 }
+button.tn-applied { font-family: inherit; cursor: pointer; }
+button.tn-applied:focus-visible { outline: 3px solid #ffffff; outline-offset: 3px; }
 
 .tn-modal { position: fixed; inset: 0; z-index: 1300; display: grid; place-items: center; padding: 16px; }
 .tn-modal[hidden] { display: none; }

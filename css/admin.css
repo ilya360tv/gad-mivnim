@@ -428,6 +428,8 @@ input[type="date"].adm-input { color-scheme: dark; }
 /* ----- בקשת הצטרפות לצוות בית (type "team"): צ'יפ + ניסיון / אזור ----- */
 .adm-chip-team { color: #fbbf24; background: rgba(251, 191, 36, .1); border-color: rgba(251, 191, 36, .6); }
 .adm-team-meta { display: block; margin-top: 2px; font-size: .82rem; color: var(--muted); }
+.adm-parts { margin: 6px 0 0; padding: 0; list-style: none; font-size: .75rem; line-height: 1.45; color: var(--muted); font-weight: 400; }
+.adm-parts li { overflow-wrap: anywhere; }
 
 /* ----- סיסמה זמנית בשורת הקבלן: מוסתרת עד לחיצה על העין, עם העתקה וצ'יפ "טרם הוחלפה" ----- */
 .adm-name { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }

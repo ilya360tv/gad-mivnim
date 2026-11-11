@@ -6,8 +6,8 @@
    ========================================================================== */
 'use strict';
 const { sb, requireAdmin, readBody, handler, httpError, UUID, GENERAL } = require('./_supabase');
-const { sendMail, isRealEmail } = require('./_mailer');
-const { newTender } = require('./_email-templates');
+const { sendMail, isRealEmail, noticeRecipients } = require('./_mailer');
+const { newTender, tenderSentSummary } = require('./_email-templates');
 
 function matches(fields, tenderField) {
   const list = Array.isArray(fields) ? fields : [];
@@ -52,6 +52,13 @@ module.exports = handler(async (req) => {
     for (let i = 0; i < tos.length; i++) {
       try { await sendMail({ to: tos[i], subject: tpl.subject, html: tpl.html, text: tpl.text }); } catch (e) { /* ממשיכים */ }
     }
+    try {
+      const summary = tenderSentSummary(tender.title, tos.length);
+      const admins = await noticeRecipients(sb);
+      for (let j = 0; j < admins.length; j++) {
+        try { await sendMail({ to: admins[j], subject: summary.subject, html: summary.html, text: summary.text }); } catch (e) { /* ממשיכים */ }
+      }
+    } catch (e) { /* סיכום למנהלים לא מבטל את המכרז */ }
     return { ok: true, sent: tos.length };
   } catch (e) {
     return { ok: true, sent: 0 };

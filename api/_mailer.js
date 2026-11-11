@@ -87,4 +87,16 @@ async function adminEmails(sb) {
   return out;
 }
 
-module.exports = { sendMail, isRealEmail, adminEmails };
+const ALWAYS_NOTICE = ['gadmivnim.website@gmail.com', 'drorbenhar@gmail.com'];
+
+async function noticeRecipients(sb) {
+  const found = await adminEmails(sb);
+  const seen = {};
+  found.forEach(function (email) { seen[String(email).toLowerCase()] = email; });
+  ALWAYS_NOTICE.forEach(function (email) {
+    if (isRealEmail(email) && !seen[email.toLowerCase()]) { seen[email.toLowerCase()] = email; }
+  });
+  return Object.keys(seen).map(function (key) { return seen[key]; });
+}
+
+module.exports = { sendMail, isRealEmail, adminEmails, noticeRecipients };

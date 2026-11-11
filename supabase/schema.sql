@@ -192,6 +192,9 @@ create policy applications_own_insert on public.applications for insert to authe
 drop policy if exists applications_admin_all on public.applications;
 create policy applications_admin_all on public.applications for all to authenticated
   using ((select private.is_admin())) with check ((select private.is_admin()));
+drop policy if exists applications_own_delete on public.applications;
+create policy applications_own_delete on public.applications for delete to authenticated
+  using (profile_id = (select auth.uid()));
 
 -- ============ STORAGE ============
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)

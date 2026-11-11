@@ -268,8 +268,8 @@
           '<div><dt data-i18n="tn_deadline">' + t('tn_deadline') + '</dt><dd><bdi>' + fmtDate(td.deadline) + '</bdi></dd></div>' +
         '</dl>' +
         (applied
-          ? i18nSpan('tn_applied', 'tn-applied')
-          : '<button type="button" class="plan-btn tn-apply" data-id="' + esc(td.id) + '">' + i18nSpan('tn_apply') + ' <span class="tn-arrow" aria-hidden="true">←</span></button>') +
+          ? '<button type="button" class="tn-applied tn-joined" data-cancel="' + esc(td.id) + '">' + i18nSpan('tn_joined') + '</button>'
+          : '<button type="button" class="plan-btn tn-apply" data-id="' + esc(td.id) + '">' + i18nSpan('tn_join') + '</button>') +
       '</article>';
   }
 
@@ -325,9 +325,35 @@
   }
 
   listEl.addEventListener('click', function (e) {
-    var btn = e.target.closest('.tn-apply');
-    if (btn) { openModal(btn.getAttribute('data-id'), btn); }
+    var join = e.target.closest('.tn-apply');
+    if (join) { participate(join.getAttribute('data-id'), join); return; }
+    var cancel = e.target.closest('[data-cancel]');
+    if (cancel) { cancelPart(cancel.getAttribute('data-cancel'), cancel); }
   });
+  function participate(id, btn) {
+    if (!id) { return; }
+    btn.disabled = true;
+    store.applications.add(id, '').then(function () {
+      if (cache.applied.indexOf(id) === -1) { cache.applied.push(id); }
+      renderMembers();
+      showToast('tn_joined_toast');
+      return store.applications.notify(id).catch(function () {});
+    }, function () {
+      btn.disabled = false;
+      showToast('tn_apply_fail');
+    });
+  }
+  function cancelPart(id, btn) {
+    if (!id || !window.confirm(t('tn_cancel_ask'))) { return; }
+    btn.disabled = true;
+    store.applications.remove(id).then(function () {
+      cache.applied = cache.applied.filter(function (x) { return x !== id; });
+      renderMembers();
+    }, function () {
+      btn.disabled = false;
+      showToast('tn_apply_fail');
+    });
+  }
   modalForm.addEventListener('submit', function (e) {
     e.preventDefault();
     if (!modalTender || !currentCode) { closeModal(); return; }
