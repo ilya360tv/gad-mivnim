@@ -5442,13 +5442,12 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
   .lang-btn .flag { width: 44%; height: 44%; margin: 0; }
 }
 
-/* ----- הלוגו בהדר ועיגול השפות — בדיוק אותו גודל בכל רוחב (72px מחשב / 56px טאבלט+טלפון),
-         ואותה עובי טבעת כך שהקוטר הנראה זהה ----- */
+/* ----- הלוגו בהדר ועיגול השפות — אותו גודל (גדול בכ-18%): 85px מחשב / 66px טאבלט+טלפון ----- */
 .site-header .logo-img,
 .site-header .lang-btn {
-  width: clamp(52px, 3.75vw, 72px) !important;      /* דסקטופ: יחסי לרוחב המסך (72px ב-1920) */
-  height: clamp(52px, 3.75vw, 72px) !important;
-  min-width: clamp(52px, 3.75vw, 72px);
+  width: clamp(61px, 4.43vw, 85px) !important;
+  height: clamp(61px, 4.43vw, 85px) !important;
+  min-width: clamp(61px, 4.43vw, 85px);
   flex-shrink: 0;
 }
 .site-header .logo-img {
@@ -5459,18 +5458,18 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
 }
 @media (max-width: 1023.98px) {
   .site-header .logo-img,
-  .site-header .lang-btn { width: 56px !important; height: 56px !important; min-width: 56px; }
+  .site-header .lang-btn { width: 66px !important; height: 66px !important; min-width: 66px; }
 }
 
 /* ----- הלוגו מוגדל ב-1.104 (כדי שהדיסק ימלא את הטבעת) — לכן הריבוע שלו קטן ב-1/1.104, והקוטר הנראה (כולל הטבעת) זהה בדיוק לעיגול השפות ----- */
 .site-header .logo-img {
-  width: clamp(47.1px, 3.397vw, 65.22px) !important;      /* = עיגול השפות / 1.104 */
-  height: clamp(47.1px, 3.397vw, 65.22px) !important;
-  min-width: clamp(47.1px, 3.397vw, 65.22px);
+  width: clamp(55.6px, 4.01vw, 77px) !important;      /* = עיגול השפות / 1.104 */
+  height: clamp(55.6px, 4.01vw, 77px) !important;
+  min-width: clamp(55.6px, 4.01vw, 77px);
   box-shadow: 0 0 0 1.36px rgba(56, 189, 248, .75), 0 0 10.9px rgba(56, 189, 248, .3) !important;
 }
 @media (max-width: 1023.98px) {
-  .site-header .logo-img { width: 50.72px !important; height: 50.72px !important; min-width: 50.72px; }
+  .site-header .logo-img { width: 59.8px !important; height: 59.8px !important; min-width: 59.8px; }
 }
 
 /* ----- Hero: באדג' "בקרוב" ממורכז מעל שורת "לרשותכם..." + תכלת כמו קטגוריות ההדר; שורת HERZLIYA תכלת (כל הרוחבים) ----- */
@@ -5503,7 +5502,7 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
     --side-top: clamp(16px, 1.25vw, 24px);         /* ריווח עליון */
     --side-pill-h: clamp(30px, 1.875vw, 36px);     /* גובה גלולה */
     --side-font: clamp(11px, .68vw, 13px);         /* גודל כתב בגלולה */
-    --side-circle: clamp(52px, 3.75vw, 72px);      /* עיגול הלוגו / השפות */
+    --side-circle: clamp(61px, 4.43vw, 85px);      /* עיגול הלוגו / השפות — גדול בכ-18% */
     --side-bottom: 24px;                           /* מרווח מתחתית המסך */
     --pill-h: var(--side-pill-h);                  /* גובה הגלולה בפועל (עברית — שורה אחת) */
     /* רווח בין גלולות: חצי מהחלוקה השווה של הגובה הפנוי (לא פרוסות על כל הגובה — מתחילות מתחת לעיגול); מינימום 10px */
@@ -7972,3 +7971,24 @@ html.a11y-no-motion body.page-split > main { animation: none !important; }
 .hero-video::-webkit-media-controls,
 .hero-video::-webkit-media-controls-start-playback-button,
 .hero-video::-webkit-media-controls-overlay-play-button { display: none !important; -webkit-appearance: none; }
+
+/* כפתור הנגישות — צד שמאל, ממורכז אנכית. "חזרה למעלה" נשאר למטה מימין ולא חופף אותו. */
+.a11y-fab {
+  left: 16px !important;
+  right: auto !important;
+  top: 50% !important;
+  bottom: auto !important;
+  transform: translateY(-50%) !important;
+}
+@media (min-width: 1024px) {
+  .a11y-fab {
+    left: calc((var(--side-w) - 56px) / 2) !important;
+  }
+  .a11y-panel {
+    left: calc(var(--side-w) + 12px) !important;
+    right: auto !important;
+    bottom: auto !important;
+    top: max(16px, calc(50vh - 220px));
+    transform-origin: center left;
+  }
+}
