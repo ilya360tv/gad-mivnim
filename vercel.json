@@ -2,7 +2,7 @@
   "cleanUrls": false,
   "trailingSlash": false,
   "functions": {
-    "api/**/*.js": {
+    "api/*.js": {
       "regions": ["iad1"]
     }
   },
