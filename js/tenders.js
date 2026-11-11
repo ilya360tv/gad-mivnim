@@ -56,7 +56,7 @@
   var cache = { tenders: [], applied: [] };       // מה שהגיע מהשרת בטעינה האחרונה (לרינדור מחדש בהחלפת שפה)
   // התחומים שהקבלן רואה: "קבלן כללי" — כל תחומי המכרזים; אחרת — רק התחומים שלו (בסדר של הרשימה)
   function visibleFields() {
-    if (!currentUser || store.isGeneral(currentUser)) { return store.TENDER_FIELDS; }
+    if (!currentUser || store.isGeneral(currentUser)) { return store.FIELDS; }
     var mine = store.fieldsOf(currentUser);
     return store.TENDER_FIELDS.filter(function (f) { return mine.indexOf(f.name) !== -1; });
   }
