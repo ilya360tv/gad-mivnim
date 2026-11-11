@@ -22,7 +22,10 @@
   var passInput = document.getElementById('tnPass');
   var eye       = document.getElementById('tnEye');
   var forgot    = document.getElementById('tnForgot');
-  var forgotNote = document.getElementById('tnForgotNote');
+  var forgotBox = document.getElementById('tnForgotBox');
+  var forgotCode = document.getElementById('tnForgotCode');
+  var forgotSend = document.getElementById('tnForgotSend');
+  var forgotMsg = document.getElementById('tnForgotMsg');
   var loginError = document.getElementById('tnLoginError');
   var loginBtn  = loginForm.querySelector('.tn-login-btn');
   var members   = document.getElementById('tnMembers');
@@ -85,8 +88,31 @@
   });
 
   forgot.addEventListener('click', function () {
-    forgotNote.hidden = !forgotNote.hidden;
-    forgot.setAttribute('aria-expanded', forgotNote.hidden ? 'false' : 'true');
+    var open = forgotBox.hidden;
+    forgotBox.hidden = !open;
+    forgot.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) {
+      if (!forgotCode.value.trim() && userInput.value.trim()) { forgotCode.value = userInput.value.trim(); }
+      forgotCode.focus();
+    }
+    sizeCard();
+  });
+  forgotCode.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); forgotSend.click(); }
+  });
+  forgotSend.addEventListener('click', function () {
+    var code = forgotCode.value.trim();
+    if (!code) { forgotCode.focus(); return; }
+    forgotSend.disabled = true;
+    fetch('/api/forgot-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userCode: code })
+    }).catch(function () {}).then(function () {
+      forgotSend.disabled = false;
+      forgotMsg.hidden = false;
+      sizeCard();
+    });
   });
 
   function showError(on) {
@@ -178,13 +204,11 @@
 
   loginForm.addEventListener('submit', function (e) {
     e.preventDefault();
-    var code = userInput.value.trim().toUpperCase();
+    var code = userInput.value.trim();             // GM-1001 וגם gm-1001 — הנרמול ב-data-store
     var pass = passInput.value;
     passInput.value = '';                         // הסיסמה לא נשמרת — מנקים מיד
     passInput.type = 'password';
     setEyeLabel();
-    forgotNote.hidden = true;
-    forgot.setAttribute('aria-expanded', 'false');
     loginBtn.disabled = true;
     store.signInContractor(code, pass).then(function (user) {
       loginBtn.disabled = false;

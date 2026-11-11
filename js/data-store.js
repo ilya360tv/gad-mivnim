@@ -182,7 +182,8 @@
   }
 
   /* ---------- התחברות ---------- */
-  function codeToEmail(code) { return String(code || '').trim().toLowerCase() + '@' + EMAIL_DOMAIN; }
+  function normalizeUserCode(code) { return String(code || '').trim().toUpperCase(); }
+  function codeToEmail(code) { return normalizeUserCode(code).toLowerCase() + '@' + EMAIL_DOMAIN; }
 
   function myProfile(sb) {
     return sb.auth.getSession().then(function (r) {
@@ -202,9 +203,10 @@
 
   // קבלן: קוד משתמש + סיסמה → הפרופיל (או null אם שגוי / לא מאושר / מנוי לא פעיל)
   function signInContractor(code, password) {
-    if (!/^GM-\d{3,}$/i.test(String(code || '').trim()) || !password) { return Promise.resolve(null); }
+    var userCode = normalizeUserCode(code);
+    if (!/^GM-\d{3,}$/.test(userCode) || !password) { return Promise.resolve(null); }
     return client().then(function (sb) {
-      return sb.auth.signInWithPassword({ email: codeToEmail(code), password: password }).then(function (r) {
+      return sb.auth.signInWithPassword({ email: codeToEmail(userCode), password: password }).then(function (r) {
         if (r.error) { return null; }
         return myProfile(sb).then(function (p) {
           if (activeContractor(p)) { return p; }
