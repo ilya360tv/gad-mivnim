@@ -247,6 +247,7 @@ input[type="date"].adm-input { color-scheme: dark; }
 
 /* טבלאות */
 .adm-table-wrap { overflow-x: auto; border-radius: 16px; box-shadow: 0 0 0 1px rgba(56, 189, 248, .25); }
+.adm-applicants { min-width: 1120px; }
 .adm-group .adm-table-wrap { box-shadow: none; border: 1px solid var(--line); border-radius: 12px; }
 .adm-table { width: 100%; border-collapse: collapse; background: var(--surface); font-size: .93rem; }
 .adm-table th, .adm-table td { padding: 12px 14px; text-align: start; vertical-align: middle; border-bottom: 1px solid var(--line); }
@@ -254,7 +255,9 @@ input[type="date"].adm-input { color-scheme: dark; }
 .adm-table tbody tr:last-child td { border-bottom: 0; }
 .adm-table tbody tr:hover { background: rgba(56, 189, 248, .04); }
 .adm-table strong { color: #fff; }
-.adm-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.adm-actions { vertical-align: middle; }
+.adm-acts { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px; max-width: 168px; }
+.adm-acts .adm-btn-sm { min-height: 30px; padding: 0 8px; font-size: .78rem; }
 
 /* חלון */
 .adm-modal { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 16px; }
@@ -350,6 +353,7 @@ input[type="date"].adm-input { color-scheme: dark; }
   .adm-table-wrap { overflow: visible; box-shadow: none; border-radius: 0; }
   .adm-group .adm-table-wrap { border: 0; }
   .adm-table, .adm-table tbody, .adm-table tr, .adm-table td { display: block; width: 100%; }
+  .adm-applicants { min-width: 0; }
   .adm-table { background: transparent; }
   .adm-table thead { display: none; }
   .adm-table tr {
@@ -363,9 +367,9 @@ input[type="date"].adm-input { color-scheme: dark; }
   .adm-table td::before { content: attr(data-label); flex: none; font-size: .8rem; font-weight: 700; color: var(--muted); }
   .adm-table tbody tr:last-child td { border-bottom: 1px solid var(--line); }
   .adm-table tr td:last-child { border-bottom: 0; }
-  .adm-actions { justify-content: flex-start; }
+  .adm-table td.adm-actions { flex-wrap: wrap; align-items: flex-start; }
   .adm-actions::before { width: 100%; }
-  .adm-table td.adm-actions { flex-wrap: wrap; }
+  .adm-acts { max-width: none; }
 }
 @media (max-width: 420px) {
   .adm-stats { grid-template-columns: 1fr 1fr; }
@@ -403,12 +407,12 @@ input[type="date"].adm-input { color-scheme: dark; }
 /* ----- סיסמה זמנית בשורת הקבלן: מוסתרת עד לחיצה על העין, עם העתקה וצ'יפ "טרם הוחלפה" ----- */
 .adm-name { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
 .adm-temp {
-  display: flex;
+  display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 6px;
-  margin-top: 2px;
-  padding: 8px 10px;
+  max-width: 280px;
+  padding: 6px 8px;
   background: rgba(56, 189, 248, .12);
   border: 1px solid rgba(56, 189, 248, .55);
   border-radius: 10px;
@@ -434,6 +438,5 @@ input[type="date"].adm-input { color-scheme: dark; }
 .adm-icon-btn.is-shown .adm-eye-off { display: block; }
 .adm-replaced { margin: 0; font-size: .9rem; font-weight: 700; color: var(--ok); }
 @media (max-width: 899.98px) {
-  .adm-table td.adm-code { flex-wrap: wrap; align-items: flex-start; }
-  .adm-code-cell { flex: 1 1 100%; }
+  .adm-temp { max-width: none; }
 }
