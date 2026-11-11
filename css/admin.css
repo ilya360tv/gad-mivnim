@@ -378,7 +378,13 @@ input[type="date"].adm-input { color-scheme: dark; }
   .adm-table, .adm-table tbody, .adm-table tr, .adm-table td { display: block; width: 100%; }
   .adm-applicants { min-width: 0; }
   .adm-contact { flex: 1; min-width: 0; text-align: end; }
-  .adm-contractors td[data-label="תחומים"] { flex-wrap: wrap; align-items: flex-start; }
+  .adm-contractors td { align-items: flex-start; overflow-wrap: normal; }
+  .adm-contractors td > bdi,
+  .adm-contractors td > strong { flex: 1; min-width: 0; text-align: end; }
+  .adm-contractors td[data-label="קוד"] > bdi,
+  .adm-contractors td[data-label="טלפון"] > bdi { white-space: nowrap; }
+  .adm-contractors td[data-label="אימייל"] > bdi { overflow-wrap: anywhere; }
+  .adm-contractors td[data-label="תחומים"] { flex-wrap: wrap; }
   .adm-contractors .adm-fchips { justify-content: flex-end; }
   .adm-table { background: transparent; }
   .adm-table thead { display: none; }
@@ -440,6 +446,10 @@ input[type="date"].adm-input { color-scheme: dark; }
 .adm-contractors td, .adm-contractors th { overflow-wrap: anywhere; }
 .adm-contractors .adm-fchips { display: flex; flex-wrap: wrap; max-width: 100%; }
 .adm-count { margin: 0; color: var(--muted); font-size: .92rem; }
+@media (max-width: 899.98px) {
+  .adm-table.adm-contractors td { overflow-wrap: normal; }
+  .adm-table.adm-contractors td[data-label="אימייל"] > bdi { overflow-wrap: anywhere; }
+}
 
 /* ----- סיסמה זמנית בשורת הקבלן: מוסתרת עד לחיצה על העין, עם העתקה וצ'יפ "טרם הוחלפה" ----- */
 .adm-name { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }

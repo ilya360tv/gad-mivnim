@@ -4,7 +4,7 @@
    לא נוגעים בטפסים (POST), וידאו, iframes חיצוניים, אנליטיקס, /.netlify/ ו-/_vercel/.
    לעולם לא שומרים במטמון בקשות ל-Supabase (*.supabase.co), לספריית supabase-js (esm.sh) או ל-/api/* — נתונים אמיתיים ופרטיים. */
 
-var VERSION = 'gad-v15-20261111m';
+var VERSION = 'gad-v16-20261111n';
 var SHELL_CACHE = VERSION + '-shell';
 var PAGES_CACHE = VERSION + '-pages';
 var ASSETS_CACHE = VERSION + '-assets';
