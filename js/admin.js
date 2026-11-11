@@ -422,12 +422,13 @@
             return '<button type="button" class="adm-btn adm-btn-sm" data-doc="' + esc(d.path) + '">' + esc(DOC_TYPE[d.type] || 'מסמך') + ' ↓</button>';
           }).join('') : '';
           var phone = String(a.phone || '').trim();
+          var mail = String(a.email || '').trim();
           var userCell = a.userCode
             ? '<div class="adm-user"><bdi>' + esc(a.userCode) + '</bdi>' + (a.subscription === 'active' ? chip('active', 'מנוי פעיל') : chip('none', 'לא פעיל')) + '</div>'
             : '';
           return '<tr data-id="' + esc(a.id) + '">' +
             '<td data-label="שם"><strong>' + esc(a.fullName || '—') + '</strong>' + typeChip + meta + '</td>' +
-            '<td data-label="טלפון">' + (phone ? '<bdi>' + esc(phone) + '</bdi>' : em) + '</td>' +
+            '<td data-label="טלפון"><span class="adm-contact">' + (phone ? '<bdi class="adm-phone">' + esc(phone) + '</bdi>' : em) + (mail ? '<span class="adm-mail" dir="ltr">' + esc(mail) + '</span>' : '') + '</span></td>' +
             '<td data-label="תחומים / תפקיד">' + (fieldChips(a) || em) + '</td>' +
             '<td data-label="תאריך">' + fmtDate(a.createdAt) + '</td>' +
             '<td data-label="סטטוס">' + (a.status ? chip(a.status, APPLICANT_STATUS[a.status] || a.status) : em) + '</td>' +

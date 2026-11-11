@@ -22,17 +22,25 @@ module.exports = handler(async (req) => {
   const a = claimed && claimed[0];
   if (!a) { return { ok: true, skipped: true }; }
 
+  const adminMessageIds = [];
+  let registrationMessageId = '';
   try {
     const admins = await adminEmails(sb);
     const notice = adminRegistration(a);
     for (let i = 0; i < admins.length; i++) {
-      try { await sendMail({ to: admins[i], subject: notice.subject, html: notice.html, text: notice.text }); } catch (e) { /* ממשיכים */ }
+      try {
+        const sent = await sendMail({ to: admins[i], subject: notice.subject, html: notice.html, text: notice.text });
+        if (sent && sent.messageId) { adminMessageIds.push(sent.messageId); }
+      } catch (e) { /* ממשיכים */ }
     }
     if (isRealEmail(a.email)) {
       const thanks = registrationReceived(a.full_name);
-      try { await sendMail({ to: a.email, subject: thanks.subject, html: thanks.html, text: thanks.text }); } catch (e) { /* ממשיכים */ }
+      try {
+        const sent = await sendMail({ to: a.email, subject: thanks.subject, html: thanks.html, text: thanks.text });
+        registrationMessageId = sent && sent.messageId ? sent.messageId : '';
+      } catch (e) { /* ממשיכים */ }
     }
   } catch (e) { /* השליחה לא חוסמת את ההרשמה */ }
 
-  return { ok: true };
+  return { ok: true, registrationMessageId: registrationMessageId, adminMessageIds: adminMessageIds };
 });

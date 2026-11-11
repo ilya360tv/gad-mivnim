@@ -24,7 +24,7 @@ module.exports = handler(async (req) => {
   const profileId = String(body.profileId || '');
   if (!UUID.test(profileId)) { throw httpError(400, 'bad_profile_id'); }
 
-  const rows = await sb('/rest/v1/profiles?select=id,role,status,user_code&id=eq.' + profileId);
+  const rows = await sb('/rest/v1/profiles?select=id,role,status,user_code,full_name,email&id=eq.' + profileId);
   const p = rows && rows[0];
   if (!p) { throw httpError(404, 'profile_not_found'); }
   if (p.role !== 'contractor') { throw httpError(400, 'not_contractor'); }
@@ -52,11 +52,16 @@ module.exports = handler(async (req) => {
   }
 
   try {
-    const apps = await sb('/rest/v1/applicants?select=email,full_name&profile_id=eq.' + profileId + '&email=not.is.null&limit=1');
-    const who = apps && apps[0];
-    if (who && isRealEmail(who.email)) {
-      const mail = passwordReset(who.full_name, p.user_code || '', password);
-      await sendMail({ to: who.email, subject: mail.subject, html: mail.html, text: mail.text });
+    let to = isRealEmail(p.email) ? String(p.email).trim() : '';
+    let name = p.full_name || '';
+    if (!to) {
+      const apps = await sb('/rest/v1/applicants?select=email,full_name&profile_id=eq.' + profileId + '&email=not.is.null&limit=1');
+      const who = apps && apps[0];
+      if (who && isRealEmail(who.email)) { to = String(who.email).trim(); name = who.full_name || name; }
+    }
+    if (to) {
+      const mail = passwordReset(name, p.user_code || '', password);
+      await sendMail({ to: to, subject: mail.subject, html: mail.html, text: mail.text });
     }
   } catch (e) { /* דוא"ל לא חוסם את האיפוס */ }
 

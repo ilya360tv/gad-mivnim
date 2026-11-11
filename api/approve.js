@@ -56,6 +56,7 @@ module.exports = handler(async (req) => {
         role: a.type === 'team' ? 'team' : 'contractor',
         full_name: a.full_name,
         phone: a.phone,
+        email: isRealEmail(a.email) ? String(a.email).trim() : null,
         fields: fields.length ? fields : [GENERAL],
         user_code: userCode,
         status: 'approved',

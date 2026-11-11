@@ -120,6 +120,8 @@
     tn_np_fail: { he: 'שמירת הסיסמה נכשלה, נסו סיסמה אחרת', ru: 'Не удалось сохранить пароль, попробуйте другой', en: 'Saving the password failed, please try another one', fr: 'L’enregistrement a échoué, essayez un autre mot de passe' },
     tn_load_fail: { he: 'טעינת המכרזים נכשלה, נסו לרענן', ru: 'Не удалось загрузить тендеры, обновите страницу', en: 'Loading tenders failed, please refresh', fr: 'Le chargement des appels d’offres a échoué, actualisez la page' },
     tn_apply_fail: { he: 'ההגשה נכשלה, נסו שוב', ru: 'Не удалось подать заявку, попробуйте ещё раз', en: 'Submitting failed, please try again', fr: 'L’envoi a échoué, veuillez réessayer' },
+    cj_email: { he: 'אימייל', ru: 'Эл. почта', en: 'Email', fr: 'E-mail' },
+    cj_email_err: { he: 'יש להזין כתובת אימייל תקינה', ru: 'Введите корректный адрес эл. почты', en: 'Please enter a valid email address', fr: 'Veuillez saisir une adresse e-mail valide' },
     cj_doc: { he: 'רישיון קבלן / מסמך תומך (לא חובה)', ru: 'Лицензия подрядчика / подтверждающий документ (необязательно)', en: 'Contractor license / supporting document (optional)', fr: 'Licence d’entrepreneur / document justificatif (facultatif)' },
     cj_doc_types: { he: 'PDF / JPG / PNG · עד 5MB', ru: 'PDF / JPG / PNG · до 5 МБ', en: 'PDF / JPG / PNG · up to 5MB', fr: 'PDF / JPG / PNG · 5 Mo max.' },
     cj_doc_err_type: { he: 'ניתן להעלות קבצי PDF, JPG או PNG בלבד', ru: 'Можно загрузить только PDF, JPG или PNG', en: 'Only PDF, JPG or PNG files can be uploaded', fr: 'Seuls les fichiers PDF, JPG ou PNG sont acceptés' },

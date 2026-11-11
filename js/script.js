@@ -1052,6 +1052,17 @@ document.addEventListener('DOMContentLoaded', function () {
   var tendersSuccess = document.getElementById('tendersSuccess');
   var joinChips      = tendersForm ? tendersForm.querySelector('[data-field-chips]') : null;
   var joinErr        = document.getElementById('tenderFieldsErr');
+  var emailInput     = document.getElementById('tenderEmail');
+  var emailErr       = document.getElementById('tenderEmailErr');
+  function emailOk(v) {
+    var s = String(v || '').trim();
+    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(s) && s.toLowerCase().indexOf('@users.gad-mivnim.app') === -1;
+  }
+  function showEmailErr(on) {
+    if (emailErr) { emailErr.hidden = !on; }
+    if (emailInput) { emailInput.setAttribute('aria-invalid', on ? 'true' : 'false'); }
+  }
+  if (emailInput) { emailInput.addEventListener('input', function () { if (emailOk(emailInput.value)) { showEmailErr(false); } }); }
   var DS = window.dataStore;
 
   // מסמך לקבלן: תיבת גרירה כמו בקורות החיים — PDF / JPG / PNG, עד 5MB, קובץ אחד
@@ -1141,6 +1152,12 @@ document.addEventListener('DOMContentLoaded', function () {
     tendersForm.addEventListener('submit', function (e) {
       e.preventDefault();
       var picked = fieldBoxes().filter(function (b) { return b.checked; }).map(function (b) { return b.value; });
+      if (emailInput && !emailOk(emailInput.value)) {
+        showEmailErr(true);
+        emailInput.focus();
+        return;
+      }
+      showEmailErr(false);
       if (joinChips && !picked.length) {
         if (joinErr) { joinErr.hidden = false; }
         var first = fieldBoxes()[0];
@@ -1155,6 +1172,7 @@ document.addEventListener('DOMContentLoaded', function () {
       var done = function () {
         tendersSuccess.hidden = false;
         tendersForm.reset();
+        showEmailErr(false);
         if (docInput) { docInput.value = ''; docRender(); }
         syncChips(null);
       };
@@ -1169,10 +1187,12 @@ document.addEventListener('DOMContentLoaded', function () {
         type: 'contractor',
         fullName: tendersForm.tenderName.value.trim(),
         phone: tendersForm.tenderPhone.value.trim(),
+        email: emailInput ? emailInput.value.trim() : '',
         fields: DS.normalizeFields(picked),
         files: doc ? [{ file: doc, docType: 'license' }] : []
       }).then(done, function (err) {
-        showFormErr(tendersErr, err && err.message === 'rate' ? 'car_wait' : 'car_fail');
+        if (err && err.message === 'email') { showEmailErr(true); if (emailInput) { emailInput.focus(); } }
+        else { showFormErr(tendersErr, err && err.message === 'rate' ? 'car_wait' : 'car_fail'); }
       }).then(function () { btn.disabled = false; });
     });
   }

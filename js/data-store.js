@@ -140,7 +140,13 @@
       status: 'pending'
     };
     if (!row.full_name || !row.phone) { return Promise.reject(new Error('invalid')); }
-    if (a.email) { row.email = String(a.email).trim().slice(0, 200); }
+    var mail = String(a.email || '').trim();
+    if (type === 'contractor') {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(mail) || mail.toLowerCase().endsWith('@users.gad-mivnim.app')) {
+        return Promise.reject(new Error('email'));
+      }
+      row.email = mail.slice(0, 200);
+    } else if (mail) { row.email = mail.slice(0, 200); }
     if (type !== 'job') { row.fields = type === 'team' ? (a.fields || []).filter(Boolean).slice(0, 1) : normalizeFields(a.fields); }
     if (type === 'team') {
       var y = parseInt(a.years, 10);

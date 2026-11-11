@@ -13,6 +13,7 @@ create table if not exists public.profiles (
   role          text not null default 'contractor' check (role in ('admin','contractor','team')),
   full_name     text,
   phone         text,
+  email         text,
   fields        text[] not null default '{קבלן כללי}',
   user_code     text unique,
   status        text not null default 'pending' check (status in ('pending','approved','rejected','suspended')),
