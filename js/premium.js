@@ -29,120 +29,33 @@
         heroVideo.addEventListener('canplay', showVideo, { once: true });
       }
 
-      // ניגון בטוח (כל המכשירים): בטעינה ובמגע הראשון — יש דפדפני אנדרואיד שחוסמים ניגון אוטומטי עד אינטראקציה.
+      // ניגון בטוח: muted + playsinline לפני כל play() (בלי זה אייפון חוסם ניגון אוטומטי).
       // בלי כפתור Play: אם הניגון נחסם — נשאר הפוסטר. "עצירת אנימציות" בתפריט הנגישות — לא מנגנים.
       var heroOn = true;
-      var lastPlayErr = '';
       var tryPlay = function () {
         if (!heroOn || document.documentElement.classList.contains('a11y-no-motion')) { return; }
         try {
+          heroVideo.muted = true;
+          heroVideo.defaultMuted = true;
+          heroVideo.playsInline = true;
+          heroVideo.setAttribute('playsinline', '');
+          heroVideo.setAttribute('webkit-playsinline', '');
           var pr = heroVideo.play();
-          if (pr && pr.then) { pr.then(function () { lastPlayErr = ''; }, function (e) { lastPlayErr = (e && (e.name + ': ' + e.message)) || 'rejected'; }); }
-        } catch (e) { lastPlayErr = 'throw: ' + e.message; }
+          if (pr && pr.catch) { pr.catch(function () {}); }
+        } catch (e) {}
       };
 
-      // הקובץ הקל למובייל לא נטען / לא מפוענח במכשיר הזה → מעבר אוטומטי לסרטון הרגיל
+      // הקובץ הקל למובייל לא נטען / לא מפוענח במכשיר הזה → מעבר לסרטון הדסקטופ (אותו מונטאז')
       var fellBack = false;
       var fallback = function () {
-        if (fellBack || /hero\.mp4/.test(heroVideo.currentSrc || '')) { return; }
+        if (fellBack || /(^|\/)hero\.mp4(?:\?|$)/.test(heroVideo.currentSrc || '')) { return; }
         fellBack = true;
         heroVideo.src = 'images/hero.mp4';
         heroVideo.load();
         tryPlay();
       };
-      heroVideo.addEventListener('error', fallback, true);   // capture: גם שגיאות של <source>
+      heroVideo.addEventListener('error', fallback, true);
 
-      // "שעון רץ אבל התמונה קפואה": יש מפענחי חומרה (למשל אנדרואיד 10) שמדווחים "מתנגן" בלי להציג פריימים חדשים.
-      // סופרים פריימים שהוצגו בפועל (requestVideoFrameCallback); אחרי ~3 שניות ניגון בלי פריימים → הסרטון הרגיל.
-      var presented = 0;
-      if (heroVideo.requestVideoFrameCallback) {
-        var onFrame = function () { presented++; heroVideo.requestVideoFrameCallback(onFrame); };
-        heroVideo.requestVideoFrameCallback(onFrame);
-        var lastT = -1, advSecs = 0, framesAtStart = 0;
-        var watchdog = setInterval(function () {
-          if (fellBack || presented - framesAtStart > 30) { clearInterval(watchdog); return; }   // תקין — מפסיקים לבדוק
-          var t = heroVideo.currentTime;
-          if (!heroVideo.paused && lastT >= 0 && t !== lastT) { advSecs++; } else if (heroVideo.paused) { framesAtStart = presented; advSecs = 0; }
-          lastT = t;
-          if (advSecs >= 3 && presented - framesAtStart < 5) { clearInterval(watchdog); fallback(); }
-        }, 1000);
-      }
-      if (/[?&]desktopvideo\b/.test(location.search)) { fallback(); }   // בדיקה ידנית: לכפות את הסרטון הרגיל
-
-      // מובייל: ציור הפריימים על canvas מעל הסרטון. בכרום על חלק ממכשירי אנדרואיד שכבת הווידאו של המכשיר
-      // "נתקעת" על הפריים הראשון בזמן שהסרטון מתנגן — ה-canvas עוקף את השכבה הזו. (הסרטון עצמו נשאר מתחת, מתנגן.)
-      var canvasDraws = 0, canvasOn = false;
-      if (window.matchMedia('(max-width: 767px)').matches && !/[?&]nocanvas\b/.test(location.search)) {
-        var cv = document.createElement('canvas');
-        var c2d = cv.getContext && cv.getContext('2d', { alpha: false });
-        if (c2d) {
-          canvasOn = true;
-          cv.className = 'hero-canvas';
-          cv.setAttribute('aria-hidden', 'true');
-          heroVideo.parentNode.insertBefore(cv, heroVideo.nextSibling);
-          var sizeCanvas = function () {
-            var dpr = Math.min(window.devicePixelRatio || 1, 2);
-            var w = Math.round(cv.clientWidth * dpr), h = Math.round(cv.clientHeight * dpr);
-            if (w && h && (cv.width !== w || cv.height !== h)) { cv.width = w; cv.height = h; }
-          };
-          var draw = function () {
-            var vw = heroVideo.videoWidth, vh = heroVideo.videoHeight;
-            if (!vw || !vh || heroVideo.readyState < 2) { return; }
-            sizeCanvas();
-            var cw = cv.width, ch = cv.height;
-            var s = Math.max(cw / vw, ch / vh);                 // כמו object-fit: cover, ממורכז
-            var sw = cw / s, sh = ch / s;
-            try { c2d.drawImage(heroVideo, (vw - sw) / 2, (vh - sh) / 2, sw, sh, 0, 0, cw, ch); canvasDraws++; cv.classList.add('is-ready'); } catch (e) {}
-          };
-          if (heroVideo.requestVideoFrameCallback) {
-            var onDraw = function () { draw(); heroVideo.requestVideoFrameCallback(onDraw); };
-            heroVideo.requestVideoFrameCallback(onDraw);
-          } else {
-            var loop = function () { if (!heroVideo.paused) { draw(); } requestAnimationFrame(loop); };
-            requestAnimationFrame(loop);
-          }
-          heroVideo.addEventListener('loadeddata', draw);
-          heroVideo.addEventListener('seeked', draw);
-          window.addEventListener('resize', draw);
-        }
-      }
-
-      // אבחון (רק בכתובת עם ?debugvideo): חלון קטן עם מצב הסרטון — לא מוצג למבקרים רגילים
-      if (/[?&]debugvideo\b/.test(location.search)) {
-        var dbg = document.createElement('pre');
-        dbg.style.cssText = 'position:fixed;inset:auto 8px 8px 8px;z-index:99999;margin:0;padding:10px;max-height:45vh;overflow:auto;background:rgba(0,0,0,.85);color:#7CFC00;font:12px/1.4 monospace;direction:ltr;text-align:left;white-space:pre-wrap;pointer-events:none;border-radius:8px';
-        document.body.appendChild(dbg);
-        var log = [];
-        ['loadstart', 'loadedmetadata', 'loadeddata', 'canplay', 'playing', 'pause', 'waiting', 'stalled', 'suspend', 'error'].forEach(function (ev) {
-          heroVideo.addEventListener(ev, function () { log.push(ev + '@' + (performance.now() / 1000).toFixed(1)); if (log.length > 14) { log.shift(); } }, true);
-        });
-        var tlog = [];
-        var tick = setInterval(function () {        // יומן: שעון הסרטון + פריימים שהוצגו, כל שנייה ל-10 שניות
-          tlog.push(heroVideo.currentTime.toFixed(1) + '/' + presented);
-          if (tlog.length >= 10) { clearInterval(tick); }
-        }, 1000);
-        var show = function () {
-          var er = heroVideo.error;
-          var pq = heroVideo.getVideoPlaybackQuality ? heroVideo.getVideoPlaybackQuality() : null;
-          dbg.textContent = [
-            'UA: ' + navigator.userAgent,
-            'width: ' + window.innerWidth + '  mobileMQ: ' + window.matchMedia('(max-width: 767px)').matches,
-            'src: ' + (heroVideo.currentSrc || '(none)').split('/').pop() + (fellBack ? '  (fallback)' : ''),
-            'readyState: ' + heroVideo.readyState + '  networkState: ' + heroVideo.networkState,
-            'paused: ' + heroVideo.paused + '  time: ' + heroVideo.currentTime.toFixed(2) + '  size: ' + heroVideo.videoWidth + 'x' + heroVideo.videoHeight,
-            'muted: ' + heroVideo.muted + '  autoplay: ' + heroVideo.autoplay + '  playsinline: ' + heroVideo.playsInline,
-            'error: ' + (er ? er.code + ' ' + (er.message || '') : 'none'),
-            'play(): ' + (lastPlayErr || 'ok/not tried'),
-            'no-motion: ' + document.documentElement.classList.contains('a11y-no-motion') + '  opacity: ' + getComputedStyle(heroVideo).opacity + '  display: ' + getComputedStyle(heroVideo).display,
-            'canvas: ' + (canvasOn ? 'on, draws ' + canvasDraws : 'off') + '  frames shown: ' + presented +(pq ? '  decoded: ' + pq.totalVideoFrames + '  dropped: ' + pq.droppedVideoFrames : ''),
-            'time/frames per sec: ' + tlog.join('  '),
-            'SW: ' + (navigator.serviceWorker && navigator.serviceWorker.controller ? 'active' : 'none') + '  build: 20261110e',
-            'events: ' + log.join(' ')
-          ].join('\n');
-        };
-        show();
-        setInterval(show, 500);
-      }
       tryPlay();
       window.addEventListener('load', tryPlay, { once: true });
       // רק אירועים שהדפדפן מחשיב "פעולת משתמש" (touchend / click / pointerup / keydown) מתירים play()
@@ -156,12 +69,16 @@
       // חזרה לאפליקציה / ללשונית (iOS משהה וידאו ברקע)
       document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { tryPlay(); } });
 
-      // משהים את הסרטון כשה-Hero מחוץ למסך (חוסך מעבד וסוללה) וממשיכים כשהוא חוזר
+      // משהים רק כשה-Hero באמת מחוץ למסך. isIntersecting לבד יכול לדווח "לא נראה"
+      // בטעינה במובייל ולהשאיר את הסרטון מושהה.
       if ('IntersectionObserver' in window) {
         var heroSec = document.getElementById('hero');
         new IntersectionObserver(function (entries) {
           if (document.documentElement.classList.contains('a11y-no-motion')) { return; }
-          heroOn = entries[entries.length - 1].isIntersecting;
+          var e = entries[entries.length - 1];
+          var r = e.boundingClientRect;
+          var off = r.bottom <= 0 || r.top >= (window.innerHeight || 0);
+          heroOn = !off;
           if (heroOn) { tryPlay(); }
           else { heroVideo.pause(); }
         }).observe(heroSec || heroVideo);
