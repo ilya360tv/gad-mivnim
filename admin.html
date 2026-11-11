@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>מערכת ניהול (הדגמה) | GAD MIVNIM</title>
+  <title>מערכת ניהול | GAD MIVNIM</title>
   <meta name="robots" content="noindex,nofollow">
   <meta name="theme-color" content="#0b0d10">
   <link rel="icon" href="/favicon.ico" sizes="any">
@@ -12,29 +12,25 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=1">
+  <link rel="stylesheet" href="css/admin.css?v=2">
 </head>
 <body>
 
-  <!-- מצב הדגמה — בכל מסך -->
-  <div class="demo-banner" role="note">מצב הדגמה – הנתונים נשמרים בדפדפן זה בלבד ואינם מערכת אמיתית</div>
-
-  <!-- ===== כניסת מנהל (הדגמה) ===== -->
+  <!-- ===== כניסת מנהל (Supabase Auth: אימייל + סיסמה) ===== -->
   <main class="adm-login" id="admLogin" hidden>
     <form class="adm-card adm-login-card" id="admLoginForm" novalidate autocomplete="off">
       <img src="images/gad_mivnim_logo.svg" alt="GAD MIVNIM" class="adm-login-logo" width="88" height="88">
       <h1 class="adm-login-title">כניסה למערכת הניהול</h1>
       <div class="adm-field">
-        <label for="admUser">שם משתמש</label>
-        <input type="text" id="admUser" autocomplete="off">
+        <label for="admUser">אימייל</label>
+        <input type="email" id="admUser" autocomplete="username" dir="ltr">
       </div>
       <div class="adm-field">
         <label for="admPass">סיסמה</label>
-        <input type="password" id="admPass" autocomplete="off">
+        <input type="password" id="admPass" autocomplete="current-password">
       </div>
       <button type="submit" class="adm-btn adm-btn-primary adm-btn-block">כניסה</button>
-      <p class="adm-error" id="admLoginError" role="alert" hidden>שם משתמש או סיסמה שגויים</p>
-      <p class="adm-note">הדגמה בלבד – בגרסה האמיתית תהיה הזדהות מאובטחת</p>
+      <p class="adm-error" id="admLoginError" role="alert" hidden>אימייל או סיסמה שגויים, או שאין הרשאת מנהל</p>
     </form>
   </main>
 
@@ -45,7 +41,7 @@
         <img src="images/gad_mivnim_logo.svg" alt="" width="44" height="44">
         <div>
           <strong>GAD MIVNIM</strong>
-          <span>מערכת ניהול · הדגמה</span>
+          <span>מערכת ניהול</span>
         </div>
       </div>
       <nav class="adm-nav" aria-label="תפריט ניהול">
@@ -53,7 +49,7 @@
         <button type="button" data-view="tenders">מכרזים</button>
         <button type="button" data-view="applicants">בקשות הצטרפות <span class="adm-badge" id="admPendingBadge" hidden></span></button>
         <button type="button" data-view="applications">מועמדויות</button>
-        <button type="button" data-view="settings">הגדרות הדגמה</button>
+        <button type="button" data-view="settings">הגדרות</button>
       </nav>
     </aside>
 
@@ -81,8 +77,8 @@
 
   <p class="adm-toast" id="admToast" role="status" aria-live="polite"></p>
 
-  <script src="js/tenders-data.js?v=1"></script>
-  <script src="js/demo-store.js?v=1"></script>
-  <script src="js/admin.js?v=1"></script>
+  <script src="js/supabase-config.js?v=1"></script>
+  <script src="js/data-store.js?v=2"></script>
+  <script src="js/admin.js?v=3"></script>
 </body>
 </html>

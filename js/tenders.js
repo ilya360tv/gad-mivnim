@@ -1,14 +1,14 @@
 /* ==========================================================================
    GAD MIVNIM — #tenders: כניסת מנויים → אזור קבלני הבית ורשימת מכרזים (tenders.js)
-   *** מצב הדגמה *** — הנתונים מגיעים מ-js/demo-store.js (localStorage של הדפדפן הזה בלבד):
-   כניסה = קוד משתמש של קבלן מאושר עם מנוי פעיל + סיסמה (בדיקת SHA-256). אין שרת ואין בקשות רשת.
-   הסיסמה לא נשמרת בשום מקום; רק קוד המשתמש נשמר ב-sessionStorage עד "יציאה" / סגירת הדפדפן.
+   הנתונים מ-Supabase דרך js/data-store.js: כניסה = קוד משתמש (GM-####) + סיסמה (Supabase Auth).
+   אילו מכרזים הקבלן רואה — נקבע במסד הנתונים (RLS: פורסם + בתחומים שלו + מנוי פעיל), לא רק כאן.
+   כניסה ראשונה עם סיסמה זמנית → שלב "בחרו סיסמה חדשה". הסיסמה לא נשמרת אצלנו.
    הטקסטים מתורגמים דרך data-i18n (js/i18n.js), כך שהחלפת שפה מעדכנת גם את הרשימה.
    ========================================================================== */
 
 (function () {
   var section = document.getElementById('tenders');
-  var store   = window.demoStore;
+  var store   = window.dataStore;
   if (!section || !store) { return; }
 
   var T = window.GAD_T || {};
@@ -53,7 +53,7 @@
     wrap.appendChild(myFields);
   })();
   var currentUser = null;
-  try { Object.keys(sessionStorage).forEach(function (k) { if (k.indexOf(store.PREFIX + 'filter:') === 0) { sessionStorage.removeItem(k); } }); } catch (e) {}
+  var cache = { tenders: [], applied: [] };       // מה שהגיע מהשרת בטעינה האחרונה (לרינדור מחדש בהחלפת שפה)
   // התחומים שהקבלן רואה: "קבלן כללי" — כל תחומי המכרזים; אחרת — רק התחומים שלו (בסדר של הרשימה)
   function visibleFields() {
     if (!currentUser || store.isGeneral(currentUser)) { return store.TENDER_FIELDS; }
@@ -94,22 +94,87 @@
     sizeCard();                                   // ההודעה מוסיפה גובה — בדיקת התאמה מחדש
   }
 
-  function enterMembers(code, focus) {
-    currentCode = code;
-    codeChip.textContent = code;
-    var user = store.applicants.findByCode(code);
+  function enterMembers(user, focus) {
+    currentCode = user.userCode;
+    codeChip.textContent = user.userCode;
     currentUser = user;
     renderMyFields();
     var name = user && user.fullName ? user.fullName.trim() : '';
     helloName.innerHTML = '';
     if (name) { var bd = document.createElement('bdi'); bd.textContent = name; helloName.appendChild(bd); }
     helloName.hidden = !name;                    // בלי שם — רק "שלום, קבלן הבית"
+    cache = { tenders: [], applied: [] };
     renderMembers();
     loginCard.hidden = true;
+    passStep.hidden = true;
     members.hidden = false;
     section.classList.add('is-members');          // הפריסה הממורכזת של אזור המנויים (במקום שתי העמודות)
     if (focus) { listTitle.focus({ preventScroll: true }); }
+    loadMembers();
   }
+
+  // טעינה מהשרת: המכרזים שה-RLS מתיר לקבלן הזה + המכרזים שכבר הגיש אליהם
+  function loadMembers() {
+    if (!currentUser) { return Promise.resolve(); }
+    return Promise.all([store.tenders.visible(), store.applications.mine()]).then(function (r) {
+      if (!currentUser) { return; }
+      cache = { tenders: r[0], applied: r[1] };
+      renderMembers();
+    }, function () { showToast('tn_load_fail'); });
+  }
+
+  /* ---------- כניסה ראשונה: "בחרו סיסמה חדשה" (באותו כרטיס, באותו עיצוב) ---------- */
+  var passStep = document.createElement('div');
+  passStep.className = 'careers-form-card tn-login tn-newpass';
+  passStep.hidden = true;
+  passStep.innerHTML =
+    '<form class="contact-form tn-login-form" id="tnNewPassForm" novalidate autocomplete="off">' +
+      '<div class="tn-login-head">' + loginCard.querySelector('.tn-lock').outerHTML +
+        '<h3 class="tn-login-title" data-i18n="tn_np_title">' + t('tn_np_title') + '</h3></div>' +
+      '<div class="tn-login-fields">' +
+        '<p class="tn-np-hint" data-i18n="tn_np_hint">' + t('tn_np_hint') + '</p>' +
+        '<div class="form-field"><label for="tnNp1" data-i18n="tn_np_new">' + t('tn_np_new') + '</label>' +
+          '<input type="password" id="tnNp1" autocomplete="new-password" minlength="8" required></div>' +
+        '<div class="form-field"><label for="tnNp2" data-i18n="tn_np_again">' + t('tn_np_again') + '</label>' +
+          '<input type="password" id="tnNp2" autocomplete="new-password" minlength="8" required></div>' +
+      '</div>' +
+      '<div class="tn-login-foot">' +
+        '<button type="submit" class="btn btn-primary form-submit tn-login-btn" data-i18n="tn_np_btn">' + t('tn_np_btn') + '</button>' +
+        '<p class="tn-login-error" id="tnNpError" role="alert" hidden></p>' +
+      '</div>' +
+    '</form>';
+  loginCard.parentNode.insertBefore(passStep, loginCard.nextSibling);
+  var npForm = passStep.querySelector('form'), np1 = passStep.querySelector('#tnNp1'), np2 = passStep.querySelector('#tnNp2');
+  var npError = passStep.querySelector('#tnNpError'), npBtn = passStep.querySelector('button[type="submit"]');
+  var pendingUser = null;
+  function npShowError(key) {
+    npError.hidden = !key;
+    if (key) { npError.setAttribute('data-i18n', key); npError.textContent = t(key); }
+  }
+  function showPassStep(user) {
+    pendingUser = user;
+    loginCard.hidden = true;
+    passStep.hidden = false;
+    npShowError(null);
+    np1.value = ''; np2.value = '';
+    np1.focus();
+  }
+  npForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var a = np1.value, b = np2.value;
+    if (a.length < 8 || a !== b) { npShowError('tn_np_err'); np1.focus(); return; }
+    npBtn.disabled = true;
+    store.changePassword(a).then(function () {
+      np1.value = ''; np2.value = '';
+      npBtn.disabled = false;
+      var u = pendingUser; pendingUser = null;
+      u.mustChange = false;
+      enterMembers(u, true);
+    }, function () {
+      npBtn.disabled = false;
+      npShowError('tn_np_fail');
+    });
+  });
 
   loginForm.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -121,19 +186,20 @@
     forgotNote.hidden = true;
     forgot.setAttribute('aria-expanded', 'false');
     loginBtn.disabled = true;
-    store.ready().then(function () { return store.verifyLogin(code, pass); }).then(function (user) {
+    store.signInContractor(code, pass).then(function (user) {
       loginBtn.disabled = false;
       if (!user) { showError(true); passInput.focus(); return; }
       showError(false);
-      store.session.set(user.userCode);
-      enterMembers(user.userCode, true);
-    });
+      if (user.mustChange) { showPassStep(user); return; }
+      enterMembers(user, true);
+    }, function () { loginBtn.disabled = false; showError(true); });
   });
 
   document.getElementById('tnLogout').addEventListener('click', function () {
-    store.session.clear();
+    store.signOut();
     currentCode = null;
     currentUser = null;
+    cache = { tenders: [], applied: [] };
     members.hidden = true;
     loginCard.hidden = false;
     section.classList.remove('is-members');
@@ -165,7 +231,7 @@
 
   function cardHtml(td) {
     var soon = daysLeft(td.deadline) <= SOON_DAYS;
-    var applied = currentCode && store.applications.has(td.id, currentCode);
+    var applied = cache.applied.indexOf(td.id) !== -1;
     return '<article class="tn-card">' +
         '<div class="tn-card-top">' +
           '<h5 class="tn-card-name">' + esc(td.title) + '</h5>' +
@@ -186,7 +252,7 @@
   function renderMembers() {
     var fields = visibleFields();
     var names = fields.map(function (f) { return f.name; });
-    var published = store.tenders.published().filter(function (td) { return names.indexOf(td.field) !== -1; });
+    var published = cache.tenders.filter(function (td) { return names.indexOf(td.field) !== -1; });
     // בלי בחירת תחום: כל התחומים של הקבלן מוצגים ישר, בלוק לכל תחום (קבלן כללי — כל התחומים, אחד מתחת לשני)
     listEl.innerHTML = fields.map(function (f) {
       var items = published.filter(function (td) { return td.field === f.name; })
@@ -200,7 +266,7 @@
     }).join('');
   }
 
-  /* ---------- 3) "הגשת מועמדות" — חלון קטן עם הערה (לא חובה) → נשמר במערכת ההדגמה + הודעה ---------- */
+  /* ---------- 3) "הגשת מועמדות" — חלון קטן עם הערה (לא חובה) → נשמר במסד הנתונים + הודעה ---------- */
   var toast = document.getElementById('tnToast');
   var toastKey = 'tn_applied_toast';
   var toastTimer;
@@ -219,7 +285,7 @@
   var modalTender = null, modalOpener = null;
 
   function openModal(tenderId, opener) {
-    var td = store.tenders.get(tenderId);
+    var td = cache.tenders.filter(function (x) { return x.id === tenderId; })[0];
     if (!td || !currentCode) { return; }
     modalTender = td;
     modalOpener = opener;
@@ -241,13 +307,17 @@
   modalForm.addEventListener('submit', function (e) {
     e.preventDefault();
     if (!modalTender || !currentCode) { closeModal(); return; }
-    if (!store.applications.has(modalTender.id, currentCode)) {
-      store.applications.add({ tenderId: modalTender.id, userCode: currentCode, note: noteInput.value.trim() });
-    }
-    modalOpener = null;
-    closeModal();
-    renderMembers();
-    showToast('tn_applied_toast');
+    var tid = modalTender.id, sendBtn = modalForm.querySelector('button[type="submit"]');
+    if (sendBtn) { sendBtn.disabled = true; }
+    store.applications.add(tid, noteInput.value.trim()).then(function () {
+      if (cache.applied.indexOf(tid) === -1) { cache.applied.push(tid); }
+      modalOpener = null;
+      closeModal();
+      renderMembers();
+      showToast('tn_applied_toast');
+    }, function () {
+      showToast('tn_apply_fail');
+    }).then(function () { if (sendBtn) { sendBtn.disabled = false; } });
   });
   modal.querySelectorAll('[data-close]').forEach(function (b) { b.addEventListener('click', closeModal); });
   modal.addEventListener('keydown', function (e) {
@@ -259,18 +329,17 @@
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   });
 
-  // שינוי נתונים בלשונית אחרת (למשל מכרז חדש במערכת הניהול) — רענון הרשימה
-  window.addEventListener('storage', function (e) {
-    if (e.key && e.key.indexOf(store.PREFIX) === 0 && !members.hidden) { renderMembers(); }
+  // חזרה ללשונית (למשל אחרי שמכרז חדש פורסם) — רענון הרשימה מהשרת
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible' && !members.hidden) { loadMembers(); }
   });
 
-  // כניסה שמורה (sessionStorage) — רק אם הקבלן עדיין מאושר עם מנוי פעיל
-  store.ready().then(function () {
-    var code = store.session.get();
-    var user = code && store.applicants.findByCode(code);
-    if (user && user.status === 'approved' && user.subscription === 'active') { enterMembers(user.userCode, false); }
-    else if (code) { store.session.clear(); }
-  });
+  // כניסה שמורה (עד "יציאה" / סגירת הדפדפן) — רק אם הקבלן עדיין מאושר עם מנוי פעיל
+  store.currentContractor().then(function (user) {
+    if (!user) { return; }
+    if (user.mustChange) { showPassStep(user); return; }
+    enterMembers(user, false);
+  }, function () {});
 
   /* ---------- 4) דסקטופ (≥1024): גובה כרטיס הכניסה = עמודת הגלולות השמאלית (מהגלולה הראשונה ועד האחרונה);
                  לחיצה על "מכרזים / מנויים" גוללת כך שראש הכרטיס נוחת בגובה הגלולה הראשונה.
