@@ -9,6 +9,8 @@
    ========================================================================== */
 'use strict';
 const { sb, requireAdmin, readBody, handler, httpError, UUID, tempPassword, saveTempPassword } = require('./_supabase');
+const { sendMail, isRealEmail } = require('./_mailer');
+const { passwordReset } = require('./_email-templates');
 
 async function revokeSessions(profileId) {
   try {
@@ -48,6 +50,15 @@ module.exports = handler(async (req) => {
   } catch (e) {
     await saveTempPassword(profileId, password);
   }
+
+  try {
+    const apps = await sb('/rest/v1/applicants?select=email,full_name&profile_id=eq.' + profileId + '&email=not.is.null&limit=1');
+    const who = apps && apps[0];
+    if (who && isRealEmail(who.email)) {
+      const mail = passwordReset(who.full_name, p.user_code || '', password);
+      await sendMail({ to: who.email, subject: mail.subject, html: mail.html, text: mail.text });
+    }
+  } catch (e) { /* דוא"ל לא חוסם את האיפוס */ }
 
   return { profileId: profileId, reset: true, tempPassword: password };
 });

@@ -155,6 +155,13 @@
       // בלי select אחרי insert — לאורח אין הרשאת קריאה (RLS). המזהה נוצר כאן בדפדפן.
       return sb.from('applicants').insert(row).then(unwrap).then(function () {
         markSubmit();
+        var ping = function () {
+          return fetch('/api/registration-notify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ applicantId: row.id })
+          }).catch(function () {});
+        };
         return files.reduce(function (p, f, i) {
           return p.then(function () {
             var ext = extOf(f.file.name);
@@ -163,7 +170,7 @@
               return sb.from('applicant_docs').insert({ applicant_id: row.id, doc_type: f.docType, storage_path: path }).then(unwrap);
             });
           });
-        }, Promise.resolve());
+        }, Promise.resolve()).then(ping, function (err) { return ping().then(function () { throw err; }); });
       });
     });
   }
@@ -257,7 +264,11 @@
         return sb.auth.getUser().then(function (u) {
           var row = tenderIn(t);
           row.created_by = u.data && u.data.user ? u.data.user.id : null;
-          return sb.from('tenders').insert(row).then(unwrap);
+          return sb.from('tenders').insert(row).select('id').then(unwrap).then(function (created) {
+            var id = created && created[0] && created[0].id;
+            if (!id) { return created; }
+            return callApi('/api/tender-notify', { tenderId: id }).catch(function () {}).then(function () { return created; });
+          });
         });
       });
     },
