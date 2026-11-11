@@ -5,23 +5,13 @@
    2) קוד משתמש חדש GM-#### (public.next_user_code — service_role בלבד)
    3) יוצר משתמש התחברות: <code>@users.gad-mivnim.app + סיסמה זמנית אקראית (14 תווים)
    4) יוצר את שורת profiles (contractor / team), מעדכן את applicants (approved + profile_id)
-   5) מחזיר את הקוד והסיסמה הזמנית — פעם אחת בלבד (לא נשמרים בשום מקום)
+   5) שומר את הסיסמה הזמנית ב-temp_credentials (רק service_role כותב; המנהל קורא עד ההחלפה)
+   6) מחזיר את הקוד והסיסמה הזמנית למנהל — בלי לכתוב אותן ללוג
    ========================================================================== */
 'use strict';
-const crypto = require('crypto');
-const { sb, requireAdmin, normalizeFields, readBody, handler, httpError, UUID, GENERAL } = require('./_supabase');
+const { sb, requireAdmin, normalizeFields, readBody, handler, httpError, UUID, GENERAL, tempPassword, saveTempPassword } = require('./_supabase');
 
 const EMAIL_DOMAIN = 'users.gad-mivnim.app';
-const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';   // בלי תווים מבלבלים (0/O, 1/l/I)
-
-function tempPassword(len) {
-  const bytes = crypto.randomBytes(len);
-  let out = '';
-  for (let i = 0; i < len; i++) { out += ALPHABET[bytes[i] % ALPHABET.length]; }
-  // לפחות אות גדולה, אות קטנה וספרה
-  if (!/[A-Z]/.test(out) || !/[a-z]/.test(out) || !/[2-9]/.test(out)) { return tempPassword(len); }
-  return out;
-}
 
 module.exports = handler(async (req) => {
   await requireAdmin(req);
@@ -70,6 +60,7 @@ module.exports = handler(async (req) => {
         subscription: a.type === 'contractor' ? 'active' : 'none'   // צוות — בלי מנוי ובלי גישה למכרזים
       }
     });
+    await saveTempPassword(userId, password);
     await sb('/rest/v1/applicants?id=eq.' + applicantId, {
       method: 'PATCH',
       headers: { Prefer: 'return=minimal' },

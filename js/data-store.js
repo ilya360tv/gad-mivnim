@@ -3,8 +3,9 @@
    מחליף את js/demo-store.js (שנשאר בתיקייה, לא נטען — לגרסת הדגמה לא מקוונת בעתיד).
    - הדפדפן משתמש רק בכתובת הפרויקט ובמפתח הציבורי (js/supabase-config.js).
      מה שכל משתמש רואה/כותב נקבע במסד הנתונים (RLS) — לא כאן.
-   - אישור בקשות והשעיית מנויים: דרך /api/approve ו-/api/suspend (צד שרת, Vercel).
-   - סיסמאות לא נשמרות אצלנו; ההתחברות מנוהלת ע"י supabase-js (sessionStorage — עד "יציאה" / סגירת הדפדפן).
+   - אישור בקשות, איפוס סיסמה והשעיית מנויים: דרך /api/approve, /api/reset-password ו-/api/suspend (צד שרת, Vercel).
+   - סיסמה זמנית נשמרת ב-temp_credentials עד שהקבלן מחליף אותה (הטריגר במסד מוחק את השורה).
+     קורא אותה רק מנהל (RLS). ההתחברות עצמה מנוהלת ע"י supabase-js (sessionStorage — עד "יציאה" / סגירת הדפדפן).
    - אין שום נתוני תשלום / כרטיס אשראי.
    ========================================================================== */
 
@@ -227,7 +228,9 @@
   function signOut() {
     return client().then(function (sb) { return sb.auth.signOut(); }).catch(function () {});
   }
-  // סיסמה חדשה (כניסה ראשונה עם סיסמה זמנית)
+  // סיסמה חדשה (כניסה ראשונה עם סיסמה זמנית).
+  // מחיקת השורה מ-temp_credentials נעשית בטריגר כשה-hash באמת משתנה — לא בבקשה נפרדת,
+  // כדי שקבלן לא יוכל להסתיר מהמנהל סיסמה זמנית שעדיין עובדת.
   function changePassword(newPassword) {
     return client().then(function (sb) {
       return sb.auth.updateUser({ password: newPassword, data: { must_change_password: false } }).then(unwrap);
@@ -316,17 +319,34 @@
   var applicants = {
     list: function () {
       return client().then(function (sb) {
-        return sb.from('applicants')
-          .select('*, profiles(user_code, status, subscription), applicant_docs(id, doc_type, storage_path, created_at)')
-          .order('created_at', { ascending: false }).then(unwrap).then(function (rows) { return rows.map(applicantOut); });
+        return Promise.all([
+          sb.from('applicants')
+            .select('*, profiles(user_code, status, subscription), applicant_docs(id, doc_type, storage_path, created_at)')
+            .order('created_at', { ascending: false }),
+          sb.from('temp_credentials').select('profile_id, temp_password')
+        ]).then(function (res) {
+          var rows = unwrap(res[0]);
+          var creds = unwrap(res[1]) || [];
+          var byId = {};
+          creds.forEach(function (c) {
+            if (c && c.profile_id && c.temp_password) { byId[c.profile_id] = c.temp_password; }
+          });
+          return rows.map(function (r) {
+            var a = applicantOut(r);
+            a.tempPassword = a.profileId && byId[a.profileId] ? byId[a.profileId] : '';
+            return a;
+          });
+        });
       });
     },
     // צוות / משרה — עדכון סטטוס בלבד (בלי משתמש התחברות)
     setStatus: function (id, status) {
       return client().then(function (sb) { return sb.from('applicants').update({ status: status }).eq('id', id).then(unwrap); });
     },
-    // קבלן — דרך השרת: קוד GM + סיסמה זמנית (מוחזרים פעם אחת)
+    // קבלן — דרך השרת: קוד GM + סיסמה זמנית (גם נשמרת למנהל עד ההחלפה)
     approve: function (id, fields) { return callApi('/api/approve', { applicantId: id, fields: fields }); },
+    // איפוס: סיסמה זמנית חדשה. התשובה לא כוללת את הסיסמה — היא נטענת מחדש לשורה.
+    resetPassword: function (profileId) { return callApi('/api/reset-password', { profileId: profileId }); },
     // השעיה / הפעלה של מנוי
     subscription: function (profileId, action) { return callApi('/api/suspend', { profileId: profileId, action: action }); },
     // קישור הורדה זמני (5 דקות) למסמך

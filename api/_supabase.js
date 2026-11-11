@@ -4,8 +4,10 @@
    המפתח הסודי לא נמצא בשום קובץ, לא נשלח לדפדפן ולא נכתב ללוג.
    ========================================================================== */
 'use strict';
+const crypto = require('crypto');
 
 const GENERAL = 'קבלן כללי';
+const PASS_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';   // בלי תווים מבלבלים (0/O, 1/l/I)
 const MAX_FIELDS = 3;
 
 function env() {
@@ -94,4 +96,26 @@ function handler(fn) {
   };
 }
 
-module.exports = { GENERAL, sb, requireAdmin, normalizeFields, readBody, handler, httpError, UUID };
+// סיסמה זמנית אקראית (לפחות 12 תווים: אות גדולה, אות קטנה וספרה). לא נכתבת ללוג.
+function tempPassword(len) {
+  const n = Math.max(12, len | 0);
+  for (let attempt = 0; attempt < 8; attempt++) {
+    const bytes = crypto.randomBytes(n);
+    let out = '';
+    for (let i = 0; i < n; i++) { out += PASS_ALPHABET[bytes[i] % PASS_ALPHABET.length]; }
+    if (/[A-Z]/.test(out) && /[a-z]/.test(out) && /[2-9]/.test(out)) { return out; }
+  }
+  throw httpError(500, 'weak_temp_password');
+}
+
+// שמירה לטבלת temp_credentials בלבד (service_role). אין לוג ואין ערך מוחזר.
+async function saveTempPassword(profileId, password) {
+  if (typeof password !== 'string' || password.length < 12) { throw httpError(500, 'weak_temp_password'); }
+  await sb('/rest/v1/temp_credentials?on_conflict=profile_id', {
+    method: 'POST',
+    headers: { Prefer: 'resolution=merge-duplicates,return=minimal' },
+    body: { profile_id: profileId, temp_password: password, created_at: new Date().toISOString() }
+  });
+}
+
+module.exports = { GENERAL, sb, requireAdmin, normalizeFields, readBody, handler, httpError, UUID, tempPassword, saveTempPassword };
