@@ -66,6 +66,8 @@ async function sendMail({ to, subject, html, text }) {
       last = e;
       const fail = mailFailure(e);
       console.error('mail_send_failed', fail.code, fail.responseCode, fail.detail);
+      // 534/535 הוא סירוב של Google, לא ניתוק. ניסיון שני רק מחמיר את החסימה.
+      if (e && (e.code === 'EAUTH' || e.responseCode === 534 || e.responseCode === 535)) { break; }
     }
   }
   throw last;
