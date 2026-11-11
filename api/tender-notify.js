@@ -32,15 +32,22 @@ module.exports = handler(async (req) => {
   if (!claimed || !claimed.length) { return { ok: true, skipped: true }; }
 
   try {
-    const profiles = await sb('/rest/v1/profiles?select=id,fields&role=eq.contractor&status=eq.approved&subscription=eq.active');
-    const ids = (profiles || []).filter(function (p) { return matches(p.fields, tender.field); }).map(function (p) { return p.id; });
-    if (!ids.length) { return { ok: true, sent: 0 }; }
-    const apps = await sb('/rest/v1/applicants?select=profile_id,email&profile_id=in.(' + ids.join(',') + ')&email=not.is.null');
+    const profiles = await sb('/rest/v1/profiles?select=id,fields,email&role=eq.contractor&status=eq.approved&subscription=eq.active');
+    const matched = (profiles || []).filter(function (p) { return matches(p.fields, tender.field); });
+    if (!matched.length) { return { ok: true, sent: 0 }; }
     const seen = {};
     const tos = [];
-    (apps || []).forEach(function (a) {
-      if (a && isRealEmail(a.email) && !seen[a.email]) { seen[a.email] = true; tos.push(a.email); }
+    const missing = [];
+    matched.forEach(function (p) {
+      if (isRealEmail(p.email) && !seen[p.email]) { seen[p.email] = true; tos.push(String(p.email).trim()); }
+      else { missing.push(p.id); }
     });
+    if (missing.length) {
+      const apps = await sb('/rest/v1/applicants?select=profile_id,email&profile_id=in.(' + missing.join(',') + ')&email=not.is.null');
+      (apps || []).forEach(function (a) {
+        if (a && isRealEmail(a.email) && !seen[a.email]) { seen[a.email] = true; tos.push(String(a.email).trim()); }
+      });
+    }
     const tpl = newTender(tender);
     for (let i = 0; i < tos.length; i++) {
       try { await sendMail({ to: tos[i], subject: tpl.subject, html: tpl.html, text: tpl.text }); } catch (e) { /* ממשיכים */ }

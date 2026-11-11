@@ -258,7 +258,10 @@ input[type="date"].adm-input { color-scheme: dark; }
 .adm-applicants th:nth-child(8), .adm-applicants td:nth-child(8) { width: 9%; }
 .adm-applicants th:nth-child(9), .adm-applicants td:nth-child(9) { width: 10%; }
 .adm-applicants th, .adm-applicants td { padding: 8px 4px; overflow-wrap: anywhere; }
-.adm-applicants td:nth-child(2) { white-space: nowrap; overflow-wrap: normal; font-size: .78rem; }
+.adm-applicants td:nth-child(2) { white-space: normal; overflow-wrap: anywhere; font-size: .78rem; }
+.adm-contact { display: block; min-width: 0; max-width: 100%; }
+.adm-phone { white-space: nowrap; }
+.adm-mail { display: block; max-width: 100%; margin-top: 2px; color: var(--muted); font-size: .72rem; line-height: 1.35; white-space: normal; overflow-wrap: anywhere; word-break: break-word; direction: ltr; text-align: right; }
 .adm-applicants td:nth-child(4) { white-space: nowrap; overflow-wrap: normal; font-size: .82rem; }
 .adm-applicants .adm-chip { white-space: normal; max-width: 100%; padding-inline: 6px; text-align: center; justify-content: center; }
 .adm-applicants .adm-fchips { display: flex; flex-wrap: wrap; max-width: 100%; }
@@ -374,6 +377,8 @@ input[type="date"].adm-input { color-scheme: dark; }
   .adm-group .adm-table-wrap { border: 0; }
   .adm-table, .adm-table tbody, .adm-table tr, .adm-table td { display: block; width: 100%; }
   .adm-applicants { min-width: 0; }
+  .adm-contact { flex: 1; min-width: 0; text-align: end; }
+  .adm-mail { text-align: end; }
   .adm-table { background: transparent; }
   .adm-table thead { display: none; }
   .adm-table tr {
