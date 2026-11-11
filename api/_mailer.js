@@ -23,12 +23,27 @@ function transport() {
     throw e;
   }
   return nodemailer.createTransport({
-    service: 'gmail',
-    auth: { user: user, pass: pass }
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: { user: user, pass: pass },
+    connectionTimeout: 8000,
+    greetingTimeout: 8000,
+    socketTimeout: 12000
   });
 }
 
-// to: כתובת אחת. מחזיר messageId בלבד.
+// קוד ותשובת SMTP בלבד — בלי גוף ההודעה ובלי הסיסמה.
+function mailFailure(e) {
+  const raw = String(e && (e.response || e.message) || '');
+  return {
+    code: e && e.code ? String(e.code) : '',
+    responseCode: e && e.responseCode ? String(e.responseCode) : '',
+    detail: raw.replace(/[A-Za-z0-9+/=]{12,}/g, '[redacted]').slice(0, 180)
+  };
+}
+
+// to: כתובת אחת. מחזיר messageId בלבד. ניסיון שני אם החיבור ל-Gmail נכשל.
 async function sendMail({ to, subject, html, text }) {
   if (!isRealEmail(to)) {
     const e = new Error('bad_recipient');
@@ -36,14 +51,24 @@ async function sendMail({ to, subject, html, text }) {
     throw e;
   }
   const user = process.env.GMAIL_USER;
-  const info = await transport().sendMail({
-    from: '"גד מבנים" <' + user + '>',
-    to: to,
-    subject: subject,
-    html: html,
-    text: text
-  });
-  return { messageId: info && info.messageId ? String(info.messageId) : '' };
+  let last;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const info = await transport().sendMail({
+        from: '"גד מבנים" <' + user + '>',
+        to: to,
+        subject: subject,
+        html: html,
+        text: text
+      });
+      return { messageId: info && info.messageId ? String(info.messageId) : '' };
+    } catch (e) {
+      last = e;
+      const fail = mailFailure(e);
+      console.error('mail_send_failed', fail.code, fail.responseCode, fail.detail);
+    }
+  }
+  throw last;
 }
 
 // כתובות המנהלים המאושרים (profiles.role = admin) מחשבון ההתחברות. בלי כתובות פנימיות.

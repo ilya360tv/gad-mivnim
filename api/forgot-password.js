@@ -25,7 +25,7 @@ async function revokeSessions(profileId) {
 }
 
 async function allowed(code) {
-  const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  const since = new Date(Date.now() - 60 * 60 * 1000).toISOString().replace(/\.\d{3}Z$/, 'Z');
   await sb('/rest/v1/password_reset_attempts', {
     method: 'POST',
     headers: { Prefer: 'return=minimal' },
@@ -82,9 +82,15 @@ module.exports = handler(async (req) => {
 
     try {
       const mail = passwordReset(dest.name, p.user_code || code, password);
-      await sendMail({ to: dest.to, subject: mail.subject, html: mail.html, text: mail.text });
-    } catch (e) { /* המייל לא חוזר ללקוח; הסיסמה הזמנית נשארת אצל המנהל */ }
-  } catch (e) { /* אותה תשובה גם בכשל */ }
+      const sent = await sendMail({ to: dest.to, subject: mail.subject, html: mail.html, text: mail.text });
+      console.error('forgot_mail_ok', sent && sent.messageId ? sent.messageId : '');
+    } catch (e) {
+      const raw = String(e && (e.response || e.message) || '');
+      console.error('forgot_mail_fail', e && e.code ? String(e.code) : '', raw.replace(/[A-Za-z0-9+/=]{12,}/g, '[redacted]').slice(0, 180));
+    }
+  } catch (e) {
+    console.error('forgot_reset_fail', e && e.code ? String(e.code) : 'error');
+  }
 
   return { ok: true, message: GENERIC };
 });

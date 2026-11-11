@@ -4,7 +4,7 @@
    לא נוגעים בטפסים (POST), וידאו, iframes חיצוניים, אנליטיקס, /.netlify/ ו-/_vercel/.
    לעולם לא שומרים במטמון בקשות ל-Supabase (*.supabase.co), לספריית supabase-js (esm.sh) או ל-/api/* — נתונים אמיתיים ופרטיים. */
 
-var VERSION = 'gad-v11-20261111i';
+var VERSION = 'gad-v12-20261111j';
 var SHELL_CACHE = VERSION + '-shell';
 var PAGES_CACHE = VERSION + '-pages';
 var ASSETS_CACHE = VERSION + '-assets';
@@ -63,7 +63,7 @@ function trimCache(name, max) {
 
 function networkFirst(event, isPage) {
   var req = event.request;
-  return fetch(req)
+  return fetch(req, { cache: 'no-store' })
     .then(function (res) {
       if (res && res.ok && res.type === 'basic') {
         var copy = res.clone();
