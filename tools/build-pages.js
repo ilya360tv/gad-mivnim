@@ -41,7 +41,7 @@ const PAGES = [
     desc: 'הפודקאסט של GAD MIVNIM — אנשים משתפים. האזינו וצפו בפרקים.' },
   { id: 'gallery',     file: 'gallery.html',     nav: 'nav_gallery_short', data: ['projects-data'],
     desc: 'גלריית בנייה ועיצובים של GAD MIVNIM — לחלום ולהגשים. השראות מפרויקטים אמיתיים.' },
-  { id: 'careers',     file: 'careers.html',     nav: 'nav_careers',       data: ['careers-data', 'supabase-config', 'data-store'],
+  { id: 'careers',     file: 'careers.html',     nav: 'nav_careers',       data: ['careers-data', 'supabase-config', 'data-store', 'field-select'],
     desc: 'דרושים ב-GAD MIVNIM — בואו לבנות איתנו. משרות פתוחות והצטרפות כקבלן בית.' },
   { id: 'tenders',     file: 'tenders.html',     nav: 'nav_tenders',       data: ['supabase-config', 'data-store', 'tenders'],
     desc: 'אזור קבלני הבית של GAD MIVNIM — כניסה למנויים פעילים עם קוד משתמש ורשימת מכרזים.' },

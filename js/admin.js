@@ -40,29 +40,19 @@
     if (a.type === 'job') { return '<span class="adm-fchips">' + chip('field', a.note || a.roleSlug || '—') + '</span>'; }
     return '<span class="adm-fchips">' + store.fieldsOf(a).map(function (n) { return chip(n === store.GENERAL ? 'general' : 'field', n); }).join('') + '</span>';
   };
-  var fieldPicker = function (selected) {
-    return '<div class="adm-fpick" data-fpick>' + store.FIELDS.map(function (f) {
-      var on = selected.indexOf(f.name) !== -1;
-      return '<label class="adm-fpick__chip' + (on ? ' is-on' : '') + (f.name === store.GENERAL ? ' is-general' : '') + '"><input type="checkbox" value="' + esc(f.name) + '"' + (on ? ' checked' : '') + '><span>' + esc(f.name) + '</span></label>';
-    }).join('') + '</div>';
+  // בחירת תחומים: תיבה אחת עם רשימה נפתחת (js/field-select.js) — עד 3, או "קבלן כללי" לבד
+  var fieldPicker = function () {
+    return '<label class="adm-flabel" id="apFieldsLabel">תחומים (עד 3, או "קבלן כללי" — כל התחומים)</label><div data-fpick></div>';
   };
-  var bindPicker = function (root) {
-    var boxes = Array.prototype.slice.call(root.querySelectorAll('input[type="checkbox"]'));
-    var sync = function (changed) {
-      if (changed && changed.checked) {
-        var gen = changed.value === store.GENERAL;
-        boxes.forEach(function (b) { if (b !== changed && (gen || b.value === store.GENERAL)) { b.checked = false; } });
-      }
-      var n = boxes.filter(function (b) { return b.checked && b.value !== store.GENERAL; }).length;
-      boxes.forEach(function (b) {
-        b.disabled = !b.checked && b.value !== store.GENERAL && n >= store.MAX_FIELDS;
-        b.parentNode.classList.toggle('is-on', b.checked);
-        b.parentNode.classList.toggle('is-off', b.disabled);
-      });
-    };
-    root.addEventListener('change', function (e) { if (e.target.matches('input[type="checkbox"]')) { sync(e.target); } });
-    sync(null);
-    return function () { return store.normalizeFields(boxes.filter(function (b) { return b.checked; }).map(function (b) { return b.value; })); };
+  var bindPicker = function (root, selected, errEl) {
+    var sel = window.FieldSelect.create({
+      mount: root, multiple: true, max: store.MAX_FIELDS, general: store.GENERAL,
+      labelId: 'apFieldsLabel', errorId: errEl ? errEl.id : null, placeholder: 'fs_ph_multi',
+      options: store.FIELDS.map(function (f) { return { value: f.name, key: f.key }; }),
+      onChange: function (v) { if (errEl && v.length) { errEl.hidden = true; sel.invalid(false); } }
+    });
+    sel.set(selected);
+    return sel;
   };
 
   /* ---------- הודעה קטנה ---------- */
@@ -538,19 +528,20 @@
     openModal('אישור קבלן בית',
       '<form id="apForm" class="adm-form" novalidate>' +
         '<p class="adm-modal-sub"><strong>' + esc(a.fullName) + '</strong></p>' +
-        '<div class="adm-field"><label>תחומים (עד 3, או "קבלן כללי" — כל התחומים)</label>' + fieldPicker(store.fieldsOf(a)) + '</div>' +
+        '<div class="adm-field">' + fieldPicker() + '</div>' +
         '<p class="adm-error" id="apFieldErr" role="alert" hidden>יש לבחור לפחות תחום אחד</p>' +
         '<p class="adm-note">קוד המשתמש (GM-####) וסיסמה זמנית ייווצרו אוטומטית. הסיסמה הזמנית תופיע בשורת הקבלן, עם כפתורי הצגה והעתקה, עד שהוא יבחר סיסמה חדשה בכניסה הראשונה.</p>' +
         '<p class="adm-error" id="apErr" role="alert" hidden></p>' +
         '<div class="adm-form-actions"><button type="submit" class="adm-btn adm-btn-primary">אישור והפעלת מנוי</button>' +
         '<button type="button" class="adm-btn adm-btn-ghost" data-close>ביטול</button></div>' +
       '</form>');
-    var getFields = bindPicker($('apForm').querySelector('[data-fpick]'));
+    var picker = bindPicker($('apForm').querySelector('[data-fpick]'), store.fieldsOf(a), $('apFieldErr'));
     $('apForm').addEventListener('submit', function (e) {
       e.preventDefault();
-      var fields = getFields();
+      var fields = store.normalizeFields(picker.value());
       $('apFieldErr').hidden = !!fields.length;
-      if (!fields.length) { return; }
+      picker.invalid(!fields.length);
+      if (!fields.length) { picker.focus(); return; }
       var btn = $('apForm').querySelector('button[type="submit"]');
       btn.disabled = true;
       store.applicants.approve(a.id, fields).then(function (res) {

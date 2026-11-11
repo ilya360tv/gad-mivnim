@@ -845,17 +845,14 @@ document.addEventListener('DOMContentLoaded', function () {
         teamLists.appendChild(h); teamLists.appendChild(ul);
       });
     }
-    // תחום מקצועי (צוות): מרשימת התחומים היחידה — תחום אחד
-    var teamSel = document.getElementById('teamField');
-    if (teamSel && DSC) {
-      DSC.TENDER_FIELDS.forEach(function (f) {
-        var o = document.createElement('option');
-        o.value = f.name;
-        o.setAttribute('data-i18n', f.key);
-        o.textContent = CT(f.key, f.name);
-        teamSel.appendChild(o);
-      });
-    }
+    // תחום מקצועי (צוות): מרשימת התחומים היחידה — תחום אחד (תיבת בחירה, js/field-select.js)
+    var teamMount = document.getElementById('teamField');
+    var teamFieldErr = document.getElementById('teamFieldErr');
+    var teamSel = teamMount && DSC && window.FieldSelect ? window.FieldSelect.create({
+      mount: teamMount, multiple: false, labelId: 'teamFieldLabel', errorId: 'teamFieldErr', placeholder: 'car_f_pick',
+      options: DSC.TENDER_FIELDS.map(function (f) { return { value: f.name, key: f.key }; }),
+      onChange: function (v) { if (v.length) { teamFieldErr.hidden = true; teamSel.invalid(false); } }
+    }) : null;
 
     function cwShow(kind, from) {
       var m = CW[kind];
@@ -918,15 +915,21 @@ document.addEventListener('DOMContentLoaded', function () {
       teamForm.addEventListener('submit', function (e) {
         e.preventDefault();
         if (!teamForm.checkValidity()) { teamForm.reportValidity(); return; }
+        if (teamSel && !teamSel.value().length) {           // תחום חובה — הודעה מתחת לתיבה
+          teamFieldErr.hidden = false;
+          teamSel.invalid(true);
+          teamSel.focus();
+          return;
+        }
         teamOk.hidden = true;
         showFormErr(teamErr, null);
-        if (isBot(teamForm)) { teamOk.hidden = false; teamForm.reset(); return; }
+        if (isBot(teamForm)) { teamOk.hidden = false; teamForm.reset(); if (teamSel) { teamSel.reset(); } return; }
         if (!DSC) { showFormErr(teamErr, 'car_fail'); return; }
         var item = {
           type: 'team',
           fullName: document.getElementById('teamName').value.trim(),
           phone: document.getElementById('teamPhone').value.trim(),
-          fields: [teamSel.value],
+          fields: teamSel ? teamSel.value().slice(0, 1) : [],
           years: document.getElementById('teamYears').value,
           area: document.getElementById('teamArea').value.trim()
         };
@@ -935,6 +938,7 @@ document.addEventListener('DOMContentLoaded', function () {
         DSC.submitApplicant(item).then(function () {
           teamOk.hidden = false;
           teamForm.reset();
+          if (teamSel) { teamSel.reset(); }
         }, function (err) {
           showFormErr(teamErr, err && err.message === 'rate' ? 'car_wait' : 'car_fail');
         }).then(function () { btn.disabled = false; });
@@ -1050,7 +1054,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // תחום מקצועי: צ'יפים מרשימת התחומים היחידה (dataStore.FIELDS) — עד 3 תחומים, או "קבלן כללי" לבד (מנקה את השאר)
   var tendersForm    = document.getElementById('tendersForm');
   var tendersSuccess = document.getElementById('tendersSuccess');
-  var joinChips      = tendersForm ? tendersForm.querySelector('[data-field-chips]') : null;
+  var joinMount      = tendersForm ? tendersForm.querySelector('[data-field-select]') : null;
   var joinErr        = document.getElementById('tenderFieldsErr');
   var emailInput     = document.getElementById('tenderEmail');
   var emailErr       = document.getElementById('tenderEmailErr');
@@ -1120,48 +1124,28 @@ document.addEventListener('DOMContentLoaded', function () {
       docCheck();
     });
   }
-  var fieldBoxes = function () { return joinChips ? Array.prototype.slice.call(joinChips.querySelectorAll('input[type="checkbox"]')) : []; };
-  var syncChips = function (changed) {
-    var boxes = fieldBoxes();
-    if (changed && changed.checked) {
-      var isGen = changed.value === DS.GENERAL;
-      boxes.forEach(function (b) { if (b !== changed && (isGen || b.value === DS.GENERAL)) { b.checked = false; } });
-    }
-    var n = boxes.filter(function (b) { return b.checked && b.value !== DS.GENERAL; }).length;
-    boxes.forEach(function (b) {
-      b.disabled = !b.checked && b.value !== DS.GENERAL && n >= DS.MAX_FIELDS;   // מקסימום 3 — השאר נעולים
-      b.parentNode.classList.toggle('is-on', b.checked);
-      b.parentNode.classList.toggle('is-off', b.disabled);
-    });
-    if (joinErr && boxes.some(function (b) { return b.checked; })) { joinErr.hidden = true; }
-  };
-  if (joinChips && DS) {
-    DS.FIELDS.forEach(function (f, i) {
-      var lab = document.createElement('label');
-      lab.className = 'tn-field-chip' + (f.name === DS.GENERAL ? ' is-general' : '');
-      lab.innerHTML = '<input type="checkbox" name="tenderFields" value="' + f.name.replace(/"/g, '&quot;') + '" id="tnf' + i + '">' +
-        '<span data-i18n="' + f.key + '"></span>';
-      lab.querySelector('span').textContent = (window.GAD_T && window.GAD_T[f.key] && window.GAD_T[f.key][document.documentElement.getAttribute('lang') || 'he']) || f.name;
-      joinChips.appendChild(lab);
-    });
-    joinChips.addEventListener('change', function (e) { if (e.target.matches('input[type="checkbox"]')) { syncChips(e.target); } });
-    syncChips(null);
-  }
+  // תחום מקצועי: תיבה אחת עם רשימה נפתחת (js/field-select.js) — עד 3 תחומים, או "קבלן כללי" לבד
+  var joinSel = joinMount && DS && window.FieldSelect ? window.FieldSelect.create({
+    mount: joinMount, multiple: true, max: DS.MAX_FIELDS, general: DS.GENERAL,
+    labelId: 'tenderFieldsLabel', errorId: 'tenderFieldsErr', placeholder: 'fs_ph_multi',
+    options: DS.FIELDS.map(function (f) { return { value: f.name, key: f.key }; }),
+    onChange: function (v) { if (joinErr && v.length) { joinErr.hidden = true; joinSel.invalid(false); } }
+  }) : null;
   if (tendersForm && tendersSuccess) {
     var tendersErr = formErrEl(tendersSuccess);
     tendersForm.addEventListener('submit', function (e) {
       e.preventDefault();
-      var picked = fieldBoxes().filter(function (b) { return b.checked; }).map(function (b) { return b.value; });
+      var picked = joinSel ? joinSel.value() : [];
       if (emailInput && !emailOk(emailInput.value)) {
         showEmailErr(true);
         emailInput.focus();
         return;
       }
       showEmailErr(false);
-      if (joinChips && !picked.length) {
+      if (joinSel && !picked.length) {
         if (joinErr) { joinErr.hidden = false; }
-        var first = fieldBoxes()[0];
-        if (!tendersForm.checkValidity()) { tendersForm.reportValidity(); } else if (first) { first.focus(); }
+        joinSel.invalid(true);
+        if (!tendersForm.checkValidity()) { tendersForm.reportValidity(); } else { joinSel.focus(); }
         return;
       }
       if (!tendersForm.checkValidity()) {
@@ -1174,7 +1158,7 @@ document.addEventListener('DOMContentLoaded', function () {
         tendersForm.reset();
         showEmailErr(false);
         if (docInput) { docInput.value = ''; docRender(); }
-        syncChips(null);
+        if (joinSel) { joinSel.reset(); }
       };
       tendersSuccess.hidden = true;
       showFormErr(tendersErr, null);

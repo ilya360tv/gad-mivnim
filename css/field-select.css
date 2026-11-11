@@ -1,0 +1,238 @@
+/* ==========================================================================
+   GAD MIVNIM — field-select.css: תיבת בחירת תחום מקצועי (js/field-select.js)
+   אותו מראה כמו שדות הטופס: כהה, מעוגל, טבעת תכלת בפוקוס, חץ.
+   משמש באתר (טופסי ההצטרפות) ובמערכת הניהול (admin.css משנה רק גובה/רדיוס).
+   ========================================================================== */
+.fsel {
+  --fs-lb: #38bdf8;
+  --fs-lb-glow: rgba(56, 189, 248, .35);
+  --fs-field: #0e1216;
+  --fs-line: #323b45;
+  --fs-card: #12161b;
+  --fs-muted: #aab3bd;
+  --fs-ok: #5eead4;
+  --fs-h: 56px;
+  --fs-r: 12px;
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  font-size: 1.05rem;
+  text-align: start;
+}
+
+/* ----- התיבה הסגורה ----- */
+.fsel__box {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-height: var(--fs-h);
+  padding: 7px 12px;
+  padding-inline-end: 44px;                 /* מקום לחץ */
+  color: #ffffff;
+  background: var(--fs-field);
+  border: 2px solid var(--fs-line);
+  border-radius: var(--fs-r);
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.fsel__box:hover { border-color: #46515d; }
+.fsel:focus-within .fsel__box,
+.fsel.is-open .fsel__box { border-color: var(--fs-lb); box-shadow: 0 0 0 3px var(--fs-lb-glow); }
+.fsel.is-invalid .fsel__box { border-color: #f87171; }
+.fsel.is-invalid:focus-within .fsel__box { box-shadow: 0 0 0 3px rgba(248, 113, 113, .35); }
+
+.fsel__chips { display: contents; }
+.fsel__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  max-width: 100%;
+  min-height: 32px;
+  padding-inline: 12px 4px;
+  font-size: .9rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--fs-lb);
+  background: rgba(56, 189, 248, .12);
+  border: 1px solid rgba(56, 189, 248, .55);
+  border-radius: 999px;
+  cursor: default;
+}
+.fsel__chip.is-general { color: var(--fs-ok); background: rgba(45, 212, 191, .1); border-color: rgba(45, 212, 191, .55); }
+.fsel__chip > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fsel__x {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  font-size: .8rem;
+  line-height: 1;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.fsel__x:hover { background: rgba(255, 255, 255, .1); }
+.fsel__x:focus-visible { outline: 2px solid #ffffff; outline-offset: 0; }
+
+/* הכפתור ממלא את שאר השורה; החץ בצד (inline-end) */
+.fsel__toggle {
+  position: static;
+  flex: 1 1 60px;
+  display: flex;
+  align-items: center;
+  min-width: 60px;
+  min-height: 38px;
+  margin: 0;
+  padding: 0 4px;
+  font: inherit;
+  font-size: 1em;
+  color: #ffffff;
+  text-align: start;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  cursor: pointer;
+}
+.fsel__toggle:focus,
+.fsel__toggle:focus-visible { outline: none; box-shadow: none; }
+.fsel__ph { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fsel--multi .fsel__ph,
+.fsel__ph.is-ph { color: #8d97a1; }
+.fsel__ph[hidden] { display: none; }
+.fsel__chev {
+  position: absolute;
+  inset-inline-end: 14px;
+  top: 50%;
+  margin-top: -9px;
+  color: var(--fs-muted);
+  transition: transform .18s ease;
+  pointer-events: none;
+}
+.fsel.is-open .fsel__chev { transform: rotate(180deg); color: var(--fs-lb); }
+
+/* ----- הרשימה הנפתחת (מתחת לתיבה) ----- */
+.fsel__pop {
+  position: absolute;
+  top: calc(100% + 6px);
+  inset-inline: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: #ffffff;
+  background: var(--fs-card);
+  border: 1px solid #2a323b;
+  border-radius: 14px;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .6);
+}
+.fsel__head {
+  margin: 0;
+  padding: 10px 16px;
+  font-size: .85rem;
+  font-weight: 700;
+  color: var(--fs-lb);
+  border-bottom: 1px solid #2a323b;
+}
+.fsel__list {
+  max-height: 260px;
+  margin: 0;
+  padding: 6px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+  outline: none;
+  scrollbar-width: thin;
+  scrollbar-color: #3a4450 transparent;
+}
+.fsel__opt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  margin: 0;
+  padding: 8px 10px;
+  font-size: .98rem;
+  line-height: 1.3;
+  border-radius: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+.fsel__opt::before { content: none; }
+.fsel__opt:hover { background: rgba(255, 255, 255, .05); }
+.fsel__opt.is-active { background: rgba(56, 189, 248, .12); }
+.fsel__list:focus-visible .fsel__opt.is-active { box-shadow: inset 0 0 0 2px var(--fs-lb); }
+.fsel__opt.is-general { margin-bottom: 6px; position: relative; }
+.fsel__opt.is-general::after {                      /* קו דק אחרי "קבלן כללי" */
+  content: '';
+  position: absolute;
+  inset-inline: 4px;
+  bottom: -4px;
+  height: 1px;
+  background: #2a323b;
+}
+.fsel__opt.is-general .fsel__name { color: var(--fs-ok); font-weight: 600; }
+.fsel__opt.is-off { opacity: .38; cursor: not-allowed; }
+.fsel__opt.is-off:hover { background: transparent; }
+.fsel__check {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  color: transparent;
+  border: 2px solid #4a5561;
+  border-radius: 6px;
+  transition: background .12s ease, border-color .12s ease;
+}
+.fsel--single .fsel__check { border-radius: 50%; }
+.fsel__opt.is-on .fsel__check { color: #0a0c0e; background: var(--fs-lb); border-color: var(--fs-lb); }
+.fsel__opt.is-general.is-on .fsel__check { background: var(--fs-ok); border-color: var(--fs-ok); }
+.fsel__name { min-width: 0; }
+.fsel__note {
+  margin: 0;
+  padding: 8px 16px;
+  font-size: .82rem;
+  font-weight: 600;
+  color: #fbbf24;
+  border-top: 1px solid #2a323b;
+}
+.fsel__note[hidden] { display: none; }
+.fsel__foot {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 10px;
+  border-top: 1px solid #2a323b;
+}
+.fsel__done {
+  min-height: 40px;
+  margin: 0;
+  padding: 0 20px;
+  font: inherit;
+  font-size: .92rem;
+  font-weight: 700;
+  color: #0a0c0e;
+  background: var(--fs-lb);
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.fsel__done:hover { background: #7dd3fc; }
+.fsel__done:focus-visible { outline: 2px solid #ffffff; outline-offset: 2px; }
+
+@media (max-width: 767.98px) {
+  .fsel__list { max-height: 50vh; }
+  .fsel__done { min-height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fsel__box, .fsel__chev, .fsel__check { transition: none; }
+}

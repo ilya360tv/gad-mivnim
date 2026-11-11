@@ -472,3 +472,8 @@ input[type="date"].adm-input { color-scheme: dark; }
   .adm-applicants .adm-acts { flex-direction: row; width: auto; }
   .adm-applicants .adm-acts .adm-btn-sm { width: auto; }
 }
+
+/* ----- בחירת תחומים בחלון האישור (css/field-select.css) — גובה/רדיוס כמו שדות הניהול ----- */
+.adm-field .fsel { --fs-h: 48px; --fs-r: 10px; font-size: 1rem; }
+/* בתוך החלון הגולל: הרשימה נפתחת בזרימה (דוחפת את הכפתורים למטה) — לא נחתכת בקצה החלון */
+.adm-field .fsel__pop { position: relative; top: auto; margin-top: 6px; box-shadow: 0 10px 28px rgba(0, 0, 0, .45); }
