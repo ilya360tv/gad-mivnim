@@ -1,6 +1,11 @@
 {
   "cleanUrls": false,
   "trailingSlash": false,
+  "functions": {
+    "api/*.js": {
+      "regions": ["iad1"]
+    }
+  },
   "headers": [
     {
       "source": "/(.*)\\.(jpg|jpeg|png|webp|svg|mp4|woff2)",

@@ -69,6 +69,18 @@ module.exports = handler(async (req) => {
     meta.user_code = p.user_code || code;
 
     const password = tempPassword(14);
+    // קודם המייל. אם Gmail מסרב, הסיסמה הקיימת נשארת.
+    let sent;
+    try {
+      const mail = passwordReset(dest.name, p.user_code || code, password);
+      sent = await sendMail({ to: dest.to, subject: mail.subject, html: mail.html, text: mail.text });
+      console.error('forgot_mail_ok', sent && sent.messageId ? sent.messageId : '');
+    } catch (e) {
+      const raw = String(e && (e.response || e.message) || '');
+      console.error('forgot_mail_fail', e && e.code ? String(e.code) : '', raw.replace(/[A-Za-z0-9+/=]{12,}/g, '[redacted]').slice(0, 180));
+      return { ok: true, message: GENERIC };
+    }
+
     await sb('/auth/v1/admin/users/' + p.id, {
       method: 'PUT',
       body: { password: password, user_metadata: meta }
@@ -78,15 +90,6 @@ module.exports = handler(async (req) => {
       await saveTempPassword(p.id, password);
     } catch (e) {
       await saveTempPassword(p.id, password);
-    }
-
-    try {
-      const mail = passwordReset(dest.name, p.user_code || code, password);
-      const sent = await sendMail({ to: dest.to, subject: mail.subject, html: mail.html, text: mail.text });
-      console.error('forgot_mail_ok', sent && sent.messageId ? sent.messageId : '');
-    } catch (e) {
-      const raw = String(e && (e.response || e.message) || '');
-      console.error('forgot_mail_fail', e && e.code ? String(e.code) : '', raw.replace(/[A-Za-z0-9+/=]{12,}/g, '[redacted]').slice(0, 180));
     }
   } catch (e) {
     console.error('forgot_reset_fail', e && e.code ? String(e.code) : 'error');
