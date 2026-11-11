@@ -66,6 +66,18 @@ async function requireAdmin(req) {
   return user;
 }
 
+async function requireUser(req) {
+  const auth = req.headers.authorization || '';
+  const m = /^Bearer\s+(.+)$/i.exec(auth);
+  if (!m) { throw httpError(401, 'missing_token'); }
+  const { url, key } = env();
+  const r = await fetch(url + '/auth/v1/user', { headers: { apikey: key, Authorization: 'Bearer ' + m[1] } });
+  if (!r.ok) { throw httpError(401, 'invalid_token'); }
+  const user = await r.json();
+  if (!user || !user.id) { throw httpError(401, 'invalid_token'); }
+  return user;
+}
+
 // "קבלן כללי" לבד, או עד 3 תחומים (אותו כלל כמו באתר)
 function normalizeFields(list) {
   const names = (Array.isArray(list) ? list : [])
@@ -118,4 +130,4 @@ async function saveTempPassword(profileId, password) {
   });
 }
 
-module.exports = { GENERAL, sb, requireAdmin, normalizeFields, readBody, handler, httpError, UUID, tempPassword, saveTempPassword };
+module.exports = { GENERAL, sb, requireAdmin, requireUser, normalizeFields, readBody, handler, httpError, UUID, tempPassword, saveTempPassword };

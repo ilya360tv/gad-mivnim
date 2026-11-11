@@ -293,15 +293,18 @@
       (rows.length ? '<div class="adm-table-wrap"><table class="adm-table"><thead><tr>' +
         '<th>שם</th><th>תחום</th><th>מיקום</th><th>מועד פתיחה</th><th>מועד אחרון</th><th>סטטוס</th><th>מועמדויות</th><th>פעולות</th>' +
         '</tr></thead><tbody>' + rows.map(function (t) {
-          var n = data.applications.filter(function (p) { return p.tenderId === t.id; }).length;
+          var people = data.applications.filter(function (p) { return p.tenderId === t.id; });
+          var who = people.length ? '<ul class="adm-parts">' + people.map(function (p) {
+            return '<li>' + esc(p.fullName || '—') + ' · <bdi>' + esc(p.userCode || '—') + '</bdi> · <bdi>' + esc(p.phone || '—') + '</bdi> · <bdi>' + esc(p.email || '—') + '</bdi></li>';
+          }).join('') + '</ul>' : '';
           return '<tr data-id="' + esc(t.id) + '">' +
-            '<td data-label="שם"><strong>' + esc(t.title) + '</strong></td>' +
+            '<td data-label="שם"><strong>' + esc(t.title) + '</strong>' + who + '</td>' +
             '<td data-label="תחום">' + esc(t.field) + '</td>' +
             '<td data-label="מיקום">' + esc(t.location) + '</td>' +
             '<td data-label="מועד פתיחה">' + fmtDate(t.openDate) + '</td>' +
             '<td data-label="מועד אחרון">' + fmtDate(t.deadline) + '</td>' +
             '<td data-label="סטטוס">' + chip(t.status, TENDER_STATUS[t.status]) + '</td>' +
-            '<td data-label="מועמדויות">' + n + '</td>' +
+            '<td data-label="מועמדויות">' + people.length + '</td>' +
             '<td data-label="פעולות" class="adm-actions"><div class="adm-acts">' +
               '<button type="button" class="adm-btn adm-btn-sm" data-act="edit">עריכה</button>' +
               '<button type="button" class="adm-btn adm-btn-sm" data-act="toggle">' + (t.status === 'published' ? 'הסתרה' : 'פרסום') + '</button>' +
@@ -589,10 +592,11 @@
       var list = groups[tid].sort(byNewest), t = list[0].tender;
       return '<div class="adm-card adm-group"><h2 class="adm-h2">' + esc(t ? t.title : '(מכרז נמחק)') +
         (t ? ' <span class="adm-muted">· ' + esc(t.field) + ' · ' + esc(t.location) + '</span>' : '') + ' ' + chip('count', list.length + ' מועמדויות') + '</h2>' +
-        '<div class="adm-table-wrap"><table class="adm-table"><thead><tr><th>קוד משתמש</th><th>שם הקבלן</th><th>תאריך</th><th>הערה</th></tr></thead><tbody>' +
+        '<div class="adm-table-wrap"><table class="adm-table"><thead><tr><th>שם הקבלן</th><th>קוד משתמש</th><th>טלפון</th><th>אימייל</th><th>תאריך</th></tr></thead><tbody>' +
         list.map(function (p) {
-          return '<tr><td data-label="קוד משתמש"><bdi>' + esc(p.userCode || '—') + '</bdi></td><td data-label="שם הקבלן">' + esc(p.fullName || '—') + '</td>' +
-            '<td data-label="תאריך">' + fmtDate(p.createdAt) + '</td><td data-label="הערה">' + (p.note ? esc(p.note) : '<span class="adm-muted">—</span>') + '</td></tr>';
+          return '<tr><td data-label="שם הקבלן">' + esc(p.fullName || '—') + '</td><td data-label="קוד משתמש"><bdi>' + esc(p.userCode || '—') + '</bdi></td>' +
+            '<td data-label="טלפון"><bdi>' + esc(p.phone || '—') + '</bdi></td><td data-label="אימייל"><bdi>' + esc(p.email || '—') + '</bdi></td>' +
+            '<td data-label="תאריך">' + fmtDate(p.createdAt) + '</td></tr>';
         }).join('') + '</tbody></table></div></div>';
     }).join('');
   }

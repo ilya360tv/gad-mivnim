@@ -305,16 +305,34 @@
         });
       });
     },
+    remove: function (tenderId) {
+      return client().then(function (sb) {
+        return sb.auth.getUser().then(function (u) {
+          var uid = u.data && u.data.user ? u.data.user.id : null;
+          return sb.from('applications').delete().eq('tender_id', tenderId).eq('profile_id', uid).then(unwrap);
+        });
+      });
+    },
+    notify: function (tenderId) { return callApi('/api/participate-notify', { tenderId: tenderId }); },
     // מנהל: הכל, עם שם המכרז והקבלן
     list: function () {
       return client().then(function (sb) {
-        return sb.from('applications').select('id, tender_id, note, created_at, profiles(user_code, full_name), tenders(title, field, location)')
+        return sb.from('applications').select('id, tender_id, profile_id, note, created_at, profiles(user_code, full_name, phone, email), tenders(title, field, location)')
           .order('created_at', { ascending: false }).then(unwrap).then(function (rows) {
-            return rows.map(function (r) {
-              return { id: r.id, tenderId: r.tender_id, note: r.note || '', createdAt: r.created_at,
-                userCode: r.profiles ? r.profiles.user_code || '' : '', fullName: r.profiles ? r.profiles.full_name || '' : '',
+            var mapped = rows.map(function (r) {
+              var prof = r.profiles || {};
+              return { id: r.id, tenderId: r.tender_id, profileId: r.profile_id, note: r.note || '', createdAt: r.created_at,
+                userCode: prof.user_code || '', fullName: prof.full_name || '', phone: prof.phone || '', email: prof.email || '',
                 tender: r.tenders ? { title: r.tenders.title, field: r.tenders.field, location: r.tenders.location } : null };
             });
+            var missing = mapped.filter(function (a) { return a.profileId && !a.email; }).map(function (a) { return a.profileId; });
+            if (!missing.length) { return mapped; }
+            return sb.from('applicants').select('profile_id, email').in('profile_id', missing).then(unwrap).then(function (apps) {
+              var by = {};
+              (apps || []).forEach(function (a) { if (a && a.email && !by[a.profile_id]) { by[a.profile_id] = a.email; } });
+              mapped.forEach(function (a) { if (!a.email && by[a.profileId]) { a.email = by[a.profileId]; } });
+              return mapped;
+            }, function () { return mapped; });
           });
       });
     }
