@@ -2587,34 +2587,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
   /* ---------------------------------------------------------------
-     10) #about — הכותרת "מדוע נולד הרעיון..." בשורה אחת, ברוחב עמודת הטקסט בדיוק
-         (מחשב ≥1024). גודל הכתב מחושב כך שהשורה נגמרת בקצה הפסקאות. במובייל — שבירה רגילה.
+     10) #about — הכותרת "מדוע נולד הרעיון..." בשורה אחת, ממורכזת בין עמודות הצד (מסך ≥769).
+         הגודל הבסיסי = כמו כותרות העמודים; אם השורה רחבה מהמקום הפנוי — מקטינים עד 18px.
+         אם גם ב-18px לא נכנס — חוזרים לשבירה רגילה (לעולם לא חותכים). מובייל ≤768 — שבירה רגילה.
      --------------------------------------------------------------- */
   var abTitle = document.querySelector('#about .about-title');
-  var abCol = document.querySelector('#about .about-text');
-  if (abTitle && abCol) {
+  if (abTitle) {
     var fitAbout = function () {
-      abTitle.style.fontSize = '';
-      abTitle.style.maxWidth = '';
-      if (window.innerWidth < 1024) { abTitle.style.whiteSpace = ''; return; }
-      abTitle.style.whiteSpace = 'nowrap';
-      var target = abCol.getBoundingClientRect().width;
-      var r = document.createRange(); r.selectNodeContents(abTitle);
-      var w = r.getBoundingClientRect().width;
-      if (target && w) {
-        // מגדילים או מכווצים כך שהשורה תמלא בדיוק את רוחב עמודת הטקסט (עד 40px)
-        var fs = parseFloat(getComputedStyle(abTitle).fontSize);
-        var raw = fs * target / w * 0.998;
-        var next = Math.max(12, Math.min(40, raw));
-        abTitle.style.fontSize = next.toFixed(2) + 'px';
-        // הכותרת לעולם לא יוצאת מעמודת הטקסט (גם ב-LTR, שם עמודת התמונה בצד השני): אם אפילו ב-12px היא רחבה מהעמודה — שבירת שורות בתוך העמודה
-        var isLtr = (document.documentElement.getAttribute('dir') || 'rtl') === 'ltr';
-        if (raw < 12 || isLtr) { abTitle.style.maxWidth = target.toFixed(1) + 'px'; }
-        if (raw < 12) {
-          var p0 = abCol.querySelector('p');
-          abTitle.style.whiteSpace = 'normal';
-          abTitle.style.fontSize = (p0 ? parseFloat(getComputedStyle(p0).fontSize) * 1.1 : 16).toFixed(2) + 'px';
-        }
+      abTitle.classList.remove('about-one-line');
+      abTitle.style.removeProperty('--about-fs');
+      if (window.innerWidth <= 768) { return; }
+      var base = parseFloat(getComputedStyle(abTitle).fontSize);      // הגודל הרגיל של כותרת העמוד
+      abTitle.classList.add('about-one-line');
+      abTitle.style.setProperty('--about-fs', base + 'px');
+      var avail = abTitle.clientWidth, need = abTitle.scrollWidth;
+      if (avail && need > avail) {
+        var fs = base * avail / need * 0.99;
+        if (fs < 18) { abTitle.classList.remove('about-one-line'); abTitle.style.removeProperty('--about-fs'); }
+        else { abTitle.style.setProperty('--about-fs', fs.toFixed(2) + 'px'); }
       }
       if (typeof liftMedia === 'function') { liftMedia(); }          // הכותרת השתנתה — מיישרים מחדש את כותרת התמונות
     };

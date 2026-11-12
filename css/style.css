@@ -8074,3 +8074,16 @@ html[dir] body #main .page-eyebrow + * { margin-top: 0 !important; }
   }
   html body .a11y-panel { --panel-bottom: 16px; }
 }
+
+/* ==========================================================================
+   ABOUT TITLE — "מדוע נולד הרעיון..." בשורה אחת (מסך ≥769), ממורכזת כמו התווית "אודות הקבוצה".
+   הקלאס about-one-line והגודל --about-fs נקבעים ע"י fitAbout (js/script.js, סעיף 10):
+   מקטינים את הכתב עד 18px כדי שהמשפט ייכנס בין עמודות הצד. בלי JS / במובייל — שבירה רגילה.
+   ========================================================================== */
+html[dir] body #main #about .page-eyebrow + .section-title.about-one-line {
+  white-space: nowrap !important;
+  text-wrap: nowrap;
+  font-size: var(--about-fs) !important;
+  text-align: center !important;
+  text-align-last: center !important;
+}
