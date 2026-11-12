@@ -2706,7 +2706,6 @@ html[dir="ltr"] .hero .hero-title { text-align: left; }
 }
 
 /* ----- כותרות הסקשנים: לימין, בלי המקף הירוק ----- */
-.section-eyebrow { margin-inline: 0; }
 .section-eyebrow::before { display: none; }  /* המקף הירוק שליד התווית — הוסר */
 
 .section-title { text-align: start; }
@@ -5219,17 +5218,8 @@ body .site-header .main-nav.is-open ul li a { color: var(--lb); }
   word-spacing: .2em;
 }
 
-/* ----- #about: התווית "אודות הקבוצה" = אותו סגנון כמו התוויות בשאר הסקשנים (גלובלי); כאן רק היישור לקצה הימני של הכותרת ----- */
-#about .section-eyebrow {
-  display: block;
-  width: auto;
-  margin-inline: 0;
-  text-align: start;
-}
-
 /* ריווח האותיות (.14em) נוסף מימין לאות הראשונה בעברית (RTL) ודוחף אותה שמאלה —
    מקזזים בשוליים שליליים באותו גודל, כך שהאות הראשונה עומדת בדיוק על קצה הפסקאות (בלי JS/transform) */
-html[dir="rtl"] #about .section-eyebrow { margin-inline-start: -.14em; }
 html[dir="rtl"] #about .about-text h3.about-sub { margin-inline-start: -.14em !important; }
 
 /* ----- #about: החלק מ"מחלקה משפטית" ועד הסוף — לבן במקום ירוק כהה (נשאר מודגש) ----- */
@@ -6084,7 +6074,6 @@ body .plan-card .plan-price { margin: -4px 0 6px; font-size: .9rem; color: var(-
 /* ----- #tenders ו-#app: הכותרות, שורת ההסבר והתוכן ממורכזים על קו המרכז של אזור התוכן (בין עמודות הצד) ----- */
 #tenders .section-title,
 #tenders .section-lead,
-#app .section-eyebrow,
 #app .section-title,
 #app .section-lead {
   display: block;
@@ -6099,7 +6088,6 @@ body .plan-card .plan-price { margin: -4px 0 6px; font-size: .9rem; color: var(-
    ========================================================================== */
 html[dir] body #tenders .section-title,
 html[dir] body #tenders .section-lead,
-html[dir] body #app .section-eyebrow,
 html[dir] body #app .section-title,
 html[dir] body #app .section-lead {
   display: block;
@@ -6121,7 +6109,6 @@ html[dir] body #app .plans-grid {
   html[dir] body #tenders,
   html[dir] body #app { padding-block: 48px; }
   /* #tenders — הכותרות כמו בשאר הסקשנים (בלי דריסות גודל/ריווח) */
-  html[dir] body #app .section-eyebrow { margin-top: 0; margin-bottom: 10px; }
   html[dir] body #app .section-title { font-size: clamp(1.8rem, 2.6vw, 2.6rem); margin-top: 0; margin-bottom: 12px; }
   html[dir] body #tenders .section-lead,
   html[dir] body #app .section-lead { margin-top: 0; margin-bottom: 28px; }
@@ -7116,10 +7103,8 @@ html.a11y-no-motion #gallery .gal-grid.is-replaced { display: flex; }
 @media (max-width: 767.98px) {
   .pod-head { flex-direction: column; gap: 18px; }
   html[dir] body #podcast .pod-head__text,
-  html[dir] body #podcast .pod-head__text .section-eyebrow,
   html[dir] body #podcast .pod-head__text .section-title,
   html[dir] body #podcast .pod-head__count { text-align: center !important; margin-inline: auto !important; }
-  html[dir] body #podcast .pod-head__text .section-eyebrow { display: flex; justify-content: center; }
 }
 @media (max-width: 640px) {
   .pod-head__media { aspect-ratio: 21 / 9; }       /* כמו אזור התמונה בכרטיס במובייל */
@@ -7992,3 +7977,38 @@ html.a11y-no-motion body.page-split > main { animation: none !important; }
     transform-origin: center left;
   }
 }
+
+/* ==========================================================================
+   PAGE EYEBROW — כותרת התווית של כל עמוד (.page-eyebrow), כלל אחד לכל האתר.
+   דסקטופ (≥1024): ממורכזת בין שתי עמודות הצד, ובראש העמוד (גלילה 0) באותו קו גובה כמו
+   מרכז עיגול הלוגו ועיגול השפות (= --side-top + חצי --side-circle). נגללת עם התוכן.
+   מובייל/טאבלט (<1024): ממורכזת בראש התוכן, מתחת לפס העליון.
+   הריווח לתוכן שמתחתיה — זהה בכל העמודים.
+   ========================================================================== */
+:root {
+  --pe-fs: clamp(1.05rem, 1.6vw, 1.35rem);        /* גודל הכתב (כמו התוויות עד היום) */
+  --pe-lh: 1.6;                                   /* גובה השורה — קבוע, כדי לחשב את המרכז */
+  --pe-top: 24px;                                 /* מובייל: מרווח מתחת לפס העליון */
+  --pe-gap: 22px;                                 /* מובייל: מרווח לתוכן */
+}
+@media (min-width: 1024px) {
+  :root {
+    --pe-top: calc(var(--side-top) + var(--side-circle) / 2 - var(--pe-fs) * var(--pe-lh) / 2);
+    --pe-gap: 28px;
+  }
+}
+/* הסקשן שמכיל את התווית מתחיל בדיוק בגובה המחושב (במקום הריפוד העליון הרגיל שלו) */
+html[dir] body #main > section.section:has(> .container > .page-eyebrow) {
+  padding-top: var(--pe-top) !important;
+}
+html[dir] body #main .section-eyebrow.page-eyebrow {
+  display: block !important;
+  width: fit-content !important;
+  max-width: 100%;
+  margin: 0 auto var(--pe-gap) !important;
+  padding: 0 0 0 .14em;                           /* ריווח האותיות מוסיף .14em בצד ימין — מאזנים משמאל, כך שהטקסט באמצע בדיוק */
+  font-size: var(--pe-fs) !important;
+  line-height: var(--pe-lh) !important;
+  text-align: center !important;
+}
+html[dir] body #main .page-eyebrow + * { margin-top: 0 !important; }
