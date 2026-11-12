@@ -7997,6 +7997,25 @@ html[dir] body #main .section-eyebrow.page-eyebrow {
   text-align: center !important;
 }
 html[dir] body #main .page-eyebrow + * { margin-top: 0 !important; }
+/* מסגרת גלולה סביב כותרת העמוד — רק מסגרת: טבעת 1px ורקע כהה כמו בגלולות הצד, פינות עגולות מלאות.
+   המסגרת היא שכבה מאחורי הטקסט (::after, absolute) — לא משנה את גודל הקופסה, ולכן הטקסט וה-h2 נשארים
+   בדיוק באותו מקום. הקופסה כבר מאוזנת לריווח האותיות (padding-left .14em), כך שהמסגרת סימטרית סביב הטקסט.
+   כותרת ולא כפתור — בלי hover ובלי סמן יד. */
+html[dir] body #main .section-eyebrow.page-eyebrow {
+  position: relative;
+  isolation: isolate;
+  cursor: default;
+}
+html[dir] body #main .section-eyebrow.page-eyebrow::after {
+  content: '';
+  position: absolute;
+  inset: -10px max(-26px, calc((100% - 100vw) / 2 + 4px));   /* 26px מכל צד; במסך צר — לא יוצאת מהמסך */
+  z-index: -1;
+  border-radius: 999px;
+  background: linear-gradient(var(--lb-bg), var(--lb-bg)), rgba(10, 12, 14, .55);
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, .45);
+  pointer-events: none;
+}
 
 /* ==========================================================================
    PAGE TITLE + COMPACT (דסקטופ ≥1024) — כלל אחד לכל עמודי התוכן.
