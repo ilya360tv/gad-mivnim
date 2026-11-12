@@ -3074,4 +3074,10 @@ function cardScale() {
   navigator.serviceWorker.getRegistrations().then(function (regs) {
     regs.forEach(function (reg) { reg.unregister(); });
   }).catch(function () {});
+  // Cache ישן של ה-PWA שנשאר בלי Service Worker (למשל התקנה שנכשלה) — האתר לא משתמש ב-Cache Storage בכלל
+  if (window.caches && caches.keys) {
+    caches.keys().then(function (keys) {
+      keys.forEach(function (k) { if (k.indexOf('gad-') === 0) { caches.delete(k); } });
+    }).catch(function () {});
+  }
 })();
