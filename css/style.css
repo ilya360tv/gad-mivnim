@@ -5568,32 +5568,36 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
   html[dir="ltr"] .site-header .main-nav ul li:nth-child(-n+7) { grid-column: 3; }
   html[dir="ltr"] .site-header .main-nav ul li:nth-child(n+8)  { grid-column: 1; }
 
-  /* כפתור הנגישות — בעמודה הימנית, ממורכז מתחת לגלולה האחרונה ("השותפים שלנו") עם 16px רווח.
-     אחרי גלילה מופיע "חזרה למעלה" במקום הזה, וכפתור הנגישות יורד 12px מתחתיו — אף פעם לא על הגלולות.
+  /* כפתור הנגישות — בעמודה השמאלית (עמודת השפות), ממורכז על קו המרכז שלה, 16px מתחת לגלולה האחרונה "שירות לקוחות".
+     "חזרה למעלה" (מופיע רק אחרי גלילה) — מתחתיו, 12px רווח, כך שלא דוחף אותו. שניהם קבועים במסך.
+     העמודות קבועות פיזית גם בשפות LTR (גלולות 8–14 תמיד משמאל) — לכן left בשני הכיוונים.
      תחתית הגלולה האחרונה = 2×ריווח עליון + עיגול + 7 גלולות + 6 רווחים */
   :root {
     --pill-last-b: calc(2 * var(--side-top) + var(--side-circle) + 7 * var(--pill-h) + 6 * var(--side-gap));
+    --fab-top: calc(var(--pill-last-b) + 16px);
   }
   .a11y-fab {
-    left: auto !important;
-    right: calc((var(--side-w) - 56px) / 2) !important;
+    left: calc((var(--side-w) - 56px) / 2) !important;
+    right: auto !important;
     bottom: auto !important;
-    top: calc(var(--pill-last-b) + 16px);
-    transition: top .3s ease, transform .18s ease, background .18s ease, box-shadow .18s ease;
+    top: var(--fab-top) !important;
   }
-  body:has(.back-top.is-visible) .a11y-fab { top: calc(var(--pill-last-b) + 16px + 54px + 12px); }
   .back-top {
-    right: calc((var(--side-w) - 54px) / 2) !important;
-    left: auto !important;
+    left: calc((var(--side-w) - 54px) / 2) !important;
+    right: auto !important;
     inset-inline-start: auto;
     bottom: auto !important;
-    top: calc(var(--pill-last-b) + 16px);
+    top: calc(var(--fab-top) + 56px + 12px) !important;
   }
-  /* הפאנל נפתח לידו, משמאל לעמודה, מיושר לתחתית הכפתור — כולו בתוך המסך */
+  /* הפאנל נפתח ליד הכפתור, לכיוון מרכז הדף; התחתית שלו בגובה תחתית הכפתור, כולו בתוך המסך */
   .a11y-panel {
-    right: calc(var(--side-w) + 12px) !important;
-    bottom: 24px;
-    max-height: calc(100vh - 48px);
+    left: calc(var(--side-w) + 12px) !important;
+    right: auto !important;
+    top: auto !important;
+    --panel-bottom: max(16px, calc(100vh - var(--fab-top) - 56px));
+    bottom: var(--panel-bottom);
+    max-height: calc(100vh - 16px - var(--panel-bottom));   /* גבוה מדי — נגלל בפנים, לא יוצא מהמסך */
+    transform-origin: bottom left;
   }
 
   /* מספר הטלפון הגדול ב-#contact: הגודל היה לפי רוחב המסך המלא — מותאם לרוחב התוכן, בשורה אחת */
@@ -8054,17 +8058,19 @@ html[dir] body #main .page-eyebrow + * { margin-top: 0 !important; }
   }
 }
 
-/* מסך נמוך מדי לגלולות + שני הכפתורים — הכפתורים בפינה הימנית-תחתונה של אזור התוכן (מחוץ לעמודות) */
-@media (min-width: 1024px) and (max-height: 680px) {
-  html body .a11y-fab,
-  html body:has(.back-top.is-visible) .a11y-fab {
-    right: calc(var(--side-w) + 16px) !important;
+/* מסך נמוך מדי לגלולות + שני הכפתורים (תחתית הגלולה + 16 + 56 + 12 + 54 + 16 > גובה המסך):
+   בפינה השמאלית-תחתונה של המסך, בתוך העמודה (מחוץ לאזור התוכן) — זה לצד זה, ממורכזים על קו המרכז של העמודה
+   (56 + 12 + 54 = 122px < רוחב העמודה), כך שצריך רק 88px מתחת לגלולה האחרונה ולא עולים על הגלולות. */
+@media (min-width: 1024px) and (max-height: 660px) {
+  html body .a11y-fab {
+    left: calc((var(--side-w) - 122px) / 2) !important;
     top: auto !important;
     bottom: 16px !important;
   }
   html body .back-top {
-    right: calc(var(--side-w) + 17px) !important;
+    left: calc((var(--side-w) - 122px) / 2 + 56px + 12px) !important;
     top: auto !important;
-    bottom: calc(16px + 56px + 12px) !important;
+    bottom: 17px !important;
   }
+  html body .a11y-panel { --panel-bottom: 16px; }
 }
