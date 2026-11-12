@@ -1790,7 +1790,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // מובייל: מעט קטן יותר, אותן פרופורציות
         var cardW = iw < 768 ? 240
           : iw < 1024 ? Math.round((Math.min(vw, 900) - 20) / 2)
-          : Math.round((vw - 4 * gap) / 5);
+          : Math.round((vw - 4 * gap) / 5 * cardScale());
         ptqBox.style.setProperty('--pt-card-w', cardW + 'px');
         ptqBox.style.setProperty('--pt-card-gap', gap + 'px');
         var step = cardW + gap;
@@ -2327,7 +2327,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var vw = pcqBox.clientWidth || iw;
         var cardW = iw < 768 ? 240
           : iw < 1024 ? Math.round((Math.min(vw, 900) - 20) / 2)
-          : Math.round((vw - 4 * gap) / 5);
+          : Math.round((vw - 4 * gap) / 5 * cardScale());
         pcqBox.style.setProperty('--pt-card-w', cardW + 'px');
         pcSec.style.setProperty('--pod-photo-w', (cardW - 2) + 'px');   // תמונת הכותרת = אזור התמונה של הכרטיס (בלי המסגרת)
         pcqBox.style.setProperty('--pt-card-gap', gap + 'px');
@@ -3045,3 +3045,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 });
+
+/* ---------------------------------------------------------------
+   כותרת העמוד (.section-title שאחרי .page-eyebrow): הגובה האמיתי שלה ב---title-h,
+   כדי שה-CSS ימרכז אותה אנכית על קו הגלולות הראשונות גם כשהיא נשברת לשתי שורות.
+   --------------------------------------------------------------- */
+(function () {
+  var titles = document.querySelectorAll('#main .page-eyebrow + .section-title');
+  if (!titles.length || !window.ResizeObserver) { return; }
+  var ro = new ResizeObserver(function (entries) {
+    entries.forEach(function (e) { e.target.style.setProperty('--title-h', e.contentRect.height + 'px'); });
+  });
+  Array.prototype.forEach.call(titles, function (el) { ro.observe(el); });
+})();
+
+/* קנה המידה של הכרטיסים בפסים הנעים (#partners, #podcast) — מ---card-scale ב-CSS (דסקטופ 0.85) */
+function cardScale() {
+  var v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-scale'));
+  return v > 0 ? v : 1;
+}

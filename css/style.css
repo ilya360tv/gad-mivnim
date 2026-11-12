@@ -5568,25 +5568,26 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
   html[dir="ltr"] .site-header .main-nav ul li:nth-child(-n+7) { grid-column: 3; }
   html[dir="ltr"] .site-header .main-nav ul li:nth-child(n+8)  { grid-column: 1; }
 
-  /* כפתור הנגישות וכפתור "חזרה למעלה" — לא על הגלולות התחתונות: נכנסים פנימה, צמודים לקצה העמודה */
-  /* כפתור הנגישות — בעמודה הימנית: ממורכז מתחת לגלולות (קו המרכז של הלוגו), 24px מתחתית המסך.
-     מעליו (12px) כפתור "חזרה למעלה" (54px); במסך נמוך — החץ לפחות 16px מתחת לגלולה האחרונה
-     (תחתית הגלולה = 2×ריווח עליון + עיגול + 7 גלולות + 6 רווחים) */
+  /* כפתור הנגישות — בעמודה הימנית, ממורכז מתחת לגלולה האחרונה ("השותפים שלנו") עם 16px רווח.
+     אחרי גלילה מופיע "חזרה למעלה" במקום הזה, וכפתור הנגישות יורד 12px מתחתיו — אף פעם לא על הגלולות.
+     תחתית הגלולה האחרונה = 2×ריווח עליון + עיגול + 7 גלולות + 6 רווחים */
   :root {
-    --fab-top: max(calc(100vh - 24px - 56px),
-                   calc(2 * var(--side-top) + var(--side-circle) + 7 * var(--pill-h) + 6 * var(--side-gap) + 16px + 54px + 12px));
+    --pill-last-b: calc(2 * var(--side-top) + var(--side-circle) + 7 * var(--pill-h) + 6 * var(--side-gap));
   }
   .a11y-fab {
+    left: auto !important;
     right: calc((var(--side-w) - 56px) / 2) !important;
     bottom: auto !important;
-    top: var(--fab-top);
+    top: calc(var(--pill-last-b) + 16px);
+    transition: top .3s ease, transform .18s ease, background .18s ease, box-shadow .18s ease;
   }
+  body:has(.back-top.is-visible) .a11y-fab { top: calc(var(--pill-last-b) + 16px + 54px + 12px); }
   .back-top {
     right: calc((var(--side-w) - 54px) / 2) !important;
     left: auto !important;
     inset-inline-start: auto;
     bottom: auto !important;
-    top: calc(var(--fab-top) - 12px - 54px);
+    top: calc(var(--pill-last-b) + 16px);
   }
   /* הפאנל נפתח לידו, משמאל לעמודה, מיושר לתחתית הכפתור — כולו בתוך המסך */
   .a11y-panel {
@@ -6053,7 +6054,7 @@ body .plan-card .plan-price { margin: -4px 0 6px; font-size: .9rem; color: var(-
 }
 
 /* ----- "חזרה למעלה" מעל כפתור הנגישות (טאבלט/טלפון), באותו קו מרכז, 12px ביניהם.
-         דסקטופ — ראו --fab-top בעמודות הצד. כפתור הנגישות: 56px ב-22px מימין/מלמטה;
+         דסקטופ — ראו --pill-last-b בעמודות הצד. כפתור הנגישות: 56px ב-22px מימין/מלמטה;
          ≤560px — 48px, 16px מלמטה, 22px מימין (עברית) / 16px (LTR) ----- */
 @media (max-width: 1023.98px) {
   .back-top {
@@ -7957,26 +7958,6 @@ html.a11y-no-motion body.page-split > main { animation: none !important; }
 .hero-video::-webkit-media-controls-start-playback-button,
 .hero-video::-webkit-media-controls-overlay-play-button { display: none !important; -webkit-appearance: none; }
 
-/* כפתור הנגישות — צד שמאל, ממורכז אנכית. "חזרה למעלה" נשאר למטה מימין ולא חופף אותו. */
-.a11y-fab {
-  left: 16px !important;
-  right: auto !important;
-  top: 50% !important;
-  bottom: auto !important;
-  transform: translateY(-50%) !important;
-}
-@media (min-width: 1024px) {
-  .a11y-fab {
-    left: calc((var(--side-w) - 56px) / 2) !important;
-  }
-  .a11y-panel {
-    left: calc(var(--side-w) + 12px) !important;
-    right: auto !important;
-    bottom: auto !important;
-    top: max(16px, calc(50vh - 220px));
-    transform-origin: center left;
-  }
-}
 
 /* ==========================================================================
    PAGE EYEBROW — כותרת התווית של כל עמוד (.page-eyebrow), כלל אחד לכל האתר.
@@ -8012,3 +7993,78 @@ html[dir] body #main .section-eyebrow.page-eyebrow {
   text-align: center !important;
 }
 html[dir] body #main .page-eyebrow + * { margin-top: 0 !important; }
+
+/* ==========================================================================
+   PAGE TITLE + COMPACT (דסקטופ ≥1024) — כלל אחד לכל עמודי התוכן.
+   1. הכותרת הראשית (.section-title שמיד אחרי .page-eyebrow) ממורכזת בין העמודות, ובגלילה 0
+      המרכז האנכי שלה = מרכז הגלולות הראשונות ("דף הבית" / "מידע לאזרח ולבונה").
+      --title-h = הגובה האמיתי של הכותרת (נמדד ב-js/script.js, גם כשהיא נשברת לשתי שורות); בלי JS — שורה אחת.
+   2. עמודים קומפקטיים: כותרת → באדג'ים 16px, באדג'ים (או כותרת) → תוכן 28px, כרטיסים ×0.85.
+   ========================================================================== */
+@media (min-width: 1024px) {
+  :root {
+    --pill1-cy: calc(2 * var(--side-top) + var(--side-circle) + var(--pill-h) / 2);
+    --eb-bottom: calc(var(--side-top) + var(--side-circle) / 2 + var(--pe-fs) * var(--pe-lh) / 2);
+  }
+  html[dir] body #main .page-eyebrow:has(+ .section-title) { margin-bottom: 0 !important; }
+  html[dir] body #main .page-eyebrow + .section-title {
+    display: block !important;
+    width: auto !important;
+    max-width: none !important;
+    font-size: clamp(1.6rem, 2.2vw, 2.1rem) !important;
+    line-height: 1.25 !important;
+    white-space: normal !important;
+    text-wrap: balance;
+    text-align: center !important;
+    text-align-last: center !important;
+    padding-block: 0 !important;
+    margin: calc(var(--pill1-cy) - var(--eb-bottom) - var(--title-h, 1.25em) / 2) auto 28px !important;
+  }
+  html[dir] body #main .page-eyebrow + .section-title:has(+ .badges-row) { margin-bottom: 16px !important; }
+  html[dir] body #main .page-eyebrow + .section-title + * { margin-top: 0 !important; }
+  html[dir] body #main .page-eyebrow ~ .badges-row {
+    justify-content: center !important;
+    margin: 0 auto 28px !important;
+  }
+  html[dir] body #main .page-eyebrow ~ .badges-row + * { margin-top: 0 !important; }
+
+  /* כרטיסים: רוחב (ולכן גם גובה ותמונה, באותן פרופורציות) ×0.85, ממורכזים */
+  html[dir] body #main .division-cards,
+  html[dir] body #main .division-page .cards-row {
+    max-width: calc(100% * var(--card-scale, 1));
+    margin-inline: auto !important;
+  }
+  /* כותרת הכרטיס הצר יותר — עד שתי שורות מאוזנות בתוך אותו גובה ראש כרטיס (לא נחתכת, לא מוקטנת) */
+  html[dir] body #main .division-cards .division-card .card-title {
+    white-space: normal !important;
+    text-wrap: balance;
+    line-height: 1.2;
+  }
+  html[dir] body #main .division-cards .division-card-head {
+    padding-inline: 4px;
+    min-height: calc(2 * 1.2 * clamp(.74rem, 1.25vw, .95rem) + 24px);   /* כל ראשי הכרטיסים באותו גובה — התמונות בקו אחד */
+  }
+}
+
+/* כרטיסים ×0.85 — מ-1280 ומעלה (ב-1024–1279 הכרטיסים כבר צרים; מתחת ל-0.85 הטקסט בהם נדחס) */
+@media (min-width: 1280px) {
+  :root {
+    --card-scale: .85;
+    --strip-tile: calc(145px * .85);              /* אריחי הלוגואים ב-#projects */
+  }
+}
+
+/* מסך נמוך מדי לגלולות + שני הכפתורים — הכפתורים בפינה הימנית-תחתונה של אזור התוכן (מחוץ לעמודות) */
+@media (min-width: 1024px) and (max-height: 680px) {
+  html body .a11y-fab,
+  html body:has(.back-top.is-visible) .a11y-fab {
+    right: calc(var(--side-w) + 16px) !important;
+    top: auto !important;
+    bottom: 16px !important;
+  }
+  html body .back-top {
+    right: calc(var(--side-w) + 17px) !important;
+    top: auto !important;
+    bottom: calc(16px + 56px + 12px) !important;
+  }
+}
