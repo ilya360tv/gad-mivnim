@@ -3064,3 +3064,14 @@ function cardScale() {
   var v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-scale'));
   return v > 0 ? v : 1;
 }
+
+/* ---------------------------------------------------------------
+   האתר כבר לא PWA (הוסר 2026-11-12): ניקוי חד-פעמי של Service Worker ישן אם נשאר רשום בדפדפן.
+   רק מבטל רישום — בלי טעינה מחדש (אין לולאה). המחיקה של ה-Cache נעשית ב-/sw.js (kill-switch).
+   --------------------------------------------------------------- */
+(function () {
+  if (!('serviceWorker' in navigator) || !navigator.serviceWorker.getRegistrations) { return; }
+  navigator.serviceWorker.getRegistrations().then(function (regs) {
+    regs.forEach(function (reg) { reg.unregister(); });
+  }).catch(function () {});
+})();
