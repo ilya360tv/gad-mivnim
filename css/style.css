@@ -8113,3 +8113,11 @@ html[dir] body #main #about .page-eyebrow + .section-title.about-one-line {
 @media (min-width: 1024px) {
   html[dir] body #main #tenders > .container > .page-eyebrow { margin-bottom: var(--pe-top) !important; }
 }
+
+/* #projects — לשוניות המגזר: שורה אחת ממורכזת על ציר ה-H1 (מסך ≥769; מובייל — 2×2 כמו קודם).
+   אם לא נכנס: js/script.js (סעיף 11b) מקטין רק את הרווח, ובמקרה קיצון מוסיף is-scroll (גלילה אופקית). */
+@media (min-width: 769px) {
+  .sector-tabs { flex-wrap: nowrap; justify-content: center; }
+  .sector-tab { flex-shrink: 0; }
+  .sector-tabs.is-scroll { justify-content: flex-start; overflow-x: auto; padding: 18px 18px; margin-block: -12px 4px; }
+}

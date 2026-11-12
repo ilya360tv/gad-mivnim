@@ -2622,6 +2622,37 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
   /* ---------------------------------------------------------------
+     11b) #projects — לשוניות המגזר (4 גלולות) בשורה אחת, ממורכזות על ציר ה-H1 (מסך ≥769; ה-CSS ממרכז).
+          אם השורה רחבה מהמקום: מקטינים רק את הרווח בין הגלולות (עד 4px); אם עדיין לא נכנס — גלילה אופקית
+          (קלאס is-scroll). גודל, ריפוד וצבעי הגלולות לא משתנים. מובייל ≤768 — בלי שינוי.
+     --------------------------------------------------------------- */
+  var secTabs = document.querySelector('#projects .sector-tabs');
+  if (secTabs) {
+    var fitSecTabs = function () {
+      secTabs.style.removeProperty('column-gap');
+      secTabs.classList.remove('is-scroll');
+      if (window.innerWidth <= 768) { return; }
+      var n = secTabs.children.length;
+      var over = secTabs.scrollWidth - secTabs.clientWidth;
+      if (over <= 0 || n < 2) { return; }
+      var gap = parseFloat(getComputedStyle(secTabs).columnGap) || 0;
+      var next = Math.floor((gap - over / (n - 1)) * 10) / 10;
+      if (next >= 4) { secTabs.style.columnGap = next + 'px'; }
+      else { secTabs.style.columnGap = '4px'; secTabs.classList.add('is-scroll'); }
+    };
+    fitSecTabs();
+    window.addEventListener('load', fitSecTabs);
+    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(fitSecTabs); }
+    var stW = window.innerWidth;
+    window.addEventListener('resize', function () { if (window.innerWidth !== stW) { stW = window.innerWidth; fitSecTabs(); } });
+    if ('MutationObserver' in window) {                                   // החלפת שפה משנה את טקסט הגלולות
+      new MutationObserver(function () { setTimeout(fitSecTabs, 30); })
+        .observe(secTabs, { childList: true, characterData: true, subtree: true });
+    }
+  }
+
+
+  /* ---------------------------------------------------------------
      12) בורר השפה — תג עגול: הדגל במרכז המדויק, שם השפה מעוקל לאורך הקשת העליונה באמצע הטבעת החופשית
          (בין הדגל לקצה העיגול), כוכב קטן בקשת התחתונה. הטקסט נלקח מ-#langLabel ומתאים את עצמו לכל שפה.
          viewBox 0 0 100 100: עיגול r=50, דגל r=22 (44%), אמצע הטבעת r=36.
