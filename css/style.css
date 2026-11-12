@@ -3709,7 +3709,7 @@ section .section-eyebrow {
 }
 
 /* ----- כותרות ירוקות → צבע האות G בלוגו (טקסט בלבד; כפתורים, טבעות, באדג'ים ונגישות ללא שינוי) ----- */
-body .section-eyebrow,
+body .section-eyebrow:not(.page-eyebrow),
 body .about-text p.about-sub,
 body .about-text p.about-quote,
 body .about-quote,
@@ -7971,30 +7971,50 @@ html.a11y-no-motion body.page-split > main { animation: none !important; }
    הריווח לתוכן שמתחתיה — זהה בכל העמודים.
    ========================================================================== */
 :root {
-  --pe-fs: clamp(1.05rem, 1.6vw, 1.35rem);        /* גודל הכתב (כמו התוויות עד היום) */
-  --pe-lh: 1.6;                                   /* גובה השורה — קבוע, כדי לחשב את המרכז */
-  --pe-top: 24px;                                 /* מובייל: מרווח מתחת לפס העליון */
-  --pe-gap: 22px;                                 /* מובייל: מרווח לתוכן */
+  --pe-h: 36px;                                   /* גובה גלולת הכותרת (מובייל: כמו גלולת הצד ב-1920) */
+  --pe-old-h: calc(clamp(1.05rem, 1.6vw, 1.35rem) * 1.6);   /* גובה שורת הכותרת הקודמת — כדי שהתוכן שמתחת לא יזוז */
+  --pe-shift: calc((var(--pe-h) - var(--pe-old-h)) / 2);
+  --pe-top: calc(24px - var(--pe-shift));         /* מובייל: אותו מרכז כמו קודם */
+  --pe-gap: calc(22px - var(--pe-shift));         /* מובייל: התוכן מתחיל באותו מקום כמו קודם */
 }
 @media (min-width: 1024px) {
   :root {
-    --pe-top: calc(var(--side-top) + var(--side-circle) / 2 - var(--pe-fs) * var(--pe-lh) / 2);
-    --pe-gap: 28px;
+    --pe-h: var(--pill-h);                        /* = גובה גלולות הצד */
+    --pe-top: calc(var(--side-top) + var(--side-circle) / 2 - var(--pe-h) / 2);
+    --pe-gap: calc(28px - var(--pe-shift));
   }
 }
 /* הסקשן שמכיל את התווית מתחיל בדיוק בגובה המחושב (במקום הריפוד העליון הרגיל שלו) */
 html[dir] body #main > section.section:has(> .container > .page-eyebrow) {
   padding-top: var(--pe-top) !important;
 }
+/* כותרת העמוד = גלולת ניווט בעמודת הצד (ערכים מועתקים מהגלולה הרגילה, לא הפעילה): טבעת תכלת 1px,
+   רקע כהה חצי-שקוף + גוון תכלת, טשטוש, כתב תכלת רגיל. כותרת ולא כפתור — בלי hover ובלי סמן יד. */
 html[dir] body #main .section-eyebrow.page-eyebrow {
-  display: block !important;
+  display: flex !important;                       /* ברוחב הטקסט (fit-content) וממורכז עם margin auto */
   width: fit-content !important;
   max-width: 100%;
+  height: var(--pe-h);
+  align-items: center;
+  justify-content: center;
   margin: 0 auto var(--pe-gap) !important;
-  padding: 0 0 0 .14em;                           /* ריווח האותיות מוסיף .14em בצד ימין — מאזנים משמאל, כך שהטקסט באמצע בדיוק */
-  font-size: var(--pe-fs) !important;
-  line-height: var(--pe-lh) !important;
+  padding: 3px 8px;
+  box-sizing: border-box;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(var(--lb-bg), var(--lb-bg)), rgba(10, 12, 14, .55);
+  -webkit-backdrop-filter: blur(6px);
+          backdrop-filter: blur(6px);
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, .45);
+  color: var(--lb);
+  font-size: var(--side-font, 13px) !important;
+  font-weight: 400;
+  line-height: 1.15 !important;
+  letter-spacing: normal;
+  text-transform: none;
   text-align: center !important;
+  white-space: nowrap;
+  cursor: default;
 }
 html[dir] body #main .page-eyebrow + * { margin-top: 0 !important; }
 
@@ -8008,7 +8028,7 @@ html[dir] body #main .page-eyebrow + * { margin-top: 0 !important; }
 @media (min-width: 1024px) {
   :root {
     --pill1-cy: calc(2 * var(--side-top) + var(--side-circle) + var(--pill-h) / 2);
-    --eb-bottom: calc(var(--side-top) + var(--side-circle) / 2 + var(--pe-fs) * var(--pe-lh) / 2);
+    --eb-bottom: calc(var(--side-top) + var(--side-circle) / 2 + var(--pe-h) / 2);
   }
   html[dir] body #main .page-eyebrow:has(+ .section-title) { margin-bottom: 0 !important; }
   html[dir] body #main .page-eyebrow + .section-title {
@@ -8086,4 +8106,8 @@ html[dir] body #main #about .page-eyebrow + .section-title.about-one-line {
   font-size: var(--about-fs) !important;
   text-align: center !important;
   text-align-last: center !important;
+}
+/* אנגלית/רוסית/צרפתית: גלולות הצד בפינות 16px — גם כותרת העמוד */
+@media (min-width: 1024px) {
+  html:not([lang="he"])[dir] body #main .section-eyebrow.page-eyebrow { border-radius: 16px; }
 }
