@@ -8077,21 +8077,16 @@ html[dir] body #main .section-eyebrow.page-eyebrow::after {
   }
 }
 
-/* מסך נמוך מדי לגלולות + שני הכפתורים (תחתית הגלולה + 16 + 56 + 12 + 54 + 16 > גובה המסך):
-   בפינה השמאלית-תחתונה של המסך, בתוך העמודה (מחוץ לאזור התוכן) — זה לצד זה, ממורכזים על קו המרכז של העמודה
-   (56 + 12 + 54 = 122px < רוחב העמודה), כך שצריך רק 88px מתחת לגלולה האחרונה ולא עולים על הגלולות. */
-@media (min-width: 1024px) and (max-height: 660px) {
-  html body .a11y-fab {
-    left: calc((var(--side-w) - 122px) / 2) !important;
+/* מסך נמוך: הכפתור נשאר ממורכז על ציר העמודה השמאלית, 16px מתחת ל"שירות לקוחות" (הכלל הרגיל למעלה).
+   כשאין מקום לשני הכפתורים מתחת לגלולה (js/a11y.js מוסיף html.a11y-short) — "חזרה למעלה" עובר לתחתית
+   העמודה הימנית, ממורכז על הציר שלה, כך שלא עולה על הגלולות ולא על התוכן. */
+@media (min-width: 1024px) {
+  html.a11y-short body .back-top {
+    left: auto !important;
+    right: calc((var(--side-w) - 54px) / 2) !important;
     top: auto !important;
     bottom: 16px !important;
   }
-  html body .back-top {
-    left: calc((var(--side-w) - 122px) / 2 + 56px + 12px) !important;
-    top: auto !important;
-    bottom: 17px !important;
-  }
-  html body .a11y-panel { --panel-bottom: 16px; }
 }
 
 /* ==========================================================================

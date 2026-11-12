@@ -257,6 +257,27 @@
       }
     }
 
+    // דסקטופ (≥1024): הכפתור תמיד ממורכז על ציר העמודה השמאלית, 16px מתחת ל"שירות לקוחות" (css/style.css).
+    // "חזרה למעלה" מתחתיו — רק אם יש מקום לשניהם עד תחתית המסך (16+56+12+54+16 = 154px מתחת לגלולה).
+    // אם אין — html.a11y-short: "חזרה למעלה" עובר לתחתית העמודה הימנית (ממורכז על הציר שלה) ולא עולה על הגלולות.
+    var deskMq = window.matchMedia('(min-width: 1024px)');
+    var fitShort = function () {
+      var short = false;
+      if (deskMq.matches) {
+        var last = document.querySelector('.site-header .main-nav a[href*="contact"]');
+        var r = last && last.getBoundingClientRect();
+        if (r && r.height) { short = window.innerHeight - r.bottom < 154; }
+      }
+      root.classList.toggle('a11y-short', short);
+    };
+    fitShort();
+    window.addEventListener('load', fitShort);
+    window.addEventListener('resize', fitShort);
+    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(fitShort); }
+    if ('MutationObserver' in window) {                         // החלפת שפה משנה את גובה הגלולות
+      new MutationObserver(function () { setTimeout(fitShort, 30); }).observe(root, { attributes: true, attributeFilter: ['lang', 'dir'] });
+    }
+
     // החלת המצב השמור
     apply();
   });
