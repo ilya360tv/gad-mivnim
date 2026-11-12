@@ -3709,7 +3709,7 @@ section .section-eyebrow {
 }
 
 /* ----- כותרות ירוקות → צבע האות G בלוגו (טקסט בלבד; כפתורים, טבעות, באדג'ים ונגישות ללא שינוי) ----- */
-body .section-eyebrow:not(.page-eyebrow),
+body .section-eyebrow,
 body .about-text p.about-sub,
 body .about-text p.about-quote,
 body .about-quote,
@@ -7971,15 +7971,14 @@ html.a11y-no-motion body.page-split > main { animation: none !important; }
    הריווח לתוכן שמתחתיה — זהה בכל העמודים.
    ========================================================================== */
 :root {
-  --pe-fs: clamp(1.05rem, 1.6vw, 1.35rem);        /* גודל הכתב — כמו הכותרת לפני הגלולה */
-  --pe-lh: 1.6;                                   /* גובה השורה — כמו לפני הגלולה */
-  --pe-h: calc(var(--pe-fs) * 36 / 13);           /* גובה הגלולה: היחס של גלולת הצד (36px לכתב 13px) */
-  --pe-top: calc(24px - (var(--pe-h) - var(--pe-fs) * var(--pe-lh)) / 2);   /* מובייל: אותו מרכז כמו הכותרת לפני הגלולה */
-  --pe-gap: 22px;                                 /* מובייל: אותו רווח לתוכן כמו לפני הגלולה */
+  --pe-fs: clamp(1.05rem, 1.6vw, 1.35rem);        /* גודל הכתב (כמו התוויות עד היום) */
+  --pe-lh: 1.6;                                   /* גובה השורה — קבוע, כדי לחשב את המרכז */
+  --pe-top: 24px;                                 /* מובייל: מרווח מתחת לפס העליון */
+  --pe-gap: 22px;                                 /* מובייל: מרווח לתוכן */
 }
 @media (min-width: 1024px) {
   :root {
-    --pe-top: calc(var(--side-top) + var(--side-circle) / 2 - var(--pe-h) / 2);
+    --pe-top: calc(var(--side-top) + var(--side-circle) / 2 - var(--pe-fs) * var(--pe-lh) / 2);
     --pe-gap: 28px;
   }
 }
@@ -7987,34 +7986,15 @@ html.a11y-no-motion body.page-split > main { animation: none !important; }
 html[dir] body #main > section.section:has(> .container > .page-eyebrow) {
   padding-top: var(--pe-top) !important;
 }
-/* כותרת העמוד = גלולת ניווט בעמודת הצד (מראה מועתק מהגלולה הרגילה, לא הפעילה): טבעת תכלת 1px,
-   רקע כהה חצי-שקוף + גוון תכלת, טשטוש, כתב תכלת. הגודל — כמו הכותרת לפני הגלולה; הגובה והריפוד
-   גדלים באותו יחס כמו בגלולת הצד (3px 8px / 36px לכתב 13px). כותרת ולא כפתור — בלי hover ובלי סמן יד. */
 html[dir] body #main .section-eyebrow.page-eyebrow {
-  display: flex !important;                       /* ברוחב הטקסט (fit-content) וממורכז עם margin auto */
+  display: block !important;
   width: fit-content !important;
   max-width: 100%;
-  height: var(--pe-h);
-  align-items: center;
-  justify-content: center;
   margin: 0 auto var(--pe-gap) !important;
-  padding: calc(var(--pe-fs) * 3 / 13) calc(var(--pe-fs) * 8 / 13);
-  box-sizing: border-box;
-  border: 0;
-  border-radius: 999px;
-  background: linear-gradient(var(--lb-bg), var(--lb-bg)), rgba(10, 12, 14, .55);
-  -webkit-backdrop-filter: blur(6px);
-          backdrop-filter: blur(6px);
-  box-shadow: 0 0 0 1px rgba(56, 189, 248, .45);
-  color: var(--lb);
+  padding: 0 0 0 .14em;                           /* ריווח האותיות מוסיף .14em בצד ימין — מאזנים משמאל, כך שהטקסט באמצע בדיוק */
   font-size: var(--pe-fs) !important;
-  font-weight: 700;
   line-height: var(--pe-lh) !important;
-  letter-spacing: normal;
-  text-transform: none;
   text-align: center !important;
-  white-space: nowrap;
-  cursor: default;
 }
 html[dir] body #main .page-eyebrow + * { margin-top: 0 !important; }
 
@@ -8028,8 +8008,7 @@ html[dir] body #main .page-eyebrow + * { margin-top: 0 !important; }
 @media (min-width: 1024px) {
   :root {
     --pill1-cy: calc(2 * var(--side-top) + var(--side-circle) + var(--pill-h) / 2);
-    --eb-bottom: calc(var(--side-top) + var(--side-circle) / 2 + var(--pe-h) / 2);
-    --eb-old-bottom: calc(var(--side-top) + var(--side-circle) / 2 + var(--pe-fs) * var(--pe-lh) / 2);   /* תחתית הכותרת לפני הגלולה */
+    --eb-bottom: calc(var(--side-top) + var(--side-circle) / 2 + var(--pe-fs) * var(--pe-lh) / 2);
   }
   html[dir] body #main .page-eyebrow:has(+ .section-title) { margin-bottom: 0 !important; }
   html[dir] body #main .page-eyebrow + .section-title {
@@ -8043,10 +8022,7 @@ html[dir] body #main .page-eyebrow + * { margin-top: 0 !important; }
     text-align: center !important;
     text-align-last: center !important;
     padding-block: 0 !important;
-    /* המרכז = הגלולה הראשונה; אם הגלולה הגדולה של כותרת העמוד מתקרבת מדי — הכותרת יורדת ושומרת
-       רווח מינימלי: הרווח שהיה לפני הגלולה (לכל היותר 12px) */
-    margin: max(calc(var(--pill1-cy) - var(--eb-bottom) - var(--title-h, 1.25em) / 2),
-                min(calc(var(--pill1-cy) - var(--eb-old-bottom) - var(--title-h, 1.25em) / 2), 12px)) auto 28px !important;
+    margin: calc(var(--pill1-cy) - var(--eb-bottom) - var(--title-h, 1.25em) / 2) auto 28px !important;
   }
   html[dir] body #main .page-eyebrow + .section-title:has(+ .badges-row) { margin-bottom: 16px !important; }
   html[dir] body #main .page-eyebrow + .section-title + * { margin-top: 0 !important; }
@@ -8111,8 +8087,9 @@ html[dir] body #main #about .page-eyebrow + .section-title.about-one-line {
   text-align: center !important;
   text-align-last: center !important;
 }
-/* מכרזים (דסקטופ): כרטיס הכניסה מתחיל בגובה הגלולה הראשונה (js/tenders.js מיישר אליה). הרווח מתחת לגלולת
-   הכותרת = --pe-top, כך שראש הכרטיס = 2×--side-top + --side-circle בדיוק — העמוד לא נגלל בטעינה והכותרת
+
+/* מכרזים (דסקטופ): כרטיס הכניסה מתחיל בגובה הגלולה הראשונה (js/tenders.js מיישר אליה). הרווח מתחת לכותרת
+   העמוד = --pe-top, כך שראש הכרטיס = 2×--side-top + --side-circle בדיוק — העמוד לא נגלל בטעינה והכותרת
    נשארת על קו מרכז הלוגו/השפות כמו בשאר העמודים. גודל הכרטיס לא משתנה. */
 @media (min-width: 1024px) {
   html[dir] body #main #tenders > .container > .page-eyebrow { margin-bottom: var(--pe-top) !important; }
