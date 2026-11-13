@@ -43,11 +43,11 @@ const PAGES = [
     desc: 'גלריית בנייה ועיצובים של GAD MIVNIM — לחלום ולהגשים. השראות מפרויקטים אמיתיים.' },
   { id: 'careers',     file: 'careers.html',     nav: 'nav_careers',       data: ['careers-data', 'supabase-config', 'data-store', 'field-select', 'form-errors', 'contractor-docs', 'agreement-data', 'contractor-wizard'],
     desc: 'דרושים ב-GAD MIVNIM — בואו לבנות איתנו. משרות פתוחות והצטרפות כקבלן בית.' },
-  { id: 'tenders',     file: 'tenders.html',     nav: 'nav_tenders',       data: ['supabase-config', 'data-store', 'tenders'],
+  { id: 'tenders',     file: 'tenders.html',     nav: 'nav_tenders',       data: ['supabase-config', 'data-store', 'form-errors', 'tenders'],
     desc: 'אזור קבלני הבית של GAD MIVNIM — כניסה למנויים פעילים עם קוד משתמש ורשימת מכרזים.' },
   { id: 'app',         file: 'app.html',         nav: 'nav_app',           data: [],
     desc: 'מנויי שירות ואחזקה של GAD MIVNIM — שקט נפשי גם אחרי המסירה. בחרו את מסלול השירות המתאים לכם.' },
-  { id: 'contact',     file: 'contact.html',     nav: 'nav_contact',       data: [],
+  { id: 'contact',     file: 'contact.html',     nav: 'nav_contact',       data: ['form-errors'],
     desc: 'שירות לקוחות GAD MIVNIM — צרו קשר. הרצליה, ישראל.' }
 ];
 const FILE_OF = Object.fromEntries(PAGES.map((p) => [p.id, p.file]));

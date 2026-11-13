@@ -12,6 +12,7 @@
   if (!store) { return; }
 
   var $ = function (id) { return document.getElementById(id); };
+  var FE = window.GMFormErrors;                   // הודעות שגיאה ליד השדה + קפיצה לשדה (js/form-errors.js)
   var loginView = $('admLogin'), appView = $('admApp'), content = $('admContent'), viewTitle = $('admViewTitle');
 
   var esc = function (s) {
@@ -168,8 +169,13 @@
     loginView.hidden = false;
     $('admUser').focus();
   }
+  var loginFE = FE ? FE.attach($('admLoginForm'), [
+    { el: $('admUser'), check: function () { return $('admUser').value.trim() ? '' : 'יש להזין אימייל'; } },
+    { el: $('admPass'), check: function () { return $('admPass').value ? '' : 'יש להזין סיסמה'; } }
+  ]) : null;
   $('admLoginForm').addEventListener('submit', function (e) {
     e.preventDefault();
+    if (loginFE && !loginFE.check()) { $('admLoginError').hidden = true; return; }
     var user = $('admUser').value, pass = $('admPass').value;
     $('admPass').value = '';
     var btn = $('admLoginForm').querySelector('button[type="submit"]');
@@ -177,7 +183,11 @@
     store.signInAdmin(user, pass).then(function (p) { return !!p; }, function () { return false; }).then(function (ok) {
       btn.disabled = false;
       $('admLoginError').hidden = ok;
-      if (!ok) { $('admPass').focus(); return; }
+      if (!ok) {
+        if (FE) { FE.mark($('admUser'), 'admLoginError'); FE.jump($('admUser')); FE.clear($('admPass')); } else { $('admPass').focus(); }
+        return;
+      }
+      if (FE) { FE.clear($('admUser')); }
       showApp();
     });
   });
@@ -364,8 +374,18 @@
         '<div class="adm-form-actions"><button type="submit" class="adm-btn adm-btn-primary">' + (t ? 'שמירה' : 'יצירת מכרז') + '</button>' +
         '<button type="button" class="adm-btn adm-btn-ghost" data-close>ביטול</button></div>' +
       '</form>');
+    var tFE = FE ? FE.attach($('tForm'), [
+      { el: $('fTitle'), check: function () { return $('fTitle').value.trim() ? '' : 'יש למלא את שם המכרז'; } },
+      { el: $('fLoc'), check: function () { return $('fLoc').value.trim() ? '' : 'יש למלא מיקום'; } },
+      { el: $('fOpen'), check: function () { return $('fOpen').value ? '' : 'יש לבחור מועד פתיחה'; } },
+      { el: $('fDead'), check: function () {
+        if (!$('fDead').value) { return 'יש לבחור מועד אחרון להגשה'; }
+        return $('fOpen').value && $('fDead').value <= $('fOpen').value ? 'המועד האחרון להגשה חייב להיות אחרי מועד הפתיחה' : '';
+      } }
+    ]) : null;
     $('tForm').addEventListener('submit', function (e) {
       e.preventDefault();
+      if (tFE && !tFE.check()) { $('fErr').hidden = true; return; }
       var d = {
         title: $('fTitle').value.trim(), field: $('fField').value, location: $('fLoc').value.trim(),
         description: $('fDesc').value.trim(), openDate: $('fOpen').value, deadline: $('fDead').value, status: $('fStatus').value
@@ -588,7 +608,6 @@
      חלון רחב: פרטים · הסכם חתום · 9 מסמכים (צפייה / הורדה / נבדק / הערה) · בדיקות · חיוב · סטטוס.
      כל שינוי — דרך השרת (/api/review-application, /api/approve); מי/מתי נקבע בשרת. */
   var CDOCS = window.GM_CONTRACTOR_DOCS;
-  var FE = window.GMFormErrors;
   var REVIEW_CHECKS = [['license', 'רישיון אומת'], ['integrity', 'תעודת יושר תקינה'], ['insurance', 'ביטוח בתוקף'],
     ['books', 'ניהול ספרים בתוקף'], ['business', 'עוסק מורשה / ח.פ אומת'], ['recommendations', 'המלצות נבדקו']];
   var ENTITY_HE = { contractor: 'קבלן', company: 'חברה', professional: 'בעל/ת מקצוע', other: 'אחר' };

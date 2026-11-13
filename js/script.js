@@ -510,19 +510,27 @@ document.addEventListener('DOMContentLoaded', function () {
   var contactForm = document.getElementById('contactForm');
   var formSuccess = document.getElementById('formSuccess');
 
+  var FE = window.GMFormErrors;                   // הודעות שגיאה ליד השדה + קפיצה לשדה הראשון (js/form-errors.js)
   if (contactForm) {
+    var cf = function (id) { return document.getElementById(id); };
+    var contactFE = FE ? FE.attach(contactForm, [
+      { el: cf('firstName'), check: function () { return FE.V.required(cf('firstName').value, 'שם'); } },
+      { el: cf('lastName'), check: function () { return FE.V.required(cf('lastName').value, 'שם משפחה'); } },
+      { el: cf('phone'), check: function () { return FE.V.phone(cf('phone').value); } }
+    ]) : null;
     contactForm.addEventListener('submit', function (e) {
       e.preventDefault(); // אין שרת — לא שולחים לשום מקום
 
-      // בדיקה בסיסית שהשדות מולאו
-      if (!contactForm.checkValidity()) {
-        contactForm.reportValidity();
+      // בדיקת השדות — הודעה מתחת לכל שדה וקפיצה לראשון
+      if (contactFE ? !contactFE.check() : !contactForm.checkValidity()) {
+        if (!contactFE) { contactForm.reportValidity(); }
         return;
       }
 
       // הצגת הודעת ההצלחה וניקוי הטופס
       formSuccess.hidden = false;
       contactForm.reset();
+      if (contactFE) { contactFE.reset(); }
     });
   }
 
@@ -793,6 +801,7 @@ document.addEventListener('DOMContentLoaded', function () {
       rmFrom = from;
       rmStatus = null;
       rmForm.reset();
+      if (rmFE) { rmFE.reset(); }
       cvShowErr(null);
       cvRender();
       renderRole();
@@ -851,7 +860,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var teamSel = teamMount && DSC && window.FieldSelect ? window.FieldSelect.create({
       mount: teamMount, multiple: false, labelId: 'teamFieldLabel', errorId: 'teamFieldErr', placeholder: 'car_f_pick',
       options: DSC.TENDER_FIELDS.map(function (f) { return { value: f.name, key: f.key }; }),
-      onChange: function (v) { if (v.length) { teamFieldErr.hidden = true; teamSel.invalid(false); } }
+      onChange: function (v) { if (v.length) { teamFieldErr.hidden = true; teamSel.invalid(false); if (window.GMFormErrors) { window.GMFormErrors.clear(teamMount); } } }
     }) : null;
 
     function cwShow(kind, from) {
@@ -912,14 +921,28 @@ document.addEventListener('DOMContentLoaded', function () {
     var teamOk = document.getElementById('teamSuccess');
     if (teamForm) {
       var teamErr = formErrEl(teamOk);
+      var tv = function (id) { return document.getElementById(id).value; };
+      var teamFE = FE ? FE.attach(teamForm, [
+        { el: document.getElementById('teamName'), check: function () { return FE.V.required(tv('teamName'), 'שם מלא'); } },
+        { el: document.getElementById('teamPhone'), check: function () { return FE.V.phone(tv('teamPhone')); } },
+        { el: teamMount, own: 'teamFieldErr', check: function () {   // תחום חובה — ההודעה הקיימת מתחת לתיבה
+          var bad = !!teamSel && !teamSel.value().length;
+          teamFieldErr.hidden = !bad;
+          if (teamSel) { teamSel.invalid(bad); }
+          return bad ? 'field' : '';
+        } },
+        { el: document.getElementById('teamYears'), check: function () {
+          var y = String(tv('teamYears')).trim();
+          return y === '' ? 'יש למלא ניסיון בשנים' : /^\d{1,2}$/.test(y) && Number(y) <= 60 ? '' : 'יש להזין מספר שנים בין 0 ל-60';
+        } },
+        { el: document.getElementById('teamArea'), check: function () { return FE.V.required(tv('teamArea'), 'אזור עבודה'); } }
+      ]) : null;
       teamForm.addEventListener('submit', function (e) {
         e.preventDefault();
-        if (!teamForm.checkValidity()) { teamForm.reportValidity(); return; }
-        if (teamSel && !teamSel.value().length) {           // תחום חובה — הודעה מתחת לתיבה
-          teamFieldErr.hidden = false;
-          teamSel.invalid(true);
-          teamSel.focus();
-          return;
+        if (teamFE) { if (!teamFE.check()) { return; } }
+        else {
+          if (!teamForm.checkValidity()) { teamForm.reportValidity(); return; }
+          if (teamSel && !teamSel.value().length) { teamFieldErr.hidden = false; teamSel.invalid(true); teamSel.focus(); return; }
         }
         teamOk.hidden = true;
         showFormErr(teamErr, null);
@@ -939,6 +962,7 @@ document.addEventListener('DOMContentLoaded', function () {
           teamOk.hidden = false;
           teamForm.reset();
           if (teamSel) { teamSel.reset(); }
+          if (teamFE) { teamFE.reset(); }
         }, function (err) {
           showFormErr(teamErr, err && err.message === 'rate' ? 'car_wait' : 'car_fail');
         }).then(function () { btn.disabled = false; });
@@ -967,14 +991,24 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // שליחה למסד הנתונים (type "job" + קורות החיים לאחסון הפרטי; js/data-store.js)
+    var rmFE = FE ? FE.attach(rmForm, [
+      { el: rmForm.querySelector('#roleFormName'), check: function () { return FE.V.required(rmForm.querySelector('#roleFormName').value, 'שם מלא'); } },
+      { el: rmForm.querySelector('#roleFormPhone'), check: function () { return FE.V.phone(rmForm.querySelector('#roleFormPhone').value); } },
+      { el: cvInput, own: 'roleFormCvErr', check: function () {      // לתיבת הקובץ יש הודעה משלה (cv-drop__err)
+        if (!cvCheck()) { return 'cv'; }
+        if (!(cvInput.files && cvInput.files[0])) { cvShowErr('car_cv_req'); return 'cv'; }
+        return '';
+      } }
+    ]) : null;
+    if (FE) { cvInput.addEventListener('change', function () { if (cvInput.files && cvInput.files[0]) { FE.clear(cvInput); } }); }
     rmForm.addEventListener('submit', function (e) {
       e.preventDefault();
-      if (!rmForm.checkValidity()) {
-        rmForm.reportValidity();
-        return;
+      if (rmFE) { if (!rmFE.check()) { return; } }
+      else {
+        if (!rmForm.checkValidity()) { rmForm.reportValidity(); return; }
+        if (!cvCheck()) { cvInput.focus(); return; }
+        if (!(cvInput.files && cvInput.files[0])) { cvShowErr('car_cv_req'); cvInput.focus(); return; }
       }
-      if (!cvCheck()) { cvInput.focus(); return; }
-      if (!(cvInput.files && cvInput.files[0])) { cvShowErr('car_cv_req'); cvInput.focus(); return; }
 
       rmRoleIn.value = roleHe();
       var label = rmSubmit.textContent;

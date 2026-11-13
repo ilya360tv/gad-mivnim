@@ -102,11 +102,20 @@
       });
     });
   }
+  // שדה עם הודעה משלו (קיימת בטופס, למשל תיבת הקובץ): מסמנים בלבד ומקשרים את ההודעה הקיימת
+  function mark(el, msgId) {
+    var host = hostOf(el), t = focusTarget(el);
+    host.classList.add('fe-invalid');
+    if (t) { t.setAttribute('aria-invalid', 'true'); if (msgId) { describe(t, msgId, true); } }
+  }
   function run(rules, box) {
     var bad = [];
     rules.forEach(function (r) {
+      if (!r.el || !document.contains(r.el)) { return; }
       var m = r.check();
-      if (m) { set(r.el, m); bad.push(r.el); } else { clear(r.el); }
+      if (m && r.own) { mark(r.el, r.own); bad.push(r.el); }
+      else if (m) { set(r.el, m); bad.push(r.el); }
+      else { clear(r.el); }
     });
     summary(box, bad.length);
     boxes = boxes.filter(function (b) { return b.box !== box; });
@@ -115,11 +124,34 @@
     return !bad.length;
   }
 
+  // חיבור טופס: סיכום בראש הטופס + בדיקה ביציאה משדה. מחזיר { check() → true אם תקין, reset(), box }
+  // rules: [{ el, check() → הודעה | '', own: id של הודעה קיימת (לא נוצרת הודעה חדשה) }]
+  function attach(form, rules, opts) {
+    opts = opts || {};
+    var box = form.querySelector('.fe-summary');
+    if (!box) {
+      box = document.createElement('p');
+      box.className = 'fe-summary';
+      box.hidden = true;
+      var at = opts.before || form.firstElementChild;
+      while (at && at.matches && at.matches('input[type="hidden"], [hidden].role-form__hp')) { at = at.nextElementSibling; }
+      form.insertBefore(box, at || null);
+    }
+    rules.forEach(function (r) {
+      if (!r.own && r.el && r.el.matches && r.el.matches('input, textarea, select')) { watch(r.el, r.check); }
+    });
+    return {
+      box: box,
+      check: function () { return run(rules, box); },
+      reset: function () { rules.forEach(function (r) { clear(r.el); }); summary(box, 0); }
+    };
+  }
+
   // כללי בדיקה משותפים
   var V = {
     phone: function (v) {
       var s = String(v || '').replace(/[\s\-().]/g, '').replace(/^\+972/, '0');
-      return /^0(5\d{8}|7\d{8}|[2-489]\d{7})$/.test(s) ? '' : 'מספר טלפון לא תקין – יש להזין 10 ספרות (05X-XXXXXXX)';
+      return /^0(5\d{8}|7\d{8}|[2-489]\d{7})$/.test(s) ? '' : 'מספר טלפון לא תקין – יש להזין 10 ספרות (⁦05X-XXXXXXX⁩)';
     },
     email: function (v) {
       var s = String(v || '').trim();
@@ -128,5 +160,5 @@
     required: function (v, label) { return String(v || '').trim() ? '' : (label ? 'יש למלא ' + label : 'שדה חובה'); }
   };
 
-  window.GMFormErrors = { set: set, clear: clear, summary: summary, jump: jump, watch: watch, run: run, V: V };
+  window.GMFormErrors = { set: set, clear: clear, mark: mark, summary: summary, jump: jump, watch: watch, run: run, attach: attach, V: V };
 })();

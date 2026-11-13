@@ -100,9 +100,14 @@
   forgotCode.addEventListener('keydown', function (e) {
     if (e.key === 'Enter') { e.preventDefault(); forgotSend.click(); }
   });
+  var FE = window.GMFormErrors;                   // הודעות שגיאה ליד השדה + קפיצה לשדה (js/form-errors.js)
   forgotSend.addEventListener('click', function () {
     var code = forgotCode.value.trim();
-    if (!code) { forgotCode.focus(); return; }
+    if (!code) {
+      if (FE) { FE.set(forgotCode, 'יש להזין קוד משתמש'); FE.jump(forgotCode); sizeCard(); } else { forgotCode.focus(); }
+      return;
+    }
+    if (FE) { FE.clear(forgotCode); }
     forgotSend.disabled = true;
     fetch('/api/forgot-password', {
       method: 'POST',
@@ -185,10 +190,15 @@
     np1.value = ''; np2.value = '';
     np1.focus();
   }
+  var npFE = FE ? FE.attach(npForm, [
+    { el: np1, check: function () { return np1.value.length >= 8 ? '' : 'הסיסמה חייבת להכיל לפחות 8 תווים'; } },
+    { el: np2, check: function () { return np2.value && np2.value === np1.value ? '' : 'הסיסמאות אינן זהות'; } }
+  ], { before: npForm.querySelector('.tn-login-fields') }) : null;
   npForm.addEventListener('submit', function (e) {
     e.preventDefault();
     var a = np1.value, b = np2.value;
-    if (a.length < 8 || a !== b) { npShowError('tn_np_err'); np1.focus(); return; }
+    if (npFE) { if (!npFE.check()) { npShowError(null); return; } }
+    else if (a.length < 8 || a !== b) { npShowError('tn_np_err'); np1.focus(); return; }
     npBtn.disabled = true;
     store.changePassword(a).then(function () {
       np1.value = ''; np2.value = '';
@@ -202,8 +212,22 @@
     });
   });
 
+  var loginFE = FE ? FE.attach(loginForm, [
+    { el: userInput, check: function () { return userInput.value.trim() ? '' : 'יש להזין קוד משתמש'; } },
+    { el: passInput, check: function () { return passInput.value ? '' : 'יש להזין סיסמה'; } }
+  ], { before: loginForm.querySelector('.tn-login-fields') }) : null;
+  // קוד / סיסמה שגויים: ההודעה הקיימת (tnLoginError) + סימון שדה הקוד, קפיצה ופוקוס אליו
+  function wrongLogin() {
+    showError(true);
+    if (!FE) { passInput.focus(); return; }
+    FE.mark(userInput, 'tnLoginError');
+    FE.jump(userInput);
+    FE.clear(passInput);                          // the password was cleared on purpose, so no "enter a password" message
+  }
+  userInput.addEventListener('input', function () { if (FE && userInput.value.trim()) { FE.clear(userInput); } });
   loginForm.addEventListener('submit', function (e) {
     e.preventDefault();
+    if (loginFE && !loginFE.check()) { showError(false); sizeCard(); return; }
     var code = userInput.value.trim();             // GM-1001 וגם gm-1001 — הנרמול ב-data-store
     var pass = passInput.value;
     passInput.value = '';                         // הסיסמה לא נשמרת — מנקים מיד
@@ -212,11 +236,12 @@
     loginBtn.disabled = true;
     store.signInContractor(code, pass).then(function (user) {
       loginBtn.disabled = false;
-      if (!user) { showError(true); passInput.focus(); return; }
+      if (!user) { wrongLogin(); return; }
       showError(false);
+      if (FE) { FE.clear(userInput); }
       if (user.mustChange) { showPassStep(user); return; }
       enterMembers(user, true);
-    }, function () { loginBtn.disabled = false; showError(true); });
+    }, function () { loginBtn.disabled = false; wrongLogin(); });
   });
 
   document.getElementById('tnLogout').addEventListener('click', function () {

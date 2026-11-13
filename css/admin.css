@@ -551,3 +551,7 @@ input[type="date"].adm-input { color-scheme: dark; }
 @keyframes fe-flash { 15% { transform: translateX(-5px); } 35% { transform: translateX(5px); } 55% { transform: translateX(-3px); } 75% { transform: translateX(2px); } }
 @media (prefers-reduced-motion: reduce) { .fe-flash { animation: none; } }
 .adm-review .adm-acts { display: flex; flex-direction: row; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+
+/* סיכום שגיאות בראש טופס (js/form-errors.js) */
+.fe-summary { margin: 0 0 4px; padding: 10px 14px; border-radius: 10px; background: rgba(248, 113, 113, .12); border: 1px solid rgba(248, 113, 113, .55); color: #fecaca; font-weight: 700; }
+.fe-summary[hidden] { display: none; }
