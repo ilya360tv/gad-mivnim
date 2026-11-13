@@ -31,9 +31,11 @@
   var byNewest = function (a, b) { return (b.createdAt || '').localeCompare(a.createdAt || ''); };
 
   var TENDER_STATUS = { draft: 'טיוטה', published: 'פורסם', closed: 'סגור' };
-  var APPLICANT_STATUS = { pending: 'ממתין', approved: 'מאושר', rejected: 'נדחה' };
+  var APPLICANT_STATUS = { pending: 'ממתין', submitted: 'הוגשה', in_review: 'בבדיקה', missing_docs: 'חסרים מסמכים', waitlist: 'רשימת המתנה', draft: 'טיוטה', approved: 'מאושר', rejected: 'נדחה' };
+  var OPEN_STATUS = ['pending', 'submitted', 'in_review', 'missing_docs'];
+  var isOpen = function (a) { return OPEN_STATUS.indexOf(a.status) !== -1; };
   var DOC_TYPE = { license: 'רישיון', projects: 'פרויקטים', company: 'חברה', finance: 'כספים', recommendations: 'המלצות',
-    insurance: 'ביטוח', integrity: 'יושרה', tax: 'מס', cv: 'קורות חיים' };
+    insurance: 'ביטוח', integrity: 'יושרה', tax: 'מס', cv: 'קורות חיים', incorporation: 'עוסק מורשה', agreement: 'הסכם' };
   var chip = function (cls, text) { return '<span class="adm-chip adm-chip-' + cls + '">' + esc(text) + '</span>'; };
   // תחומי הקבלן כצ'יפים; משרה — שם התפקיד
   var fieldChips = function (a) {
@@ -117,6 +119,7 @@
   var modal = $('admModal'), modalTitle = $('admModalTitle'), modalBody = $('admModalBody'), modalOpener = null;
   function openModal(title, html) {
     modalOpener = document.activeElement;
+    modal.querySelector('.adm-modal-box').classList.remove('adm-modal-wide');
     modalTitle.textContent = title;
     modalBody.innerHTML = html;
     modal.hidden = false;
@@ -153,7 +156,9 @@
   var applicantById = function (id) { return data.applicants.filter(function (a) { return a.id === id; })[0] || null; };
 
   /* ---------- כניסה / יציאה ---------- */
+  var cleaned = false;
   function showApp() {
+    if (!cleaned && store.applicants.cleanupIncoming) { cleaned = true; store.applicants.cleanupIncoming().catch(function () {}); }
     loginView.hidden = true;
     appView.hidden = false;
     go(location.hash.replace('#', '') || 'dashboard', false);
@@ -212,7 +217,7 @@
   function render() {
     if (current !== 'applicants') { tempByProfile = {}; }
     VIEWS[current].render();
-    var pending = data.applicants.filter(function (a) { return a.status === 'pending'; }).length;
+    var pending = data.applicants.filter(isOpen).length;
     var badge = $('admPendingBadge');
     badge.hidden = !pending;
     badge.textContent = pending;
@@ -240,7 +245,7 @@
     var cards = [
       ['מכרזים פורסמו', T.filter(function (t) { return t.status === 'published'; }).length],
       ['מכרזים פתוחים', T.filter(function (t) { return t.status === 'published' && t.deadline >= today; }).length],
-      ['בקשות הצטרפות ממתינות', A.filter(function (a) { return a.status === 'pending'; }).length],
+      ['בקשות הצטרפות ממתינות', A.filter(isOpen).length],
       ['קבלני בית פעילים', A.filter(function (a) { return a.type === 'contractor' && a.profileStatus === 'approved' && a.subscription === 'active'; }).length],
       ['מועמדויות שהוגשו', P.length]
     ];
@@ -390,10 +395,11 @@
   function renderApplicants() {
     tempByProfile = {};
     var rows = data.applicants.filter(function (a) { return !aFilter || a.status === aFilter; }).sort(byNewest);
-    var tabs = [['', 'הכל'], ['pending', 'ממתין'], ['approved', 'מאושר'], ['rejected', 'נדחה']];
+    var tabs = [['', 'הכל'], ['submitted', 'הוגשו'], ['in_review', 'בבדיקה'], ['missing_docs', 'חסרים מסמכים'], ['pending', 'ממתין'], ['approved', 'אושרו'], ['rejected', 'נדחו']];
     content.innerHTML =
       '<div class="adm-toolbar"><div class="adm-pills" role="group" aria-label="סינון לפי סטטוס">' + tabs.map(function (x) {
-        return '<button type="button" class="adm-pill' + (aFilter === x[0] ? ' is-active' : '') + '" aria-pressed="' + (aFilter === x[0]) + '" data-af="' + x[0] + '">' + x[1] + '</button>';
+        var n = x[0] ? data.applicants.filter(function (a) { return a.status === x[0]; }).length : data.applicants.length;
+        return '<button type="button" class="adm-pill' + (aFilter === x[0] ? ' is-active' : '') + '" aria-pressed="' + (aFilter === x[0]) + '" data-af="' + x[0] + '">' + x[1] + ' ' + n + '</button>';
       }).join('') + '</div><p class="adm-note adm-note-inline">תשלום יחובר בהמשך – האישור מפעיל מנוי מיד</p></div>' +
       (rows.length ? '<div class="adm-table-wrap"><table class="adm-table adm-applicants"><thead><tr>' +
         '<th>שם</th><th>טלפון</th><th>תחומים / תפקיד</th><th>תאריך</th><th>סטטוס</th><th>שם משתמש</th><th>קוד כניסה</th><th>מסמכים</th><th>פעולות</th></tr></thead><tbody>' +
@@ -401,8 +407,12 @@
           var actions = '';
           var isContractor = a.type === 'contractor';
           var em = '<span class="adm-muted">—</span>';
-          if (a.status !== 'approved') { actions += '<button type="button" class="adm-btn adm-btn-sm adm-btn-primary" data-aact="' + (isContractor ? 'approve' : 'approve-simple') + '">אישור</button>'; }
-          if (a.status === 'pending') { actions += '<button type="button" class="adm-btn adm-btn-sm adm-btn-danger" data-aact="reject">דחייה</button>'; }
+          var withAgr = isAgreementApplicant(a);
+          if (withAgr) { actions += '<button type="button" class="adm-btn adm-btn-sm adm-btn-primary" data-aact="review">פתיחת הבקשה</button>'; }
+          else {
+            if (a.status !== 'approved' && a.status !== 'rejected') { actions += '<button type="button" class="adm-btn adm-btn-sm adm-btn-primary" data-aact="' + (isContractor ? 'approve' : 'approve-simple') + '">אישור</button>'; }
+            if (a.status === 'pending') { actions += '<button type="button" class="adm-btn adm-btn-sm adm-btn-danger" data-aact="reject">דחייה</button>'; }
+          }
           if (a.status === 'approved' && isContractor && a.profileId) {
             actions += a.subscription === 'active'
               ? '<button type="button" class="adm-btn adm-btn-sm" data-aact="suspend">השעיית מנוי</button>'
@@ -412,7 +422,9 @@
           var passHtml = passwordBlock(a) || em;
           var typeChip = a.type === 'team' ? ' ' + chip('team', 'צוות') : a.type === 'job' ? ' ' + chip('team', 'משרה') : '';
           var meta = a.type === 'team' ? '<span class="adm-team-meta">' + esc((a.years !== '' ? 'ניסיון ' + a.years + ' שנים' : '') + (a.years !== '' && a.area ? ' · ' : '') + (a.area || '')) + '</span>' : '';
-          var docs = a.docs.length ? a.docs.map(function (d) {
+          var dc = withAgr ? docCount(a) : null;
+          var docs = withAgr ? '<span class="adm-chip ' + (dc.missingReq ? 'adm-chip-rejected' : 'adm-chip-count') + '" title="' + (dc.missingReq ? 'חסרים ' + dc.missingReq + ' מסמכי חובה' : 'כל מסמכי החובה הועלו') + '">מסמכים ' + dc.have + '/' + dc.all + '</span>'
+            : a.docs.length ? a.docs.map(function (d) {
             return '<button type="button" class="adm-btn adm-btn-sm" data-doc="' + esc(d.path) + '">' + esc(DOC_TYPE[d.type] || 'מסמך') + ' ↓</button>';
           }).join('') : '';
           var phone = String(a.phone || '').trim();
@@ -482,6 +494,7 @@
     var id = b.closest('tr').getAttribute('data-id'), a = applicantById(id);
     if (!a) { return; }
     var act = b.getAttribute('data-aact'), job = null, msg = '';
+    if (act === 'review') { reviewDrawer(a); return; }
     if (act === 'approve') { approveForm(a); return; }
     if (act === 'approve-simple') { job = store.applicants.setStatus(id, 'approved'); msg = a.type === 'team' ? 'הבקשה לצוות אושרה' : 'המועמדות למשרה סומנה כמאושרת'; }
     if (act === 'reject') {
@@ -570,6 +583,226 @@
       });
     });
   }
+
+  /* ======================= 3a) בדיקת בקשת קבלן בית (הסכם דיגיטלי) =======================
+     חלון רחב: פרטים · הסכם חתום · 9 מסמכים (צפייה / הורדה / נבדק / הערה) · בדיקות · חיוב · סטטוס.
+     כל שינוי — דרך השרת (/api/review-application, /api/approve); מי/מתי נקבע בשרת. */
+  var CDOCS = window.GM_CONTRACTOR_DOCS;
+  var FE = window.GMFormErrors;
+  var REVIEW_CHECKS = [['license', 'רישיון אומת'], ['integrity', 'תעודת יושר תקינה'], ['insurance', 'ביטוח בתוקף'],
+    ['books', 'ניהול ספרים בתוקף'], ['business', 'עוסק מורשה / ח.פ אומת'], ['recommendations', 'המלצות נבדקו']];
+  var ENTITY_HE = { contractor: 'קבלן', company: 'חברה', professional: 'בעל/ת מקצוע', other: 'אחר' };
+  var SUB_STATUS = { awaiting_payment: 'ממתין לתשלום', review_fee_charged: 'דמי בדיקה נגבו', active: 'פעיל', rejected_closed: 'נדחה – נסגר', suspended: 'מושעה' };
+  var CHARGE_STATUS = { awaiting_provider: 'ממתין לספק סליקה', scheduled: 'מתוזמן', paid: 'שולם', failed: 'נכשל', canceled: 'בוטל' };
+  var REVIEW_ERR = {
+    note_required: 'יש לכתוב מה חסר', reason_required: 'יש לכתוב סיבת דחייה', not_open: 'הבקשה כבר נסגרה (אושרה / נדחתה)',
+    not_admin: 'אין הרשאת מנהל – התחברו מחדש', invalid_token: 'פג תוקף ההתחברות – התחברו מחדש', missing_token: 'פג תוקף ההתחברות – התחברו מחדש',
+    server_not_configured: 'השרת עדיין לא מוגדר (משתני סביבה ב-Vercel)', doc_not_found: 'המסמך לא נמצא'
+  };
+  var isAgreementApplicant = function (a) { return a.type === 'contractor' && !!a.agreement; };
+  var fmtDT = function (iso) {
+    if (!iso) { return '—'; }
+    var d = new Date(iso), p = function (n) { return (n < 10 ? '0' : '') + n; };
+    return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear() + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+  };
+  var money = function (n) { return '₪' + (Number(n) || 0).toLocaleString('he-IL'); };
+  function docsOf(a) {
+    var by = {};
+    (a.docs || []).forEach(function (d) { if (!by[d.type] || (d.createdAt || '') > (by[d.type].createdAt || '')) { by[d.type] = d; } });
+    return by;
+  }
+  function docCount(a) {
+    if (!CDOCS) { return { have: a.docs.length, all: 0, missingReq: 0 }; }
+    var by = docsOf(a);
+    var have = CDOCS.DOCS.filter(function (x) { return by[x.type]; }).length;
+    var missingReq = CDOCS.REQUIRED_DOCS.filter(function (t) { return !by[t]; }).length;
+    return { have: have, all: CDOCS.DOCS.length, missingReq: missingReq };
+  }
+  // צפייה בלשונית חדשה (קישור חתום ל-5 דקות). החלון נפתח מיד כדי שהדפדפן לא יחסום אותו
+  function openSigned(path, download) {
+    if (download) {
+      return store.applicants.docUrl(path).then(function (url) { location.href = url; }, function () { toast('ההורדה נכשלה, נסו שוב'); });
+    }
+    var w = window.open('about:blank', '_blank');
+    return store.applicants.docUrl(path, true).then(function (url) {
+      if (w) { w.opener = null; w.location.href = url; } else { location.href = url; }
+    }, function () { if (w) { w.close(); } toast('פתיחת הקובץ נכשלה, נסו שוב'); });
+  }
+
+  function reviewDrawer(a) {
+    var g = a.agreement || {}, sub = a.billing, by = docsOf(a);
+    var open = ['pending', 'submitted', 'in_review', 'missing_docs'].indexOf(a.status) !== -1;
+    var dl = function (rows) {
+      return '<dl class="adm-dl">' + rows.map(function (r) { return '<div><dt>' + esc(r[0]) + '</dt><dd>' + (r[2] ? r[1] : '<bdi>' + esc(r[1] || '—') + '</bdi>') + '</dd></div>'; }).join('') + '</dl>';
+    };
+    var entity = ENTITY_HE[a.entityType] || '—';
+    if (a.entityType === 'other' && a.entityOther) { entity += ': ' + a.entityOther; }
+    var c = g.consents || {};
+    var consentRows = [['read', 'קרא/ה את ההסכם ומסכים/ה לכל תנאיו'], ['fee', 'תשלום חודש ראשון בגין הבדיקה'], ['annual', 'מנוי שנתי שאינו ניתן לביטול'],
+      ['confidentiality', 'סודיות ואי-פנייה ללקוחות 36 חודשים'], ['privacy', 'מדיניות הפרטיות']];
+    var docsHtml = CDOCS ? CDOCS.DOCS.map(function (x) {
+      var d = by[x.type], req = CDOCS.isRequired(x.type);
+      var st = !d ? chip(req ? 'rejected' : 'none', 'חסר') : d.checked ? chip('approved', 'נבדק') : chip('pending', 'הועלה');
+      return '<li class="adm-rdoc' + (!d && req ? ' is-missing' : '') + '" data-dtype="' + x.type + '"' + (d ? ' data-did="' + esc(d.id) + '"' : '') + '>' +
+        '<div class="adm-rdoc-head"><span class="adm-rdoc-n">' + x.n + '</span><strong>' + esc(x.title) + '</strong>' + (req ? ' <small class="adm-req">חובה</small>' : '') + ' ' + st + '</div>' +
+        (d ? '<div class="adm-rdoc-file"><bdi>' + esc(d.fileName || d.path.split('/').pop()) + '</bdi>' + (d.fileSize ? ' · ' + Math.max(1, Math.round(d.fileSize / 1024)) + ' KB' : '') +
+              (d.meets ? ' · <span class="adm-ok">סומן "עומד/ת בתנאי"</span>' : '') + '</div>' +
+          '<div class="adm-acts"><button type="button" class="adm-btn adm-btn-sm" data-rview="' + esc(d.path) + '">צפייה</button>' +
+          '<button type="button" class="adm-btn adm-btn-sm" data-rdl="' + esc(d.path) + '">הורדה</button></div>' +
+          '<div class="adm-rdoc-check"><label class="adm-check"><input type="checkbox" data-rchecked' + (d.checked ? ' checked' : '') + '> נבדק</label>' +
+          '<input type="text" class="adm-input" data-rnote maxlength="1000" placeholder="הערה למסמך" aria-label="הערה למסמך ' + esc(x.title) + '" value="' + esc(d.adminNote) + '">' +
+          '<button type="button" class="adm-btn adm-btn-sm" data-rdocsave>שמירה</button></div>' +
+          (d.checkedBy ? '<p class="adm-who">עודכן ע״י ' + esc(d.checkedBy) + ' · ' + fmtDT(d.checkedAt) + '</p>' : '')
+          : '<p class="adm-muted">לא הועלה מסמך</p>') +
+      '</li>';
+    }).join('') : '';
+    var checks = a.reviewChecks || {};
+    var checksHtml = REVIEW_CHECKS.map(function (k) {
+      var v = checks[k[0]] || {};
+      return '<li><label class="adm-check"><input type="checkbox" data-rcheck="' + k[0] + '"' + (v.done ? ' checked' : '') + '> ' + esc(k[1]) + '</label>' +
+        (v.by ? '<span class="adm-who">' + esc(v.by) + ' · ' + fmtDT(v.at) + '</span>' : '') + '</li>';
+    }).join('');
+    var chargesHtml = sub && sub.charges.length ? '<div class="adm-table-wrap"><table class="adm-table adm-charges"><thead><tr><th>#</th><th>סוג</th><th>סכום</th><th>מועד</th><th>סטטוס</th></tr></thead><tbody>' +
+      sub.charges.map(function (ch) {
+        return '<tr><td>' + (ch.installment || '—') + '</td><td>' + (ch.kind === 'review_fee' ? 'דמי בדיקה (חודש 1)' : 'חודשי') + '</td><td>' + money(ch.amount) + '</td><td>' +
+          fmtDate(ch.dueAt) + '</td><td>' + esc(CHARGE_STATUS[ch.status] || ch.status) + '</td></tr>';
+      }).join('') + '</tbody></table></div>' : '<p class="adm-muted">אין חיובים</p>';
+
+    openModal('בקשת הצטרפות – ' + (a.fullName || ''),
+      '<div class="adm-review" data-rid="' + esc(a.id) + '">' +
+        '<div class="adm-rstatus">' + chip(a.status, APPLICANT_STATUS[a.status] || a.status) +
+          '<span class="adm-muted">הוגשה ' + fmtDT(a.submittedAt || a.createdAt) + (a.statusChangedAt ? ' · עודכנה ' + fmtDT(a.statusChangedAt) : '') + '</span>' +
+          (a.statusNote ? '<p class="adm-rnote"><strong>' + (a.status === 'rejected' ? 'סיבת דחייה (פנימי): ' : a.status === 'missing_docs' ? 'מה חסר: ' : 'הערה: ') + '</strong>' + esc(a.statusNote) + '</p>' : '') +
+        '</div>' +
+        (open ? '<div class="adm-ractions">' +
+          (a.status !== 'in_review' ? '<button type="button" class="adm-btn" data-ract="in_review">העברה לבדיקה</button>' : '') +
+          '<button type="button" class="adm-btn" data-ract="missing_docs">דרושים מסמכים נוספים</button>' +
+          '<button type="button" class="adm-btn adm-btn-danger" data-ract="reject">דחייה</button>' +
+          '<button type="button" class="adm-btn adm-btn-primary" data-ract="approve">אישור</button>' +
+        '</div>' +
+        '<div class="adm-rform" data-rform hidden><div class="adm-field"><label for="rText" id="rTextLbl"></label>' +
+          '<textarea id="rText" class="adm-input" rows="3" maxlength="2000"></textarea></div>' +
+          '<div class="adm-form-actions"><button type="button" class="adm-btn adm-btn-primary" data-rsend></button>' +
+          '<button type="button" class="adm-btn adm-btn-ghost" data-rcancel>ביטול</button></div></div>' : '') +
+
+        '<section class="adm-rsec"><h3 class="adm-h3">פרטי קבלן הבית</h3>' + dl([
+          ['סוג', entity], ['שם מלא / שם החברה', a.fullName], ['ח.פ / ע.מ / ת.ז', a.idNumber],
+          ['איש קשר', a.contactName + (a.contactRole ? ' – ' + a.contactRole : '')], ['טלפון', a.phone], ['דוא"ל', a.email],
+          ['כתובת', a.address], ['תחומי עיסוק', store.fieldsOf(a).join(', ')], ['אזורי פעילות', a.regions],
+          ['רישיון / הסמכה וסיווג', a.license], ['עובדים קבועים', String(a.employees)]
+        ]) + '</section>' +
+
+        '<section class="adm-rsec"><h3 class="adm-h3">הסכם חתום</h3>' +
+          (g.pdfPath ? '<div class="adm-acts"><button type="button" class="adm-btn adm-btn-primary adm-btn-sm" data-rview="' + esc(g.pdfPath) + '">פתיחת ההסכם החתום (PDF)</button>' +
+            '<button type="button" class="adm-btn adm-btn-sm" data-rdl="' + esc(g.pdfPath) + '">הורדה</button></div>' : '<p class="adm-muted">אין קובץ PDF</p>') +
+          dl([['גרסת ההסכם', g.version], ['נחתם', fmtDT(g.acceptedAt)], ['עיר', g.city], ['החותם', (g.signerName || '') + (g.signerRole ? ' – ' + g.signerRole : '')],
+            ['כתובת IP', g.ip], ['דפדפן', '<small dir="ltr">' + esc(g.userAgent || '—') + '</small>', true],
+            ['SHA-256 של הנוסח', '<small dir="ltr" class="adm-hash">' + esc(g.sha256 || '—') + '</small>', true]]) +
+          '<div class="adm-rsig"><span class="adm-muted">חתימה:</span>' + (g.signaturePath ? '<img alt="חתימת קבלן הבית" data-rsig="' + esc(g.signaturePath) + '">' : '—') + '</div>' +
+          '<ul class="adm-consents">' + consentRows.map(function (r) {
+            return '<li class="' + (c[r[0]] ? 'is-ok' : 'is-bad') + '"><span aria-hidden="true">' + (c[r[0]] ? '✓' : '✗') + '</span> ' + esc(r[1]) + '<span class="sr-only">' + (c[r[0]] ? ' – סומן' : ' – לא סומן') + '</span></li>';
+          }).join('') + '</ul>' +
+        '</section>' +
+
+        '<section class="adm-rsec"><h3 class="adm-h3">מסמכים <span class="adm-chip adm-chip-count">' + docCount(a).have + '/' + docCount(a).all + '</span></h3>' +
+          '<ul class="adm-rdocs">' + docsHtml + '</ul></section>' +
+
+        '<section class="adm-rsec"><h3 class="adm-h3">בדיקות</h3><ul class="adm-rchecks">' + checksHtml + '</ul>' +
+          '<div class="adm-field"><label for="rNotes">הערות פנימיות</label><textarea id="rNotes" class="adm-input" rows="3" maxlength="4000">' + esc(a.reviewNotes) + '</textarea></div>' +
+          (a.reviewedBy ? '<p class="adm-who">נבדק לאחרונה ע״י ' + esc(a.reviewedBy) + ' · ' + fmtDT(a.reviewedAt) + '</p>' : '') +
+          '<button type="button" class="adm-btn adm-btn-sm" data-rchecksave>שמירת הבדיקות</button></section>' +
+
+        '<section class="adm-rsec"><h3 class="adm-h3">מנוי וחיובים <small class="adm-muted">(ללא חיוב אמיתי – ספק סליקה עוד לא מחובר)</small></h3>' +
+          (sub ? dl([['סטטוס', SUB_STATUS[sub.status] || sub.status], ['סכום חודשי', money(sub.monthlyAmount)],
+            ['תחילה', fmtDate(sub.startedAt) || '—'], ['סיום', fmtDate(sub.endsAt) || '—'],
+            ['החיוב הבא', sub.nextCharge ? fmtDate(sub.nextCharge.dueAt) + ' · ' + money(sub.nextCharge.amount) : '—']]) + chargesHtml
+            : '<p class="adm-muted">אין מנוי</p>') +
+        '</section>' +
+      '</div>');
+    var box = modal.querySelector('.adm-modal-box');
+    box.classList.add('adm-modal-wide');
+    box.scrollTop = 0;
+    var sig = modalBody.querySelector('[data-rsig]');
+    if (sig) { store.applicants.docUrl(sig.getAttribute('data-rsig'), true).then(function (u) { sig.src = u; }, function () { sig.alt = 'טעינת החתימה נכשלה'; }); }
+  }
+
+  function reviewAfter(a, msg) {
+    toast(msg);
+    return refresh().then(function () { var fresh = applicantById(a.id); if (fresh && !modal.hidden) { reviewDrawer(fresh); } });
+  }
+  function reviewFail(err) { toast(REVIEW_ERR[err && err.message] || 'הפעולה נכשלה, נסו שוב'); }
+
+  modalBody.addEventListener('click', function (e) {
+    var root = modalBody.querySelector('.adm-review');
+    if (!root) { return; }
+    var a = applicantById(root.getAttribute('data-rid'));
+    if (!a) { return; }
+    var v = e.target.closest('[data-rview]');
+    if (v) { openSigned(v.getAttribute('data-rview'), false); return; }
+    var dlb = e.target.closest('[data-rdl]');
+    if (dlb) { openSigned(dlb.getAttribute('data-rdl'), true); return; }
+
+    var save = e.target.closest('[data-rdocsave]');
+    if (save) {
+      var li = save.closest('[data-did]');
+      save.disabled = true;
+      store.applicants.review({ applicantId: a.id, action: 'doc', docId: li.getAttribute('data-did'),
+        checked: li.querySelector('[data-rchecked]').checked, note: li.querySelector('[data-rnote]').value.trim() })
+        .then(function () { return reviewAfter(a, 'המסמך עודכן'); }, function (err) { save.disabled = false; reviewFail(err); });
+      return;
+    }
+    var cs = e.target.closest('[data-rchecksave]');
+    if (cs) {
+      var checks = {};
+      root.querySelectorAll('[data-rcheck]').forEach(function (cb) { checks[cb.getAttribute('data-rcheck')] = cb.checked; });
+      cs.disabled = true;
+      store.applicants.review({ applicantId: a.id, action: 'checks', checks: checks, notes: $('rNotes').value.trim() })
+        .then(function () { return reviewAfter(a, 'הבדיקות נשמרו'); }, function (err) { cs.disabled = false; reviewFail(err); });
+      return;
+    }
+
+    var act = e.target.closest('[data-ract]');
+    var form = root.querySelector('[data-rform]');
+    if (act) {
+      var kind = act.getAttribute('data-ract');
+      if (kind === 'approve') {
+        var n = docCount(a);
+        if (n.missingReq && !window.confirm('חסרים ' + n.missingReq + ' מסמכי חובה. לאשר בכל זאת?')) { return; }
+        approveForm(a);
+        return;
+      }
+      if (kind === 'in_review') {
+        act.disabled = true;
+        store.applicants.review({ applicantId: a.id, action: 'in_review' })
+          .then(function () { return reviewAfter(a, 'הבקשה הועברה לבדיקה'); }, function (err) { act.disabled = false; reviewFail(err); });
+        return;
+      }
+      // דחייה / מסמכים חסרים — טקסט חובה
+      form.hidden = false;
+      form.setAttribute('data-kind', kind);
+      $('rTextLbl').textContent = kind === 'reject' ? 'סיבת הדחייה (פנימי – לא נשלח לקבלן)' : 'מה חסר? (יוצג לצוות; לעדכון הקבלן)';
+      $('rText').value = '';
+      FE.clear($('rText'));
+      var send = form.querySelector('[data-rsend]');
+      send.textContent = kind === 'reject' ? 'דחיית הבקשה' : 'שמירה – "חסרים מסמכים"';
+      send.className = 'adm-btn ' + (kind === 'reject' ? 'adm-btn-danger' : 'adm-btn-primary');
+      $('rText').focus();
+      return;
+    }
+    if (e.target.closest('[data-rcancel]')) { form.hidden = true; return; }
+    var sendBtn = e.target.closest('[data-rsend]');
+    if (sendBtn) {
+      var k = form.getAttribute('data-kind');
+      var text = $('rText').value.trim();
+      if (!text) { FE.set($('rText'), k === 'reject' ? 'יש לכתוב סיבת דחייה' : 'יש לכתוב מה חסר'); FE.jump($('rText')); return; }
+      if (k === 'reject' && !window.confirm('לדחות את הבקשה של ' + a.fullName + '?\nלא יבוצעו חיובים נוספים.')) { return; }
+      sendBtn.disabled = true;
+      store.applicants.review(k === 'reject' ? { applicantId: a.id, action: 'reject', reason: text } : { applicantId: a.id, action: 'missing_docs', note: text })
+        .then(function () { return reviewAfter(a, k === 'reject' ? 'הבקשה נדחתה – המנוי נסגר' : 'הסטטוס עודכן: חסרים מסמכים'); },
+          function (err) { sendBtn.disabled = false; reviewFail(err); });
+    }
+  });
+  modalBody.addEventListener('input', function (e) { if (e.target.id === 'rText' && e.target.value.trim()) { FE.clear(e.target); } });
 
   /* ======================= 3b) קבלנים מאושרים ======================= */
   var cField = '';

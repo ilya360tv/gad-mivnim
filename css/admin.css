@@ -497,3 +497,57 @@ input[type="date"].adm-input { color-scheme: dark; }
 .adm-field .fsel { --fs-h: 48px; --fs-r: 10px; font-size: 1rem; }
 /* בתוך החלון הגולל: הרשימה נפתחת בזרימה (דוחפת את הכפתורים למטה) — לא נחתכת בקצה החלון */
 .adm-field .fsel__pop { position: relative; top: auto; margin-top: 6px; box-shadow: 0 10px 28px rgba(0, 0, 0, .45); }
+
+/* ===== בדיקת בקשת קבלן בית (הסכם דיגיטלי) — js/admin.js reviewDrawer ===== */
+.adm-chip-submitted { color: var(--lb); background: var(--lb-bg); border-color: rgba(56, 189, 248, .55); }
+.adm-chip-in_review { color: #c4b5fd; background: rgba(167, 139, 250, .1); border-color: rgba(167, 139, 250, .6); }
+.adm-chip-missing_docs { color: var(--warn); background: rgba(251, 191, 36, .1); border-color: rgba(251, 191, 36, .6); }
+.adm-chip-waitlist { color: var(--muted); background: rgba(170, 179, 189, .08); border-color: #4b5561; }
+.adm-modal-box.adm-modal-wide { max-width: 920px; }
+.adm-review { display: flex; flex-direction: column; gap: 18px; }
+.adm-rstatus { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.adm-rnote { flex-basis: 100%; margin: 0; padding: 10px 12px; border-radius: 10px; background: rgba(251, 191, 36, .08); border: 1px solid rgba(251, 191, 36, .4); color: #fde68a; }
+.adm-ractions { display: flex; flex-wrap: wrap; gap: 8px; }
+.adm-rform { display: flex; flex-direction: column; gap: 10px; padding: 14px; border: 1px solid #323b45; border-radius: 12px; }
+.adm-rform[hidden] { display: none; }
+.adm-rsec { padding-top: 14px; border-top: 1px solid #2a323b; }
+.adm-h3 { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font-size: 1.05rem; color: var(--lb); }
+.adm-dl { display: grid; grid-template-columns: 1fr; gap: 6px; margin: 0 0 10px; }
+.adm-dl div { display: grid; grid-template-columns: 170px 1fr; gap: 10px; }
+.adm-dl dt { color: var(--muted); }
+.adm-dl dd { margin: 0; color: #fff; overflow-wrap: anywhere; }
+.adm-hash { font-size: .75rem; color: var(--muted); }
+.adm-rsig { display: flex; align-items: center; gap: 12px; margin: 6px 0 10px; }
+.adm-rsig img { max-width: 260px; max-height: 90px; padding: 4px; border-radius: 8px; background: #fff; }
+.adm-consents { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+.adm-consents li.is-ok span[aria-hidden] { color: var(--ok); font-weight: 800; }
+.adm-consents li.is-bad { color: var(--bad); }
+.adm-rdocs { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.adm-rdoc { display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid #2a323b; border-radius: 12px; }
+.adm-rdoc.is-missing { border-color: rgba(248, 113, 113, .7); background: rgba(248, 113, 113, .06); }
+.adm-rdoc-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.adm-rdoc-n { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--lb-bg); color: var(--lb); font-weight: 800; font-size: .85rem; }
+.adm-req { color: var(--bad); }
+.adm-ok { color: var(--ok); }
+.adm-rdoc-file { color: var(--muted); font-size: .9rem; }
+.adm-rdoc-check { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.adm-rdoc-check .adm-input { flex: 1 1 200px; min-height: 36px; }
+.adm-check { display: inline-flex; align-items: center; gap: 8px; color: #fff; cursor: pointer; }
+.adm-check input { width: 18px; height: 18px; accent-color: var(--lb); }
+.adm-rchecks { margin: 0 0 12px; padding: 0; list-style: none; display: grid; gap: 6px; }
+.adm-rchecks li { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; }
+.adm-who { margin: 0; color: var(--muted); font-size: .8rem; }
+.adm-charges td, .adm-charges th { font-size: .85rem; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (max-width: 640px) {
+  .adm-dl div { grid-template-columns: 1fr; gap: 0; }
+  .adm-modal-box.adm-modal-wide { padding: 22px 14px; }
+}
+/* הודעות שגיאה (js/form-errors.js) במערכת הניהול */
+.fe-msg { margin: 4px 0 0; color: #f87171; font-size: .88rem; font-weight: 600; }
+.fe-msg[hidden] { display: none; }
+.fe-invalid .adm-input, .fe-invalid input, .fe-invalid select, .fe-invalid textarea, textarea.adm-input[aria-invalid="true"] { border-color: #f87171 !important; }
+.fe-flash { animation: fe-flash .8s ease; }
+@keyframes fe-flash { 15% { transform: translateX(-5px); } 35% { transform: translateX(5px); } 55% { transform: translateX(-3px); } 75% { transform: translateX(2px); } }
+@media (prefers-reduced-motion: reduce) { .fe-flash { animation: none; } }
+.adm-review .adm-acts { display: flex; flex-direction: row; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
