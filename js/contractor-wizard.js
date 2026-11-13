@@ -14,7 +14,7 @@
   var DS = window.dataStore, AGR = window.GM_AGREEMENT, DOCS = window.GM_CONTRACTOR_DOCS, FE = window.GMFormErrors;
   if (!mount || !DS || !AGR || !DOCS || !FE) { return; }
 
-  var REVIEW_FEE = '0000';                       // דמי בדיקה וקליטה (חודש ראשון) — הסכום ייקבע ע"י החברה
+  var REVIEW_FEE = 'יעודכן בהמשך';               // דמי בדיקה וקליטה (חודש ראשון) — הסכום ייקבע ע"י החברה; אין ספק סליקה עדיין
   var DRAFT_KEY = 'gm:contractorDraft';
   var STEPS = ['פרטי קבלן הבית', 'תנאי סף ומסמכים', 'ההסכם', 'חתימה', 'סיכום ותשלום'];
   var ENTITY = [['contractor', 'קבלן'], ['company', 'חברה'], ['professional', 'בעל/ת מקצוע'], ['other', 'אחר']];
@@ -165,6 +165,7 @@
           '<div class="cwz-progress__bar" role="progressbar" aria-valuemin="1" aria-valuemax="5"><span></span></div>' +
           '<ol class="cwz-steps">' + STEPS.map(function (s, i) { return '<li data-n="' + (i + 1) + '"><span>' + (i + 1) + '</span><em>' + esc(s) + '</em></li>'; }).join('') + '</ol>' +
         '</div>' +
+        '<p class="cwz-beta">המערכת בהרצה – נוסח ההסכם טיוטה בבדיקת עורך דין</p>' +
         '<p class="cwz-summary" hidden></p>' +
         '<div class="cwz-body"></div>' +
         '<p class="role-form__hp" hidden><label>Leave empty <input name="website" tabindex="-1" autocomplete="off"></label></p>' +
@@ -193,7 +194,7 @@
     });
     $('.cwz-back').hidden = S.step === 1;
     var nx = $('.cwz-next');
-    nx.textContent = S.step === 5 ? 'המשך לתשלום מאובטח' : 'הבא ←';
+    nx.textContent = S.step === 5 ? 'שליחת הבקשה' : 'הבא ←';
     nx.classList.toggle('cwz-pay', S.step === 5);
     [null, step1, step2, step3, step4, step5][S.step](b);
     syncNext();
@@ -499,7 +500,7 @@
           '<div><dt>החותם</dt><dd>' + esc(S.signerName) + (S.signerRole ? ' – ' + esc(S.signerRole) : '') + '</dd></div>' +
           '<div><dt>חתימה</dt><dd><img class="cwz-sum__sig" alt="החתימה שלכם" src="' + esc(S.signature) + '"></dd></div>' +
         '</dl></section>' +
-        '<p class="cwz-fee">דמי בדיקה וקליטה: ' + REVIEW_FEE + ' ש"ח (חודש ראשון)</p>' +
+        '<p class="cwz-fee">דמי בדיקה וקליטה (חודש ראשון): ' + REVIEW_FEE + '</p>' +
         '<p class="cwz-paynote">' + esc(AGR.PAY_NOTE) + '</p>' +
       '</div>' +
       '<p class="cwz-progress-up" aria-live="polite" hidden></p>';
@@ -611,8 +612,7 @@
     clearDraft();
     mount.innerHTML =
       '<div class="cwz cwz-done" role="status" tabindex="-1">' +
-        '<h3 class="cwz-h">הבקשה התקבלה ✓</h3>' +
-        '<p>התשלום יחובר בהמשך. נעדכן אתכם לאחר הבדיקה.</p>' +
+        '<p class="cwz-done__msg"><strong>הבקשה התקבלה ✓</strong> – נבדוק את המסמכים ונחזור אליכם. התשלום יחובר בהמשך.</p>' +
       '</div>';
     var d = $('.cwz-done');
     var bx = box(); if (bx) { bx.scrollTop = 0; }

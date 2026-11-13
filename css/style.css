@@ -8261,3 +8261,6 @@ html.a11y-no-motion .fe-flash { animation: none; }
 /* סיכום שגיאות בראש טופס (js/form-errors.js) */
 .fe-summary { margin: 0 0 4px; padding: 10px 14px; border-radius: 10px; background: rgba(248, 113, 113, .12); border: 1px solid rgba(248, 113, 113, .55); color: #fecaca; font-weight: 700; }
 .fe-summary[hidden] { display: none; }
+.cwz-beta { margin: 0; padding: 6px 12px; border-radius: 99px; background: rgba(251, 191, 36, .1); border: 1px solid rgba(251, 191, 36, .45); color: #fcd34d; font-size: .85rem; font-weight: 600; text-align: center; }
+.cwz-done__msg { margin: 0; color: #fff; font-size: 1.1rem; line-height: 1.6; }
+.cwz-done__msg strong { color: var(--green); }
