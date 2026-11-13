@@ -17,7 +17,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Gveret+Levin&family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 
   <!-- העיצוב שלנו -->
-  <link rel="stylesheet" href="css/style.css?v=20261113a11yC">
+  <link rel="stylesheet" href="css/style.css?v=20261113cwz1">
   <link rel="stylesheet" href="css/field-select.css?v=2">
   <meta name="theme-color" content="#0b0d10">
   <link rel="icon" href="/favicon.ico" sizes="any">
@@ -176,8 +176,8 @@
       </div>
     </div>
 
-    <!-- חלון 5: קבלן בית משותף — טופס ההצטרפות למאגר (type "contractor"; js/script.js + js/data-store.js) -->
-    <div class="proj-modal role-modal cw-modal" id="joinContractorModal" hidden>
+    <!-- חלון 5: קבלן בית משותף — אשף ההצטרפות: פרטים, מסמכים, הסכם, חתימה, סיכום (js/contractor-wizard.js) -->
+    <div class="proj-modal role-modal cw-modal cwz-modal" id="joinContractorModal" hidden>
       <div class="proj-modal__backdrop" data-cw-close></div>
       <div class="proj-modal__box role-modal__box" role="dialog" aria-modal="true" aria-labelledby="joinContractorModalTitle" tabindex="-1">
         <button type="button" class="proj-modal__x" data-cw-close aria-label="סגירה">&times;</button>
@@ -186,47 +186,9 @@
           <h2 class="proj-modal__name" id="joinContractorModalTitle" data-i18n="car_contractor">קבלן בית משותף</h2>
           <p class="role-modal__intro" data-i18n="cj_note">ההצטרפות מוגבלת ובאישור החברה בלבד. לאחר אישור ותשלום המנוי תקבלו קוד משתמש לכניסה למכרזים.</p>
         </div>
-        <form id="tendersForm" class="contact-form" novalidate>
-          <p class="role-form__hp" hidden><label>Leave empty <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
-          <div class="form-field">
-            <label for="tenderName" data-i18n="car_f_name">שם מלא</label>
-            <input type="text" id="tenderName" name="tenderName" autocomplete="name" data-i18n-ph="car_f_name" placeholder="שם מלא" required>
-          </div>
-          <div class="form-field">
-            <label for="tenderPhone" data-i18n="f_phone">טלפון</label>
-            <input type="tel" id="tenderPhone" name="tenderPhone" autocomplete="tel" placeholder="05X-XXXXXXX" required>
-          </div>
-          <div class="form-field">
-            <label for="tenderEmail" data-i18n="cj_email">אימייל</label>
-            <input type="email" id="tenderEmail" name="tenderEmail" autocomplete="email" inputmode="email" dir="ltr" placeholder="name@example.com" required aria-describedby="tenderEmailErr">
-            <p class="tn-fields-err" id="tenderEmailErr" role="alert" data-i18n="cj_email_err" hidden>יש להזין כתובת אימייל תקינה</p>
-          </div>
-          <div class="form-field tn-fields" id="tenderFields">
-            <label id="tenderFieldsLabel" data-i18n="tn_f_field">תחום מקצועי</label>
-            <div data-field-select></div>
-            <p class="tn-fields-err" id="tenderFieldsErr" role="alert" data-i18n="tn_f_fields_err" hidden>יש לבחור לפחות תחום אחד</p>
-          </div>
-          <div class="form-field">
-            <label for="cjDoc" data-i18n="cj_doc">רישיון קבלן / מסמך תומך (לא חובה)</label>
-            <div class="cv-drop" id="cjDocDrop">
-              <input type="file" id="cjDoc" name="doc" class="cv-drop__input" aria-describedby="cjDocHint cjDocErr" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png">
-              <div class="cv-drop__empty">
-                <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 15V4"/><path d="m7 9 5-5 5 5"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
-                <span class="cv-drop__text" id="cjDocHint" data-i18n="car_cv_hint">גררו לכאן קובץ או לחצו לבחירה</span>
-                <span class="cv-drop__types" data-i18n="cj_doc_types">PDF / JPG / PNG · עד 5MB</span>
-              </div>
-              <div class="cv-drop__file" hidden>
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>
-                <span class="cv-drop__meta"><span class="cv-drop__name" dir="auto"></span><span class="cv-drop__size"></span></span>
-                <button type="button" class="cv-drop__x" aria-label="הסרת הקובץ">&times;</button>
-              </div>
-            </div>
-            <p class="cv-drop__err" id="cjDocErr" role="alert" hidden></p>
-          </div>
-          <button type="submit" class="btn btn-primary form-submit" data-i18n="cj_submit">הגשת בקשת הצטרפות</button>
-          <p class="cj-after"><a href="tenders.html" class="cj-login-link" data-i18n="cj_login_link">כבר מנויים? לכניסה ←</a></p>
-          <p class="form-success" id="tendersSuccess" role="status" data-i18n="tn_success" hidden>נרשמתם בהצלחה! נעדכן אתכם על מכרזים חדשים בתחום שלכם.</p>
-        </form>
+        <!-- אשף ההצטרפות (5 שלבים) — נבנה ע"י js/contractor-wizard.js -->
+        <div class="cwz-mount" data-contractor-wizard></div>
+        <p class="cj-after"><a href="tenders.html" class="cj-login-link" data-i18n="cj_login_link">כבר מנויים? לכניסה ←</a></p>
       </div>
     </div>
   </section>
@@ -354,13 +316,17 @@
     <input type="text" name="bot-field">
   </form>
 
-  <script src="js/i18n.js?v=20261111fsel"></script>
+  <script src="js/i18n.js?v=20261112abt1"></script>
   <script src="js/premium.js?v=20261110f"></script>
   <script src="js/careers-data.js?v=2"></script>
   <script src="js/supabase-config.js?v=1"></script>
-  <script src="js/data-store.js?v=7"></script>
+  <script src="js/data-store.js?v=8"></script>
   <script src="js/field-select.js?v=2"></script>
-  <script src="js/script.js?v=20261112nopwa2"></script>
+  <script src="js/form-errors.js?v=1"></script>
+  <script src="js/contractor-docs.js?v=1"></script>
+  <script src="js/agreement-data.js?v=1"></script>
+  <script src="js/contractor-wizard.js?v=1"></script>
+  <script src="js/script.js?v=20261113sect"></script>
   <script src="js/a11y.js?v=20261113a11yC"></script>
 </body>
 </html>

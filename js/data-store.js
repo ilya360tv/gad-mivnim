@@ -423,27 +423,33 @@
     cleanupIncoming: function () { return callApi('/api/cleanup-incoming', {}); }
   };
 
+  // POST ציבורי (בלי התחברות) — שגיאה עם קוד השרת (err.message) ו-err.fields אם הוחזרו
+  function postJson(url, body) {
+    return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      .then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (data) {
+          if (!res.ok) { var e = new Error(data.error || ('http_' + res.status)); e.status = res.status; e.fields = data.fields || null; throw e; }
+          return data;
+        });
+      }, function () { throw new Error('network'); });
+  }
+
   /* ---------- הצטרפות קבלן בית (אשף ההסכם) ----------
      הקבצים עולים רק בהגשה הסופית, לנתיב זמני incoming/<מזהה>/ בבאקט הפרטי (לאורח מותר רק להעלות).
      השמירה עצמה — בשרת (/api/submit-application): IP, זמן, SHA-256 של ההסכם, PDF חתום. */
   var contractorJoin = {
+    // קישור העלאה חד-פעמי מהשרת (/api/upload-url) — לאורח אין הרשאת כתיבה ישירה לבאקט
     upload: function (applicantId, docType, file) {
       var ext = extOf(file.name);
-      if (['pdf', 'jpg', 'jpeg', 'png'].indexOf(ext) === -1 || file.size > MAX_FILE) { return Promise.reject(new Error('file')); }
-      var path = 'incoming/' + applicantId + '/' + docType + '-' + Date.now() + '.' + ext;
-      return client().then(function (sb) {
-        return sb.storage.from(BUCKET).upload(path, file, { contentType: MIME[ext], upsert: false }).then(unwrap).then(function () { return path; });
+      if (['pdf', 'jpg', 'jpeg', 'png'].indexOf(ext) === -1) { return Promise.reject(new Error('file_type')); }
+      if (file.size > MAX_FILE) { return Promise.reject(new Error('file_size')); }
+      return postJson('/api/upload-url', { applicantId: applicantId, docType: docType, ext: ext, size: file.size }).then(function (r) {
+        return client().then(function (sb) {
+          return sb.storage.from(BUCKET).uploadToSignedUrl(r.path, r.token, file, { contentType: MIME[ext] }).then(unwrap).then(function () { return r.path; });
+        });
       });
     },
-    submit: function (payload) {
-      return fetch('/api/submit-application', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-        .then(function (res) {
-          return res.json().catch(function () { return {}; }).then(function (data) {
-            if (!res.ok) { var e = new Error(data.error || ('http_' + res.status)); e.status = res.status; throw e; }
-            return data;
-          });
-        });
-    },
+    submit: function (payload) { return postJson('/api/submit-application', payload); },
     uuid: uuid
   };
 
