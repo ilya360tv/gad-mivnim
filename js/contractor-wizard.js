@@ -31,7 +31,7 @@
   /* ---------- מצב ---------- */
   var S = {
     step: 1, applicantId: DS.contractorJoin.uuid(),
-    d: {}, fields: [], docs: {}, consents: {}, readToEnd: false,
+    d: {}, fields: [], docs: {}, consents: {}, readToEnd: false, secRead: [],
     city: '', signerName: '', signerRole: '', signature: '', sigDirty: false, done: false
   };
   DETAIL_KEYS.forEach(function (k) { S.d[k] = ''; });
@@ -145,9 +145,9 @@
       });
     } else if (step === 3) {
       add('#cwzCity', function () { return S.city.trim().length < 2 ? 'יש למלא את העיר שבה נחתם ההסכם' : ''; });
-      add('[data-k="read"]', function () { return S.readToEnd ? '' : 'יש לגלול ולקרוא את ההסכם עד סופו'; });
+      add('[data-k="read"]', function () { return S.readToEnd ? '' : 'יש לקרוא את כל סעיפי ההסכם'; });
       CONSENTS.forEach(function (c) {
-        add('#cwzConsent-' + c[0], function () { return S.consents[c[0]] === true ? '' : 'יש לסמן את תיבת ההסכמה'; });
+        add('#cwzConsent-' + c[0], function () { return !S.readToEnd || S.consents[c[0]] === true ? '' : 'יש לסמן את תיבת ההסכמה'; });
       });
     } else if (step === 4) {
       add('#cwzSignerName', function () { return S.signerName.trim().length < 2 ? 'יש למלא את שם החותם' : ''; });
@@ -200,13 +200,10 @@
     syncNext();
   }
   function syncNext() {
+    // "הבא" תמיד לחיץ: לפני קריאת ההסכם — הודעה "יש לקרוא את כל סעיפי ההסכם" וקפיצה לכפתור הפתיחה
     var nx = $('.cwz-next');
-    // שלב ההסכם: "הבא" כבוי עד שגללו לסוף
-    var locked = S.step === 3 && !S.readToEnd;
-    nx.disabled = locked;
-    nx.setAttribute('aria-disabled', locked ? 'true' : 'false');
-    var hint = $('.cwz-readhint');
-    if (hint) { hint.hidden = !locked; }
+    nx.disabled = false;
+    nx.removeAttribute('aria-disabled');
   }
   function go(step, focusEl) {
     S.step = Math.max(1, Math.min(5, step));
@@ -366,39 +363,212 @@
     paint();
   }
 
-  /* ----- שלב 3: ההסכם ----- */
+  /* ----- שלב 3: ההסכם — קורא מלא, כל סעיף חייב להיקרא עד סופו ----- */
   function step3(b) {
     b.innerHTML =
       '<h3 class="cwz-h">ההסכם</h3>' +
-      '<p class="cwz-lead">קראו את ההסכם עד סופו. הפרטים שמילאתם כבר מופיעים בו. גרסה: <span dir="ltr">' + esc(AGR.VERSION) + '</span></p>' +
+      '<p class="cwz-lead">פתחו את ההסכם וקראו את כל הסעיפים. הפרטים שמילאתם כבר מופיעים בו. גרסה: <span dir="ltr">' + esc(AGR.VERSION) + '</span></p>' +
       '<div class="cwz-grid">' + field('cwzCity', 'העיר שבה נחתם ההסכם', { attrs: ' maxlength="80" autocomplete="address-level2"' }) +
         '<div class="form-field cwz-field"><span class="cwz-label">תאריך</span><p class="cwz-static">' + esc(today().text) + '</p></div></div>' +
-      '<div class="cwz-field" data-k="read" data-fe-host>' +
-        '<div class="cwz-agr" tabindex="0" role="document" aria-label="נוסח ההסכם"></div>' +
-        '<p class="cwz-readhint">יש לגלול עד סוף ההסכם כדי להמשיך</p>' +
+      '<div class="cwz-field cwz-readbox" data-k="read" data-fe-host>' +
+        '<button type="button" class="btn btn-primary cwz-openagr" aria-haspopup="dialog">פתיחת ההסכם לקריאה</button>' +
+        '<p class="cwz-readstate" aria-live="polite"></p>' +
       '</div>' +
+      '<p class="cwz-consent-hint">יש לקרוא את ההסכם עד הסוף</p>' +
       '<div class="cwz-consents">' + CONSENTS.map(function (c) {
         return '<div class="cwz-field" data-fe-host><label class="cwz-check cwz-consent"><input type="checkbox" id="cwzConsent-' + c[0] + '"><span>' + c[1] + '</span></label></div>';
       }).join('') + '</div>';
-    var agr = $('.cwz-agr');
-    function paintAgr() { agr.innerHTML = AGR.toHtml(agreementData(false)); }
-    paintAgr();
-    var city = $('#cwzCity');
-    bindValue(city, 'city', S);
-    city.addEventListener('input', paintAgr);
-    function atEnd() {
-      if (agr.scrollHeight - agr.clientHeight - agr.scrollTop <= 24) {
-        if (!S.readToEnd) { S.readToEnd = true; saveDraft(); syncNext(); FE.clear($('[data-k="read"]')); }
-      }
-    }
-    agr.addEventListener('scroll', atEnd, { passive: true });
-    setTimeout(atEnd, 0);                                  // ההסכם קצר מהתיבה — נחשב כנקרא
+    bindValue($('#cwzCity'), 'city', S);
+    $('.cwz-openagr').addEventListener('click', function () { openReader(this); });
     CONSENTS.forEach(function (c) {
       var cb = $('#cwzConsent-' + c[0]);
       cb.checked = S.consents[c[0]] === true;
       cb.addEventListener('change', function () { S.consents[c[0]] = cb.checked; saveDraft(); if (cb.checked) { FE.clear(cb); } });
     });
+    paintReadState();
     watchAll();
+  }
+  // מצב הקריאה בשלב 3: לפני — תיבות ההסכמה נעולות; אחרי — "✓ ההסכם נקרא במלואו" ותיבות פעילות
+  function paintReadState() {
+    var st = $('.cwz-readstate');
+    if (!st) { return; }
+    var n = S.secRead.filter(Boolean).length, all = S.secRead.length || 9;
+    st.textContent = S.readToEnd ? '✓ ההסכם נקרא במלואו' : (n ? 'קראת ' + n + ' מתוך ' + all + ' סעיפים' : 'טרם נקרא');
+    st.classList.toggle('is-done', !!S.readToEnd);
+    $('.cwz-openagr').textContent = S.readToEnd ? 'פתיחת ההסכם שוב' : 'פתיחת ההסכם לקריאה';
+    $('.cwz-openagr').classList.toggle('btn-outline', !!S.readToEnd);
+    $('.cwz-openagr').classList.toggle('btn-primary', !S.readToEnd);
+    $('.cwz-consent-hint').hidden = !!S.readToEnd;
+    CONSENTS.forEach(function (c) {
+      var cb = $('#cwzConsent-' + c[0]);
+      cb.disabled = !S.readToEnd;
+      cb.closest('.cwz-check').classList.toggle('is-locked', !S.readToEnd);
+    });
+  }
+
+  /* ---------- קורא ההסכם (חלון מלא) ----------
+     סעיף = כותרת (h3.agr-h) עד הכותרת הבאה; מה שלפני "הקדמה" (כותרת, תאריך, הצדדים) שייך לסעיף הראשון.
+     ✓ רק כשסוף הסעיף נראה בפועל (IntersectionObserver על סמן בסוף כל סעיף).
+     טבלת החתימות ושורת "לשימוש GAD MIVNIM" לא מוצגות לקבלן (חתימה — בשלב 4; המשרד — רק ב-PDF למנהל). */
+  var R = null;
+  function openReader(opener) {
+    if (R) { return; }
+    var wrap = document.createElement('div');
+    wrap.className = 'agr-reader';
+    wrap.setAttribute('role', 'dialog');
+    wrap.setAttribute('aria-modal', 'true');
+    wrap.setAttribute('aria-labelledby', 'agrReaderTitle');
+    wrap.innerHTML =
+      '<div class="agr-reader__panel">' +
+        '<div class="agr-reader__head">' +
+          '<h2 class="agr-reader__title" id="agrReaderTitle">הסכם הצטרפות – קבלן בית</h2>' +
+          '<p class="agr-reader__progress" aria-live="polite"></p>' +
+          '<button type="button" class="agr-reader__x" aria-label="סגירה">&times;</button>' +
+          '<div class="agr-reader__bar" aria-hidden="true"><span></span></div>' +
+        '</div>' +
+        '<div class="agr-reader__main">' +
+          '<nav class="agr-reader__toc" aria-label="סעיפי ההסכם"><ol></ol></nav>' +
+          '<div class="agr-reader__body cwz-agr" tabindex="0"></div>' +
+        '</div>' +
+        '<div class="agr-reader__foot">' +
+          '<button type="button" class="btn btn-outline agr-reader__prev">→ לסעיף הקודם</button>' +
+          '<button type="button" class="btn btn-outline agr-reader__next">לסעיף הבא ←</button>' +
+          '<button type="button" class="btn btn-primary agr-reader__done">סיימתי לקרוא</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(wrap);
+    var body = wrap.querySelector('.agr-reader__body');
+    // בניית הסעיפים מתוך ה-HTML הממולא (אותו נוסח בדיוק)
+    var tmp = document.createElement('div');
+    tmp.innerHTML = AGR.toHtml(agreementData(false), { contractorView: true });
+    var secs = [], cur = null, pre = [];
+    Array.prototype.slice.call(tmp.children).forEach(function (el) {
+      if (el.matches('h3.agr-h')) {
+        cur = document.createElement('section');
+        cur.className = 'agr-sec';
+        cur.id = 'agrSec' + secs.length;
+        cur.setAttribute('aria-labelledby', 'agrSecH' + secs.length);
+        el.id = 'agrSecH' + secs.length;
+        el.setAttribute('tabindex', '-1');
+        secs.push({ el: cur, title: el.textContent.trim() });
+        pre.forEach(function (p) { cur.appendChild(p); });
+        pre = [];
+        cur.appendChild(el);
+        return;
+      }
+      if (cur) { cur.appendChild(el); } else { pre.push(el); }
+    });
+    secs.forEach(function (s) {
+      var end = document.createElement('span');
+      end.className = 'agr-sec__end';
+      end.setAttribute('aria-hidden', 'true');
+      s.el.appendChild(end);
+      s.end = end;
+      body.appendChild(s.el);
+    });
+    if (S.secRead.length !== secs.length) { S.secRead = secs.map(function () { return !!S.readToEnd; }); }
+    var toc = wrap.querySelector('.agr-reader__toc ol');
+    toc.innerHTML = secs.map(function (s, i) {
+      return '<li><button type="button" data-sec="' + i + '"><span class="agr-toc__st" aria-hidden="true"></span><span class="agr-toc__t">' + esc(s.title) + '</span><span class="sr-only agr-toc__sr"></span></button></li>';
+    }).join('');
+
+    var prev = wrap.querySelector('.agr-reader__prev'), nextB = wrap.querySelector('.agr-reader__next'), done = wrap.querySelector('.agr-reader__done');
+    function paint() {
+      var n = S.secRead.filter(Boolean).length;
+      wrap.querySelector('.agr-reader__progress').textContent = 'קראת ' + n + ' מתוך ' + secs.length + ' סעיפים';
+      wrap.querySelector('.agr-reader__bar span').style.width = Math.round(n / secs.length * 100) + '%';
+      Array.prototype.forEach.call(toc.querySelectorAll('[data-sec]'), function (btn, i) {
+        var ok = !!S.secRead[i];
+        btn.classList.toggle('is-read', ok);
+        btn.querySelector('.agr-toc__st').textContent = ok ? '✓' : '○';
+        btn.querySelector('.agr-toc__sr').textContent = ok ? ' – נקרא' : ' – טרם נקרא';
+      });
+      var all = n === secs.length;
+      done.disabled = !all;
+      done.setAttribute('aria-disabled', all ? 'false' : 'true');
+      done.title = all ? '' : 'יש לקרוא את כל הסעיפים';
+    }
+    function current() {
+      var top = body.getBoundingClientRect().top + 8, idx = 0;
+      secs.forEach(function (s, i) { if (s.el.getBoundingClientRect().top <= top + 4) { idx = i; } });
+      return idx;
+    }
+    function goSec(i) {
+      i = Math.max(0, Math.min(secs.length - 1, i));
+      // קפיצה מיידית (לא גלילה חלקה) — כדי שסעיפים שדילגו עליהם לא יסומנו ✓ בדרך
+      body.scrollTop = secs[i].el.offsetTop - body.offsetTop;
+      var h = secs[i].el.querySelector('h3');
+      if (h) { h.focus({ preventScroll: true }); }
+    }
+    function syncNav() {
+      var c = current();
+      prev.disabled = c === 0;
+      nextB.disabled = c === secs.length - 1;
+      Array.prototype.forEach.call(toc.querySelectorAll('[data-sec]'), function (btn, i) {
+        if (i === c) { btn.setAttribute('aria-current', 'true'); } else { btn.removeAttribute('aria-current'); }
+      });
+    }
+    var io = 'IntersectionObserver' in window ? new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) { return; }
+        var i = secs.map(function (s) { return s.end; }).indexOf(en.target);
+        if (i !== -1 && !S.secRead[i]) { S.secRead[i] = true; paint(); paintReadState(); }
+      });
+    }, { root: body, threshold: 1 }) : null;
+    if (io) { secs.forEach(function (s) { io.observe(s.end); }); }
+    else { S.secRead = secs.map(function () { return true; }); }  // דפדפן ישן מאוד — אין דרך למדוד
+
+    body.addEventListener('scroll', syncNav, { passive: true });
+    prev.addEventListener('click', function () { goSec(current() - 1); });
+    nextB.addEventListener('click', function () { goSec(current() + 1); });
+    toc.addEventListener('click', function (e) { var t = e.target.closest('[data-sec]'); if (t) { goSec(Number(t.getAttribute('data-sec'))); } });
+    done.addEventListener('click', function () {
+      if (S.secRead.filter(Boolean).length !== secs.length) { return; }
+      S.readToEnd = true;
+      saveDraft();
+      close(true);
+    });
+    wrap.querySelector('.agr-reader__x').addEventListener('click', function () { close(false); });
+
+    function focusables() {
+      return Array.prototype.filter.call(wrap.querySelectorAll('button, [tabindex="0"], a[href]'), function (el) { return !el.disabled && el.offsetParent !== null; });
+    }
+    // לפני מלכודת הפוקוס של חלון הקבלן (script.js, document capture) — כאן window capture
+    function onKey(e) {
+      if (e.key === 'Escape') { e.preventDefault(); e.stopImmediatePropagation(); close(false); return; }
+      if (e.key !== 'Tab') { return; }
+      e.stopImmediatePropagation();
+      var f = focusables();
+      if (!f.length) { return; }
+      var first = f[0], last = f[f.length - 1];
+      if (!wrap.contains(document.activeElement)) { e.preventDefault(); first.focus(); return; }
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+    window.addEventListener('keydown', onKey, true);
+    function close(finished) {
+      if (io) { io.disconnect(); }
+      window.removeEventListener('keydown', onKey, true);
+      document.documentElement.classList.remove('agr-reader-open');
+      wrap.remove();
+      R = null;
+      paintReadState();
+      if (finished) {
+        FE.clear($('[data-k="read"]'));
+        FE.summary($('.cwz-summary'), 0);
+        var first = $('#cwzConsent-read');
+        if (first) { first.focus({ preventScroll: true }); first.closest('.cwz-field').scrollIntoView({ block: 'center', behavior: calm() ? 'auto' : 'smooth' }); }
+      } else if (opener && document.body.contains(opener)) { opener.focus({ preventScroll: true }); }
+    }
+    R = { close: close };
+    document.documentElement.classList.add('agr-reader-open');
+    paint();
+    syncNav();
+    body.focus({ preventScroll: true });
+  }
+  function calm() {
+    return document.documentElement.classList.contains('a11y-no-motion') ||
+      (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   }
 
   /* ----- שלב 4: חתימה ----- */

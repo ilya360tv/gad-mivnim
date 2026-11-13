@@ -171,10 +171,14 @@
   /* ---------- HTML ממולא (שלב 3 באתר + הקובץ החתום בשרת) ----------
      d: { entityType, fullName, idNumber, contact, phone, email, address, fields, regions, license, employees,
           city, day, month, year, signerName, signerRole, signDate, signature (data-URL / URL של PNG) } */
-  function toHtml(d) {
+  // opts.contractorView: בלי טבלת החתימות ובלי שורת "לשימוש GAD MIVNIM" (החתימה בשלב 4; המשרד — רק ב-PDF למנהל).
+  // הנוסח עצמו לא משתנה — רק אילו בלוקים מוצגים.
+  function toHtml(d, opts) {
     d = d || {};
+    opts = opts || {};
     var H = [];
     BLOCKS.forEach(function (b) {
+      if (opts.contractorView && (b.t === 'sign' || b.t === 'office')) { return; }
       switch (b.t) {
         case 'title': H.push('<h2 class="agr-title">' + inline(b.text) + '</h2>'); break;
         case 'sub': H.push('<p class="agr-sub">' + inline(b.text) + '</p>'); break;
