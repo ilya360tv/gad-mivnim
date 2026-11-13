@@ -143,7 +143,7 @@ module.exports = handler(async (req) => {
     fullName: str(d.fullName, 120), idNumber: String(d.idNumber || '').replace(/\D/g, ''),
     contactName: str(d.contactName, 120), contactRole: str(d.contactRole, 80),
     phone: str(d.phone, 30), email: str(d.email, 200), address: str(d.address, 200),
-    regions: str(d.regions, 200), license: str(d.license, 120),
+    regions: str(d.regions, 300), license: str(d.license, 160),
     employees: d.employees === '' || d.employees == null ? null : parseInt(d.employees, 10)
   };
   const fields = normalizeFields(body.fields);
@@ -188,6 +188,7 @@ module.exports = handler(async (req) => {
   const missing = DOCS.REQUIRED_DOCS.filter((t) => !docs[t]);
   if (missing.length) { throw httpError(400, 'missing_docs:' + missing.join(',')); }
   const originalNames = body.docNames && typeof body.docNames === 'object' ? body.docNames : {};
+  const meets = body.docMeets && typeof body.docMeets === 'object' ? body.docMeets : {};
 
   /* הגבלת קצב: עד 5 הגשות לשעה מאותה כתובת */
   const ip = clientIp(req);
@@ -204,9 +205,11 @@ module.exports = handler(async (req) => {
   const entityLabel = entity === 'other' ? 'אחר: ' + out.entityOther : ENTITY[entity];
   const row = {
     id: id, type: 'contractor', status: 'submitted', status_changed_at: now.toISOString(),
+    submitted_at: now.toISOString(), received_at: now.toISOString(), agreed: true, agreed_at: now.toISOString(),
+    signer_name: signerName, signer_role: signerRole || null,
     full_name: out.fullName, phone: out.phone, email: out.email, fields: fields,
-    entity_type: entity, id_number: out.idNumber, contact_name: out.contactName, contact_role: out.contactRole || null,
-    address: out.address, regions: out.regions, license_no: out.license, employees: out.employees,
+    entity_kind: entity, entity_other: entity === 'other' ? out.entityOther : null, id_number: out.idNumber, contact_name: out.contactName, contact_role: out.contactRole || null,
+    address: out.address, activity_areas: out.regions, license_info: out.license, employee_count: out.employees,
     note: entity === 'other' ? 'סוג: ' + entityLabel : null
   };
   const created = await sb('/rest/v1/applicants', { method: 'POST', headers: { Prefer: 'return=representation' }, body: row })
@@ -219,7 +222,7 @@ module.exports = handler(async (req) => {
       headers: { Prefer: 'return=minimal' },
       body: Object.keys(docs).map((t) => ({
         applicant_id: id, doc_type: t, storage_path: 'incoming/' + id + '/' + docs[t].name,
-        file_name: str(originalNames[t], 200) || docs[t].name, file_size: docs[t].size
+        file_name: str(originalNames[t], 180) || docs[t].name, file_size: docs[t].size, meets: meets[t] === true
       }))
     });
 
@@ -234,7 +237,7 @@ module.exports = handler(async (req) => {
       license: out.license, employees: String(out.employees),
       city: city, day: String(Number(p.day)), month: MONTHS_HE[Number(p.month) - 1], year: p.year,
       signerName: signerName, signerRole: signerRole, signDate: p.day + '/' + p.month + '/' + p.year,
-      docs: docNames, extraDocTitle: DOCS.byType('business_cert').title
+      docs: docNames, extraDocTitle: DOCS.byType('incorporation').title
     }, {
       sha256: AGREEMENT_SHA256, acceptedAt: now.toISOString(),
       acceptedLocal: p.day + '/' + p.month + '/' + p.year + ' ' + p.hour + ':' + p.minute + ' (Asia/Jerusalem)',

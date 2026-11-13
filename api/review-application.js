@@ -2,7 +2,7 @@
    POST /api/review-application — בדיקת בקשת קבלן בית (מנהל בלבד)
    body: { applicantId, action, ... }
      action 'in_review'                       → סטטוס "בבדיקה"
-     action 'pending_docs', note              → "דרושים מסמכים נוספים" (מה חסר — חובה)
+     action 'missing_docs', note              → "דרושים מסמכים נוספים" (מה חסר — חובה)
      action 'reject', reason                  → "נדחה" (סיבה פנימית — חובה) + וו חיוב: rejected_closed
      action 'checks', checks{}, notes         → רשימת הבדיקות + הערות (מי/מתי נשמר כאן, בשרת)
      action 'doc', docId, checked, note       → "נבדק" + הערה למסמך
@@ -13,7 +13,7 @@ const { sb, requireAdmin, readBody, handler, httpError, UUID } = require('./_sup
 const billing = require('./_billing');
 
 const CHECKS = ['license', 'integrity', 'insurance', 'books', 'business', 'recommendations'];
-const OPEN = ['pending', 'submitted', 'in_review', 'pending_docs'];
+const OPEN = ['pending', 'submitted', 'in_review', 'missing_docs'];
 const str = (v, max) => String(v == null ? '' : v).trim().slice(0, max);
 
 module.exports = handler(async (req) => {
@@ -35,19 +35,19 @@ module.exports = handler(async (req) => {
       await patch({ status: 'in_review', status_changed_at: now, reviewed_by: who, reviewed_at: now });
       return { ok: true, status: 'in_review' };
 
-    case 'pending_docs': {
+    case 'missing_docs': {
       const note = str(body.note, 2000);
       if (!note) { throw httpError(400, 'note_required'); }
       if (OPEN.indexOf(a.status) === -1) { throw httpError(409, 'not_open'); }
-      await patch({ status: 'pending_docs', docs_request: note, status_changed_at: now, reviewed_by: who, reviewed_at: now });
-      return { ok: true, status: 'pending_docs' };
+      await patch({ status: 'missing_docs', status_note: note, status_changed_at: now, reviewed_by: who, reviewed_at: now });
+      return { ok: true, status: 'missing_docs' };
     }
 
     case 'reject': {
       const reason = str(body.reason, 2000);
       if (!reason) { throw httpError(400, 'reason_required'); }
       if (OPEN.indexOf(a.status) === -1) { throw httpError(409, 'not_open'); }
-      await patch({ status: 'rejected', reject_reason: reason, status_changed_at: now, reviewed_by: who, reviewed_at: now });
+      await patch({ status: 'rejected', status_note: reason, status_changed_at: now, reviewed_by: who, reviewed_at: now });
       const sub = await billing.onReject(id);
       return { ok: true, status: 'rejected', subscription: sub };
     }

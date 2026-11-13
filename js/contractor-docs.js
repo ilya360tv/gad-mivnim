@@ -14,10 +14,10 @@
     { n: 6, type: 'insurance',       title: 'אישור קיום ביטוחים',                text: 'ביטוח בתוקף – צד ג\', חבות מעבידים ואחריות מקצועית' },
     { n: 7, type: 'integrity',       title: 'תעודת יושר',                        text: 'אישור היעדר רישום פלילי (לפי הדין החל)' },
     { n: 8, type: 'tax',             title: 'אישור ניהול ספרים + ניכוי מס במקור', text: 'אישור ניהול ספרים ואישור ניכוי מס במקור בתוקף' },
-    { n: 9, type: 'business_cert',   title: 'תעודת עוסק מורשה / תעודת התאגדות',  text: 'תעודת עוסק מורשה, או תעודת התאגדות לחברה' }
+    { n: 9, type: 'incorporation',   title: 'תעודת עוסק מורשה / תעודת התאגדות',  text: 'תעודת עוסק מורשה, או תעודת התאגדות לחברה' }
   ];
   // חובה: כולם חוץ מ-3 (פרופיל חברה) ו-5 (המלצות)
-  var REQUIRED_DOCS = ['license', 'projects', 'finance', 'insurance', 'integrity', 'tax', 'business_cert'];
+  var REQUIRED_DOCS = ['license', 'projects', 'finance', 'insurance', 'integrity', 'tax', 'incorporation'];
   var EXT = ['pdf', 'jpg', 'jpeg', 'png'];
   var MAX_BYTES = 5 * 1024 * 1024;
 

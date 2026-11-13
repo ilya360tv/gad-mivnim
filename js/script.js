@@ -1790,7 +1790,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // מובייל: מעט קטן יותר, אותן פרופורציות
         var cardW = iw < 768 ? 240
           : iw < 1024 ? Math.round((Math.min(vw, 900) - 20) / 2)
-          : Math.round((vw - 4 * gap) / 5);
+          : Math.round((vw - 4 * gap) / 5 * cardScale());
         ptqBox.style.setProperty('--pt-card-w', cardW + 'px');
         ptqBox.style.setProperty('--pt-card-gap', gap + 'px');
         var step = cardW + gap;
@@ -2327,7 +2327,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var vw = pcqBox.clientWidth || iw;
         var cardW = iw < 768 ? 240
           : iw < 1024 ? Math.round((Math.min(vw, 900) - 20) / 2)
-          : Math.round((vw - 4 * gap) / 5);
+          : Math.round((vw - 4 * gap) / 5 * cardScale());
         pcqBox.style.setProperty('--pt-card-w', cardW + 'px');
         pcSec.style.setProperty('--pod-photo-w', (cardW - 2) + 'px');   // תמונת הכותרת = אזור התמונה של הכרטיס (בלי המסגרת)
         pcqBox.style.setProperty('--pt-card-gap', gap + 'px');
@@ -2587,34 +2587,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
   /* ---------------------------------------------------------------
-     10) #about — הכותרת "מדוע נולד הרעיון..." בשורה אחת, ברוחב עמודת הטקסט בדיוק
-         (מחשב ≥1024). גודל הכתב מחושב כך שהשורה נגמרת בקצה הפסקאות. במובייל — שבירה רגילה.
+     10) #about — הכותרת "מדוע נולד הרעיון..." בשורה אחת, ממורכזת בין עמודות הצד (מסך ≥769).
+         הגודל הבסיסי = כמו כותרות העמודים; אם השורה רחבה מהמקום הפנוי — מקטינים עד 18px.
+         אם גם ב-18px לא נכנס — חוזרים לשבירה רגילה (לעולם לא חותכים). מובייל ≤768 — שבירה רגילה.
      --------------------------------------------------------------- */
   var abTitle = document.querySelector('#about .about-title');
-  var abCol = document.querySelector('#about .about-text');
-  if (abTitle && abCol) {
+  if (abTitle) {
     var fitAbout = function () {
-      abTitle.style.fontSize = '';
-      abTitle.style.maxWidth = '';
-      if (window.innerWidth < 1024) { abTitle.style.whiteSpace = ''; return; }
-      abTitle.style.whiteSpace = 'nowrap';
-      var target = abCol.getBoundingClientRect().width;
-      var r = document.createRange(); r.selectNodeContents(abTitle);
-      var w = r.getBoundingClientRect().width;
-      if (target && w) {
-        // מגדילים או מכווצים כך שהשורה תמלא בדיוק את רוחב עמודת הטקסט (עד 40px)
-        var fs = parseFloat(getComputedStyle(abTitle).fontSize);
-        var raw = fs * target / w * 0.998;
-        var next = Math.max(12, Math.min(40, raw));
-        abTitle.style.fontSize = next.toFixed(2) + 'px';
-        // הכותרת לעולם לא יוצאת מעמודת הטקסט (גם ב-LTR, שם עמודת התמונה בצד השני): אם אפילו ב-12px היא רחבה מהעמודה — שבירת שורות בתוך העמודה
-        var isLtr = (document.documentElement.getAttribute('dir') || 'rtl') === 'ltr';
-        if (raw < 12 || isLtr) { abTitle.style.maxWidth = target.toFixed(1) + 'px'; }
-        if (raw < 12) {
-          var p0 = abCol.querySelector('p');
-          abTitle.style.whiteSpace = 'normal';
-          abTitle.style.fontSize = (p0 ? parseFloat(getComputedStyle(p0).fontSize) * 1.1 : 16).toFixed(2) + 'px';
-        }
+      abTitle.classList.remove('about-one-line');
+      abTitle.style.removeProperty('--about-fs');
+      if (window.innerWidth <= 768) { return; }
+      var base = parseFloat(getComputedStyle(abTitle).fontSize);      // הגודל הרגיל של כותרת העמוד
+      abTitle.classList.add('about-one-line');
+      abTitle.style.setProperty('--about-fs', base + 'px');
+      var avail = abTitle.clientWidth, need = abTitle.scrollWidth;
+      if (avail && need > avail) {
+        var fs = base * avail / need * 0.99;
+        if (fs < 18) { abTitle.classList.remove('about-one-line'); abTitle.style.removeProperty('--about-fs'); }
+        else { abTitle.style.setProperty('--about-fs', fs.toFixed(2) + 'px'); }
       }
       if (typeof liftMedia === 'function') { liftMedia(); }          // הכותרת השתנתה — מיישרים מחדש את כותרת התמונות
     };
@@ -2627,6 +2617,37 @@ document.addEventListener('DOMContentLoaded', function () {
     if ('MutationObserver' in window) {
       new MutationObserver(function () { setTimeout(fitAbout, 30); })
         .observe(abTitle, { childList: true, characterData: true, subtree: true });
+    }
+  }
+
+
+  /* ---------------------------------------------------------------
+     11b) #projects — לשוניות המגזר (4 גלולות) בשורה אחת, ממורכזות על ציר ה-H1 (מסך ≥769; ה-CSS ממרכז).
+          אם השורה רחבה מהמקום: מקטינים רק את הרווח בין הגלולות (עד 4px); אם עדיין לא נכנס — גלילה אופקית
+          (קלאס is-scroll). גודל, ריפוד וצבעי הגלולות לא משתנים. מובייל ≤768 — בלי שינוי.
+     --------------------------------------------------------------- */
+  var secTabs = document.querySelector('#projects .sector-tabs');
+  if (secTabs) {
+    var fitSecTabs = function () {
+      secTabs.style.removeProperty('column-gap');
+      secTabs.classList.remove('is-scroll');
+      if (window.innerWidth <= 768) { return; }
+      var n = secTabs.children.length;
+      var over = secTabs.scrollWidth - secTabs.clientWidth;
+      if (over <= 0 || n < 2) { return; }
+      var gap = parseFloat(getComputedStyle(secTabs).columnGap) || 0;
+      var next = Math.floor((gap - over / (n - 1)) * 10) / 10;
+      if (next >= 4) { secTabs.style.columnGap = next + 'px'; }
+      else { secTabs.style.columnGap = '4px'; secTabs.classList.add('is-scroll'); }
+    };
+    fitSecTabs();
+    window.addEventListener('load', fitSecTabs);
+    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(fitSecTabs); }
+    var stW = window.innerWidth;
+    window.addEventListener('resize', function () { if (window.innerWidth !== stW) { stW = window.innerWidth; fitSecTabs(); } });
+    if ('MutationObserver' in window) {                                   // החלפת שפה משנה את טקסט הגלולות
+      new MutationObserver(function () { setTimeout(fitSecTabs, 30); })
+        .observe(secTabs, { childList: true, characterData: true, subtree: true });
     }
   }
 
@@ -3045,3 +3066,39 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 });
+
+/* ---------------------------------------------------------------
+   כותרת העמוד (.section-title שאחרי .page-eyebrow): הגובה האמיתי שלה ב---title-h,
+   כדי שה-CSS ימרכז אותה אנכית על קו הגלולות הראשונות גם כשהיא נשברת לשתי שורות.
+   --------------------------------------------------------------- */
+(function () {
+  var titles = document.querySelectorAll('#main .page-eyebrow + .section-title');
+  if (!titles.length || !window.ResizeObserver) { return; }
+  var ro = new ResizeObserver(function (entries) {
+    entries.forEach(function (e) { e.target.style.setProperty('--title-h', e.contentRect.height + 'px'); });
+  });
+  Array.prototype.forEach.call(titles, function (el) { ro.observe(el); });
+})();
+
+/* קנה המידה של הכרטיסים בפסים הנעים (#partners, #podcast) — מ---card-scale ב-CSS (דסקטופ 0.85) */
+function cardScale() {
+  var v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-scale'));
+  return v > 0 ? v : 1;
+}
+
+/* ---------------------------------------------------------------
+   האתר כבר לא PWA (הוסר 2026-11-12): ניקוי חד-פעמי של Service Worker ישן אם נשאר רשום בדפדפן.
+   רק מבטל רישום — בלי טעינה מחדש (אין לולאה). המחיקה של ה-Cache נעשית ב-/sw.js (kill-switch).
+   --------------------------------------------------------------- */
+(function () {
+  if (!('serviceWorker' in navigator) || !navigator.serviceWorker.getRegistrations) { return; }
+  navigator.serviceWorker.getRegistrations().then(function (regs) {
+    regs.forEach(function (reg) { reg.unregister(); });
+  }).catch(function () {});
+  // Cache ישן של ה-PWA שנשאר בלי Service Worker (למשל התקנה שנכשלה) — האתר לא משתמש ב-Cache Storage בכלל
+  if (window.caches && caches.keys) {
+    caches.keys().then(function (keys) {
+      keys.forEach(function (k) { if (k.indexOf('gad-') === 0) { caches.delete(k); } });
+    }).catch(function () {});
+  }
+})();

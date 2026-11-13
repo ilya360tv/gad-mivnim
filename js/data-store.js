@@ -107,13 +107,13 @@
       userCode: p ? p.user_code || '' : '', subscription: p ? p.subscription : 'none', profileStatus: p ? p.status : '',
       docs: (r.applicant_docs || []).map(function (d) {
         return { id: d.id, type: d.doc_type, path: d.storage_path, createdAt: d.created_at, checked: !!d.checked_by_admin,
-          adminNote: d.admin_note || '', checkedBy: d.checked_by || '', checkedAt: d.checked_at || '', fileName: d.file_name || '', fileSize: d.file_size || 0 };
+          adminNote: d.admin_note || '', checkedBy: d.checked_by || '', checkedAt: d.checked_at || '', fileName: d.file_name || '', fileSize: d.file_size || 0, meets: d.meets === true };
       }),
       // הסכם דיגיטלי (קבלן בית) — שדות שלב 1 + בדיקת המנהל
-      entityType: r.entity_type || '', idNumber: r.id_number || '', contactName: r.contact_name || '', contactRole: r.contact_role || '',
-      address: r.address || '', regions: r.regions || '', license: r.license_no || '', employees: r.employees == null ? '' : r.employees,
+      entityType: r.entity_kind || '', entityOther: r.entity_other || '', idNumber: r.id_number || '', contactName: r.contact_name || '', contactRole: r.contact_role || '',
+      address: r.address || '', regions: r.activity_areas || '', license: r.license_info || '', employees: r.employee_count == null ? '' : r.employee_count,
       reviewChecks: r.review_checks || {}, reviewNotes: r.review_notes || '', reviewedBy: r.reviewed_by || '', reviewedAt: r.reviewed_at || '',
-      rejectReason: r.reject_reason || '', docsRequest: r.docs_request || '', statusChangedAt: r.status_changed_at || '',
+      statusNote: r.status_note || '', submittedAt: r.submitted_at || '', statusChangedAt: r.status_changed_at || '',
       agreement: agreementOut((r.agreement_acceptances || [])[0] || (r.agreement_acceptances && !Array.isArray(r.agreement_acceptances) ? r.agreement_acceptances : null)),
       billing: subscriptionOut((r.subscriptions || [])[0] || (r.subscriptions && !Array.isArray(r.subscriptions) ? r.subscriptions : null))
     };
@@ -417,7 +417,7 @@
         return sb.storage.from(BUCKET).createSignedUrl(path, 300, view ? undefined : { download: true }).then(unwrap).then(function (d) { return d.signedUrl; });
       });
     },
-    // בדיקת בקשת קבלן בית: in_review / pending_docs / reject / checks / doc
+    // בדיקת בקשת קבלן בית: in_review / missing_docs / reject / checks / doc
     review: function (body) { return callApi('/api/review-application', body); },
     // ניקוי קבצים יתומים (incoming/ ישנים מ-48 שעות בלי בקשה) — בטעינת מערכת הניהול
     cleanupIncoming: function () { return callApi('/api/cleanup-incoming', {}); }
@@ -447,6 +447,30 @@
     uuid: uuid
   };
 
+  /* ---------- קבלנים מאושרים (מנהל) ---------- */
+  var contractors = {
+    list: function () {
+      return client().then(function (sb) {
+        return sb.from('profiles').select('id, full_name, phone, email, fields, user_code, created_at')
+          .eq('role', 'contractor').eq('status', 'approved').order('full_name', { ascending: true })
+          .then(unwrap).then(function (rows) {
+            var mapped = (rows || []).map(function (r) {
+              return { id: r.id, fullName: r.full_name || '', phone: r.phone || '', email: r.email || '',
+                fields: r.fields && r.fields.length ? r.fields : [GENERAL], userCode: r.user_code || '', createdAt: r.created_at };
+            });
+            var missing = mapped.filter(function (c) { return !c.email; }).map(function (c) { return c.id; });
+            if (!missing.length) { return mapped; }
+            return sb.from('applicants').select('profile_id, email').in('profile_id', missing).then(unwrap).then(function (apps) {
+              var by = {};
+              (apps || []).forEach(function (a) { if (a && a.email && !by[a.profile_id]) { by[a.profile_id] = a.email; } });
+              mapped.forEach(function (c) { if (!c.email && by[c.id]) { c.email = by[c.id]; } });
+              return mapped;
+            }, function () { return mapped; });
+          });
+      });
+    }
+  };
+
   window.dataStore = {
     FIELDS: FIELDS, TENDER_FIELDS: TENDER_FIELDS, GENERAL: GENERAL, MAX_FIELDS: MAX_FIELDS, MAX_FILE: MAX_FILE,
     fieldByName: function (name) { return FIELDS.filter(function (f) { return f.name === name; })[0] || null; },
@@ -454,6 +478,6 @@
     checkFile: checkFile, rateLimited: rateLimited, submitApplicant: submitApplicant,
     signInContractor: signInContractor, currentContractor: currentContractor, signInAdmin: signInAdmin, currentAdmin: currentAdmin,
     signOut: signOut, changePassword: changePassword,
-    tenders: tenders, applications: applications, applicants: applicants, contractorJoin: contractorJoin
+    tenders: tenders, applications: applications, applicants: applicants, contractors: contractors, contractorJoin: contractorJoin
   };
 })();

@@ -2706,7 +2706,6 @@ html[dir="ltr"] .hero .hero-title { text-align: left; }
 }
 
 /* ----- כותרות הסקשנים: לימין, בלי המקף הירוק ----- */
-.section-eyebrow { margin-inline: 0; }
 .section-eyebrow::before { display: none; }  /* המקף הירוק שליד התווית — הוסר */
 
 .section-title { text-align: start; }
@@ -5219,17 +5218,8 @@ body .site-header .main-nav.is-open ul li a { color: var(--lb); }
   word-spacing: .2em;
 }
 
-/* ----- #about: התווית "אודות הקבוצה" = אותו סגנון כמו התוויות בשאר הסקשנים (גלובלי); כאן רק היישור לקצה הימני של הכותרת ----- */
-#about .section-eyebrow {
-  display: block;
-  width: auto;
-  margin-inline: 0;
-  text-align: start;
-}
-
 /* ריווח האותיות (.14em) נוסף מימין לאות הראשונה בעברית (RTL) ודוחף אותה שמאלה —
    מקזזים בשוליים שליליים באותו גודל, כך שהאות הראשונה עומדת בדיוק על קצה הפסקאות (בלי JS/transform) */
-html[dir="rtl"] #about .section-eyebrow { margin-inline-start: -.14em; }
 html[dir="rtl"] #about .about-text h3.about-sub { margin-inline-start: -.14em !important; }
 
 /* ----- #about: החלק מ"מחלקה משפטית" ועד הסוף — לבן במקום ירוק כהה (נשאר מודגש) ----- */
@@ -5442,13 +5432,12 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
   .lang-btn .flag { width: 44%; height: 44%; margin: 0; }
 }
 
-/* ----- הלוגו בהדר ועיגול השפות — בדיוק אותו גודל בכל רוחב (72px מחשב / 56px טאבלט+טלפון),
-         ואותה עובי טבעת כך שהקוטר הנראה זהה ----- */
+/* ----- הלוגו בהדר ועיגול השפות — אותו גודל (גדול בכ-18%): 85px מחשב / 66px טאבלט+טלפון ----- */
 .site-header .logo-img,
 .site-header .lang-btn {
-  width: clamp(52px, 3.75vw, 72px) !important;      /* דסקטופ: יחסי לרוחב המסך (72px ב-1920) */
-  height: clamp(52px, 3.75vw, 72px) !important;
-  min-width: clamp(52px, 3.75vw, 72px);
+  width: clamp(61px, 4.43vw, 85px) !important;
+  height: clamp(61px, 4.43vw, 85px) !important;
+  min-width: clamp(61px, 4.43vw, 85px);
   flex-shrink: 0;
 }
 .site-header .logo-img {
@@ -5459,18 +5448,18 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
 }
 @media (max-width: 1023.98px) {
   .site-header .logo-img,
-  .site-header .lang-btn { width: 56px !important; height: 56px !important; min-width: 56px; }
+  .site-header .lang-btn { width: 66px !important; height: 66px !important; min-width: 66px; }
 }
 
 /* ----- הלוגו מוגדל ב-1.104 (כדי שהדיסק ימלא את הטבעת) — לכן הריבוע שלו קטן ב-1/1.104, והקוטר הנראה (כולל הטבעת) זהה בדיוק לעיגול השפות ----- */
 .site-header .logo-img {
-  width: clamp(47.1px, 3.397vw, 65.22px) !important;      /* = עיגול השפות / 1.104 */
-  height: clamp(47.1px, 3.397vw, 65.22px) !important;
-  min-width: clamp(47.1px, 3.397vw, 65.22px);
+  width: clamp(55.6px, 4.01vw, 77px) !important;      /* = עיגול השפות / 1.104 */
+  height: clamp(55.6px, 4.01vw, 77px) !important;
+  min-width: clamp(55.6px, 4.01vw, 77px);
   box-shadow: 0 0 0 1.36px rgba(56, 189, 248, .75), 0 0 10.9px rgba(56, 189, 248, .3) !important;
 }
 @media (max-width: 1023.98px) {
-  .site-header .logo-img { width: 50.72px !important; height: 50.72px !important; min-width: 50.72px; }
+  .site-header .logo-img { width: 59.8px !important; height: 59.8px !important; min-width: 59.8px; }
 }
 
 /* ----- Hero: באדג' "בקרוב" ממורכז מעל שורת "לרשותכם..." + תכלת כמו קטגוריות ההדר; שורת HERZLIYA תכלת (כל הרוחבים) ----- */
@@ -5503,7 +5492,7 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
     --side-top: clamp(16px, 1.25vw, 24px);         /* ריווח עליון */
     --side-pill-h: clamp(30px, 1.875vw, 36px);     /* גובה גלולה */
     --side-font: clamp(11px, .68vw, 13px);         /* גודל כתב בגלולה */
-    --side-circle: clamp(52px, 3.75vw, 72px);      /* עיגול הלוגו / השפות */
+    --side-circle: clamp(61px, 4.43vw, 85px);      /* עיגול הלוגו / השפות — גדול בכ-18% */
     --side-bottom: 24px;                           /* מרווח מתחתית המסך */
     --pill-h: var(--side-pill-h);                  /* גובה הגלולה בפועל (עברית — שורה אחת) */
     /* רווח בין גלולות: חצי מהחלוקה השווה של הגובה הפנוי (לא פרוסות על כל הגובה — מתחילות מתחת לעיגול); מינימום 10px */
@@ -5579,31 +5568,36 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
   html[dir="ltr"] .site-header .main-nav ul li:nth-child(-n+7) { grid-column: 3; }
   html[dir="ltr"] .site-header .main-nav ul li:nth-child(n+8)  { grid-column: 1; }
 
-  /* כפתור הנגישות וכפתור "חזרה למעלה" — לא על הגלולות התחתונות: נכנסים פנימה, צמודים לקצה העמודה */
-  /* כפתור הנגישות — בעמודה הימנית: ממורכז מתחת לגלולות (קו המרכז של הלוגו), 24px מתחתית המסך.
-     מעליו (12px) כפתור "חזרה למעלה" (54px); במסך נמוך — החץ לפחות 16px מתחת לגלולה האחרונה
-     (תחתית הגלולה = 2×ריווח עליון + עיגול + 7 גלולות + 6 רווחים) */
+  /* כפתור הנגישות — בעמודה השמאלית (עמודת השפות), ממורכז על קו המרכז שלה, 16px מתחת לגלולה האחרונה "שירות לקוחות".
+     "חזרה למעלה" (מופיע רק אחרי גלילה) — מתחתיו, 12px רווח, כך שלא דוחף אותו. שניהם קבועים במסך.
+     העמודות קבועות פיזית גם בשפות LTR (גלולות 8–14 תמיד משמאל) — לכן left בשני הכיוונים.
+     תחתית הגלולה האחרונה = 2×ריווח עליון + עיגול + 7 גלולות + 6 רווחים */
   :root {
-    --fab-top: max(calc(100vh - 24px - 56px),
-                   calc(2 * var(--side-top) + var(--side-circle) + 7 * var(--pill-h) + 6 * var(--side-gap) + 16px + 54px + 12px));
+    --pill-last-b: calc(2 * var(--side-top) + var(--side-circle) + 7 * var(--pill-h) + 6 * var(--side-gap));
+    --fab-top: calc(var(--pill-last-b) + 16px);
   }
   .a11y-fab {
-    right: calc((var(--side-w) - 56px) / 2) !important;
+    left: calc((var(--side-w) - 56px) / 2) !important;
+    right: auto !important;
     bottom: auto !important;
-    top: var(--fab-top);
+    top: var(--fab-top) !important;
   }
   .back-top {
-    right: calc((var(--side-w) - 54px) / 2) !important;
-    left: auto !important;
+    left: calc((var(--side-w) - 54px) / 2) !important;
+    right: auto !important;
     inset-inline-start: auto;
     bottom: auto !important;
-    top: calc(var(--fab-top) - 12px - 54px);
+    top: calc(var(--fab-top) + 56px + 12px) !important;
   }
-  /* הפאנל נפתח לידו, משמאל לעמודה, מיושר לתחתית הכפתור — כולו בתוך המסך */
+  /* הפאנל נפתח ליד הכפתור, לכיוון מרכז הדף; התחתית שלו בגובה תחתית הכפתור, כולו בתוך המסך */
   .a11y-panel {
-    right: calc(var(--side-w) + 12px) !important;
-    bottom: 24px;
-    max-height: calc(100vh - 48px);
+    left: calc(var(--side-w) + 12px) !important;
+    right: auto !important;
+    top: auto !important;
+    --panel-bottom: max(16px, calc(100vh - var(--fab-top) - 56px));
+    bottom: var(--panel-bottom);
+    max-height: calc(100vh - 16px - var(--panel-bottom));   /* גבוה מדי — נגלל בפנים, לא יוצא מהמסך */
+    transform-origin: bottom left;
   }
 
   /* מספר הטלפון הגדול ב-#contact: הגודל היה לפי רוחב המסך המלא — מותאם לרוחב התוכן, בשורה אחת */
@@ -6064,7 +6058,7 @@ body .plan-card .plan-price { margin: -4px 0 6px; font-size: .9rem; color: var(-
 }
 
 /* ----- "חזרה למעלה" מעל כפתור הנגישות (טאבלט/טלפון), באותו קו מרכז, 12px ביניהם.
-         דסקטופ — ראו --fab-top בעמודות הצד. כפתור הנגישות: 56px ב-22px מימין/מלמטה;
+         דסקטופ — ראו --pill-last-b בעמודות הצד. כפתור הנגישות: 56px ב-22px מימין/מלמטה;
          ≤560px — 48px, 16px מלמטה, 22px מימין (עברית) / 16px (LTR) ----- */
 @media (max-width: 1023.98px) {
   .back-top {
@@ -6085,7 +6079,6 @@ body .plan-card .plan-price { margin: -4px 0 6px; font-size: .9rem; color: var(-
 /* ----- #tenders ו-#app: הכותרות, שורת ההסבר והתוכן ממורכזים על קו המרכז של אזור התוכן (בין עמודות הצד) ----- */
 #tenders .section-title,
 #tenders .section-lead,
-#app .section-eyebrow,
 #app .section-title,
 #app .section-lead {
   display: block;
@@ -6100,7 +6093,6 @@ body .plan-card .plan-price { margin: -4px 0 6px; font-size: .9rem; color: var(-
    ========================================================================== */
 html[dir] body #tenders .section-title,
 html[dir] body #tenders .section-lead,
-html[dir] body #app .section-eyebrow,
 html[dir] body #app .section-title,
 html[dir] body #app .section-lead {
   display: block;
@@ -6122,7 +6114,6 @@ html[dir] body #app .plans-grid {
   html[dir] body #tenders,
   html[dir] body #app { padding-block: 48px; }
   /* #tenders — הכותרות כמו בשאר הסקשנים (בלי דריסות גודל/ריווח) */
-  html[dir] body #app .section-eyebrow { margin-top: 0; margin-bottom: 10px; }
   html[dir] body #app .section-title { font-size: clamp(1.8rem, 2.6vw, 2.6rem); margin-top: 0; margin-bottom: 12px; }
   html[dir] body #tenders .section-lead,
   html[dir] body #app .section-lead { margin-top: 0; margin-bottom: 28px; }
@@ -7117,10 +7108,8 @@ html.a11y-no-motion #gallery .gal-grid.is-replaced { display: flex; }
 @media (max-width: 767.98px) {
   .pod-head { flex-direction: column; gap: 18px; }
   html[dir] body #podcast .pod-head__text,
-  html[dir] body #podcast .pod-head__text .section-eyebrow,
   html[dir] body #podcast .pod-head__text .section-title,
   html[dir] body #podcast .pod-head__count { text-align: center !important; margin-inline: auto !important; }
-  html[dir] body #podcast .pod-head__text .section-eyebrow { display: flex; justify-content: center; }
 }
 @media (max-width: 640px) {
   .pod-head__media { aspect-ratio: 21 / 9; }       /* כמו אזור התמונה בכרטיס במובייל */
@@ -7972,3 +7961,158 @@ html.a11y-no-motion body.page-split > main { animation: none !important; }
 .hero-video::-webkit-media-controls,
 .hero-video::-webkit-media-controls-start-playback-button,
 .hero-video::-webkit-media-controls-overlay-play-button { display: none !important; -webkit-appearance: none; }
+
+
+/* ==========================================================================
+   PAGE EYEBROW — כותרת התווית של כל עמוד (.page-eyebrow), כלל אחד לכל האתר.
+   דסקטופ (≥1024): ממורכזת בין שתי עמודות הצד, ובראש העמוד (גלילה 0) באותו קו גובה כמו
+   מרכז עיגול הלוגו ועיגול השפות (= --side-top + חצי --side-circle). נגללת עם התוכן.
+   מובייל/טאבלט (<1024): ממורכזת בראש התוכן, מתחת לפס העליון.
+   הריווח לתוכן שמתחתיה — זהה בכל העמודים.
+   ========================================================================== */
+:root {
+  --pe-fs: clamp(1.05rem, 1.6vw, 1.35rem);        /* גודל הכתב (כמו התוויות עד היום) */
+  --pe-lh: 1.6;                                   /* גובה השורה — קבוע, כדי לחשב את המרכז */
+  --pe-top: 24px;                                 /* מובייל: מרווח מתחת לפס העליון */
+  --pe-gap: 22px;                                 /* מובייל: מרווח לתוכן */
+}
+@media (min-width: 1024px) {
+  :root {
+    --pe-top: calc(var(--side-top) + var(--side-circle) / 2 - var(--pe-fs) * var(--pe-lh) / 2);
+    --pe-gap: 28px;
+  }
+}
+/* הסקשן שמכיל את התווית מתחיל בדיוק בגובה המחושב (במקום הריפוד העליון הרגיל שלו) */
+html[dir] body #main > section.section:has(> .container > .page-eyebrow) {
+  padding-top: var(--pe-top) !important;
+}
+html[dir] body #main .section-eyebrow.page-eyebrow {
+  display: block !important;
+  width: fit-content !important;
+  max-width: 100%;
+  margin: 0 auto var(--pe-gap) !important;
+  padding: 0 0 0 .14em;                           /* ריווח האותיות מוסיף .14em בצד ימין — מאזנים משמאל, כך שהטקסט באמצע בדיוק */
+  font-size: var(--pe-fs) !important;
+  line-height: var(--pe-lh) !important;
+  text-align: center !important;
+}
+html[dir] body #main .page-eyebrow + * { margin-top: 0 !important; }
+/* מסגרת גלולה סביב כותרת העמוד — רק מסגרת: טבעת 1px ורקע כהה כמו בגלולות הצד, פינות עגולות מלאות.
+   המסגרת היא שכבה מאחורי הטקסט (::after, absolute) — לא משנה את גודל הקופסה, ולכן הטקסט וה-h2 נשארים
+   בדיוק באותו מקום. הקופסה כבר מאוזנת לריווח האותיות (padding-left .14em), כך שהמסגרת סימטרית סביב הטקסט.
+   כותרת ולא כפתור — בלי hover ובלי סמן יד. */
+html[dir] body #main .section-eyebrow.page-eyebrow {
+  position: relative;
+  isolation: isolate;
+  cursor: default;
+}
+html[dir] body #main .section-eyebrow.page-eyebrow::after {
+  content: '';
+  position: absolute;
+  inset: -10px max(-26px, calc((100% - 100vw) / 2 + 4px));   /* 26px מכל צד; במסך צר — לא יוצאת מהמסך */
+  z-index: -1;
+  border-radius: 999px;
+  background: linear-gradient(var(--lb-bg), var(--lb-bg)), rgba(10, 12, 14, .55);
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, .45);
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   PAGE TITLE + COMPACT (דסקטופ ≥1024) — כלל אחד לכל עמודי התוכן.
+   1. הכותרת הראשית (.section-title שמיד אחרי .page-eyebrow) ממורכזת בין העמודות, ובגלילה 0
+      המרכז האנכי שלה = מרכז הגלולות הראשונות ("דף הבית" / "מידע לאזרח ולבונה").
+      --title-h = הגובה האמיתי של הכותרת (נמדד ב-js/script.js, גם כשהיא נשברת לשתי שורות); בלי JS — שורה אחת.
+   2. עמודים קומפקטיים: כותרת → באדג'ים 16px, באדג'ים (או כותרת) → תוכן 28px, כרטיסים ×0.85.
+   ========================================================================== */
+@media (min-width: 1024px) {
+  :root {
+    --pill1-cy: calc(2 * var(--side-top) + var(--side-circle) + var(--pill-h) / 2);
+    --eb-bottom: calc(var(--side-top) + var(--side-circle) / 2 + var(--pe-fs) * var(--pe-lh) / 2);
+  }
+  html[dir] body #main .page-eyebrow:has(+ .section-title) { margin-bottom: 0 !important; }
+  html[dir] body #main .page-eyebrow + .section-title {
+    display: block !important;
+    width: auto !important;
+    max-width: none !important;
+    font-size: clamp(1.6rem, 2.2vw, 2.1rem) !important;
+    line-height: 1.25 !important;
+    white-space: normal !important;
+    text-wrap: balance;
+    text-align: center !important;
+    text-align-last: center !important;
+    padding-block: 0 !important;
+    margin: calc(var(--pill1-cy) - var(--eb-bottom) - var(--title-h, 1.25em) / 2) auto 28px !important;
+  }
+  html[dir] body #main .page-eyebrow + .section-title:has(+ .badges-row) { margin-bottom: 16px !important; }
+  html[dir] body #main .page-eyebrow + .section-title + * { margin-top: 0 !important; }
+  html[dir] body #main .page-eyebrow ~ .badges-row {
+    justify-content: center !important;
+    margin: 0 auto 28px !important;
+  }
+  html[dir] body #main .page-eyebrow ~ .badges-row + * { margin-top: 0 !important; }
+
+  /* כרטיסים: רוחב (ולכן גם גובה ותמונה, באותן פרופורציות) ×0.85, ממורכזים */
+  html[dir] body #main .division-cards,
+  html[dir] body #main .division-page .cards-row {
+    max-width: calc(100% * var(--card-scale, 1));
+    margin-inline: auto !important;
+  }
+  /* כותרת הכרטיס הצר יותר — עד שתי שורות מאוזנות בתוך אותו גובה ראש כרטיס (לא נחתכת, לא מוקטנת) */
+  html[dir] body #main .division-cards .division-card .card-title {
+    white-space: normal !important;
+    text-wrap: balance;
+    line-height: 1.2;
+  }
+  html[dir] body #main .division-cards .division-card-head {
+    padding-inline: 4px;
+    min-height: calc(2 * 1.2 * clamp(.74rem, 1.25vw, .95rem) + 24px);   /* כל ראשי הכרטיסים באותו גובה — התמונות בקו אחד */
+  }
+}
+
+/* כרטיסים ×0.85 — מ-1280 ומעלה (ב-1024–1279 הכרטיסים כבר צרים; מתחת ל-0.85 הטקסט בהם נדחס) */
+@media (min-width: 1280px) {
+  :root {
+    --card-scale: .85;
+    --strip-tile: calc(145px * .85);              /* אריחי הלוגואים ב-#projects */
+  }
+}
+
+/* מסך נמוך: הכפתור נשאר ממורכז על ציר העמודה השמאלית, 16px מתחת ל"שירות לקוחות" (הכלל הרגיל למעלה).
+   כשאין מקום לשני הכפתורים מתחת לגלולה (js/a11y.js מוסיף html.a11y-short) — "חזרה למעלה" עובר לתחתית
+   העמודה הימנית, ממורכז על הציר שלה, כך שלא עולה על הגלולות ולא על התוכן. */
+@media (min-width: 1024px) {
+  html.a11y-short body .back-top {
+    left: auto !important;
+    right: calc((var(--side-w) - 54px) / 2) !important;
+    top: auto !important;
+    bottom: 16px !important;
+  }
+}
+
+/* ==========================================================================
+   ABOUT TITLE — "מדוע נולד הרעיון..." בשורה אחת (מסך ≥769), ממורכזת כמו התווית "אודות הקבוצה".
+   הקלאס about-one-line והגודל --about-fs נקבעים ע"י fitAbout (js/script.js, סעיף 10):
+   מקטינים את הכתב עד 18px כדי שהמשפט ייכנס בין עמודות הצד. בלי JS / במובייל — שבירה רגילה.
+   ========================================================================== */
+html[dir] body #main #about .page-eyebrow + .section-title.about-one-line {
+  white-space: nowrap !important;
+  text-wrap: nowrap;
+  font-size: var(--about-fs) !important;
+  text-align: center !important;
+  text-align-last: center !important;
+}
+
+/* מכרזים (דסקטופ): כרטיס הכניסה מתחיל בגובה הגלולה הראשונה (js/tenders.js מיישר אליה). הרווח מתחת לכותרת
+   העמוד = --pe-top, כך שראש הכרטיס = 2×--side-top + --side-circle בדיוק — העמוד לא נגלל בטעינה והכותרת
+   נשארת על קו מרכז הלוגו/השפות כמו בשאר העמודים. גודל הכרטיס לא משתנה. */
+@media (min-width: 1024px) {
+  html[dir] body #main #tenders > .container > .page-eyebrow { margin-bottom: var(--pe-top) !important; }
+}
+
+/* #projects — לשוניות המגזר: שורה אחת ממורכזת על ציר ה-H1 (מסך ≥769; מובייל — 2×2 כמו קודם).
+   אם לא נכנס: js/script.js (סעיף 11b) מקטין רק את הרווח, ובמקרה קיצון מוסיף is-scroll (גלילה אופקית). */
+@media (min-width: 769px) {
+  .sector-tabs { flex-wrap: nowrap; justify-content: center; }
+  .sector-tab { flex-shrink: 0; }
+  .sector-tabs.is-scroll { justify-content: flex-start; overflow-x: auto; padding: 18px 18px; margin-block: -12px 4px; }
+}
