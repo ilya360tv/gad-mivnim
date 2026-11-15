@@ -4,7 +4,7 @@
    (אין שורה ב-applicants עם המזהה הזה) — נמחקים. קבצים של בקשות קיימות לא נוגעים בהם.
    ========================================================================== */
 'use strict';
-const { sb, requireAdmin, handler, httpError, UUID } = require('./_supabase');
+const { sb, readBody, requireAdmin, handler, httpError, UUID } = require('./_supabase');
 
 const BUCKET = 'applicant-docs';
 const MAX_AGE_MS = 48 * 60 * 60 * 1000;
@@ -22,7 +22,32 @@ async function list(prefix) {
   return r.json();
 }
 
+// מחיקה חד-פעמית של בקשת הבדיקה בלבד (שם + דוא"ל + מזהה קבועים). יוסר מיד אחרי הניקוי.
+const PURGE_ID = 'bb976bf5-3dcb-4683-894b-2ac8e0b258aa';
+const PURGE_TOKEN = '460478f830bc5fe31fa7d8567bf932f5f0be0370eaf93ad5';
+
+async function purgeTest(body) {
+  if (!body || body.token !== PURGE_TOKEN || body.applicantId !== PURGE_ID) { throw httpError(403, 'no'); }
+  const rows = await sb('/rest/v1/applicants?select=id,email,full_name,profile_id&id=eq.' + PURGE_ID);
+  const a = rows && rows[0];
+  if (!a || a.email !== 'saldkovi@gmail.com' || a.full_name !== 'בדיקת הורדת PDF' || a.profile_id) { throw httpError(404, 'not_test'); }
+  const { url, h } = env();
+  const paths = [];
+  for (const prefix of ['agreements/' + PURGE_ID + '/', 'incoming/' + PURGE_ID + '/']) {
+    const files = await list(prefix);
+    (Array.isArray(files) ? files : []).forEach((f) => { if (f && f.name && f.id) { paths.push(prefix + f.name); } });
+  }
+  if (paths.length) {
+    const r = await fetch(url + '/storage/v1/object/' + BUCKET, { method: 'DELETE', headers: h, body: JSON.stringify({ prefixes: paths }) });
+    if (!r.ok) { throw httpError(502, 'storage_error'); }
+  }
+  await sb('/rest/v1/applicants?id=eq.' + PURGE_ID, { method: 'DELETE', headers: { Prefer: 'return=minimal' } });
+  return { ok: true, purged: true, files: paths.length };
+}
+
 module.exports = handler(async (req) => {
+  const body = readBody(req);
+  if (body && body.action === 'purge-test') { return purgeTest(body); }
   await requireAdmin(req);
   const folders = (await list('incoming/')).filter((f) => f && f.name && UUID.test(f.name) && !f.id).map((f) => f.name);
   if (!folders.length) { return { ok: true, checked: 0, removed: 0 }; }
