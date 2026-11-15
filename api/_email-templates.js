@@ -33,14 +33,17 @@ function button(href, label) {
   return '<p style="margin:22px 0 0;"><a href="' + esc(href) + '" style="display:inline-block;background:#16a34a;color:#ffffff;text-decoration:none;font-weight:700;padding:12px 22px;border-radius:999px;">' + esc(label) + '</a></p>';
 }
 
-function registrationReceived(name) {
+function registrationReceived(name, opt) {
   const who = name ? esc(name) : 'שלום';
+  const attached = !!(opt && opt.attached);
+  const pdfLine = attached ? ' טופס ההרשמה החתום מצורף להודעה זו כקובץ PDF.' : '';
   return {
     subject: 'גד מבנים — קיבלנו את בקשת ההצטרפות',
-    text: (name ? name + ', ' : '') + 'קיבלנו את בקשת ההצטרפות. נבדוק אותה ונחזור אליך.\n' + SITE,
+    text: (name ? name + ', ' : '') + 'קיבלנו את בקשת ההצטרפות. נבדוק אותה ונחזור אליך.' + pdfLine + '\n' + SITE,
     html: layout('קיבלנו את הבקשה',
       '<p style="margin:0 0 12px;">' + who + ',</p>' +
       '<p style="margin:0;">תודה שנרשמת. קיבלנו את בקשת ההצטרפות ונבדוק אותה. נחזור אליך אחרי האישור.</p>' +
+      (attached ? '<p style="margin:12px 0 0;">טופס ההרשמה החתום מצורף להודעה זו כקובץ PDF.</p>' : '') +
       button(SITE, 'לאתר גד מבנים'))
   };
 }

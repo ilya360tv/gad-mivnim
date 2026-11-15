@@ -453,6 +453,37 @@
     submit: function (payload) { return postJson('/api/submit-application', payload); },
     resubmitInfo: function (id, token) { return postJson('/api/upload-url', { action: 'resubmit-info', applicantId: id, token: token }); },
     resubmit: function (id, token, docNames) { return postJson('/api/upload-url', { action: 'resubmit-finish', applicantId: id, token: token, docNames: docNames }); },
+    // קישור הורדה חדש ל-PDF החתום — רק עם טוקן השלמת המסמכים
+    agreementUrl: function (id, token) { return postJson('/api/upload-url', { action: 'resubmit-agreement', applicantId: id, token: token }); },
+    // שמירת ה-PDF שחזר מהשרת (הקובץ עצמו, לא עותק חדש).
+    // אם הדפדפן חוסם קריאה ישירה — עוברים לקישור החתום, עם download= שכבר על הכתובת.
+    savePdf: function (url) {
+      if (!/^https:\/\/[^\s]+$/.test(String(url || ''))) { return Promise.reject(new Error('download')); }
+      function viaLink() {
+        var a = document.createElement('a');
+        a.href = url;
+        a.rel = 'noopener';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
+      return fetch(url).then(function (r) {
+        if (!r.ok) { throw new Error('download'); }
+        return r.arrayBuffer();
+      }).then(function (buf) {
+        var bytes = new Uint8Array(buf);
+        var head = bytes.length >= 4 ? String.fromCharCode(bytes[0], bytes[1], bytes[2], bytes[3]) : '';
+        if (head !== '%PDF') { throw new Error('download'); }
+        var obj = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
+        var a = document.createElement('a');
+        a.href = obj;
+        a.download = 'טופס-הרשמה-חתום.pdf';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(function () { URL.revokeObjectURL(obj); }, 4000);
+      }).catch(function () { viaLink(); });
+    },
     uuid: uuid
   };
 

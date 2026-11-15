@@ -2,10 +2,11 @@
    POST /api/registration-notify — אחרי הרשמה ציבורית.
    body: { applicantId }
    שולח למנהלים הודעה, ולנרשם (אם השאיר דוא"ל אמיתי) אישור קבלה.
+   אם נשמר לקבלן הזה signed-agreement.pdf — אותו קובץ מצורף לאישור (הבאקט נשאר פרטי).
    נכשלת השליחה — ההרשמה עצמה לא נפגעת. כל בקשה נשלחת פעם אחת.
    ========================================================================== */
 'use strict';
-const { sb, readBody, handler, httpError, UUID } = require('./_supabase');
+const { sb, readBody, handler, httpError, UUID, storageGet } = require('./_supabase');
 const { sendMail, isRealEmail, adminEmails } = require('./_mailer');
 const { registrationReceived, adminRegistration } = require('./_email-templates');
 
@@ -34,9 +35,18 @@ module.exports = handler(async (req) => {
       } catch (e) { /* ממשיכים */ }
     }
     if (isRealEmail(a.email)) {
-      const thanks = registrationReceived(a.full_name);
+      let attachments;
+      const pdfPath = 'agreements/' + applicantId + '/signed-agreement.pdf';
       try {
-        const sent = await sendMail({ to: a.email, subject: thanks.subject, html: thanks.html, text: thanks.text });
+        const rows = await sb('/rest/v1/agreement_acceptances?select=pdf_path&applicant_id=eq.' + applicantId);
+        if (rows && rows[0] && rows[0].pdf_path === pdfPath) {
+          const buf = await storageGet('applicant-docs', pdfPath);
+          if (buf) { attachments = [{ filename: 'טופס-הרשמה-חתום.pdf', content: buf, contentType: 'application/pdf' }]; }
+        }
+      } catch (e) { /* בלי קובץ — האישור נשלח בלי צרופה */ }
+      const thanks = registrationReceived(a.full_name, { attached: !!attachments });
+      try {
+        const sent = await sendMail({ to: a.email, subject: thanks.subject, html: thanks.html, text: thanks.text, attachments: attachments });
         registrationMessageId = sent && sent.messageId ? sent.messageId : '';
       } catch (e) { /* ממשיכים */ }
     }
