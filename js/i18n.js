@@ -334,6 +334,7 @@
 
     /* ----- הפרויקטים שלנו ----- */
     proj_eyebrow: { he: 'הפרויקטים שלנו', ru: 'Наши проекты', en: 'Our Projects', fr: 'Nos projets' },
+    proj_h2: { he: 'מהמגזר הפרטי ועד המגזר הציבורי', ru: 'От частного сектора до общественного', en: 'From the private sector to the public sector', fr: 'Du secteur privé au secteur public' },
     ip_title2:    { he: 'מה אנחנו בונים עכשיו', ru: 'Что мы строим сейчас', en: 'What We Are Building Now', fr: 'Ce que nous construisons maintenant' },
     partners_eyebrow: { he: 'השותפים שלנו', ru: 'Наши партнёры', en: 'Our Partners', fr: 'Nos partenaires' },
     filter_all:      { he: 'הכל', ru: 'Все', en: 'All', fr: 'Tout' },
@@ -375,12 +376,14 @@
 
     /* ----- הצוותים שלנו ----- */
     teams_slogan: { he: 'מצוינות ללא פשרות', ru: 'Совершенство без компромиссов', en: 'Excellence without compromise', fr: 'L’excellence sans compromis' },
+    teams_h2: { he: 'מצוינות ללא פשרות', ru: 'Совершенство без компромиссов', en: 'Excellence without compromise', fr: 'L’excellence sans compromis' },
     teams_l1: { he: 'קבלני בית משותפים', ru: 'Подрядчики многоквартирных домов', en: 'Shared-building contractors', fr: 'Entrepreneurs de copropriétés' },
     teams_l2: { he: 'אמינות ומקצועיות ללא פשרות', ru: 'Надёжность и профессионализм без компромиссов', en: 'Reliability and professionalism without compromise', fr: 'Fiabilité et professionnalisme sans compromis' },
     teams_l3: { he: 'קבלנים מוסמכים', ru: 'Сертифицированные подрядчики', en: 'Certified contractors', fr: 'Entrepreneurs agréés' },
 
     /* ----- גלריה ----- */
     gal_title:  { he: 'גלריה / השראות', ru: 'Галерея / Вдохновение', en: 'Gallery / Inspiration', fr: 'Galerie / Inspiration' },
+    gal_h2: { he: 'בנייה ועיצובים — לחלום ולהגשים !', ru: 'Строительство и дизайн — мечтать и воплощать !', en: 'Building and design — dream it and make it happen !', fr: 'Construction et design — rêver et réaliser !' },
 
     /* ----- מידע לאזרח ולבונה ----- */
     info_title: { he: 'מידע לאזרח ולבונה', ru: 'Информация для клиента и застройщика', en: 'Info for the Citizen & Builder', fr: 'Info pour le citoyen et le bâtisseur' },

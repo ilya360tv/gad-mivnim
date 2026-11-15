@@ -8444,3 +8444,64 @@ html[dir] body #main .division-page .division-top:has(.project-head) > * { text-
   html[dir] body #main .division-page .project-head-text > .project-city { grid-column: 2; grid-row: 3; justify-self: center; }
   html[dir] body #main .division-page .division-top:has(.project-head) .division-actions { grid-column: 3; grid-row: 1; justify-self: end; }
 }
+
+/* ==========================================================================
+   CONTENT HEADINGS — סולם אחד לכל כותרות התוכן, כמו #about:
+   כותרת סקשן = h3 של אודות (תכלת, 700, גודל 1.343vw בדסקטופ / .92rem במובייל, גובה שורה 1.8).
+   כותרת משנה וסלוגן = h4 של אודות (לבן, 700, אותו גודל).
+   שורת הסבר (.section-lead) = פסקת אודות (רגיל, אותו גודל).
+   גלולת העמוד והכותרת הגדולה שמתחתיה (.page-eyebrow / .section-title) לא נכללות.
+   ========================================================================== */
+:root {
+  --ch-fs: .95rem;
+  --ch-lh: 1.8;
+  --ch-head: #38bdf8;
+  --ch-sub: #f2f5f7;
+  --ch-lead: #e8ecef;
+}
+@media (max-width: 767.98px) { :root { --ch-fs: .92rem; } }
+@media (min-width: 1024px) { :root { --ch-fs: 1.343vw; } }
+
+html[dir] body #main :is(h2, h3, h4):not(.section-title):not(.page-eyebrow):not(.about-sub):not(.hero-title) {
+  font-family: 'Rubik', 'Segoe UI', Arial, sans-serif !important;
+  font-size: var(--ch-fs) !important;
+  font-weight: 700 !important;
+  line-height: var(--ch-lh) !important;
+  color: var(--ch-head) !important;
+  letter-spacing: .02em;
+  margin-block: 22px 6px;
+}
+html[dir] body #main :is(.division-slogan, .card-tagline, .teams-slogan, .partner-slogan, .project-subtitle) {
+  font-family: 'Rubik', 'Segoe UI', Arial, sans-serif !important;
+  font-size: var(--ch-fs) !important;
+  font-weight: 700 !important;
+  line-height: var(--ch-lh) !important;
+  color: var(--ch-sub) !important;
+  letter-spacing: .02em;
+  margin-block: 14px 4px;
+}
+html[dir] body #main .partner-chip > strong {
+  font-family: 'Rubik', 'Segoe UI', Arial, sans-serif !important;
+  font-size: var(--ch-fs) !important;
+  font-weight: 700 !important;
+  line-height: var(--ch-lh) !important;
+  color: var(--ch-head) !important;
+  letter-spacing: .02em;
+}
+html[dir] body #main .section-lead {
+  font-family: 'Rubik', 'Segoe UI', Arial, sans-serif !important;
+  font-size: var(--ch-fs) !important;
+  font-weight: 400 !important;
+  line-height: var(--ch-lh) !important;
+  color: var(--ch-lead) !important;
+  letter-spacing: normal;
+  margin-block: 0 16px !important;
+}
+/* בתוך כרטיס / חלון / פס צר — אותו סולם, בלי שוליים שפורצים את הכרטיס.
+   מה שיושב צמוד לכותרת העמוד שומר על הרווח שכבר נקבע לה. */
+html[dir] body #main :is(.card, .role-card, .partner-chip, .progress-card, .plan-card, .proj-modal, .ip-marquee, .teams-tiles) :is(h2, h3, h4),
+html[dir] body #main :is(.division-slogan, .card-tagline, .teams-slogan, .partner-slogan) {
+  margin-block: 0 !important;
+}
+html[dir] body #main .page-eyebrow ~ .section-lead,
+html[dir] body #main .section-title + .section-lead { margin-top: 0 !important; }
