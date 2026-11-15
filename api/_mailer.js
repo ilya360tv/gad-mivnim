@@ -43,8 +43,9 @@ function mailFailure(e) {
   };
 }
 
-// to: כתובת אחת. מחזיר messageId בלבד. ניסיון שני אם החיבור ל-Gmail נכשל.
-async function sendMail({ to, subject, html, text }) {
+// to: כתובת אחת. attachments אופציונלי (למשל ה-PDF החתום). מחזיר messageId בלבד.
+// ניסיון שני אם החיבור ל-Gmail נכשל.
+async function sendMail({ to, subject, html, text, attachments }) {
   if (!isRealEmail(to)) {
     const e = new Error('bad_recipient');
     e.code = 'bad_recipient';
@@ -59,7 +60,8 @@ async function sendMail({ to, subject, html, text }) {
         to: to,
         subject: subject,
         html: html,
-        text: text
+        text: text,
+        attachments: Array.isArray(attachments) && attachments.length ? attachments : undefined
       });
       return { messageId: info && info.messageId ? String(info.messageId) : '' };
     } catch (e) {

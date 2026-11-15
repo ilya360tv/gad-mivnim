@@ -4,6 +4,7 @@
    - הנתונים נשמרים בין השלבים, וטיוטה ב-sessionStorage בלבד (בלי קבצים ובלי חתימה).
    - הקבצים עולים רק בהגשה הסופית: קישור חד-פעמי מהשרת (/api/upload-url) → incoming/<מזהה>/ בבאקט הפרטי.
    - השמירה עצמה בשרת (/api/submit-application): IP, זמן, SHA-256 של ההסכם, PDF חתום, מנוי "awaiting_payment".
+     אחרי ההגשה מוצג כפתור הורדה לאותו PDF (קישור זמני מהשרת).
    - אין כאן ולא יהיו פרטי כרטיס אשראי. התשלום — בעמוד מאובטח של חברת הסליקה (בהמשך).
    תלוי ב: dataStore (data-store.js), GM_AGREEMENT (agreement-data.js), GM_CONTRACTOR_DOCS (contractor-docs.js),
            FieldSelect (field-select.js), GMFormErrors (form-errors.js).
@@ -813,14 +814,28 @@
       serverError(err);
     });
   }
-  function success() {
+  function success(res) {
     busy = false;
     S.done = true;
     clearDraft();
+    var url = res && typeof res.agreementUrl === 'string' && /^https:\/\/[^\s]+$/.test(res.agreementUrl) ? res.agreementUrl : '';
     mount.innerHTML =
       '<div class="cwz cwz-done" role="status" tabindex="-1">' +
         '<p class="cwz-done__msg"><strong>נרשמת ✓</strong> – הבקשה התקבלה. נבדוק את המסמכים ונעדכן אתכם בערוץ שבחרתם.</p>' +
+        (url
+          ? '<a class="btn btn-primary cwz-done__pdf" href="' + esc(url) + '">הורדת טופס ההרשמה החתום (PDF)</a>' +
+            '<p class="cwz-done__hint">הקישור תקף כרבע שעה. אם בחרתם במייל — העותק נשלח גם אליו.</p>'
+          : '') +
       '</div>';
+    var pdf = $('.cwz-done__pdf');
+    if (pdf) {
+      pdf.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (pdf.getAttribute('aria-busy') === 'true') { return; }
+        pdf.setAttribute('aria-busy', 'true');
+        DS.contractorJoin.savePdf(url).then(function () { pdf.removeAttribute('aria-busy'); }, function () { pdf.removeAttribute('aria-busy'); });
+      });
+    }
     var d = $('.cwz-done');
     var bx = box(); if (bx) { bx.scrollTop = 0; }
     d.focus({ preventScroll: true });

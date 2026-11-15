@@ -17,6 +17,7 @@
   DS.contractorJoin.resubmitInfo(id, token).then(function (info) {
     say('');
     body.innerHTML =
+      '<p class="rsb-pdf"><button type="button" class="btn btn-primary" id="rsbPdf">הורדת טופס ההרשמה החתום (PDF)</button></p>' +
       '<p>שלום ' + esc(info.name) + ', כדי להשלים את בדיקת הבקשה יש להעלות את המסמכים הבאים (' + info.docs.length + '). <bdi dir="ltr">PDF / JPG / PNG</bdi>, עד <bdi dir="ltr">5MB</bdi> לכל קובץ.</p>' +
       (info.note ? '<p class="rsb-msg">' + esc(info.note) + '</p>' : '') +
       '<div class="cwz-docs">' + info.docs.map(function (d) {
@@ -36,6 +37,22 @@
       });
     });
     document.getElementById('rsbSend').addEventListener('click', function () { send(info); });
+    document.getElementById('rsbPdf').addEventListener('click', function () {
+      var btn = this;
+      if (btn.disabled) { return; }
+      btn.disabled = true;
+      DS.contractorJoin.agreementUrl(id, token).then(function (r) {
+        return DS.contractorJoin.savePdf(r && r.agreementUrl);
+      }).then(function () {
+        btn.disabled = false;
+      }, function (e) {
+        btn.disabled = false;
+        var c = String(e && e.message || '');
+        say(c === 'no_agreement' ? 'לא נמצא טופס חתום לבקשה הזו.' :
+          c === 'link_expired' ? 'תוקף הקישור פג. פנו אלינו ונשלח קישור חדש.' :
+          'לא הצלחנו להכין את ההורדה. נסו שוב בעוד רגע.', 'is-err');
+      });
+    });
   }, function (e) {
     var c = String(e && e.message || '');
     say(c === 'link_expired' ? 'תוקף הקישור פג. פנו אלינו ונשלח קישור חדש.' :

@@ -8264,6 +8264,9 @@ html.a11y-no-motion .fe-flash { animation: none; }
 .cwz-beta { margin: 0; padding: 6px 12px; border-radius: 99px; background: rgba(251, 191, 36, .1); border: 1px solid rgba(251, 191, 36, .45); color: #fcd34d; font-size: .85rem; font-weight: 600; text-align: center; }
 .cwz-done__msg { margin: 0; color: #fff; font-size: 1.1rem; line-height: 1.6; }
 .cwz-done__msg strong { color: var(--green); }
+.cwz-done__pdf { display: inline-flex; align-items: center; justify-content: center; width: min(100%, 420px); min-height: 48px; padding: 12px 18px; text-align: center; text-decoration: none; line-height: 1.35; white-space: normal; }
+.cwz-done__pdf[aria-busy="true"] { opacity: .7; pointer-events: none; }
+.cwz-done__hint { margin: 0; max-width: 36em; color: var(--ink-soft); font-size: .92rem; }
 
 /* ----- שלב 3: כפתור פתיחת ההסכם + קורא ההסכם המלא (js/contractor-wizard.js openReader) ----- */
 .cwz-readbox { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 16px; border: 1px dashed rgba(56, 189, 248, .55); border-radius: 14px; background: var(--lb-bg); }
@@ -8351,3 +8354,6 @@ html.a11y-no-motion .agr-reader__bar span { transition: none; }
 .rsb-msg { padding: 12px 14px; border-radius: 12px; border: 1px solid #323b45; background: #0e1216; }
 .rsb-msg.is-err { border-color: #f87171; color: #fecaca; }
 .rsb-msg.is-ok { border-color: rgba(22, 163, 74, .7); color: #bbf7d0; }
+.rsb-pdf { margin: 0 0 16px; }
+.rsb-pdf .btn { display: inline-flex; align-items: center; justify-content: center; width: 100%; min-height: 48px; padding: 12px 18px; text-align: center; line-height: 1.35; white-space: normal; }
+@media (min-width: 640px) { .rsb-pdf .btn { width: auto; max-width: 100%; } }
