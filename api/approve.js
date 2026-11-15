@@ -10,7 +10,9 @@
    ========================================================================== */
 'use strict';
 const { sb, requireAdmin, normalizeFields, readBody, handler, httpError, UUID, GENERAL, tempPassword, saveTempPassword } = require('./_supabase');
-const { sendMail, isRealEmail } = require('./_mailer');
+const { isRealEmail } = require('./_mailer');
+const { notifyApplicant } = require('./_notify');
+const DOCS = require('../js/contractor-docs.js');
 const { approvedAccess } = require('./_email-templates');
 const billing = require('./_billing');
 
@@ -22,12 +24,22 @@ module.exports = handler(async (req) => {
   const applicantId = String(body.applicantId || '');
   if (!UUID.test(applicantId)) { throw httpError(400, 'bad_applicant_id'); }
 
-  const rows = await sb('/rest/v1/applicants?select=id,type,full_name,phone,email,fields,status,profile_id&id=eq.' + applicantId);
+  const rows = await sb('/rest/v1/applicants?select=id,type,full_name,phone,email,fields,status,profile_id,notify_channels&id=eq.' + applicantId);
   const a = rows && rows[0];
   if (!a) { throw httpError(404, 'applicant_not_found'); }
   if (a.type !== 'contractor' && a.type !== 'team') { throw httpError(400, 'type_not_approvable'); }
   if (a.status === 'approved' || a.profile_id) { throw httpError(409, 'already_approved'); }
   if (a.status === 'rejected') { throw httpError(409, 'already_rejected'); }
+
+  // בקשת הסכם דיגיטלי: אסור לאשר כל עוד חסר מסמך או שמסמך לא סומן "נבדק" (גם אם הדפדפן עקף את הכפתור)
+  if (a.type === 'contractor') {
+    const agr = await sb('/rest/v1/agreement_acceptances?select=id&applicant_id=eq.' + applicantId);
+    if (agr && agr.length) {
+      const docs = await sb('/rest/v1/applicant_docs?select=doc_type,checked_by_admin&applicant_id=eq.' + applicantId);
+      const ok = DOCS.REQUIRED_DOCS.every((t) => (docs || []).some((d) => d.doc_type === t && d.checked_by_admin === true));
+      if (!ok) { const e = httpError(409, 'docs_not_verified'); e.he = 'לא ניתן לאשר – חסרים מסמכים'; throw e; }
+    }
+  }
 
   let fields = normalizeFields(Array.isArray(body.fields) && body.fields.length ? body.fields : a.fields);
   if (!fields.length) { fields = a.type === 'contractor' ? [GENERAL] : []; }
@@ -83,12 +95,12 @@ module.exports = handler(async (req) => {
     try { subscription = await billing.onApprove(applicantId, userId); } catch (e) { billingError = true; }
   }
 
+  // הודעה בערוץ/ים שהקבלן בחר (דוא"ל עכשיו; SMS / וואטסאפ — וו ב-_notify.js). לא חוסם את האישור.
+  let notified = {};
   try {
-    if (isRealEmail(a.email)) {
-      const mail = approvedAccess(a.full_name, userCode, password);
-      await sendMail({ to: a.email, subject: mail.subject, html: mail.html, text: mail.text });
-    }
-  } catch (e) { /* דוא"ל לא חוסם את האישור */ }
+    const mail = approvedAccess(a.full_name, userCode, password);
+    notified = await notifyApplicant(a, mail);
+  } catch (e) { /* ממשיכים */ }
 
-  return { userCode: userCode, tempPassword: password, role: a.type === 'team' ? 'team' : 'contractor', fields: fields, subscription: subscription, billingError: billingError };
+  return { userCode: userCode, tempPassword: password, role: a.type === 'team' ? 'team' : 'contractor', fields: fields, subscription: subscription, billingError: billingError, notified: notified };
 });

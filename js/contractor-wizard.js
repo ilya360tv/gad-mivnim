@@ -1,6 +1,6 @@
 /* ==========================================================================
    GAD MIVNIM — contractor-wizard.js: אשף ההצטרפות של "קבלן בית" (חלון "קבלן בית משותף" בעמוד הדרושים).
-   5 שלבים: פרטים → תנאי סף ומסמכים → ההסכם → חתימה → סיכום והגשה.
+   4 שלבים: 1 פרטים (+ ערוץ הודעות) → 2 ההסכם בקורא מלא, כולל 9 המסמכים בסעיף 3 → 3 הסכמות וחתימה → 4 סיכום והגשה.
    - הנתונים נשמרים בין השלבים, וטיוטה ב-sessionStorage בלבד (בלי קבצים ובלי חתימה).
    - הקבצים עולים רק בהגשה הסופית: קישור חד-פעמי מהשרת (/api/upload-url) → incoming/<מזהה>/ בבאקט הפרטי.
    - השמירה עצמה בשרת (/api/submit-application): IP, זמן, SHA-256 של ההסכם, PDF חתום, מנוי "awaiting_payment".
@@ -16,7 +16,8 @@
 
   var REVIEW_FEE = 'יעודכן בהמשך';               // דמי בדיקה וקליטה (חודש ראשון) — הסכום ייקבע ע"י החברה; אין ספק סליקה עדיין
   var DRAFT_KEY = 'gm:contractorDraft';
-  var STEPS = ['פרטי קבלן הבית', 'תנאי סף ומסמכים', 'ההסכם', 'חתימה', 'סיכום ותשלום'];
+  var STEPS = ['פרטי קבלן הבית', 'ההסכם והמסמכים', 'הסכמות וחתימה', 'סיכום והגשה'];
+  var CHANNELS = [['email', 'מייל'], ['sms', 'SMS'], ['whatsapp', 'וואטסאפ']];
   var ENTITY = [['contractor', 'קבלן'], ['company', 'חברה'], ['professional', 'בעל/ת מקצוע'], ['other', 'אחר']];
   var MONTHS = ['ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני', 'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'];
   var CONSENTS = [
@@ -31,7 +32,7 @@
   /* ---------- מצב ---------- */
   var S = {
     step: 1, applicantId: DS.contractorJoin.uuid(),
-    d: {}, fields: [], docs: {}, consents: {}, readToEnd: false, secRead: [],
+    d: {}, fields: [], channels: [], docs: {}, consents: {}, readToEnd: false, secRead: [],
     city: '', signerName: '', signerRole: '', signature: '', sigDirty: false, done: false
   };
   DETAIL_KEYS.forEach(function (k) { S.d[k] = ''; });
@@ -41,7 +42,7 @@
       var meets = {};
       Object.keys(S.docs).forEach(function (t) { meets[t] = !!S.docs[t].meets; });
       sessionStorage.setItem(DRAFT_KEY, JSON.stringify({
-        step: S.step, applicantId: S.applicantId, d: S.d, fields: S.fields, meets: meets, consents: S.consents,
+        step: S.step, applicantId: S.applicantId, d: S.d, fields: S.fields, channels: S.channels, meets: meets, consents: S.consents,
         readToEnd: S.readToEnd, city: S.city, signerName: S.signerName, signerRole: S.signerRole
       }));
     } catch (e) { /* פרטי / חסום — ממשיכים בלי טיוטה */ }
@@ -53,6 +54,7 @@
       if (/^[0-9a-f-]{36}$/i.test(j.applicantId || '')) { S.applicantId = j.applicantId; }
       DETAIL_KEYS.forEach(function (k) { if (j.d && typeof j.d[k] === 'string') { S.d[k] = j.d[k]; } });
       S.fields = Array.isArray(j.fields) ? DS.normalizeFields(j.fields) : [];
+      S.channels = Array.isArray(j.channels) ? j.channels.filter(function (c) { return CHANNELS.some(function (x) { return x[0] === c; }); }) : [];
       S.consents = j.consents && typeof j.consents === 'object' ? j.consents : {};
       S.readToEnd = !!j.readToEnd;
       S.city = String(j.city || ''); S.signerName = String(j.signerName || ''); S.signerRole = String(j.signerRole || '');
@@ -133,36 +135,49 @@
         if (v === '') { return 'יש למלא מספר עובדים קבועים'; }
         return /^\d{1,6}$/.test(v) && Number(v) <= 100000 ? '' : 'יש להזין מספר עובדים (מספר שלם)';
       });
+      add('[data-k="channels"]', function () { return S.channels.length ? '' : 'יש לבחור לפחות דרך אחת לקבלת הודעות: מייל, SMS או וואטסאפ'; });
     } else if (step === 2) {
-      DOCS.DOCS.forEach(function (x) {
-        add('[data-doc="' + x.type + '"]', function () {
-          var o = S.docs[x.type] || {};
-          if (o.err) { return o.err; }
-          if (DOCS.isRequired(x.type) && !o.file) { return 'יש להעלות את ' + x.title.replace(/ \(.*\)$/, ''); }
-          if (o.file && !o.meets) { return 'יש לסמן "עומד/ת בתנאי"'; }
-          return '';
-        });
+      add('[data-k="read"]', function () {
+        if (!S.readToEnd) { return 'יש לפתוח את ההסכם, לקרוא את כל הסעיפים ולהעלות את כל 9 המסמכים'; }
+        var bad = firstBadDoc();
+        return bad ? badMsg(bad) : '';
       });
     } else if (step === 3) {
       add('#cwzCity', function () { return S.city.trim().length < 2 ? 'יש למלא את העיר שבה נחתם ההסכם' : ''; });
-      add('[data-k="read"]', function () { return S.readToEnd ? '' : 'יש לקרוא את כל סעיפי ההסכם'; });
-      CONSENTS.forEach(function (c) {
-        add('#cwzConsent-' + c[0], function () { return !S.readToEnd || S.consents[c[0]] === true ? '' : 'יש לסמן את תיבת ההסכמה'; });
-      });
-    } else if (step === 4) {
       add('#cwzSignerName', function () { return S.signerName.trim().length < 2 ? 'יש למלא את שם החותם' : ''; });
+      CONSENTS.forEach(function (c) {
+        add('#cwzConsent-' + c[0], function () { return S.consents[c[0]] === true ? '' : 'יש לסמן את תיבת ההסכמה'; });
+      });
       add('[data-k="signature"]', function () { return S.signature ? '' : 'יש לחתום לפני המשך'; });
     }
     return R;
   }
   function validStep(step) { return rulesFor(step).every(function (r) { return !r.check(); }); }
 
+  /* ---------- 9 המסמכים (כולם חובה) ---------- */
+  function docIssue(x) {
+    var o = S.docs[x.type] || {};
+    if (o.err) { return o.err; }
+    if (!o.file) { return 'upload'; }
+    if (!o.meets) { return 'meets'; }
+    return '';
+  }
+  function firstBadDoc() { return DOCS.DOCS.filter(function (x) { return docIssue(x); })[0] || null; }
+  function badMsg(x) {
+    var i = docIssue(x);
+    if (i === 'meets') { return 'יש לסמן "עומד/ת בתנאי" ב: ' + x.title; }
+    if (i === 'upload') { return 'יש להעלות את כל המסמכים לפני החתימה – חסר: ' + x.title; }
+    return i;
+  }
+  function docsCount() { return DOCS.DOCS.filter(function (x) { return !docIssue(x); }).length; }
+  var docChanged = function () {};
+
   /* ---------- תצוגה ---------- */
   function shell() {
     mount.innerHTML =
       '<div class="cwz" dir="rtl">' +
         '<div class="cwz-progress"><p class="cwz-progress__label" aria-live="polite"></p>' +
-          '<div class="cwz-progress__bar" role="progressbar" aria-valuemin="1" aria-valuemax="5"><span></span></div>' +
+          '<div class="cwz-progress__bar" role="progressbar" aria-valuemin="1" aria-valuemax="4"><span></span></div>' +
           '<ol class="cwz-steps">' + STEPS.map(function (s, i) { return '<li data-n="' + (i + 1) + '"><span>' + (i + 1) + '</span><em>' + esc(s) + '</em></li>'; }).join('') + '</ol>' +
         '</div>' +
         '<p class="cwz-beta">המערכת בהרצה – נוסח ההסכם טיוטה בבדיקת עורך דין</p>' +
@@ -181,11 +196,11 @@
   function render() {
     var b = $('.cwz-body');
     FE.summary($('.cwz-summary'), 0);
-    $('.cwz-progress__label').textContent = 'שלב ' + S.step + ' מתוך 5 · ' + STEPS[S.step - 1];
+    $('.cwz-progress__label').textContent = 'שלב ' + S.step + ' מתוך 4 · ' + STEPS[S.step - 1];
     var bar = $('.cwz-progress__bar');
     bar.setAttribute('aria-valuenow', S.step);
-    bar.setAttribute('aria-valuetext', 'שלב ' + S.step + ' מתוך 5');
-    bar.firstChild.style.width = (S.step * 20) + '%';
+    bar.setAttribute('aria-valuetext', 'שלב ' + S.step + ' מתוך 4');
+    bar.firstChild.style.width = (S.step * 25) + '%';
     $$('.cwz-steps li').forEach(function (li) {
       var n = Number(li.getAttribute('data-n'));
       li.classList.toggle('is-done', n < S.step);
@@ -194,9 +209,9 @@
     });
     $('.cwz-back').hidden = S.step === 1;
     var nx = $('.cwz-next');
-    nx.textContent = S.step === 5 ? 'שליחת הבקשה' : 'הבא ←';
-    nx.classList.toggle('cwz-pay', S.step === 5);
-    [null, step1, step2, step3, step4, step5][S.step](b);
+    nx.textContent = S.step === 4 ? 'שליחת הבקשה' : 'הבא ←';
+    nx.classList.toggle('cwz-pay', S.step === 4);
+    [null, step1, step2, step3, step4][S.step](b);
     syncNext();
   }
   function syncNext() {
@@ -206,7 +221,7 @@
     nx.removeAttribute('aria-disabled');
   }
   function go(step, focusEl) {
-    S.step = Math.max(1, Math.min(5, step));
+    S.step = Math.max(1, Math.min(4, step));
     saveDraft();
     render();
     var bx = box();
@@ -215,12 +230,17 @@
     else { var l = $('.cwz-progress__label'); l.setAttribute('tabindex', '-1'); l.focus({ preventScroll: true }); }
   }
   // "הבא": בודקים גם את השלבים הקודמים — אם השגיאה הראשונה שם, חוזרים אליו וקופצים לשדה
+  function stepFail(st) {
+    var bad = st === 2 && S.readToEnd ? firstBadDoc() : null;
+    FE.run(rulesFor(st), $('.cwz-summary'));
+    if (bad) { openReader(null, { jump: bad.type }); }
+  }
   function next() {
-    for (var s = 1; s < S.step; s++) {
-      if (!validStep(s)) { go(s); FE.run(rulesFor(s), $('.cwz-summary')); return; }
+    for (var st = 1; st < S.step; st++) {
+      if (!validStep(st)) { go(st); stepFail(st); return; }
     }
-    if (!FE.run(rulesFor(S.step), $('.cwz-summary'))) { return; }
-    if (S.step < 5) { go(S.step + 1); } else { submit(); }
+    if (!validStep(S.step)) { stepFail(S.step); return; }
+    if (S.step < 4) { go(S.step + 1); } else { submit(); }
   }
   function bindValue(el, key, obj) {
     obj = obj || S.d;
@@ -236,7 +256,7 @@
   function field(id, label, opts) {
     opts = opts || {};
     return '<div class="form-field cwz-field' + (opts.wide ? ' cwz-wide' : '') + '">' +
-      '<label for="' + id + '">' + esc(label) + (opts.optional ? ' <span class="cwz-opt">(לא חובה)</span>' : '') + '</label>' +
+      '<label for="' + id + '">' + esc(label) + '' + '</label>' +
       '<input id="' + id + '" type="' + (opts.type || 'text') + '"' + (opts.attrs || '') + '></div>';
   }
 
@@ -244,7 +264,7 @@
   function step1(b) {
     b.innerHTML =
       '<h3 class="cwz-h">פרטי קבלן הבית</h3>' +
-      '<p class="cwz-lead">הפרטים ימולאו בסעיף 1 בהסכם ההצטרפות.</p>' +
+      '<p class="cwz-lead">הפרטים ימולאו בסעיף 1 בהסכם ההצטרפות. את המסמכים תעלו בשלב הבא, בתוך ההסכם.</p>' +
       '<div class="cwz-grid">' +
         '<div class="form-field cwz-field cwz-wide" data-k="entityType" role="radiogroup" aria-labelledby="cwzEntityLbl">' +
           '<span class="cwz-label" id="cwzEntityLbl">סוג</span>' +
@@ -266,6 +286,12 @@
         field('cwzRegions', 'אזורי פעילות', { attrs: ' placeholder="לדוגמה: השרון, מרכז, ירושלים" maxlength="300"' }) +
         field('cwzLicense', 'מספר רישיון / הסמכה וסיווג', { attrs: ' maxlength="160"' }) +
         field('cwzEmployees', 'מספר עובדים קבועים', { type: 'number', attrs: ' min="0" max="100000" step="1" inputmode="numeric"' }) +
+        '<div class="form-field cwz-field cwz-wide" data-k="channels" role="group" aria-labelledby="cwzChLbl">' +
+          '<span class="cwz-label" id="cwzChLbl">איך תרצו לקבל הודעות?</span>' +
+          '<div class="cwz-radios">' + CHANNELS.map(function (c) {
+            return '<label class="cwz-radio"><input type="checkbox" name="cwzChannel" value="' + c[0] + '"><span>' + esc(c[1]) + '</span></label>';
+          }).join('') + '</div>' +
+        '</div>' +
       '</div>';
     var map = { cwzEntityOther: 'entityOther', cwzFullName: 'fullName', cwzIdNumber: 'idNumber', cwzContactName: 'contactName', cwzContactRole: 'contactRole',
       cwzPhone: 'phone', cwzEmail: 'email', cwzAddress: 'address', cwzRegions: 'regions', cwzLicense: 'license', cwzEmployees: 'employees' };
@@ -279,6 +305,14 @@
       });
     });
     other.hidden = S.d.entityType !== 'other';
+    $$('input[name="cwzChannel"]').forEach(function (cb) {
+      cb.checked = S.channels.indexOf(cb.value) !== -1;
+      cb.addEventListener('change', function () {
+        S.channels = $$('input[name="cwzChannel"]').filter(function (x) { return x.checked; }).map(function (x) { return x.value; });
+        saveDraft();
+        if (S.channels.length) { FE.clear($('[data-k="channels"]')); }
+      });
+    });
     var sel = window.FieldSelect && window.FieldSelect.create({
       mount: $('#cwzFields'), multiple: true, max: DS.MAX_FIELDS, general: DS.GENERAL,
       labelId: 'cwzFieldsLbl', placeholder: 'fs_ph_multi',
@@ -292,34 +326,53 @@
     watchAll();
   }
 
-  /* ----- שלב 2: תנאי סף ומסמכים ----- */
+  /* ----- שלב 2: ההסכם (קורא מלא). 9 המסמכים מועלים בתוכו, בסעיף 3 (תנאי סף) ----- */
   function step2(b) {
     b.innerHTML =
-      '<h3 class="cwz-h">תנאי סף ומסמכים</h3>' +
-      '<p class="cwz-lead">לכל מסמך: סמנו "עומד/ת בתנאי" והעלו קובץ <bdi dir="ltr">PDF / JPG / PNG</bdi> עד <bdi dir="ltr">5MB</bdi>. המסמכים יועלו רק בהגשה הסופית.</p>' +
-      '<div class="cwz-docs">' + DOCS.DOCS.map(function (x) {
-        var req = DOCS.isRequired(x.type);
-        return '<div class="cwz-doc cwz-field" data-doc="' + x.type + '" data-fe-host>' +
-          '<div class="cwz-doc__head"><span class="cwz-doc__n" aria-hidden="true">' + x.n + '</span>' +
-            '<div><strong class="cwz-doc__title" id="cwzDocT-' + x.type + '">' + esc(x.title) + '</strong> ' +
-            '<span class="cwz-tag' + (req ? ' is-req' : '') + '">' + (req ? 'חובה' : 'לא חובה') + '</span>' +
-            '<p class="cwz-doc__text">' + esc(x.text) + '</p></div></div>' +
-          '<label class="cwz-check"><input type="checkbox" class="cwz-meets"><span>עומד/ת בתנאי</span></label>' +
-          '<div class="cv-drop cwz-drop">' +
-            '<input type="file" class="cv-drop__input" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" aria-labelledby="cwzDocT-' + x.type + '">' +
-            '<div class="cv-drop__empty">' +
-              '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 15V4"/><path d="m7 9 5-5 5 5"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>' +
-              '<span class="cv-drop__text">גררו לכאן קובץ או לחצו לבחירה</span><span class="cv-drop__types"><bdi dir="ltr">PDF / JPG / PNG</bdi> · עד <bdi dir="ltr">5MB</bdi></span>' +
-            '</div>' +
-            '<div class="cv-drop__file" hidden>' +
-              '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>' +
-              '<span class="cv-drop__meta"><span class="cv-drop__name" dir="auto"></span><span class="cv-drop__size" dir="ltr"></span></span>' +
-              '<button type="button" class="cv-drop__x" aria-label="הסרת הקובץ">&times;</button>' +
-            '</div>' +
-          '</div>' +
-        '</div>';
-      }).join('') + '</div>';
-    $$('.cwz-doc').forEach(setupDoc);
+      '<h3 class="cwz-h">ההסכם והמסמכים</h3>' +
+      '<p class="cwz-lead">פתחו את ההסכם וקראו את כל הסעיפים. בסעיף 3 (תנאי סף) מעלים ליד כל תנאי את המסמך שלו – <strong>כל 9 המסמכים חובה</strong>. הפרטים שמילאתם כבר מופיעים בהסכם. גרסה: <span dir="ltr">' + esc(AGR.VERSION) + '</span></p>' +
+      '<div class="cwz-field cwz-readbox" data-k="read" data-fe-host>' +
+        '<button type="button" class="btn btn-primary cwz-openagr" aria-haspopup="dialog">פתיחת ההסכם לקריאה</button>' +
+        '<p class="cwz-readstate" aria-live="polite"></p>' +
+      '</div>';
+    $('.cwz-openagr').addEventListener('click', function () { openReader(this); });
+    docChanged = paintReadState;
+    paintReadState();
+  }
+  // מצב בשלב 2: כמה סעיפים נקראו וכמה מסמכים הועלו
+  function paintReadState() {
+    var st = $('.cwz-readstate');
+    if (!st) { return; }
+    var n = S.secRead.filter(Boolean).length, all = S.secRead.length || 9, dn = docsCount();
+    var ready = S.readToEnd && dn === DOCS.DOCS.length;
+    st.textContent = ready ? '✓ ההסכם נקרא במלואו וכל 9 המסמכים הועלו' :
+      (n ? 'נקראו ' + n + ' מתוך ' + all + ' סעיפים · ' : 'טרם נקרא · ') + 'הועלו ' + dn + ' מתוך ' + DOCS.DOCS.length + ' מסמכים';
+    st.classList.toggle('is-done', ready);
+    var ob = $('.cwz-openagr');
+    ob.textContent = S.readToEnd ? 'פתיחת ההסכם שוב' : 'פתיחת ההסכם לקריאה';
+    ob.classList.toggle('btn-outline', !!S.readToEnd);
+    ob.classList.toggle('btn-primary', !S.readToEnd);
+  }
+  // תיבת מסמך בתוך סעיף 3: מספר, כותרת, טקסט התנאי, "עומד/ת בתנאי", גרירה / בחירת קובץ
+  function docBox(x) {
+    return '<div class="cwz-doc cwz-field" data-doc="' + x.type + '" data-fe-host>' +
+      '<div class="cwz-doc__head"><span class="cwz-doc__n" aria-hidden="true">' + x.n + '</span>' +
+        '<div><strong class="cwz-doc__title" id="cwzDocT-' + x.type + '">' + esc(x.title) + '</strong>' +
+        '<p class="cwz-doc__text">' + esc(x.text) + '</p></div></div>' +
+      '<label class="cwz-check"><input type="checkbox" class="cwz-meets"><span>עומד/ת בתנאי</span></label>' +
+      '<div class="cv-drop cwz-drop">' +
+        '<input type="file" class="cv-drop__input" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" aria-labelledby="cwzDocT-' + x.type + '">' +
+        '<div class="cv-drop__empty">' +
+          '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 15V4"/><path d="m7 9 5-5 5 5"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>' +
+          '<span class="cv-drop__text">גררו לכאן קובץ או לחצו לבחירה</span><span class="cv-drop__types"><bdi dir="ltr">PDF / JPG / PNG</bdi> · עד <bdi dir="ltr">5MB</bdi></span>' +
+        '</div>' +
+        '<div class="cv-drop__file" hidden>' +
+          '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>' +
+          '<span class="cv-drop__meta"><span class="cv-drop__name" dir="auto"></span><span class="cv-drop__size" dir="ltr"></span></span>' +
+          '<button type="button" class="cv-drop__x" aria-label="הסרת הקובץ">&times;</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
   }
   function setupDoc(el) {
     var t = el.getAttribute('data-doc');
@@ -335,9 +388,9 @@
       el.classList.toggle('is-ok', !!f && !!o.meets);
     }
     function recheck() {
-      var r = rulesFor(2).filter(function (x) { return x.el === el; })[0];
-      var m = r && r.check();
+      var x = DOCS.byType(t), m = docIssue(x) ? badMsg(x) : '';
       if (!m) { FE.clear(el); } else if (el.classList.contains('fe-invalid') || o.err) { FE.set(el, m); }
+      docChanged();
     }
     function take(f) {
       o.err = '';
@@ -363,55 +416,12 @@
     paint();
   }
 
-  /* ----- שלב 3: ההסכם — קורא מלא, כל סעיף חייב להיקרא עד סופו ----- */
-  function step3(b) {
-    b.innerHTML =
-      '<h3 class="cwz-h">ההסכם</h3>' +
-      '<p class="cwz-lead">פתחו את ההסכם וקראו את כל הסעיפים. הפרטים שמילאתם כבר מופיעים בו. גרסה: <span dir="ltr">' + esc(AGR.VERSION) + '</span></p>' +
-      '<div class="cwz-grid">' + field('cwzCity', 'העיר שבה נחתם ההסכם', { attrs: ' maxlength="80" autocomplete="address-level2"' }) +
-        '<div class="form-field cwz-field"><span class="cwz-label">תאריך</span><p class="cwz-static">' + esc(today().text) + '</p></div></div>' +
-      '<div class="cwz-field cwz-readbox" data-k="read" data-fe-host>' +
-        '<button type="button" class="btn btn-primary cwz-openagr" aria-haspopup="dialog">פתיחת ההסכם לקריאה</button>' +
-        '<p class="cwz-readstate" aria-live="polite"></p>' +
-      '</div>' +
-      '<p class="cwz-consent-hint">יש לקרוא את ההסכם עד הסוף</p>' +
-      '<div class="cwz-consents">' + CONSENTS.map(function (c) {
-        return '<div class="cwz-field" data-fe-host><label class="cwz-check cwz-consent"><input type="checkbox" id="cwzConsent-' + c[0] + '"><span>' + c[1] + '</span></label></div>';
-      }).join('') + '</div>';
-    bindValue($('#cwzCity'), 'city', S);
-    $('.cwz-openagr').addEventListener('click', function () { openReader(this); });
-    CONSENTS.forEach(function (c) {
-      var cb = $('#cwzConsent-' + c[0]);
-      cb.checked = S.consents[c[0]] === true;
-      cb.addEventListener('change', function () { S.consents[c[0]] = cb.checked; saveDraft(); if (cb.checked) { FE.clear(cb); } });
-    });
-    paintReadState();
-    watchAll();
-  }
-  // מצב הקריאה בשלב 3: לפני — תיבות ההסכמה נעולות; אחרי — "✓ ההסכם נקרא במלואו" ותיבות פעילות
-  function paintReadState() {
-    var st = $('.cwz-readstate');
-    if (!st) { return; }
-    var n = S.secRead.filter(Boolean).length, all = S.secRead.length || 9;
-    st.textContent = S.readToEnd ? '✓ ההסכם נקרא במלואו' : (n ? 'קראת ' + n + ' מתוך ' + all + ' סעיפים' : 'טרם נקרא');
-    st.classList.toggle('is-done', !!S.readToEnd);
-    $('.cwz-openagr').textContent = S.readToEnd ? 'פתיחת ההסכם שוב' : 'פתיחת ההסכם לקריאה';
-    $('.cwz-openagr').classList.toggle('btn-outline', !!S.readToEnd);
-    $('.cwz-openagr').classList.toggle('btn-primary', !S.readToEnd);
-    $('.cwz-consent-hint').hidden = !!S.readToEnd;
-    CONSENTS.forEach(function (c) {
-      var cb = $('#cwzConsent-' + c[0]);
-      cb.disabled = !S.readToEnd;
-      cb.closest('.cwz-check').classList.toggle('is-locked', !S.readToEnd);
-    });
-  }
-
   /* ---------- קורא ההסכם (חלון מלא) ----------
      סעיף = כותרת (h3.agr-h) עד הכותרת הבאה; מה שלפני "הקדמה" (כותרת, תאריך, הצדדים) שייך לסעיף הראשון.
      ✓ רק כשסוף הסעיף נראה בפועל (IntersectionObserver על סמן בסוף כל סעיף).
      טבלת החתימות ושורת "לשימוש GAD MIVNIM" לא מוצגות לקבלן (חתימה — בשלב 4; המשרד — רק ב-PDF למנהל). */
   var R = null;
-  function openReader(opener) {
+  function openReader(opener, opts) {
     if (R) { return; }
     var wrap = document.createElement('div');
     wrap.className = 'agr-reader';
@@ -431,6 +441,7 @@
           '<div class="agr-reader__body cwz-agr" tabindex="0"></div>' +
         '</div>' +
         '<div class="agr-reader__foot">' +
+          '<p class="agr-reader__err" role="alert" hidden></p>' +
           '<button type="button" class="btn btn-outline agr-reader__prev">→ לסעיף הקודם</button>' +
           '<button type="button" class="btn btn-outline agr-reader__next">לסעיף הבא ←</button>' +
           '<button type="button" class="btn btn-primary agr-reader__done">סיימתי לקרוא</button>' +
@@ -441,6 +452,9 @@
     // בניית הסעיפים מתוך ה-HTML הממולא (אותו נוסח בדיוק)
     var tmp = document.createElement('div');
     tmp.innerHTML = AGR.toHtml(agreementData(false), { contractorView: true });
+    // סעיף 3: במקום רשימת התנאים הסטטית — תיבת העלאה ליד כל אחד מ-9 התנאים
+    var dd = tmp.querySelector('.agr-docs');
+    if (dd) { dd.className = 'cwz-docs'; dd.innerHTML = DOCS.DOCS.map(docBox).join(''); }
     var secs = [], cur = null, pre = [];
     Array.prototype.slice.call(tmp.children).forEach(function (el) {
       if (el.matches('h3.agr-h')) {
@@ -483,10 +497,7 @@
         btn.querySelector('.agr-toc__st').textContent = ok ? '✓' : '○';
         btn.querySelector('.agr-toc__sr').textContent = ok ? ' – נקרא' : ' – טרם נקרא';
       });
-      var all = n === secs.length;
-      done.disabled = !all;
-      done.setAttribute('aria-disabled', all ? 'false' : 'true');
-      done.title = all ? '' : 'יש לקרוא את כל הסעיפים';
+      wrap.querySelector('.agr-reader__progress').textContent += ' · הועלו ' + docsCount() + ' מתוך ' + DOCS.DOCS.length + ' מסמכים';
     }
     function current() {
       var top = body.getBoundingClientRect().top + 8, idx = 0;
@@ -522,12 +533,28 @@
     prev.addEventListener('click', function () { goSec(current() - 1); });
     nextB.addEventListener('click', function () { goSec(current() + 1); });
     toc.addEventListener('click', function (e) { var t = e.target.closest('[data-sec]'); if (t) { goSec(Number(t.getAttribute('data-sec'))); } });
+    var errEl = wrap.querySelector('.agr-reader__err');
+    function showErr(m) { errEl.textContent = m; errEl.hidden = false; }
+    function jumpDoc(type, msg) {
+      var el = wrap.querySelector('[data-doc="' + type + '"]');
+      if (!el) { return; }
+      var m = msg || badMsg(DOCS.byType(type));
+      FE.set(el, m); showErr(m); FE.jump(el);
+    }
+    // "סיימתי": קודם כל הסעיפים, אחר כך כל 9 המסמכים — חסר משהו = הודעה + קפיצה אליו
     done.addEventListener('click', function () {
-      if (S.secRead.filter(Boolean).length !== secs.length) { return; }
+      errEl.hidden = true;
+      var unread = [];
+      S.secRead.forEach(function (r, i) { if (!r) { unread.push(i); } });
+      if (unread.length) { showErr('יש לקרוא את כל הסעיפים – נותרו ' + unread.length + ' סעיפים שטרם נקראו'); goSec(unread[0]); return; }
+      var bad = firstBadDoc();
+      if (bad) { jumpDoc(bad.type); return; }
       S.readToEnd = true;
       saveDraft();
       close(true);
     });
+    $$('.cwz-doc', wrap).forEach(setupDoc);
+    docChanged = function () { paint(); if (!firstBadDoc()) { errEl.hidden = true; } };
     wrap.querySelector('.agr-reader__x').addEventListener('click', function () { close(false); });
 
     function focusables() {
@@ -552,12 +579,13 @@
       document.documentElement.classList.remove('agr-reader-open');
       wrap.remove();
       R = null;
+      docChanged = paintReadState;
       paintReadState();
       if (finished) {
         FE.clear($('[data-k="read"]'));
         FE.summary($('.cwz-summary'), 0);
-        var first = $('#cwzConsent-read');
-        if (first) { first.focus({ preventScroll: true }); first.closest('.cwz-field').scrollIntoView({ block: 'center', behavior: calm() ? 'auto' : 'smooth' }); }
+        var nb = $('.cwz-next');
+        if (nb) { nb.focus({ preventScroll: true }); }
       } else if (opener && document.body.contains(opener)) { opener.focus({ preventScroll: true }); }
     }
     R = { close: close };
@@ -565,20 +593,26 @@
     paint();
     syncNav();
     body.focus({ preventScroll: true });
+    if (opts && opts.jump) { requestAnimationFrame(function () { jumpDoc(opts.jump, opts.msg); }); }
   }
   function calm() {
     return document.documentElement.classList.contains('a11y-no-motion') ||
       (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   }
 
-  /* ----- שלב 4: חתימה ----- */
-  function step4(b) {
+  /* ----- שלב 3: הסכמות וחתימה ----- */
+  function step3(b) {
     b.innerHTML =
-      '<h3 class="cwz-h">חתימה</h3>' +
+      '<h3 class="cwz-h">הסכמות וחתימה</h3>' +
       '<div class="cwz-grid">' +
+        field('cwzCity', 'העיר שבה נחתם ההסכם', { attrs: ' maxlength="80" autocomplete="address-level2"' }) +
+        '<div class="form-field cwz-field"><span class="cwz-label">תאריך</span><p class="cwz-static">' + esc(today().text) + '</p></div>' +
         field('cwzSignerName', 'שם החותם', { attrs: ' autocomplete="name" maxlength="120"' }) +
         field('cwzSignerRole', 'תפקיד החותם', { optional: true, attrs: ' maxlength="80"' }) +
       '</div>' +
+      '<div class="cwz-consents">' + CONSENTS.map(function (c) {
+        return '<div class="cwz-field" data-fe-host><label class="cwz-check cwz-consent"><input type="checkbox" id="cwzConsent-' + c[0] + '"><span>' + c[1] + '</span></label></div>';
+      }).join('') + '</div>' +
       '<div class="cwz-field" data-k="signature" data-fe-host>' +
         '<span class="cwz-label" id="cwzSigLbl">חתימה (באצבע או בעכבר)</span>' +
         '<div class="cwz-sig"><canvas class="cwz-sig__pad" role="img" aria-labelledby="cwzSigLbl" tabindex="0"></canvas>' +
@@ -586,8 +620,14 @@
         '<div class="cwz-sig__bar"><span>תאריך: ' + esc(today().text) + '</span>' +
           '<button type="button" class="btn btn-outline cwz-sig__clear">ניקוי</button></div>' +
       '</div>';
+    bindValue($('#cwzCity'), 'city', S);
     bindValue($('#cwzSignerName'), 'signerName', S);
     bindValue($('#cwzSignerRole'), 'signerRole', S);
+    CONSENTS.forEach(function (c) {
+      var cb = $('#cwzConsent-' + c[0]);
+      cb.checked = S.consents[c[0]] === true;
+      cb.addEventListener('change', function () { S.consents[c[0]] = cb.checked; saveDraft(); if (cb.checked) { FE.clear(cb); } });
+    });
     pad($('.cwz-sig__pad'));
     watchAll();
   }
@@ -645,16 +685,17 @@
     return o.toDataURL('image/png');
   }
 
-  /* ----- שלב 5: סיכום ותשלום ----- */
-  function step5(b) {
+  /* ----- שלב 4: סיכום והגשה ----- */
+  function step4(b) {
     var rows = [
       ['סוג', entityLabel()], ['שם מלא / שם החברה', S.d.fullName], ['ח.פ / ע.מ / ת.ז', S.d.idNumber],
       ['איש קשר', S.d.contactName + (S.d.contactRole ? ' – ' + S.d.contactRole : '')], ['טלפון', S.d.phone], ['דוא"ל', S.d.email],
       ['כתובת', S.d.address], ['תחומי עיסוק', S.fields.join(', ')], ['אזורי פעילות', S.d.regions],
-      ['רישיון / הסמכה', S.d.license], ['עובדים קבועים', String(S.d.employees)]
+      ['רישיון / הסמכה', S.d.license], ['עובדים קבועים', String(S.d.employees)],
+      ['הודעות בערוץ', CHANNELS.filter(function (c) { return S.channels.indexOf(c[0]) !== -1; }).map(function (c) { return c[1]; }).join(', ')]
     ];
     b.innerHTML =
-      '<h3 class="cwz-h">סיכום ותשלום</h3>' +
+      '<h3 class="cwz-h">סיכום והגשה</h3>' +
       '<div class="cwz-sum">' +
         '<section><h4>הפרטים <button type="button" class="cwz-edit" data-go="1">עריכה</button></h4><dl>' +
           rows.map(function (r) { return '<div><dt>' + esc(r[0]) + '</dt><dd><bdi>' + esc(r[1]) + '</bdi></dd></div>'; }).join('') + '</dl></section>' +
@@ -664,7 +705,7 @@
             return '<li class="' + (f ? 'is-ok' : '') + '"><span aria-hidden="true">' + (f ? '✓' : '–') + '</span> ' + esc(x.title) +
               (f ? ' <small dir="auto">' + esc(f.name) + '</small>' : ' <small>(לא צורף)</small>') + '</li>';
           }).join('') + '</ul></section>' +
-        '<section><h4>ההסכם והחתימה</h4><dl>' +
+        '<section><h4>ההסכם והחתימה <button type="button" class="cwz-edit" data-go="3">עריכה</button></h4><dl>' +
           '<div><dt>גרסת ההסכם</dt><dd dir="ltr">' + esc(AGR.VERSION) + '</dd></div>' +
           '<div><dt>נחתם ב-</dt><dd>' + esc(S.city) + ', ' + esc(today().text) + '</dd></div>' +
           '<div><dt>החותם</dt><dd>' + esc(S.signerName) + (S.signerRole ? ' – ' + esc(S.signerRole) : '') + '</dd></div>' +
@@ -680,10 +721,10 @@
   /* ---------- הגשה ---------- */
   var DETAIL_FIELD = { entityType: '[data-k="entityType"]', fullName: '#cwzFullName', idNumber: '#cwzIdNumber', contactName: '#cwzContactName',
     phone: '#cwzPhone', email: '#cwzEmail', address: '#cwzAddress', fields: '[data-k="fields"]', regions: '#cwzRegions', license: '#cwzLicense',
-    employees: '#cwzEmployees', city: '#cwzCity', consents: '#cwzConsent-read', signerName: '#cwzSignerName', signature: '[data-k="signature"]' };
-  var FIELD_STEP = { city: 3, consents: 3, signerName: 4, signature: 4 };
+    employees: '#cwzEmployees', channels: '[data-k="channels"]', city: '#cwzCity', consents: '#cwzConsent-read', signerName: '#cwzSignerName', signature: '[data-k="signature"]' };
+  var FIELD_STEP = { city: 3, consents: 3, signerName: 3, signature: 3 };
   var SERVER_MSG = {
-    city: 'יש למלא את העיר שבה נחתם ההסכם', consents: 'יש לסמן את כל תיבות ההסכמה', signature: 'החתימה לא נקלטה – יש לחתום שוב',
+    channels: 'יש לבחור לפחות דרך אחת לקבלת הודעות', city: 'יש למלא את העיר שבה נחתם ההסכם', consents: 'יש לסמן את כל תיבות ההסכמה', signature: 'החתימה לא נקלטה – יש לחתום שוב',
     signerName: 'יש למלא את שם החותם', idNumber: 'מספר ח.פ / ע.מ / ת.ז לא תקין', phone: 'מספר טלפון לא תקין – יש להזין 10 ספרות (⁦05X-XXXXXXX⁩)',
     email: 'כתובת דוא"ל לא תקינה'
   };
@@ -705,14 +746,12 @@
     }
     if ((m = /^missing_docs:(.+)$/.exec(code))) {
       var types = m[1].split(',');
+      var first = DOCS.byType(types[0]);
+      var txt = (err && err.he) || ('יש להעלות את כל המסמכים לפני החתימה – חסר: ' + (first ? first.title : 'מסמך'));
+      types.forEach(function (t) { if (S.docs[t]) { S.docs[t].file = null; S.docs[t].path = ''; } });
       go(2);
-      types.forEach(function (t) {
-        var d = DOCS.byType(t); var el2 = $('[data-doc="' + t + '"]');
-        if (S.docs[t]) { S.docs[t].path = ''; }
-        if (el2) { FE.set(el2, 'המסמך לא התקבל – יש להעלות את ' + (d ? d.title : 'המסמך') + ' שוב'); }
-      });
-      FE.summary($('.cwz-summary'), types.length);
-      FE.jump($('[data-doc="' + types[0] + '"]'));
+      FE.summary($('.cwz-summary'), 0, txt);
+      openReader(null, { jump: types[0], msg: txt });
       return;
     }
     var msg = {
@@ -756,7 +795,7 @@
       return DS.contractorJoin.submit({
         applicantId: S.applicantId, agreementVersion: AGR.VERSION, details: details, fields: S.fields,
         consents: S.consents, signer: { name: S.signerName.trim(), role: S.signerRole.trim(), city: S.city.trim() },
-        signature: S.signature, docNames: names, docMeets: meets, website: ''
+        signature: S.signature, docNames: names, docMeets: meets, channels: S.channels, website: ''
       });
     }).then(success, function (err) {
       busy = false;
@@ -765,12 +804,10 @@
       if (err && err.message === 'upload') {
         var t = err.doc, inner = String(err.inner && err.inner.message || '');
         go(2);
-        var el = $('[data-doc="' + t + '"]');
         var msg = inner === 'file_size' ? 'הקובץ גדול מ-5MB' : inner === 'file_type' ? 'ניתן להעלות קבצי PDF, JPG או PNG בלבד'
           : inner === 'already_submitted' ? 'הבקשה כבר התקבלה. לבקשה חדשה – רעננו את העמוד.' : 'העלאת הקובץ נכשלה – נסו שוב';
-        FE.set(el, msg);
         FE.summary($('.cwz-summary'), 0, 'לא הצלחנו להעלות את אחד המסמכים');
-        FE.jump(el);
+        openReader(null, { jump: t, msg: msg });
         return;
       }
       serverError(err);
@@ -782,7 +819,7 @@
     clearDraft();
     mount.innerHTML =
       '<div class="cwz cwz-done" role="status" tabindex="-1">' +
-        '<p class="cwz-done__msg"><strong>הבקשה התקבלה ✓</strong> – נבדוק את המסמכים ונחזור אליכם. התשלום יחובר בהמשך.</p>' +
+        '<p class="cwz-done__msg"><strong>נרשמת ✓</strong> – הבקשה התקבלה. נבדוק את המסמכים ונעדכן אתכם בערוץ שבחרתם.</p>' +
       '</div>';
     var d = $('.cwz-done');
     var bx = box(); if (bx) { bx.scrollTop = 0; }

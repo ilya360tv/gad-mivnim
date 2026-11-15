@@ -9,6 +9,7 @@
 'use strict';
 const { sb, readBody, handler, httpError, UUID } = require('./_supabase');
 const DOCS = require('../js/contractor-docs.js');
+const resubmit = require('./_resubmit');
 
 const BUCKET = 'applicant-docs';
 const MAX_FILES_PER_APPLICANT = 30;
@@ -32,8 +33,13 @@ module.exports = handler(async (req) => {
   if (!(size > 0) || size > DOCS.MAX_BYTES) { throw httpError(400, 'file_size'); }
 
   // בקשה שכבר הוגשה — אי אפשר להוסיף לה קבצים מבחוץ
+  // (חריג: קישור "מסמכים חסרים" תקף — רק לסוגי המסמכים שהמנהל ביקש)
   const existing = await sb('/rest/v1/applicants?select=id&id=eq.' + id);
-  if (existing && existing.length) { throw httpError(409, 'already_submitted'); }
+  if (existing && existing.length) {
+    if (!body.token) { throw httpError(409, 'already_submitted'); }
+    const a = await resubmit.verify(id, body.token);
+    if ((a.docs_requested || []).indexOf(def.type) === -1) { throw httpError(403, 'doc_not_requested'); }
+  }
 
   const { url, key } = env();
   const h = { apikey: key, Authorization: 'Bearer ' + key, 'Content-Type': 'application/json' };

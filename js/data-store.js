@@ -113,6 +113,7 @@
       entityType: r.entity_kind || '', entityOther: r.entity_other || '', idNumber: r.id_number || '', contactName: r.contact_name || '', contactRole: r.contact_role || '',
       address: r.address || '', regions: r.activity_areas || '', license: r.license_info || '', employees: r.employee_count == null ? '' : r.employee_count,
       reviewChecks: r.review_checks || {}, reviewNotes: r.review_notes || '', reviewedBy: r.reviewed_by || '', reviewedAt: r.reviewed_at || '',
+      notifyChannels: r.notify_channels || [], docsRequested: r.docs_requested || [],
       statusNote: r.status_note || '', submittedAt: r.submitted_at || '', statusChangedAt: r.status_changed_at || '',
       agreement: agreementOut((r.agreement_acceptances || [])[0] || (r.agreement_acceptances && !Array.isArray(r.agreement_acceptances) ? r.agreement_acceptances : null)),
       billing: subscriptionOut((r.subscriptions || [])[0] || (r.subscriptions && !Array.isArray(r.subscriptions) ? r.subscriptions : null))
@@ -428,7 +429,7 @@
     return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
       .then(function (res) {
         return res.json().catch(function () { return {}; }).then(function (data) {
-          if (!res.ok) { var e = new Error(data.error || ('http_' + res.status)); e.status = res.status; e.fields = data.fields || null; throw e; }
+          if (!res.ok) { var e = new Error(data.error || ('http_' + res.status)); e.status = res.status; e.fields = data.fields || null; e.he = data.message || ''; throw e; }
           return data;
         });
       }, function () { throw new Error('network'); });
@@ -439,17 +440,19 @@
      השמירה עצמה — בשרת (/api/submit-application): IP, זמן, SHA-256 של ההסכם, PDF חתום. */
   var contractorJoin = {
     // קישור העלאה חד-פעמי מהשרת (/api/upload-url) — לאורח אין הרשאת כתיבה ישירה לבאקט
-    upload: function (applicantId, docType, file) {
+    upload: function (applicantId, docType, file, token) {
       var ext = extOf(file.name);
       if (['pdf', 'jpg', 'jpeg', 'png'].indexOf(ext) === -1) { return Promise.reject(new Error('file_type')); }
       if (file.size > MAX_FILE) { return Promise.reject(new Error('file_size')); }
-      return postJson('/api/upload-url', { applicantId: applicantId, docType: docType, ext: ext, size: file.size }).then(function (r) {
+      return postJson('/api/upload-url', { applicantId: applicantId, docType: docType, ext: ext, size: file.size, token: token || undefined }).then(function (r) {
         return client().then(function (sb) {
           return sb.storage.from(BUCKET).uploadToSignedUrl(r.path, r.token, file, { contentType: MIME[ext] }).then(unwrap).then(function () { return r.path; });
         });
       });
     },
     submit: function (payload) { return postJson('/api/submit-application', payload); },
+    resubmitInfo: function (id, token) { return postJson('/api/resubmit-info', { applicantId: id, token: token }); },
+    resubmit: function (id, token, docNames) { return postJson('/api/resubmit-application', { applicantId: id, token: token, docNames: docNames }); },
     uuid: uuid
   };
 

@@ -11,6 +11,10 @@
 'use strict';
 const { sb, requireAdmin, readBody, handler, httpError, UUID } = require('./_supabase');
 const billing = require('./_billing');
+const resubmit = require('./_resubmit');
+const { notifyApplicant } = require('./_notify');
+const { docsRequested } = require('./_email-templates');
+const DOCS = require('../js/contractor-docs.js');
 
 const CHECKS = ['license', 'integrity', 'insurance', 'books', 'business', 'recommendations'];
 const OPEN = ['pending', 'submitted', 'in_review', 'missing_docs'];
@@ -22,7 +26,7 @@ module.exports = handler(async (req) => {
   const body = readBody(req);
   const id = String(body.applicantId || '');
   if (!UUID.test(id)) { throw httpError(400, 'bad_applicant_id'); }
-  const rows = await sb('/rest/v1/applicants?select=id,type,status,review_checks&id=eq.' + id);
+  const rows = await sb('/rest/v1/applicants?select=id,type,status,review_checks,full_name,email,phone,notify_channels&id=eq.' + id);
   const a = rows && rows[0];
   if (!a) { throw httpError(404, 'applicant_not_found'); }
   if (a.type !== 'contractor') { throw httpError(400, 'not_contractor'); }
@@ -36,11 +40,25 @@ module.exports = handler(async (req) => {
       return { ok: true, status: 'in_review' };
 
     case 'missing_docs': {
-      const note = str(body.note, 2000);
-      if (!note) { throw httpError(400, 'note_required'); }
+      // docs: סוגי מסמכים להעלאה מחדש (מסמך שחסר נכלל תמיד). הערה לקבלן — לא חובה.
       if (OPEN.indexOf(a.status) === -1) { throw httpError(409, 'not_open'); }
-      await patch({ status: 'missing_docs', status_note: note, status_changed_at: now, reviewed_by: who, reviewed_at: now });
-      return { ok: true, status: 'missing_docs' };
+      const have = await sb('/rest/v1/applicant_docs?select=doc_type&applicant_id=eq.' + id);
+      const present = new Set((have || []).map((d) => d.doc_type));
+      const picked = Array.isArray(body.docs) ? body.docs.filter((t) => DOCS.byType(t)) : [];
+      const wanted = DOCS.DOCS.map((d) => d.type).filter((t) => !present.has(t) || picked.indexOf(t) !== -1);
+      if (!wanted.length) { throw httpError(400, 'docs_required'); }
+      const note = str(body.note, 2000);
+      const token = resubmit.newToken();
+      const expires = new Date(Date.now() + resubmit.TTL_MS).toISOString();
+      await patch({ status: 'missing_docs', status_note: note || null, docs_requested: wanted, resubmit_token_hash: resubmit.sha(token),
+        resubmit_expires_at: expires, status_changed_at: now, reviewed_by: who, reviewed_at: now });
+      // מסמך שהמנהל ביקש מחדש — כבר לא "נבדק"
+      await sb('/rest/v1/applicant_docs?applicant_id=eq.' + id + '&doc_type=in.(' + wanted.join(',') + ')', {
+        method: 'PATCH', headers: { Prefer: 'return=minimal' }, body: { checked_by_admin: false } });
+      const link = 'https://gad-mivnim.vercel.app/resubmit.html?a=' + id + '&t=' + token;
+      const notified = await notifyApplicant(a, docsRequested(a.full_name, wanted.map((t) => DOCS.byType(t).title), note, link));
+      // הקישור חוזר למנהל כגיבוי (SMS / וואטסאפ עדיין לא מחוברים)
+      return { ok: true, status: 'missing_docs', link: link, notified: notified, docs: wanted };
     }
 
     case 'reject': {

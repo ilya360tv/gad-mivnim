@@ -32,7 +32,7 @@
   var byNewest = function (a, b) { return (b.createdAt || '').localeCompare(a.createdAt || ''); };
 
   var TENDER_STATUS = { draft: 'טיוטה', published: 'פורסם', closed: 'סגור' };
-  var APPLICANT_STATUS = { pending: 'ממתין', submitted: 'הוגשה', in_review: 'בבדיקה', missing_docs: 'חסרים מסמכים', waitlist: 'רשימת המתנה', draft: 'טיוטה', approved: 'מאושר', rejected: 'נדחה' };
+  var APPLICANT_STATUS = { pending: 'ממתין', submitted: 'הוגשה', in_review: 'בבדיקה', missing_docs: 'ממתין למסמכים', waitlist: 'רשימת המתנה', draft: 'טיוטה', approved: 'מאושר', rejected: 'נדחה' };
   var OPEN_STATUS = ['pending', 'submitted', 'in_review', 'missing_docs'];
   var isOpen = function (a) { return OPEN_STATUS.indexOf(a.status) !== -1; };
   var DOC_TYPE = { license: 'רישיון', projects: 'פרויקטים', company: 'חברה', finance: 'כספים', recommendations: 'המלצות',
@@ -547,6 +547,7 @@
   });
 
   var APPROVE_ERR = {
+    docs_not_verified: 'לא ניתן לאשר – חסרים מסמכים',
     already_approved: 'הבקשה כבר אושרה',
     not_admin: 'אין הרשאת מנהל – התחברו מחדש',
     invalid_token: 'פג תוקף ההתחברות – התחברו מחדש',
@@ -614,6 +615,7 @@
   var SUB_STATUS = { awaiting_payment: 'ממתין לתשלום', review_fee_charged: 'דמי בדיקה נגבו', active: 'פעיל', rejected_closed: 'נדחה – נסגר', suspended: 'מושעה' };
   var CHARGE_STATUS = { awaiting_provider: 'ממתין לספק סליקה', scheduled: 'מתוזמן', paid: 'שולם', failed: 'נכשל', canceled: 'בוטל' };
   var REVIEW_ERR = {
+    docs_required: 'יש לסמן לפחות מסמך אחד להעלאה', docs_not_verified: 'לא ניתן לאשר – חסרים מסמכים',
     note_required: 'יש לכתוב מה חסר', reason_required: 'יש לכתוב סיבת דחייה', not_open: 'הבקשה כבר נסגרה (אושרה / נדחתה)',
     not_admin: 'אין הרשאת מנהל – התחברו מחדש', invalid_token: 'פג תוקף ההתחברות – התחברו מחדש', missing_token: 'פג תוקף ההתחברות – התחברו מחדש',
     server_not_configured: 'השרת עדיין לא מוגדר (משתני סביבה ב-Vercel)', doc_not_found: 'המסמך לא נמצא'
@@ -631,11 +633,12 @@
     return by;
   }
   function docCount(a) {
-    if (!CDOCS) { return { have: a.docs.length, all: 0, missingReq: 0 }; }
+    if (!CDOCS) { return { have: a.docs.length, all: 0, missingReq: 0, unchecked: 0, canApprove: true }; }
     var by = docsOf(a);
     var have = CDOCS.DOCS.filter(function (x) { return by[x.type]; }).length;
     var missingReq = CDOCS.REQUIRED_DOCS.filter(function (t) { return !by[t]; }).length;
-    return { have: have, all: CDOCS.DOCS.length, missingReq: missingReq };
+    var unchecked = CDOCS.REQUIRED_DOCS.filter(function (t) { return by[t] && !by[t].checked; }).length;
+    return { have: have, all: CDOCS.DOCS.length, missingReq: missingReq, unchecked: unchecked, canApprove: missingReq === 0 && unchecked === 0 };
   }
   // צפייה בלשונית חדשה (קישור חתום ל-5 דקות). החלון נפתח מיד כדי שהדפדפן לא יחסום אותו
   function openSigned(path, download) {
@@ -691,16 +694,24 @@
       '<div class="adm-review" data-rid="' + esc(a.id) + '">' +
         '<div class="adm-rstatus">' + chip(a.status, APPLICANT_STATUS[a.status] || a.status) +
           '<span class="adm-muted">הוגשה ' + fmtDT(a.submittedAt || a.createdAt) + (a.statusChangedAt ? ' · עודכנה ' + fmtDT(a.statusChangedAt) : '') + '</span>' +
-          (a.statusNote ? '<p class="adm-rnote"><strong>' + (a.status === 'rejected' ? 'סיבת דחייה (פנימי): ' : a.status === 'missing_docs' ? 'מה חסר: ' : 'הערה: ') + '</strong>' + esc(a.statusNote) + '</p>' : '') +
+          (a.statusNote ? '<p class="adm-rnote"><strong>' + (a.status === 'rejected' ? 'סיבת דחייה (פנימי): ' : a.status === 'missing_docs' ? 'הערה לקבלן: ' : 'הערה: ') + '</strong>' + esc(a.statusNote) + '</p>' : '') +
         '</div>' +
         (open ? '<div class="adm-ractions">' +
           (a.status !== 'in_review' ? '<button type="button" class="adm-btn" data-ract="in_review">העברה לבדיקה</button>' : '') +
           '<button type="button" class="adm-btn" data-ract="missing_docs">דרושים מסמכים נוספים</button>' +
           '<button type="button" class="adm-btn adm-btn-danger" data-ract="reject">דחייה</button>' +
-          '<button type="button" class="adm-btn adm-btn-primary" data-ract="approve">אישור</button>' +
+          (docCount(a).canApprove
+            ? '<button type="button" class="adm-btn adm-btn-primary" data-ract="approve">אישור</button>'
+            : '<span class="adm-tip" title="לא ניתן לאשר – חסרים מסמכים"><button type="button" class="adm-btn adm-btn-primary" data-ract="approve" disabled aria-disabled="true" title="לא ניתן לאשר – חסרים מסמכים">אישור</button></span>') +
         '</div>' +
+        (open && !docCount(a).canApprove ? '<p class="adm-note adm-note-warn">לא ניתן לאשר – חסרים מסמכים (' + docCount(a).missingReq + ' חסרים, ' + docCount(a).unchecked + ' טרם סומנו "נבדק"). אפשר להשתמש ב"דרושים מסמכים נוספים".</p>' : '') +
         '<div class="adm-rform" data-rform hidden><div class="adm-field"><label for="rText" id="rTextLbl"></label>' +
           '<textarea id="rText" class="adm-input" rows="3" maxlength="2000"></textarea></div>' +
+          '<fieldset class="adm-rpick" data-rpick hidden><legend>אילו מסמכים הקבלן צריך להעלות מחדש? (מסמך חסר מסומן אוטומטית)</legend>' +
+          (CDOCS ? CDOCS.DOCS.map(function (x) {
+            var miss = !docsOf(a)[x.type];
+            return '<label class="adm-check"><input type="checkbox" data-rpickdoc="' + x.type + '"' + (miss ? ' checked disabled' : '') + '> ' + x.n + '. ' + esc(x.title) + (miss ? ' <small class="adm-req">חסר</small>' : '') + '</label>';
+          }).join('') : '') + '</fieldset>' +
           '<div class="adm-form-actions"><button type="button" class="adm-btn adm-btn-primary" data-rsend></button>' +
           '<button type="button" class="adm-btn adm-btn-ghost" data-rcancel>ביטול</button></div></div>' : '') +
 
@@ -708,7 +719,8 @@
           ['סוג', entity], ['שם מלא / שם החברה', a.fullName], ['ח.פ / ע.מ / ת.ז', a.idNumber],
           ['איש קשר', a.contactName + (a.contactRole ? ' – ' + a.contactRole : '')], ['טלפון', a.phone], ['דוא"ל', a.email],
           ['כתובת', a.address], ['תחומי עיסוק', store.fieldsOf(a).join(', ')], ['אזורי פעילות', a.regions],
-          ['רישיון / הסמכה וסיווג', a.license], ['עובדים קבועים', String(a.employees)]
+          ['רישיון / הסמכה וסיווג', a.license], ['עובדים קבועים', String(a.employees)],
+          ['הודעות בערוץ', (a.notifyChannels || []).map(function (c) { return { email: 'מייל', sms: 'SMS', whatsapp: 'וואטסאפ' }[c] || c; }).join(', ') || 'מייל']
         ]) + '</section>' +
 
         '<section class="adm-rsec"><h3 class="adm-h3">הסכם חתום</h3>' +
@@ -785,8 +797,7 @@
     if (act) {
       var kind = act.getAttribute('data-ract');
       if (kind === 'approve') {
-        var n = docCount(a);
-        if (n.missingReq && !window.confirm('חסרים ' + n.missingReq + ' מסמכי חובה. לאשר בכל זאת?')) { return; }
+        if (!docCount(a).canApprove) { toast('לא ניתן לאשר – חסרים מסמכים'); return; }
         approveForm(a);
         return;
       }
@@ -799,11 +810,12 @@
       // דחייה / מסמכים חסרים — טקסט חובה
       form.hidden = false;
       form.setAttribute('data-kind', kind);
-      $('rTextLbl').textContent = kind === 'reject' ? 'סיבת הדחייה (פנימי – לא נשלח לקבלן)' : 'מה חסר? (יוצג לצוות; לעדכון הקבלן)';
+      $('rTextLbl').textContent = kind === 'reject' ? 'סיבת הדחייה (פנימי – לא נשלח לקבלן)' : 'הערה לקבלן (אופציונלי) – תישלח עם הקישור להעלאה';
+      form.querySelector('[data-rpick]').hidden = kind !== 'missing_docs';
       $('rText').value = '';
       FE.clear($('rText'));
       var send = form.querySelector('[data-rsend]');
-      send.textContent = kind === 'reject' ? 'דחיית הבקשה' : 'שמירה – "חסרים מסמכים"';
+      send.textContent = kind === 'reject' ? 'דחיית הבקשה' : 'שליחת בקשה להשלמת מסמכים';
       send.className = 'adm-btn ' + (kind === 'reject' ? 'adm-btn-danger' : 'adm-btn-primary');
       $('rText').focus();
       return;
@@ -813,11 +825,20 @@
     if (sendBtn) {
       var k = form.getAttribute('data-kind');
       var text = $('rText').value.trim();
-      if (!text) { FE.set($('rText'), k === 'reject' ? 'יש לכתוב סיבת דחייה' : 'יש לכתוב מה חסר'); FE.jump($('rText')); return; }
+      if (!text && k === 'reject') { FE.set($('rText'), 'יש לכתוב סיבת דחייה'); FE.jump($('rText')); return; }
+      var picked = [].slice.call(form.querySelectorAll('[data-rpickdoc]')).filter(function (c) { return c.checked; }).map(function (c) { return c.getAttribute('data-rpickdoc'); });
+      if (k === 'missing_docs' && !picked.length) { toast('יש לסמן לפחות מסמך אחד להעלאה'); return; }
       if (k === 'reject' && !window.confirm('לדחות את הבקשה של ' + a.fullName + '?\nלא יבוצעו חיובים נוספים.')) { return; }
       sendBtn.disabled = true;
-      store.applicants.review(k === 'reject' ? { applicantId: a.id, action: 'reject', reason: text } : { applicantId: a.id, action: 'missing_docs', note: text })
-        .then(function () { return reviewAfter(a, k === 'reject' ? 'הבקשה נדחתה – המנוי נסגר' : 'הסטטוס עודכן: חסרים מסמכים'); },
+      store.applicants.review(k === 'reject' ? { applicantId: a.id, action: 'reject', reason: text } : { applicantId: a.id, action: 'missing_docs', note: text, docs: picked })
+        .then(function (res) {
+          if (k === 'reject') { return reviewAfter(a, 'הבקשה נדחתה – המנוי נסגר'); }
+          var n = res && res.notified || {}, CH = { email: 'מייל', sms: 'SMS', whatsapp: 'וואטסאפ' };
+          var parts = Object.keys(n).map(function (c) { return CH[c] + ': ' + (n[c] === 'sent' ? 'נשלח' : n[c] === 'todo' ? 'עוד לא מחובר (העבירו ידנית)' : n[c] === 'no_address' ? 'אין כתובת' : 'נכשל'); });
+          return reviewAfter(a, 'נשלחה בקשה להשלמת מסמכים. ' + parts.join(' · ')).then(function () {
+            if (res && res.link) { window.prompt('קישור מאובטח להעלאת המסמכים (גיבוי, להעתקה):', res.link); }
+          });
+        },
           function (err) { sendBtn.disabled = false; reviewFail(err); });
     }
   });

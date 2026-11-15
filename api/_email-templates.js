@@ -49,14 +49,30 @@ function approvedAccess(name, userCode, tempPassword) {
   const who = name ? esc(name) : '';
   return {
     subject: 'גד מבנים — אושרת, פרטי הכניסה שלך',
-    text: (name ? name + '\n' : '') + 'קוד משתמש: ' + userCode + '\nסיסמה זמנית: ' + tempPassword + '\nכניסה: ' + LOGIN + '\nבכניסה הראשונה תתבקש לבחור סיסמה חדשה.',
+    text: (name ? name + '\n' : '') + 'מספר מנוי (קוד GM): ' + userCode + '\nקוד זמני: ' + tempPassword + '\nכניסה: ' + LOGIN + '\nבכניסה הראשונה תתבקש לבחור סיסמה חדשה.',
     html: layout('אושרת כקבלן בית',
       (who ? '<p style="margin:0 0 12px;">' + who + ',</p>' : '') +
       '<p style="margin:0 0 12px;">הבקשה אושרה. אלה פרטי הכניסה לאזור הקבלנים:</p>' +
-      '<p style="margin:0 0 8px;"><strong>קוד משתמש:</strong> <span dir="ltr">' + esc(userCode) + '</span></p>' +
-      '<p style="margin:0 0 8px;"><strong>סיסמה זמנית:</strong> <span dir="ltr">' + esc(tempPassword) + '</span></p>' +
+      '<p style="margin:0 0 8px;"><strong>מספר מנוי (קוד GM):</strong> <span dir="ltr">' + esc(userCode) + '</span></p>' +
+      '<p style="margin:0 0 8px;"><strong>קוד זמני:</strong> <span dir="ltr">' + esc(tempPassword) + '</span></p>' +
       '<p style="margin:0;">בכניסה הראשונה תתבקש לבחור סיסמה חדשה.</p>' +
       button(LOGIN, 'לכניסה לאזור הקבלנים'))
+  };
+}
+
+function docsRequested(name, titles, note, link) {
+  const who = name ? esc(name) : '';
+  const list = (titles || []).map((t) => '<li>' + esc(t) + '</li>').join('');
+  return {
+    subject: 'גד מבנים — נדרשים מסמכים להשלמת הבקשה',
+    text: (name ? name + ',\n' : '') + 'כדי להשלים את בדיקת הבקשה יש להעלות:\n- ' + (titles || []).join('\n- ') + (note ? '\n\n' + note : '') + '\n\nקישור מאובטח להעלאה (תקף 14 יום): ' + link,
+    html: layout('נדרשים מסמכים נוספים',
+      (who ? '<p style="margin:0 0 12px;">' + who + ',</p>' : '') +
+      '<p style="margin:0 0 8px;">כדי להשלים את בדיקת הבקשה יש להעלות את המסמכים הבאים:</p>' +
+      '<ul style="margin:0 0 12px;padding-right:20px;">' + list + '</ul>' +
+      (note ? '<p style="margin:0 0 12px;">' + esc(note) + '</p>' : '') +
+      '<p style="margin:0;">הקישור אישי ומאובטח, תקף ל-14 יום, ומאפשר להעלות רק את המסמכים האלה.</p>' +
+      button(link, 'להעלאת המסמכים'))
   };
 }
 
@@ -136,4 +152,4 @@ function tenderSentSummary(title, count) {
   };
 }
 
-module.exports = { registrationReceived, approvedAccess, passwordReset, newTender, adminRegistration, participationNotice, tenderSentSummary, LOGIN, ADMIN };
+module.exports = { registrationReceived, docsRequested, approvedAccess, passwordReset, newTender, adminRegistration, participationNotice, tenderSentSummary, LOGIN, ADMIN };

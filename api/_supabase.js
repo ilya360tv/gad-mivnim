@@ -103,7 +103,7 @@ function handler(fn) {
       return send(res, 200, out);
     } catch (e) {
       const status = e.status || 500;
-      return send(res, status, { error: e.code || 'server_error' });
+      return send(res, status, e.he ? { error: e.code || 'server_error', message: e.he } : { error: e.code || 'server_error' });
     }
   };
 }

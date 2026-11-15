@@ -18,6 +18,7 @@ const { sendMail, isRealEmail, adminEmails } = require('./_mailer');
 const { registrationReceived, adminRegistration } = require('./_email-templates');
 const { buildAgreementPdf } = require('./_agreement-pdf');
 const billing = require('./_billing');
+const { CHANNELS, notifyApplicant } = require('./_notify');
 const AGREEMENT = require('../js/agreement-data.js');
 const DOCS = require('../js/contractor-docs.js');
 
@@ -160,6 +161,9 @@ module.exports = handler(async (req) => {
   if (out.license.length < 2) { bad.push('license'); }
   if (out.employees == null || isNaN(out.employees) || out.employees < 0 || out.employees > 100000) { bad.push('employees'); }
 
+  const channels = Array.isArray(body.channels) ? CHANNELS.filter((c) => body.channels.indexOf(c) !== -1) : [];
+  if (!channels.length) { bad.push('channels'); }
+
   /* 3) ההסכם: 5 הסכמות + חותם + חתימה */
   const c = body.consents || {};
   const consents = ['read', 'fee', 'annual', 'confidentiality', 'privacy'];
@@ -186,7 +190,12 @@ module.exports = handler(async (req) => {
     if (!docs[def.type] || f.created_at > docs[def.type].created_at) { docs[def.type] = { name: f.name, size: size, created_at: f.created_at, def: def }; }
   });
   const missing = DOCS.REQUIRED_DOCS.filter((t) => !docs[t]);
-  if (missing.length) { throw httpError(400, 'missing_docs:' + missing.join(',')); }
+  if (missing.length) {
+    // כל 9 המסמכים חובה — גם אם הדפדפן עקף את הבדיקה
+    const e = httpError(400, 'missing_docs:' + missing.join(','));
+    e.he = 'יש להעלות את כל המסמכים לפני החתימה – חסר: ' + DOCS.byType(missing[0]).title;
+    throw e;
+  }
   const originalNames = body.docNames && typeof body.docNames === 'object' ? body.docNames : {};
   const meets = body.docMeets && typeof body.docMeets === 'object' ? body.docMeets : {};
 
@@ -207,7 +216,7 @@ module.exports = handler(async (req) => {
     id: id, type: 'contractor', status: 'submitted', status_changed_at: now.toISOString(),
     submitted_at: now.toISOString(), received_at: now.toISOString(), agreed: true, agreed_at: now.toISOString(),
     signer_name: signerName, signer_role: signerRole || null,
-    full_name: out.fullName, phone: out.phone, email: out.email, fields: fields,
+    full_name: out.fullName, phone: out.phone, email: out.email, fields: fields, notify_channels: channels,
     entity_kind: entity, entity_other: entity === 'other' ? out.entityOther : null, id_number: out.idNumber, contact_name: out.contactName, contact_role: out.contactRole || null,
     address: out.address, activity_areas: out.regions, license_info: out.license, employee_count: out.employees,
     note: entity === 'other' ? 'סוג: ' + entityLabel : null
@@ -270,10 +279,8 @@ module.exports = handler(async (req) => {
     const admins = await adminEmails(sb);
     const notice = adminRegistration(applicant);
     for (const to of admins) { try { await sendMail({ to: to, subject: notice.subject, html: notice.html, text: notice.text }); } catch (e) { /* ממשיכים */ } }
-    if (isRealEmail(out.email)) {
-      const thanks = registrationReceived(out.fullName);
-      await sendMail({ to: out.email, subject: thanks.subject, html: thanks.html, text: thanks.text });
-    }
+    const thanks = registrationReceived(out.fullName);
+    await notifyApplicant({ email: out.email, phone: out.phone, notify_channels: channels }, thanks);
   } catch (e) { /* ממשיכים */ }
 
   return { ok: true, applicantId: id, agreementVersion: AGREEMENT.VERSION };

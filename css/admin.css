@@ -555,3 +555,11 @@ input[type="date"].adm-input { color-scheme: dark; }
 /* סיכום שגיאות בראש טופס (js/form-errors.js) */
 .fe-summary { margin: 0 0 4px; padding: 10px 14px; border-radius: 10px; background: rgba(248, 113, 113, .12); border: 1px solid rgba(248, 113, 113, .55); color: #fecaca; font-weight: 700; }
 .fe-summary[hidden] { display: none; }
+
+/* ביקור מסמכים: כפתור אישור חסום + בחירת מסמכים לבקשה חוזרת */
+.adm-tip { display: inline-block; cursor: not-allowed; }
+.adm-tip .adm-btn:disabled { opacity: .5; pointer-events: none; }
+.adm-note-warn { color: #b45309; font-weight: 600; }
+.adm-rpick { margin: 10px 0; padding: 10px 12px; border: 1px solid #d0d5db; border-radius: 10px; display: grid; gap: 6px; }
+.adm-rpick[hidden] { display: none; }
+.adm-rpick legend { font-weight: 700; padding: 0 6px; }
