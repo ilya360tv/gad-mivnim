@@ -2495,7 +2495,62 @@ document.addEventListener('DOMContentLoaded', function () {
      10) כותרות העמוד (המשפט הגדול מתחת לגלולה) — כל העמודים. הגודל והריווח ב-CSS ("PAGE TITLE").
          דסקטופ (≥769): שורה אחת; אם רחבה מהמקום הפנוי — מקטינים עד 20px; אם גם אז לא נכנס — שבירה רגילה (לעולם לא חותכים).
          מובייל (≤768): עד שתי שורות — מקטינים עד 18px אם צריך.
+         דסקטופ (≥1024): מרכז גלולת העמוד = מרכז עיגול הלוגו; מרכז הכותרת השנייה = מרכז גלולת "דף הבית".
      --------------------------------------------------------------- */
+  function gmDocTop(el) {
+    var y = 0;
+    for (var n = el; n; n = n.offsetParent) y += n.offsetTop;
+    return y;
+  }
+  /* מרכז הפריסה, בלי transform של אנימציית הכניסה (הגלולות נופלות 28px). אחרי האנימציה זה גם המרכז על המסך. */
+  function gmLayoutCY(el) {
+    return gmDocTop(el) + el.offsetHeight / 2;
+  }
+  function gmHeadHost(el) {
+    var pod = el.closest('.pod-head');
+    if (pod) return pod;
+    var tn = el.closest('.tn-layout');
+    if (tn) return tn;
+    var div = el.closest('.division-top');
+    if (div) return div;
+    return el;
+  }
+  function gmAlignHeads() {
+    var pill = document.querySelector('#main .page-eyebrow');
+    var sec = pill && pill.closest('section');
+    var logo = document.querySelector('.site-header .logo-img');
+    var home = document.querySelector('.site-header .main-nav a[data-i18n="nav_home"]');
+    var titles = document.querySelectorAll('#main .page-eyebrow + .section-title, #main .division-top-text > .section-title, #main .project-head-text > .section-title, #main .pod-head__text > .section-title, #main .tn-intro > .section-title');
+    var desktop = window.innerWidth >= 1024 && logo && home;
+    if (!desktop) {
+      if (sec) sec.style.removeProperty('padding-top');
+      Array.prototype.forEach.call(titles, function (el) { gmHeadHost(el).style.removeProperty('margin-top'); });
+      return;
+    }
+    if (pill && sec && pill.offsetHeight) {
+      var want = gmLayoutCY(logo);
+      var got = gmLayoutCY(pill);
+      var d = want - got;
+      if (Math.abs(d) >= 0.4) {
+        var pad = parseFloat(getComputedStyle(sec).paddingTop) || 0;
+        sec.style.setProperty('padding-top', (pad + d).toFixed(2) + 'px', 'important');
+      }
+    }
+    var pass = function () {
+      var wantH = gmLayoutCY(home);
+      Array.prototype.forEach.call(titles, function (el) {
+        if (el.offsetHeight < 1) return;
+        var host = gmHeadHost(el);
+        var gotH = gmLayoutCY(el);
+        var dh = wantH - gotH;
+        if (Math.abs(dh) < 0.4) return;
+        var mt = parseFloat(getComputedStyle(host).marginTop) || 0;
+        host.style.setProperty('margin-top', (mt + dh).toFixed(2) + 'px', 'important');
+      });
+    };
+    pass();
+    pass();
+  }
   var ptSel = '#main .page-eyebrow + .section-title, #main .division-top-text > .section-title, #main .project-head-text > .section-title, #main .pod-head__text > .section-title, #main .tn-intro > .section-title';
   var ptTitles = document.querySelectorAll(ptSel);
   if (ptTitles.length) {
@@ -2513,8 +2568,14 @@ document.addEventListener('DOMContentLoaded', function () {
         el.classList.remove('pt-wrap');
         if (el.closest('.division-top')) { el.closest('.division-top').classList.remove('pt-stack'); }
         el.style.removeProperty('--pt-fit');
+        if (gmHeadHost(el) !== el) gmHeadHost(el).style.removeProperty('--pt-fit');
         var base = parseFloat(getComputedStyle(el).fontSize), fs = base, min = mobile ? 18 : 20;
-        var set = function () { el.style.setProperty('--pt-fit', fs.toFixed(1) + 'px'); };
+        var set = function () {
+          var px = fs.toFixed(1) + 'px';
+          el.style.setProperty('--pt-fit', px);
+          var host = gmHeadHost(el);
+          if (host !== el) host.style.setProperty('--pt-fit', px);
+        };
         if (mobile) {
           while (el.getBoundingClientRect().height > fs * 1.3 * 2.2 && fs > min) { fs -= 0.5; set(); }
           return;
@@ -2537,6 +2598,7 @@ document.addEventListener('DOMContentLoaded', function () {
         el.classList.add('pt-wrap');                                           // לא נכנס גם ב-20px — שבירה רגילה (לא חותכים)
       });
       if (typeof liftMedia === 'function') { liftMedia(); }
+      gmAlignHeads();
     };
     fitTitles();
     window.addEventListener('load', fitTitles);
@@ -2550,6 +2612,12 @@ document.addEventListener('DOMContentLoaded', function () {
       Array.prototype.forEach.call(ptTitles, function (el) { ptMo.observe(el, { childList: true, characterData: true, subtree: true }); });
     }
   }
+  gmAlignHeads();
+  window.addEventListener('load', gmAlignHeads);
+  window.addEventListener('pageshow', function (e) { if (e.persisted) gmAlignHeads(); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(gmAlignHeads);
+  var alW = window.innerWidth;
+  window.addEventListener('resize', function () { if (window.innerWidth !== alW) { alW = window.innerWidth; gmAlignHeads(); } });
 
 
   /* ---------------------------------------------------------------

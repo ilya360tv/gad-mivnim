@@ -8307,6 +8307,18 @@ html[dir] body #main :is(
     text-wrap: nowrap;
   }
 }
+/* דסקטופ: מרכז הכותרת השנייה = מרכז שורת הגלולות הראשונה (דף הבית / מידע לאזרח ולבונה).
+   מרחק מקצה הגלולה אל ראש הכותרת, כך שמרכז תיבת השורה (גודל × 1.3) נופל על מרכז הגלולה.
+   js/script.js מתקן לפי הגובה האמיתי (כותרת שהוקטנה, או #info). */
+@media (min-width: 1024px) {
+  html[dir] body #main .page-eyebrow + .section-title {
+    margin-top: calc(
+      var(--side-top) + var(--side-circle) / 2 + var(--pill-h) / 2
+      - var(--pt-fit, var(--pt-fs)) * 1.3 / 2
+      - var(--pe-fs) * var(--pe-lh) / 2
+    ) !important;
+  }
+}
 /* מה שמתחת לכותרת: ללא רווח עליון נוסף; שורת ההסבר ממורכזת */
 html[dir] body #main .page-eyebrow + .section-title + * { margin-top: 0 !important; }
 html[dir] body #main .page-eyebrow + .section-title + .section-lead { text-align: center !important; margin-inline: auto !important; }
@@ -8317,6 +8329,15 @@ html[dir] body #main .division-top-text .section-title + * { margin-top: 0 !impo
 
 /* עמודי חטיבה / פרויקט: הכותרת במרכז, הכפתורים בקצה השמאלי של אותה שורה */
 html[dir] body #main .division-page .division-top { margin-top: calc(var(--pt-gap-top) + var(--pt-frame)) !important; }
+@media (min-width: 1024px) {
+  html[dir] body #main .division-page .division-top {
+    margin-top: calc(
+      var(--side-top) + var(--side-circle) / 2 + var(--pill-h) / 2
+      - var(--pt-fit, var(--pt-fs)) * 1.3 / 2
+      - var(--pe-fs) * var(--pe-lh) / 2
+    ) !important;
+  }
+}
 /* כשהכותרת בתוך מכל (חטיבה / פרויקט / פודקאסט) — את הרווח העליון נותן המכל, כדי שגם הכפתורים / התמונה לידה באותו קו */
 html[dir] body #main .division-top-text > .section-title.section-title,
 html[dir] body #main .project-head-text > .section-title.section-title,
@@ -8361,6 +8382,15 @@ html[dir] body #main .pod-head {
   align-items: center;
   margin-top: calc(var(--pt-gap-top) + var(--pt-frame)) !important;
 }
+@media (min-width: 1024px) {
+  html[dir] body #main .pod-head {
+    margin-top: calc(
+      var(--side-top) + var(--side-circle) / 2 + var(--pill-h) / 2
+      - var(--pt-fit, var(--pt-fs)) * 1.3 / 2
+      - var(--pe-fs) * var(--pe-lh) / 2
+    ) !important;
+  }
+}
 html[dir] body #main .pod-head__text { display: contents; }
 html[dir] body #main .pod-head__text > .section-title.section-title { grid-column: 1 / -1; grid-row: 1; margin-bottom: 0 !important; }
 html[dir] body #main .pod-head__media { grid-column: 1; grid-row: 2; }
@@ -8376,7 +8406,11 @@ html[dir] body #main .pod-head__count { grid-column: 2; grid-row: 2; text-align:
   html[dir] body #tenders:not(.is-members) .tn-layout {
     grid-template-rows: auto auto 1fr;
     row-gap: 0;
-    margin-top: calc(var(--pt-gap-top) + var(--pt-frame)) !important;
+    margin-top: calc(
+      var(--side-top) + var(--side-circle) / 2 + var(--pill-h) / 2
+      - var(--pt-fit, var(--pt-fs)) * 1.3 / 2
+      - var(--pe-fs) * var(--pe-lh) / 2
+    ) !important;
   }
   html[dir] body #tenders:not(.is-members) .tn-intro { display: contents; }
   html[dir] body #tenders:not(.is-members) .tn-intro > .section-title.section-title { grid-column: 1 / -1; grid-row: 1; margin-top: 0 !important; }
