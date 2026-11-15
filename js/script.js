@@ -2492,36 +2492,62 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
   /* ---------------------------------------------------------------
-     10) #about — הכותרת "מדוע נולד הרעיון..." בשורה אחת, ממורכזת בין עמודות הצד (מסך ≥769).
-         הגודל הבסיסי = כמו כותרות העמודים; אם השורה רחבה מהמקום הפנוי — מקטינים עד 18px.
-         אם גם ב-18px לא נכנס — חוזרים לשבירה רגילה (לעולם לא חותכים). מובייל ≤768 — שבירה רגילה.
+     10) כותרות העמוד (המשפט הגדול מתחת לגלולה) — כל העמודים. הגודל והריווח ב-CSS ("PAGE TITLE").
+         דסקטופ (≥769): שורה אחת; אם רחבה מהמקום הפנוי — מקטינים עד 20px; אם גם אז לא נכנס — שבירה רגילה (לעולם לא חותכים).
+         מובייל (≤768): עד שתי שורות — מקטינים עד 18px אם צריך.
      --------------------------------------------------------------- */
-  var abTitle = document.querySelector('#about .about-title');
-  if (abTitle) {
-    var fitAbout = function () {
-      abTitle.classList.remove('about-one-line');
-      abTitle.style.removeProperty('--about-fs');
-      if (window.innerWidth <= 768) { return; }
-      var base = parseFloat(getComputedStyle(abTitle).fontSize);      // הגודל הרגיל של כותרת העמוד
-      abTitle.classList.add('about-one-line');
-      abTitle.style.setProperty('--about-fs', base + 'px');
-      var avail = abTitle.clientWidth, need = abTitle.scrollWidth;
-      if (avail && need > avail) {
-        var fs = base * avail / need * 0.99;
-        if (fs < 18) { abTitle.classList.remove('about-one-line'); abTitle.style.removeProperty('--about-fs'); }
-        else { abTitle.style.setProperty('--about-fs', fs.toFixed(2) + 'px'); }
-      }
-      if (typeof liftMedia === 'function') { liftMedia(); }          // הכותרת השתנתה — מיישרים מחדש את כותרת התמונות
+  var ptSel = '#main .page-eyebrow + .section-title, #main .division-top-text > .section-title, #main .project-head-text > .section-title, #main .pod-head__text > .section-title, #main .tn-intro > .section-title';
+  var ptTitles = document.querySelectorAll(ptSel);
+  if (ptTitles.length) {
+    var ptAvail = function (el) {
+      var par = el.parentElement, pcs = par && getComputedStyle(par);
+      var w = par ? par.clientWidth - parseFloat(pcs.paddingLeft) - parseFloat(pcs.paddingRight) : 0;   // רוחב התוכן בלי ריפוד
+      var top = el.closest('.division-top'), act = top && top.querySelector('.division-actions');
+      if (act && getComputedStyle(top).display === 'grid') { w = top.clientWidth - 2 * (act.offsetWidth + 24); }   // עמודות צד סימטריות
+      return w;
     };
-    fitAbout();
-    window.addEventListener('load', fitAbout);
-    window.addEventListener('pageshow', function (e) { if (e.persisted) { fitAbout(); } });   // חזרה מ-bfcache
-    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(fitAbout); }
-    var abW = window.innerWidth;
-    window.addEventListener('resize', function () { if (window.innerWidth !== abW) { abW = window.innerWidth; fitAbout(); } });
+    var fitTitles = function () {
+      var mobile = window.innerWidth <= 768;
+      Array.prototype.forEach.call(ptTitles, function (el) {
+        if (el.querySelector('.info-mq')) { return; }                  // #info: כותרת נעה (marquee) — לא נוגעים
+        el.classList.remove('pt-wrap');
+        if (el.closest('.division-top')) { el.closest('.division-top').classList.remove('pt-stack'); }
+        el.style.removeProperty('--pt-fit');
+        var base = parseFloat(getComputedStyle(el).fontSize), fs = base, min = mobile ? 18 : 20;
+        var set = function () { el.style.setProperty('--pt-fit', fs.toFixed(1) + 'px'); };
+        if (mobile) {
+          while (el.getBoundingClientRect().height > fs * 1.3 * 2.2 && fs > min) { fs -= 0.5; set(); }
+          return;
+        }
+        var shrink = function (avail) {
+          var need = el.getBoundingClientRect().width;
+          if (need > avail + 0.5) { fs = Math.max(min, Math.floor(base * avail / need * 2) / 2); set(); }
+          while (el.getBoundingClientRect().width > avail + 0.5 && fs > min) { fs -= 0.5; set(); }
+          return el.getBoundingClientRect().width <= avail + 0.5;
+        };
+        var avail = ptAvail(el);
+        if (!avail) { return; }
+        if (shrink(avail)) { return; }
+        // עמוד חטיבה: אם לא נכנס בין הכפתורים — הכפתורים יורדים מתחת לכותרת והיא מקבלת את כל הרוחב
+        var dtop = el.closest('.division-top');
+        if (dtop && getComputedStyle(dtop).display === 'grid') {
+          dtop.classList.add('pt-stack');
+          if (shrink(ptAvail(el))) { return; }
+        }
+        el.classList.add('pt-wrap');                                           // לא נכנס גם ב-20px — שבירה רגילה (לא חותכים)
+      });
+      if (typeof liftMedia === 'function') { liftMedia(); }
+    };
+    fitTitles();
+    window.addEventListener('load', fitTitles);
+    window.addEventListener('pageshow', function (e) { if (e.persisted) { fitTitles(); } });       // חזרה מ-bfcache
+    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(fitTitles); }
+    var ptW = window.innerWidth;
+    window.addEventListener('resize', function () { if (window.innerWidth !== ptW) { ptW = window.innerWidth; fitTitles(); } });
     if ('MutationObserver' in window) {
-      new MutationObserver(function () { setTimeout(fitAbout, 30); })
-        .observe(abTitle, { childList: true, characterData: true, subtree: true });
+      var ptTimer = 0;
+      var ptMo = new MutationObserver(function () { clearTimeout(ptTimer); ptTimer = setTimeout(fitTitles, 30); });   // החלפת שפה / שם פרויקט נטען
+      Array.prototype.forEach.call(ptTitles, function (el) { ptMo.observe(el, { childList: true, characterData: true, subtree: true }); });
     }
   }
 
@@ -2971,19 +2997,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 });
-
-/* ---------------------------------------------------------------
-   כותרת העמוד (.section-title שאחרי .page-eyebrow): הגובה האמיתי שלה ב---title-h,
-   כדי שה-CSS ימרכז אותה אנכית על קו הגלולות הראשונות גם כשהיא נשברת לשתי שורות.
-   --------------------------------------------------------------- */
-(function () {
-  var titles = document.querySelectorAll('#main .page-eyebrow + .section-title');
-  if (!titles.length || !window.ResizeObserver) { return; }
-  var ro = new ResizeObserver(function (entries) {
-    entries.forEach(function (e) { e.target.style.setProperty('--title-h', e.contentRect.height + 'px'); });
-  });
-  Array.prototype.forEach.call(titles, function (el) { ro.observe(el); });
-})();
 
 /* קנה המידה של הכרטיסים בפסים הנעים (#partners, #podcast) — מ---card-scale ב-CSS (דסקטופ 0.85) */
 function cardScale() {

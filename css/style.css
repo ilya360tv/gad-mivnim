@@ -3667,27 +3667,6 @@ section .section-eyebrow {
   text-wrap: balance;
 }
 
-/* 1024+: שורה אחת. הגודל נגזר מרוחב הקונטיינר עצמו (cqw) לפי יחס רוחב-הטקסט (--k)
-   שנמדד לכל שפה — כך שהמשפט תמיד נכנס בדיוק, בלי גלישה ובלי גלילה אופקית. */
-@media (min-width: 1024px) {
-  .about .container { container-type: inline-size; }
-
-  .about-title {
-    white-space: nowrap;
-    --k: 49;                                           /* עברית (גדול = פונט קטן יותר) */
-    font-size: clamp(1rem, 1.6vw, 1.4rem);             /* גיבוי לדפדפנים בלי cqw */
-    font-size: min(2.7rem, calc(100cqw / var(--k)));
-  }
-  html[lang="en"] .about-title { --k: 63; }
-  html[lang="fr"] .about-title { --k: 63; }
-  html[lang="ru"] .about-title { --k: 67; }
-}
-
-/* מובייל/טאבלט (<1024): גודל שמאפשר לעברית להישבר לשתי שורות מאוזנות */
-@media (max-width: 1023.98px) {
-  .about-title { font-size: clamp(1rem, 4.4vw, 1.4rem); }
-}
-
 /* ----- תפריט נגישות: כפתור "חזרה לשלב הקודם" ----- */
 .a11y-undo { margin-top: 4px; }
 .a11y-undo:disabled { opacity: .45; cursor: not-allowed; }
@@ -3722,8 +3701,6 @@ body .contact-label {
 
 /* ----- #services: כותרת הלבנה קטנה יותר (בלבד) ----- */
 #services .section-title {
-  font-size: clamp(1.4rem, 2.6vw, 2rem);
-  text-wrap: balance;
   /* אותו פונט כמו "השירותים שלנו" (Rubik), מודגש */
   font-family: 'Rubik', 'Segoe UI', Arial, sans-serif;
   font-weight: 700;
@@ -3950,8 +3927,6 @@ body .contact-label {
 
 /* ----- #partners: כותרת בגודל זהה לכותרת #services ----- */
 #partners .section-title {
-  font-size: clamp(1.4rem, 2.6vw, 2rem);
-  text-wrap: balance;
   font-weight: 700;
 }
 
@@ -5078,10 +5053,6 @@ body .site-header .main-nav.is-open ul li a { color: var(--lb); }
   .sector-tab { flex: 0 0 calc(50% - 5px); padding-inline: 8px; text-align: center; }
 }
 
-/* ----- #about: כותרת "מדוע נולד הרעיון..." יורדת מעט (יותר אוויר מתחת לתווית "אודות הקבוצה") ----- */
-#about .about-title { margin-top: 24px; }
-@media (max-width: 767.98px) { #about .about-title { margin-top: 16px; } }
-
 /* ----- #about: שורת הסיום — GAD MIVNIM למעלה, "משנים את הדרך לבניה נכונה !" מתחת, הכל ממורכז ----- */
 #about .about-text .about-quote {
   text-align: center !important;
@@ -5166,17 +5137,11 @@ body .site-header .main-nav.is-open ul li a { color: var(--lb); }
   #about .about-text h4.about-sub--sm,
   #about .about-text .about-quote { font-size: .92rem !important; }
 }
-/* כותרת "מדוע נולד הרעיון..." — מתחת ל-1024 גודל קבוע (שבירה רגילה); ב-1024+ הגודל נקבע ע"י fitAbout (js/script.js) */
-@media (max-width: 1023.98px) { #about .about-title { font-size: .95rem !important; line-height: 1.8 !important; } }
-@media (max-width: 767.98px) { #about .about-title { font-size: .92rem !important; } }
-@media (min-width: 1024px) { #about .about-title { line-height: 1.8; } }
-
 /* כותרות: מודגש + ירוק Word */
 #about .about-text h3.about-sub { font-weight: 700 !important; color: #00B050 !important; }
 #about .about-title { font-weight: 700 !important; color: #f2f5f7 !important; }
 
 /* יישור לשני הצדדים כמו ב-Word (שורה אחרונה לימין) */
-#about .about-title,
 #about .about-text > p:not(.about-quote),
 #about .about-text h3.about-sub,
 #about .about-text h4.about-sub--sm {
@@ -5844,17 +5809,6 @@ html.a11y-no-motion .about-tile--reel.is-ready { cursor: default; }
 }
 html.a11y-no-motion .about-tile--reel.is-ready { -webkit-mask-image: none; mask-image: none; }
 
-/* ----- #contact: הכותרת במשפט אחד בשורה אחת, קטנה (~70%); במובייל מותר לשבור שורה, ממורכז ----- */
-/* עודכן: מיושר לימין כמו קודם (לא ממורכז), גודל 9pt */
-#contact .contact-title {
-  font-size: 9pt;
-  white-space: normal;
-  text-align: start;
-}
-@media (max-width: 767.98px) {
-  #contact .contact-title { font-size: 9pt; }
-}
-
 /* ----- #teams: עמודת התמונה — שלושה אריחים עם כותרת מעל כל אחד (כמו אריחי "מאז ועד היום" ב-#about).
          גובה האריח = 11/16 מרוחב העמודה (זהה לגובה אריחי #about — עמודות באותו רוחב); במובייל 170px ----- */
 .teams-media { container-type: inline-size; }
@@ -6114,7 +6068,6 @@ html[dir] body #app .plans-grid {
   html[dir] body #tenders,
   html[dir] body #app { padding-block: 48px; }
   /* #tenders — הכותרות כמו בשאר הסקשנים (בלי דריסות גודל/ריווח) */
-  html[dir] body #app .section-title { font-size: clamp(1.8rem, 2.6vw, 2.6rem); margin-top: 0; margin-bottom: 12px; }
   html[dir] body #tenders .section-lead,
   html[dir] body #app .section-lead { margin-top: 0; margin-bottom: 28px; }
 
@@ -6520,15 +6473,6 @@ html[dir] body #partners .partner-chip .partner-slogan {
 html[dir] body #partners .pt-track .partner-chip strong { min-height: var(--pt-title-h, auto); }
 
 /* ----- #info: הכותרת "עם קצת ידע והכוונה נכונה כל אחד יכול לבנות את מבנה חיו !" בשורה אחת, קטנה יותר ----- */
-@media (min-width: 1024px) {
-  #info .info-title {
-    font-size: clamp(1.35rem, 1.75vw, 2.1rem) !important;
-    white-space: nowrap;
-  }
-}
-@media (max-width: 1023.98px) {
-  #info .info-title { font-size: 1.35rem !important; }
-}
 
 /* ----- #info: "חשבנו בשבילכם על הכל..." בגופן המכחול (Guttman Yad-Brush; גיבוי Gveret Levin) ----- */
 html[lang="he"] #info .info-brush {
@@ -6540,9 +6484,6 @@ html[lang="he"] #info .info-brush {
 }
 
 /* ----- #info: "חשבנו בשבילכם על הכל..." באותה שורה של הכותרת (בגופן המכחול) — הכותרת מוקטנת כדי שהכל ייכנס בשורה אחת ----- */
-@media (min-width: 1024px) {
-  #info .info-title { font-size: clamp(1.1rem, 1.38vw, 1.7rem) !important; white-space: nowrap; }
-}
 html[lang="he"] #info .info-title .info-brush {
   font-size: 1.15em !important;          /* גופן מכחול נראה קטן יותר — מיושר לגובה הכותרת */
   vertical-align: baseline;
@@ -6550,9 +6491,6 @@ html[lang="he"] #info .info-title .info-brush {
 
 /* ----- #info כותרת: מרווחת יותר (רווח בין מילים + רווח לפני "חשבנו בשבילכם...") ----- */
 #info .info-title { word-spacing: .14em; letter-spacing: .01em; }
-@media (min-width: 1024px) {
-  #info .info-title { font-size: clamp(1.05rem, 1.3vw, 1.6rem) !important; }   /* מפצה על הריווח — נשאר בשורה אחת */
-}
 #info .info-title .info-brush { margin-inline-start: .45em; word-spacing: .08em; }
 
 /* ----- #info כותרת — סידור נקי: ריווח רגיל בכותרת, ביטוי המכחול באותו גובה ויזואלי,
@@ -6596,9 +6534,6 @@ html[lang="he"] #info .info-title .info-brush { color: inherit !important; }
 .info-mq__track { display: flex; align-items: baseline; width: max-content; will-change: transform; }
 .info-mq__item { flex: none; display: inline-block; padding-inline-end: 80px; direction: rtl; white-space: nowrap; }
 html[dir="ltr"] .info-mq__item { direction: ltr; }
-@media (max-width: 767.98px) {
-  #info .info-title { font-size: 1.2rem !important; }
-}
 /* כפתור הנגישות "עצירת אנימציות": הכותרת הסטטית כמו קודם */
 html.a11y-no-motion .info-mq { display: none; }
 html.a11y-no-motion .info-mq__src {
@@ -7101,7 +7036,6 @@ html.a11y-no-motion #gallery .gal-grid.is-replaced { display: flex; }
 .pod-head__media:hover .pod-head__play svg,
 .pod-head__media:focus-visible .pod-head__play svg { fill: #0b0d10; }
 .pod-head__text { min-width: 0; }
-#podcast .pod-head__text .section-title { margin-bottom: 6px; }
 .pod-head__count { margin: 0; color: var(--pc-dim); font-size: .95rem; }
 
 /* מובייל: התמונה למעלה (בגודל אזור התמונה של הכרטיס), הטקסט מתחתיה — ממורכז */
@@ -7635,13 +7569,12 @@ html[dir="ltr"] .tn-arrow { display: inline-block; transform: scaleX(-1); }
    #tenders — מצב כניסה (לפני login): שתי עמודות — טקסט מימין, כרטיס כניסה קומפקטי משמאל.
    גובר על כללי המירכוז של #tenders (שנשארים לאזור המנויים, .is-members). js/tenders.js מוסיף/מסיר is-members.
    ========================================================================== */
-html[dir] body #tenders:not(.is-members) .tn-intro .section-title,
 html[dir] body #tenders:not(.is-members) .tn-intro .section-lead {
   max-width: none;
   margin-inline: 0 !important;
-  text-align: start !important;
+  margin-bottom: 0;
+  text-align: center !important;
 }
-html[dir] body #tenders:not(.is-members) .tn-intro .section-lead { margin-bottom: 0; }
 
 .tn-perks { gap: 14px; margin: 22px 0 0; }
 #tenders.is-members .tn-perks { display: none; }
@@ -8019,32 +7952,10 @@ html[dir] body #main .section-eyebrow.page-eyebrow::after {
 
 /* ==========================================================================
    PAGE TITLE + COMPACT (דסקטופ ≥1024) — כלל אחד לכל עמודי התוכן.
-   1. הכותרת הראשית (.section-title שמיד אחרי .page-eyebrow) ממורכזת בין העמודות, ובגלילה 0
-      המרכז האנכי שלה = מרכז הגלולות הראשונות ("דף הבית" / "מידע לאזרח ולבונה").
-      --title-h = הגובה האמיתי של הכותרת (נמדד ב-js/script.js, גם כשהיא נשברת לשתי שורות); בלי JS — שורה אחת.
+   1. כותרת העמוד (המשפט הגדול מתחת לגלולה) — כלל אחד בסוף הקובץ: "PAGE TITLE".
    2. עמודים קומפקטיים: כותרת → באדג'ים 16px, באדג'ים (או כותרת) → תוכן 28px, כרטיסים ×0.85.
    ========================================================================== */
 @media (min-width: 1024px) {
-  :root {
-    --pill1-cy: calc(2 * var(--side-top) + var(--side-circle) + var(--pill-h) / 2);
-    --eb-bottom: calc(var(--side-top) + var(--side-circle) / 2 + var(--pe-fs) * var(--pe-lh) / 2);
-  }
-  html[dir] body #main .page-eyebrow:has(+ .section-title) { margin-bottom: 0 !important; }
-  html[dir] body #main .page-eyebrow + .section-title {
-    display: block !important;
-    width: auto !important;
-    max-width: none !important;
-    font-size: clamp(1.6rem, 2.2vw, 2.1rem) !important;
-    line-height: 1.25 !important;
-    white-space: normal !important;
-    text-wrap: balance;
-    text-align: center !important;
-    text-align-last: center !important;
-    padding-block: 0 !important;
-    margin: calc(var(--pill1-cy) - var(--eb-bottom) - var(--title-h, 1.25em) / 2) auto 28px !important;
-  }
-  html[dir] body #main .page-eyebrow + .section-title:has(+ .badges-row) { margin-bottom: 16px !important; }
-  html[dir] body #main .page-eyebrow + .section-title + * { margin-top: 0 !important; }
   html[dir] body #main .page-eyebrow ~ .badges-row {
     justify-content: center !important;
     margin: 0 auto 28px !important;
@@ -8087,19 +7998,6 @@ html[dir] body #main .section-eyebrow.page-eyebrow::after {
     top: auto !important;
     bottom: 16px !important;
   }
-}
-
-/* ==========================================================================
-   ABOUT TITLE — "מדוע נולד הרעיון..." בשורה אחת (מסך ≥769), ממורכזת כמו התווית "אודות הקבוצה".
-   הקלאס about-one-line והגודל --about-fs נקבעים ע"י fitAbout (js/script.js, סעיף 10):
-   מקטינים את הכתב עד 18px כדי שהמשפט ייכנס בין עמודות הצד. בלי JS / במובייל — שבירה רגילה.
-   ========================================================================== */
-html[dir] body #main #about .page-eyebrow + .section-title.about-one-line {
-  white-space: nowrap !important;
-  text-wrap: nowrap;
-  font-size: var(--about-fs) !important;
-  text-align: center !important;
-  text-align-last: center !important;
 }
 
 /* מכרזים (דסקטופ): כרטיס הכניסה מתחיל בגובה הגלולה הראשונה (js/tenders.js מיישר אליה). הרווח מתחת לכותרת
@@ -8351,3 +8249,100 @@ html.a11y-no-motion .agr-reader__bar span { transition: none; }
 .rsb-msg { padding: 12px 14px; border-radius: 12px; border: 1px solid #323b45; background: #0e1216; }
 .rsb-msg.is-err { border-color: #f87171; color: #fecaca; }
 .rsb-msg.is-ok { border-color: rgba(22, 163, 74, .7); color: #bbf7d0; }
+
+/* ==========================================================================
+   PAGE TITLE — כותרת העמוד (המשפט הגדול מתחת לגלולת העמוד), כלל אחד לכל האתר.
+   גודל: 30px (דסקטופ ≥1280) · 26px (769–1279) · 22px (≤768). שורה אחת בדסקטופ; js/script.js (סעיף 10) מקטין
+   אוטומטית עד 20px אם לא נכנס, ואם גם אז לא — שבירה רגילה (לעולם לא חותך, בלי "...").
+   ריווח: גלולה → כותרת 18px · כותרת → התוכן 28px (מובייל 20px). ממורכז על ציר הגלולה.
+   חריג אחד לפי המבנה: ב-#podcast וב-#tenders הכותרת יושבת בעמודה ליד תמונה / כרטיס כניסה — ממורכזת בעמודה שלה.
+   ========================================================================== */
+:root { --pt-fs: 22px; --pt-gap-top: 18px; --pt-gap-bottom: 20px; --pt-frame: 10px; }   /* --pt-frame: המסגרת של הגלולה יוצאת 10px מתחת לטקסט שלה — 18px נמדדים מקצה המסגרת */
+@media (min-width: 769px) { :root { --pt-fs: 26px; --pt-gap-bottom: 28px; } }
+@media (min-width: 1280px) { :root { --pt-fs: 30px; } }
+
+/* הגלולה לא מוסיפה רווח משלה מתחתיה — הריווח נקבע בכותרת */
+html[dir] body #main .page-eyebrow:has(+ .section-title),
+html[dir] body #main .page-eyebrow:has(+ .division-top),
+html[dir] body #main .page-eyebrow:has(+ .pod-head),
+html[dir] body #main .page-eyebrow:has(+ .tn-layout) { margin-bottom: 0 !important; }
+
+html[dir] body #main :is(
+  .page-eyebrow + .section-title,
+  .division-top-text > .section-title,
+  .project-head-text > .section-title,
+  .pod-head__text > .section-title,
+  .tn-intro > .section-title
+) {
+  display: block !important;
+  width: auto !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+  margin: calc(var(--pt-gap-top) + var(--pt-frame)) auto var(--pt-gap-bottom) !important;
+  padding: 0 !important;
+  font-size: var(--pt-fit, var(--pt-fs)) !important;
+  line-height: 1.3 !important;
+  text-align: center !important;
+  text-align-last: center !important;
+  text-wrap: balance;
+  white-space: normal !important;
+}
+@media (min-width: 769px) {
+  html[dir] body #main :is(
+    .page-eyebrow + .section-title,
+    .division-top-text > .section-title,
+    .project-head-text > .section-title,
+    .pod-head__text > .section-title,
+    .tn-intro > .section-title
+  ):not(.pt-wrap):not(.info-title) {
+    width: max-content !important;
+    max-width: none !important;
+    white-space: nowrap !important;
+    text-wrap: nowrap;
+  }
+}
+/* מה שמתחת לכותרת: ללא רווח עליון נוסף; שורת ההסבר ממורכזת */
+html[dir] body #main .page-eyebrow + .section-title + * { margin-top: 0 !important; }
+html[dir] body #main .page-eyebrow + .section-title + .section-lead { text-align: center !important; margin-inline: auto !important; }
+html[dir] body #main .division-top-text .division-head,
+html[dir] body #main .division-top-text .division-slogan,
+html[dir] body #main .pod-head__count { text-align: center !important; margin-top: 0 !important; margin-inline: auto !important; }
+html[dir] body #main .division-top-text .section-title + * { margin-top: 0 !important; }
+
+/* עמודי חטיבה / פרויקט: הכותרת במרכז, הכפתורים בקצה השמאלי של אותה שורה */
+html[dir] body #main .division-page .division-top { margin-top: calc(var(--pt-gap-top) + var(--pt-frame)) !important; }
+/* כשהכותרת בתוך מכל (חטיבה / פרויקט / פודקאסט) — את הרווח העליון נותן המכל, כדי שגם הכפתורים / התמונה לידה באותו קו */
+html[dir] body #main .division-top-text > .section-title.section-title,
+html[dir] body #main .project-head-text > .section-title.section-title,
+html[dir] body #main .pod-head__text > .section-title.section-title { margin-top: 0 !important; }
+@media (min-width: 1280px) {
+  html[dir] body #main .division-page .division-top {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: start;
+  }
+  html[dir] body #main .division-page .division-top-text { grid-column: 2; justify-self: center; text-align: center; }
+  html[dir] body #main .division-page .division-top .division-actions { grid-column: 3; justify-self: end; align-self: start; }
+}
+/* שם חטיבה ארוך (אנגלית / רוסית): הכפתורים מתחת לכותרת (js/script.js מוסיף pt-stack) */
+html[dir] body #main .division-page .division-top.pt-stack { display: flex !important; flex-direction: column; align-items: center; }
+html[dir] body #main .division-page .division-top.pt-stack .division-actions { justify-content: center; }
+@media (min-width: 769px) and (max-width: 1279.98px) {
+  html[dir] body #main .division-page .division-top { flex-direction: column; align-items: center; }
+  html[dir] body #main .division-page .division-top-text { text-align: center; }
+  html[dir] body #main .division-page .division-top .division-actions { justify-content: center; }
+}
+@media (max-width: 768px) {
+  html[dir] body #main .division-page .division-top-text { text-align: center; }
+  html[dir] body #main .division-page .division-top .division-actions { justify-content: center; }
+}
+
+/* #podcast: הטקסט צמוד לראש התמונה — הכותרת 18px מתחת לגלולה */
+@media (min-width: 768px) {
+  html[dir] body #main .pod-head { margin-top: calc(var(--pt-gap-top) + var(--pt-frame)) !important; align-items: flex-start; }
+  html[dir] body #main .pod-head__text { align-self: flex-start; text-align: center; }
+}
+/* #tenders (דסקטופ): כרטיס הכניסה נשאר בגובה הגלולה הראשונה — הכותרת עולה ל-18px מתחת לגלולה */
+@media (min-width: 1024px) {
+  html[dir] body #main #tenders:not(.is-members) .tn-intro > .section-title { margin-top: calc(var(--pt-gap-top) + var(--pt-frame) - var(--pe-top)) !important; }
+}
