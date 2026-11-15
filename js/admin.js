@@ -430,7 +430,12 @@
           var withAgr = isAgreementApplicant(a);
           if (withAgr) { actions += '<button type="button" class="adm-btn adm-btn-sm adm-btn-primary" data-aact="review">פתיחת הבקשה</button>'; }
           else {
-            if (a.status !== 'approved' && a.status !== 'rejected') { actions += '<button type="button" class="adm-btn adm-btn-sm adm-btn-primary" data-aact="' + (isContractor ? 'approve' : 'approve-simple') + '">אישור</button>'; }
+            if (a.status !== 'approved' && a.status !== 'rejected') {
+              // קבלן: אישור רק עם 9 מסמכים "נבדק" + הסכם חתום — בקשה בלי זה (גם מהטופס הישן) חסומה
+              actions += isContractor
+                ? '<span class="adm-tip" title="לא ניתן לאשר – חסרים מסמכים או הסכם חתום"><button type="button" class="adm-btn adm-btn-sm adm-btn-primary" disabled aria-disabled="true" title="לא ניתן לאשר – חסרים מסמכים או הסכם חתום">אישור</button></span>'
+                : '<button type="button" class="adm-btn adm-btn-sm adm-btn-primary" data-aact="approve-simple">אישור</button>';
+            }
             if (a.status === 'pending') { actions += '<button type="button" class="adm-btn adm-btn-sm adm-btn-danger" data-aact="reject">דחייה</button>'; }
           }
           if (a.status === 'approved' && isContractor && a.profileId) {
@@ -547,7 +552,7 @@
   });
 
   var APPROVE_ERR = {
-    docs_not_verified: 'לא ניתן לאשר – חסרים מסמכים',
+    docs_not_verified: 'לא ניתן לאשר – חסרים מסמכים או הסכם חתום',
     already_approved: 'הבקשה כבר אושרה',
     not_admin: 'אין הרשאת מנהל – התחברו מחדש',
     invalid_token: 'פג תוקף ההתחברות – התחברו מחדש',
@@ -615,7 +620,7 @@
   var SUB_STATUS = { awaiting_payment: 'ממתין לתשלום', review_fee_charged: 'דמי בדיקה נגבו', active: 'פעיל', rejected_closed: 'נדחה – נסגר', suspended: 'מושעה' };
   var CHARGE_STATUS = { awaiting_provider: 'ממתין לספק סליקה', scheduled: 'מתוזמן', paid: 'שולם', failed: 'נכשל', canceled: 'בוטל' };
   var REVIEW_ERR = {
-    docs_required: 'יש לסמן לפחות מסמך אחד להעלאה', docs_not_verified: 'לא ניתן לאשר – חסרים מסמכים',
+    docs_required: 'יש לסמן לפחות מסמך אחד להעלאה', docs_not_verified: 'לא ניתן לאשר – חסרים מסמכים או הסכם חתום',
     note_required: 'יש לכתוב מה חסר', reason_required: 'יש לכתוב סיבת דחייה', not_open: 'הבקשה כבר נסגרה (אושרה / נדחתה)',
     not_admin: 'אין הרשאת מנהל – התחברו מחדש', invalid_token: 'פג תוקף ההתחברות – התחברו מחדש', missing_token: 'פג תוקף ההתחברות – התחברו מחדש',
     server_not_configured: 'השרת עדיין לא מוגדר (משתני סביבה ב-Vercel)', doc_not_found: 'המסמך לא נמצא'
@@ -702,9 +707,9 @@
           '<button type="button" class="adm-btn adm-btn-danger" data-ract="reject">דחייה</button>' +
           (docCount(a).canApprove
             ? '<button type="button" class="adm-btn adm-btn-primary" data-ract="approve">אישור</button>'
-            : '<span class="adm-tip" title="לא ניתן לאשר – חסרים מסמכים"><button type="button" class="adm-btn adm-btn-primary" data-ract="approve" disabled aria-disabled="true" title="לא ניתן לאשר – חסרים מסמכים">אישור</button></span>') +
+            : '<span class="adm-tip" title="לא ניתן לאשר – חסרים מסמכים או הסכם חתום"><button type="button" class="adm-btn adm-btn-primary" data-ract="approve" disabled aria-disabled="true" title="לא ניתן לאשר – חסרים מסמכים או הסכם חתום">אישור</button></span>') +
         '</div>' +
-        (open && !docCount(a).canApprove ? '<p class="adm-note adm-note-warn">לא ניתן לאשר – חסרים מסמכים (' + docCount(a).missingReq + ' חסרים, ' + docCount(a).unchecked + ' טרם סומנו "נבדק"). אפשר להשתמש ב"דרושים מסמכים נוספים".</p>' : '') +
+        (open && !docCount(a).canApprove ? '<p class="adm-note adm-note-warn">לא ניתן לאשר – חסרים מסמכים או הסכם חתום (' + docCount(a).missingReq + ' חסרים, ' + docCount(a).unchecked + ' טרם סומנו "נבדק"). אפשר להשתמש ב"דרושים מסמכים נוספים".</p>' : '') +
         '<div class="adm-rform" data-rform hidden><div class="adm-field"><label for="rText" id="rTextLbl"></label>' +
           '<textarea id="rText" class="adm-input" rows="3" maxlength="2000"></textarea></div>' +
           '<fieldset class="adm-rpick" data-rpick hidden><legend>אילו מסמכים הקבלן צריך להעלות מחדש? (מסמך חסר מסומן אוטומטית)</legend>' +
@@ -797,7 +802,7 @@
     if (act) {
       var kind = act.getAttribute('data-ract');
       if (kind === 'approve') {
-        if (!docCount(a).canApprove) { toast('לא ניתן לאשר – חסרים מסמכים'); return; }
+        if (!docCount(a).canApprove) { toast('לא ניתן לאשר – חסרים מסמכים או הסכם חתום'); return; }
         approveForm(a);
         return;
       }

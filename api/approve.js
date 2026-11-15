@@ -31,14 +31,13 @@ module.exports = handler(async (req) => {
   if (a.status === 'approved' || a.profile_id) { throw httpError(409, 'already_approved'); }
   if (a.status === 'rejected') { throw httpError(409, 'already_rejected'); }
 
-  // בקשת הסכם דיגיטלי: אסור לאשר כל עוד חסר מסמך או שמסמך לא סומן "נבדק" (גם אם הדפדפן עקף את הכפתור)
+  // קבלן: אישור רק עם הסכם חתום + כל 9 המסמכים "נבדק" (גם בקשה מהטופס הישן נחסמת; גם אם הדפדפן עקף את הכפתור)
   if (a.type === 'contractor') {
     const agr = await sb('/rest/v1/agreement_acceptances?select=id&applicant_id=eq.' + applicantId);
-    if (agr && agr.length) {
-      const docs = await sb('/rest/v1/applicant_docs?select=doc_type,checked_by_admin&applicant_id=eq.' + applicantId);
-      const ok = DOCS.REQUIRED_DOCS.every((t) => (docs || []).some((d) => d.doc_type === t && d.checked_by_admin === true));
-      if (!ok) { const e = httpError(409, 'docs_not_verified'); e.he = 'לא ניתן לאשר – חסרים מסמכים'; throw e; }
-    }
+    const docs = await sb('/rest/v1/applicant_docs?select=doc_type,checked_by_admin&applicant_id=eq.' + applicantId);
+    const ok = agr && agr.length &&
+      DOCS.REQUIRED_DOCS.every((t) => (docs || []).some((d) => d.doc_type === t && d.checked_by_admin === true));
+    if (!ok) { const e = httpError(409, 'docs_not_verified'); e.he = 'לא ניתן לאשר – חסרים מסמכים או הסכם חתום'; throw e; }
   }
 
   let fields = normalizeFields(Array.isArray(body.fields) && body.fields.length ? body.fields : a.fields);
