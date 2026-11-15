@@ -26,14 +26,18 @@ async function sendWhatsapp(phone, text) { // eslint-disable-line no-unused-vars
 }
 
 // msg: { subject, html, text }  (text משמש גם ל-SMS / וואטסאפ)
+// extra.attachments מצורף רק לדוא"ל (לא ל-SMS / וואטסאפ).
 // מחזיר סטטוס לכל ערוץ שנבחר: 'sent' | 'failed' | 'todo' | 'no_address'
-async function notifyApplicant(a, msg) {
+async function notifyApplicant(a, msg, extra) {
   const out = {};
   for (const ch of channelsOf(a)) {
     try {
       if (ch === 'email') {
         if (!isRealEmail(a.email)) { out.email = 'no_address'; continue; }
-        await sendMail({ to: a.email, subject: msg.subject, html: msg.html, text: msg.text });
+        await sendMail({
+          to: a.email, subject: msg.subject, html: msg.html, text: msg.text,
+          attachments: extra && extra.attachments
+        });
         out.email = 'sent';
       } else if (ch === 'sms') {
         const r = await sendSms(a.phone, msg.text);

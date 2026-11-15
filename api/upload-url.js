@@ -7,7 +7,7 @@
    הבאקט נשאר פרטי. קבצים בלי בקשה שהוגשה נמחקים אחרי 48 שעות (api/cleanup-incoming.js).
    ========================================================================== */
 'use strict';
-const { sb, readBody, handler, httpError, UUID } = require('./_supabase');
+const { sb, readBody, handler, httpError, UUID, storageSign } = require('./_supabase');
 const DOCS = require('../js/contractor-docs.js');
 const resubmit = require('./_resubmit');
 
@@ -26,6 +26,8 @@ module.exports = handler(async (req) => {
   // אותה פונקציה משרתת גם את דף "השלמת מסמכים" (מגבלת 12 פונקציות בתוכנית של Vercel)
   if (body.action === 'resubmit-info') { return resubmit.info(body); }
   if (body.action === 'resubmit-finish') { return resubmit.finish(body); }
+  // הורדה חוזרת של ה-PDF החתום — אותו טוקן של דף השלמת המסמכים, קישור חדש ל-15 דקות, רק לקובץ של המבקש
+  if (body.action === 'resubmit-agreement') { return agreementLink(body); }
   const id = String(body.applicantId || '');
   if (!UUID.test(id)) { throw httpError(400, 'bad_applicant_id'); }
   const def = DOCS.byType(String(body.docType || ''));
@@ -61,3 +63,15 @@ module.exports = handler(async (req) => {
   if (!token) { throw httpError(502, 'storage_error'); }
   return { path: path, token: token };
 });
+
+const PDF_NAME = 'signed-agreement.pdf';
+const PDF_LINK_SECONDS = 15 * 60;
+
+async function agreementLink(body) {
+  const a = await resubmit.verify(body.applicantId, body.token);
+  const path = 'agreements/' + a.id + '/' + PDF_NAME;
+  const rows = await sb('/rest/v1/agreement_acceptances?select=pdf_path&applicant_id=eq.' + a.id);
+  if (!rows || !rows[0] || rows[0].pdf_path !== path) { throw httpError(404, 'no_agreement'); }
+  const agreementUrl = await storageSign(BUCKET, path, PDF_LINK_SECONDS, PDF_NAME);
+  return { agreementUrl: agreementUrl };
+}

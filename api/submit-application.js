@@ -7,13 +7,15 @@
      3) IP + user agent + זמן החתימה + SHA-256 של נוסח ההסכם — נקבעים כאן, לא בדפדפן
      4) applicants (submitted) + applicant_docs + agreement_acceptances
      5) חתימה PNG + signed-agreement.pdf → applicant-docs/agreements/<applicantId>/
+        בתשובה: קישור הורדה זמני (15 דקות) לאותו PDF בלבד. הבאקט נשאר פרטי.
      6) מנוי "awaiting_payment" + דמי בדיקה (וו לחיוב — עדיין בלי ספק סליקה)
+     7) אם נבחר מייל — אותו PDF מצורף לאישור הקבלה
    אין כאן ולא יהיו פרטי כרטיס אשראי.
    ========================================================================== */
 'use strict';
 const crypto = require('crypto');
 const zlib = require('zlib');
-const { sb, readBody, handler, httpError, UUID, normalizeFields } = require('./_supabase');
+const { sb, readBody, handler, httpError, UUID, normalizeFields, storageSign } = require('./_supabase');
 const { sendMail, isRealEmail, adminEmails } = require('./_mailer');
 const { registrationReceived, adminRegistration } = require('./_email-templates');
 const { buildAgreementPdf } = require('./_agreement-pdf');
@@ -23,6 +25,8 @@ const AGREEMENT = require('../js/agreement-data.js');
 const DOCS = require('../js/contractor-docs.js');
 
 const BUCKET = 'applicant-docs';
+const PDF_NAME = 'signed-agreement.pdf';
+const PDF_LINK_SECONDS = 15 * 60;
 const ENTITY = { contractor: 'קבלן', company: 'חברה', professional: 'בעל/ת מקצוע', other: 'אחר' };
 const MONTHS_HE = ['ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני', 'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'];
 const AGREEMENT_MD = AGREEMENT.toMarkdown();
@@ -225,6 +229,9 @@ module.exports = handler(async (req) => {
     .catch((e) => { if (/duplicate|unique/i.test(String(e.detail))) { throw httpError(409, 'already_submitted'); } throw e; });
   const applicant = created && created[0];
   const agrDir = 'agreements/' + id + '/';
+  const pdfPath = agrDir + PDF_NAME;
+  let pdf = null;
+  let agreementUrl = '';
   try {
     await sb('/rest/v1/applicant_docs', {
       method: 'POST',
@@ -239,7 +246,7 @@ module.exports = handler(async (req) => {
     await storagePut(agrDir + 'signature.png', sigPng, 'image/png');
     const docNames = {};
     Object.keys(docs).forEach((t) => { docNames[docs[t].def.n] = str(originalNames[t], 120) || docs[t].name; });
-    const pdf = await buildAgreementPdf({
+    pdf = await buildAgreementPdf({
       entityType: entityLabel, fullName: out.fullName, idNumber: out.idNumber,
       contact: out.contactName + (out.contactRole ? ' – ' + out.contactRole : ''),
       phone: out.phone, email: out.email, address: out.address, fields: fields.join(', '), regions: out.regions,
@@ -252,7 +259,8 @@ module.exports = handler(async (req) => {
       acceptedLocal: p.day + '/' + p.month + '/' + p.year + ' ' + p.hour + ':' + p.minute + ' (Asia/Jerusalem)',
       ip: ip, applicantId: id, signaturePng: sigPng
     });
-    await storagePut(agrDir + 'signed-agreement.pdf', pdf, 'application/pdf');
+    await storagePut(pdfPath, pdf, 'application/pdf');
+    agreementUrl = await storageSign(BUCKET, pdfPath, PDF_LINK_SECONDS, PDF_NAME);
 
     await sb('/rest/v1/agreement_acceptances', {
       method: 'POST',
@@ -261,7 +269,7 @@ module.exports = handler(async (req) => {
         applicant_id: id, agreement_version: AGREEMENT.VERSION, agreement_sha256: AGREEMENT_SHA256, accepted_at: now.toISOString(),
         consent_read: true, consent_review_fee: true, consent_annual: true, consent_confidentiality: true, consent_privacy: true,
         signer_name: signerName, signer_role: signerRole || null, signing_city: city,
-        signature_path: agrDir + 'signature.png', pdf_path: agrDir + 'signed-agreement.pdf', ip_address: ip, user_agent: ua
+        signature_path: agrDir + 'signature.png', pdf_path: pdfPath, ip_address: ip, user_agent: ua
       }
     });
 
@@ -270,7 +278,7 @@ module.exports = handler(async (req) => {
   } catch (e) {
     // מחזירים מצב נקי: הבקשה לא נשמרה חלקית (הקבצים ב-incoming יימחקו בניקוי של 48 שעות)
     await sb('/rest/v1/applicants?id=eq.' + id, { method: 'DELETE', headers: { Prefer: 'return=minimal' } }).catch(() => {});
-    await storageRemove([agrDir + 'signature.png', agrDir + 'signed-agreement.pdf']);
+    await storageRemove([agrDir + 'signature.png', pdfPath]);
     throw e;
   }
 
@@ -279,11 +287,12 @@ module.exports = handler(async (req) => {
     const admins = await adminEmails(sb);
     const notice = adminRegistration(applicant);
     for (const to of admins) { try { await sendMail({ to: to, subject: notice.subject, html: notice.html, text: notice.text }); } catch (e) { /* ממשיכים */ } }
-    const thanks = registrationReceived(out.fullName);
-    await notifyApplicant({ email: out.email, phone: out.phone, notify_channels: channels }, thanks);
+    const thanks = registrationReceived(out.fullName, { attached: !!pdf });
+    const attachments = pdf ? [{ filename: 'טופס-הרשמה-חתום.pdf', content: pdf, contentType: 'application/pdf' }] : undefined;
+    await notifyApplicant({ email: out.email, phone: out.phone, notify_channels: channels }, thanks, { attachments: attachments });
   } catch (e) { /* ממשיכים */ }
 
-  return { ok: true, applicantId: id, agreementVersion: AGREEMENT.VERSION };
+  return { ok: true, applicantId: id, agreementVersion: AGREEMENT.VERSION, agreementUrl: agreementUrl };
 });
 
 module.exports.israeliIdOk = israeliIdOk;

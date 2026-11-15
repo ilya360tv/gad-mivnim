@@ -130,4 +130,40 @@ async function saveTempPassword(profileId, password) {
   });
 }
 
-module.exports = { GENERAL, sb, requireAdmin, requireUser, normalizeFields, readBody, handler, httpError, UUID, tempPassword, saveTempPassword };
+// קישור הורדה זמני לקובץ אחד בבאקט פרטי. expiresIn בשניות. השם ב-download מאלץ שמירה (לא תצוגה).
+// הכתובת נחתמת במפתח הפנימי של האחסון — לא מפתח השירות, ותקפה רק לקובץ הזה עד שפג התוקף.
+async function storageSign(bucket, objectPath, expiresIn, downloadName) {
+  const { url, key } = env();
+  const path = String(objectPath || '').replace(/^\/+/, '');
+  if (!path || path.indexOf('..') !== -1) { throw httpError(400, 'bad_path'); }
+  const r = await fetch(url + '/storage/v1/object/sign/' + bucket + '/' + path, {
+    method: 'POST',
+    headers: { apikey: key, Authorization: 'Bearer ' + key, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ expiresIn: expiresIn })
+  });
+  if (!r.ok) { throw httpError(502, 'storage_error'); }
+  const data = await r.json().catch(() => ({}));
+  const rel = data && (data.signedURL || data.signedUrl);
+  if (!rel || typeof rel !== 'string') { throw httpError(502, 'storage_error'); }
+  const absolute = rel.charAt(0) === '/' ? url + '/storage/v1' + rel : rel;
+  const signed = new URL(absolute);
+  const base = new URL(url);
+  if (signed.protocol !== 'https:' || signed.host !== base.host) { throw httpError(502, 'storage_error'); }
+  if (downloadName) { signed.searchParams.set('download', downloadName); }
+  return signed.toString();
+}
+
+// הורדת הקובץ עצמו (service_role). null אם אין קובץ — בלי לזרוק, כדי שדוא"ל בלי PDF עדיין יישלח.
+async function storageGet(bucket, objectPath) {
+  const { url, key } = env();
+  const path = String(objectPath || '').replace(/^\/+/, '');
+  if (!path || path.indexOf('..') !== -1) { return null; }
+  const r = await fetch(url + '/storage/v1/object/' + bucket + '/' + path, {
+    headers: { apikey: key, Authorization: 'Bearer ' + key }
+  });
+  if (!r.ok) { return null; }
+  const buf = Buffer.from(await r.arrayBuffer());
+  return buf.length ? buf : null;
+}
+
+module.exports = { GENERAL, sb, requireAdmin, requireUser, normalizeFields, readBody, handler, httpError, UUID, tempPassword, saveTempPassword, storageSign, storageGet };
