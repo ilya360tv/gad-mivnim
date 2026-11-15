@@ -431,7 +431,8 @@
 
   function sizeCard() {
     var col = desktopMq.matches ? navColumn() : null;
-    var target = col ? Math.round(col.bottom - col.top) : 0;
+    // הכרטיס מתחיל מתחת לכותרת — מסתיים בגובה הגלולה האחרונה (לא גבוה מהעמודה)
+    var target = col ? Math.max(0, Math.round(col.bottom - docTop(loginCard))) : 0;
     // גובה מינימלי (לא קבוע): הכרטיס גדל אם התוכן צריך יותר — שום דבר לא נחתך או גולש החוצה
     loginCard.style.height = '';
     loginCard.style.minHeight = target ? target + 'px' : '';
@@ -452,8 +453,7 @@
     if (section.classList.contains('is-members')) {            // אזור המנויים — הכותרת 16px מתחת לראש המסך
       return Math.max(0, docTop(section.querySelector('.section-eyebrow')) - 16);
     }
-    // מיקום מדויק (כולל שברי פיקסל) — לכרטיס ולהוריו אין transform של reveal
-    return Math.max(0, Math.round(window.scrollY + loginCard.getBoundingClientRect().top - col.top));
+    return 0;                                                  // הכותרת והגלולה בראש העמוד — בלי גלילה
   }
 
   function alignToNav(behavior) {

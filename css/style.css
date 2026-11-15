@@ -8004,7 +8004,7 @@ html[dir] body #main .section-eyebrow.page-eyebrow::after {
    העמוד = --pe-top, כך שראש הכרטיס = 2×--side-top + --side-circle בדיוק — העמוד לא נגלל בטעינה והכותרת
    נשארת על קו מרכז הלוגו/השפות כמו בשאר העמודים. גודל הכרטיס לא משתנה. */
 @media (min-width: 1024px) {
-  html[dir] body #main #tenders > .container > .page-eyebrow { margin-bottom: var(--pe-top) !important; }
+  html[dir] body #main #tenders.is-members > .container > .page-eyebrow { margin-bottom: var(--pe-top) !important; }
 }
 
 /* #projects — לשוניות המגזר: שורה אחת ממורכזת על ציר ה-H1 (מסך ≥769; מובייל — 2×2 כמו קודם).
@@ -8339,15 +8339,70 @@ html[dir] body #main .division-page .division-top.pt-stack .division-actions { j
   html[dir] body #main .division-page .division-top .division-actions { justify-content: center; }
 }
 
-/* #podcast: הטקסט צמוד לראש התמונה — הכותרת 18px מתחת לגלולה */
-@media (min-width: 768px) {
-  html[dir] body #main .pod-head { margin-top: calc(var(--pt-gap-top) + var(--pt-frame)) !important; align-items: flex-start; }
-  html[dir] body #main .pod-head__text { align-self: flex-start; text-align: center; }
-}
-/* #tenders (דסקטופ): כרטיס הכניסה נשאר בגובה הגלולה הראשונה — הכותרת עולה ל-18px מתחת לגלולה */
-@media (min-width: 1024px) {
-  html[dir] body #main #tenders:not(.is-members) .tn-intro > .section-title { margin-top: calc(var(--pt-gap-top) + var(--pt-frame) - var(--pe-top)) !important; }
-}
 .rsb-pdf { margin: 0 0 16px; }
 .rsb-pdf .btn { display: inline-flex; align-items: center; justify-content: center; width: 100%; min-height: 48px; padding: 12px 18px; text-align: center; line-height: 1.35; white-space: normal; }
 @media (min-width: 640px) { .rsb-pdf .btn { width: auto; max-width: 100%; } }
+
+/* ==========================================================================
+   כותרת העמוד באותו מקום בכל עמוד: הגלולה באותו Y, הכותרת באותו Y וביחס לאותו ציר (מרכז אזור התוכן).
+   עמודים שבהם הכותרת ישבה ליד תמונה / כרטיס / לוגו — הכותרת עולה לשורה משלה, ברוחב מלא, והתוכן יורד מתחתיה.
+   ========================================================================== */
+
+/* #podcast: כותרת בשורה ראשונה; מתחתיה התמונה ולצידה "20 פרקים" */
+html[dir] body #main .pod-head {
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 28px;
+  row-gap: var(--pt-gap-bottom);
+  align-items: center;
+  margin-top: calc(var(--pt-gap-top) + var(--pt-frame)) !important;
+}
+html[dir] body #main .pod-head__text { display: contents; }
+html[dir] body #main .pod-head__text > .section-title.section-title { grid-column: 1 / -1; grid-row: 1; margin-bottom: 0 !important; }
+html[dir] body #main .pod-head__media { grid-column: 1; grid-row: 2; }
+html[dir] body #main .pod-head__count { grid-column: 2; grid-row: 2; text-align: start !important; margin-inline: 0 !important; }
+@media (max-width: 767.98px) {
+  html[dir] body #main .pod-head { grid-template-columns: minmax(0, 1fr); }
+  html[dir] body #main .pod-head__media { grid-column: 1; width: 100%; }
+  html[dir] body #main .pod-head__count { grid-column: 1; grid-row: 3; text-align: center !important; }
+}
+
+/* #tenders (לפני כניסה, ≥1024): הכותרת בשורה ראשונה במרכז; מתחתיה כרטיס הכניסה (שמאל) והטקסט (ימין) */
+@media (min-width: 1024px) {
+  html[dir] body #tenders:not(.is-members) .tn-layout {
+    grid-template-rows: auto auto 1fr;
+    row-gap: 0;
+    margin-top: calc(var(--pt-gap-top) + var(--pt-frame)) !important;
+  }
+  html[dir] body #tenders:not(.is-members) .tn-intro { display: contents; }
+  html[dir] body #tenders:not(.is-members) .tn-intro > .section-title.section-title { grid-column: 1 / -1; grid-row: 1; margin-top: 0 !important; }
+  html[dir] body #tenders:not(.is-members) .tn-intro > .section-lead { grid-column: 1; grid-row: 2; }
+  html[dir] body #tenders:not(.is-members) .tn-intro > .tn-perks { grid-column: 1; grid-row: 3; align-self: start; }
+  html[dir] body #tenders:not(.is-members) .tn-stage { grid-column: 2; grid-row: 2 / span 2; }
+}
+
+/* עמוד פרויקט: הכותרת במרכז, הלוגו בקצה הימני, הכפתורים בקצה השמאלי (≥1280); מתחת ל-1280 הכותרת קודמת ללוגו */
+html[dir] body #main .division-page .division-top-text.project-head,
+html[dir] body #main .division-page .project-head-text { display: contents; }
+html[dir] body #main .division-page .project-head .project-logo { order: 4; }
+html[dir] body #main .division-page .project-head-text > .section-title { order: 1; }
+html[dir] body #main .division-page .project-head-text > .project-subtitle { order: 2; }
+html[dir] body #main .division-page .project-head-text > .project-city { order: 3; }
+html[dir] body #main .division-page .division-top:has(.project-head) .division-actions { order: 5; }
+html[dir] body #main .division-page .division-top:has(.project-head) { display: flex; flex-direction: column; align-items: center; }
+html[dir] body #main .division-page .division-top:has(.project-head) > * { text-align: center; }
+@media (min-width: 1280px) {
+  html[dir] body #main .division-page .division-top:has(.project-head) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: start;
+    row-gap: 0;
+    position: relative;
+    min-height: 120px;                               /* גובה הלוגו — הוא מחוץ לזרימה כדי שלא יזיז את הכותרת */
+  }
+  html[dir] body #main .division-page .project-head .project-logo { position: absolute; inset-block-start: 0; inset-inline-start: 0; }
+  html[dir] body #main .division-page .project-head-text > .section-title { grid-column: 2; grid-row: 1; }
+  html[dir] body #main .division-page .project-head-text > .project-subtitle { grid-column: 2; grid-row: 2; justify-self: center; }
+  html[dir] body #main .division-page .project-head-text > .project-city { grid-column: 2; grid-row: 3; justify-self: center; }
+  html[dir] body #main .division-page .division-top:has(.project-head) .division-actions { grid-column: 3; grid-row: 1; justify-self: end; }
+}
