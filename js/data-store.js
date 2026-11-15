@@ -451,8 +451,8 @@
       });
     },
     submit: function (payload) { return postJson('/api/submit-application', payload); },
-    resubmitInfo: function (id, token) { return postJson('/api/resubmit-info', { applicantId: id, token: token }); },
-    resubmit: function (id, token, docNames) { return postJson('/api/resubmit-application', { applicantId: id, token: token, docNames: docNames }); },
+    resubmitInfo: function (id, token) { return postJson('/api/upload-url', { action: 'resubmit-info', applicantId: id, token: token }); },
+    resubmit: function (id, token, docNames) { return postJson('/api/upload-url', { action: 'resubmit-finish', applicantId: id, token: token, docNames: docNames }); },
     uuid: uuid
   };
 

@@ -23,6 +23,9 @@ function env() {
 
 module.exports = handler(async (req) => {
   const body = readBody(req);
+  // אותה פונקציה משרתת גם את דף "השלמת מסמכים" (מגבלת 12 פונקציות בתוכנית של Vercel)
+  if (body.action === 'resubmit-info') { return resubmit.info(body); }
+  if (body.action === 'resubmit-finish') { return resubmit.finish(body); }
   const id = String(body.applicantId || '');
   if (!UUID.test(id)) { throw httpError(400, 'bad_applicant_id'); }
   const def = DOCS.byType(String(body.docType || ''));
