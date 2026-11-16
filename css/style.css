@@ -7958,12 +7958,12 @@ html[dir] body #main .section-eyebrow.page-eyebrow::after {
     margin-inline: auto !important;
   }
   /* כותרת הכרטיס הצר יותר — עד שתי שורות מאוזנות בתוך אותו גובה ראש כרטיס (לא נחתכת, לא מוקטנת) */
-  html[dir] body #main .division-cards .division-card .card-title {
+  html[dir] body #main .division-cards .division-card .card-title:not(#services *) {
     white-space: normal !important;
     text-wrap: balance;
     line-height: 1.2;
   }
-  html[dir] body #main .division-cards .division-card-head {
+  html[dir] body #main .division-cards .division-card-head:not(#services *) {
     padding-inline: 4px;
     min-height: calc(2 * 1.2 * clamp(.74rem, 1.25vw, .95rem) + 24px);   /* כל ראשי הכרטיסים באותו גובה — התמונות בקו אחד */
   }
@@ -8451,7 +8451,7 @@ html[dir] body #main .division-page .division-top:has(.project-head) > * { text-
 @media (max-width: 767.98px) { :root { --ch-fs: .92rem; } }
 @media (min-width: 1024px) { :root { --ch-fs: 1.343vw; } }
 
-html[dir] body #main :is(h2, h3, h4):not(.section-title):not(.page-eyebrow):not(.about-sub):not(.hero-title) {
+html[dir] body #main :is(h2, h3, h4):not(.section-title):not(.page-eyebrow):not(.about-sub):not(.hero-title):not(#services .division-card *) {
   font-family: 'Rubik', 'Segoe UI', Arial, sans-serif !important;
   font-size: var(--ch-fs) !important;
   font-weight: 700 !important;
@@ -8460,7 +8460,7 @@ html[dir] body #main :is(h2, h3, h4):not(.section-title):not(.page-eyebrow):not(
   letter-spacing: .02em;
   margin-block: 22px 6px;
 }
-html[dir] body #main :is(.division-slogan, .card-tagline, .teams-slogan, .partner-slogan, .project-subtitle) {
+html[dir] body #main :is(.division-slogan, .card-tagline, .teams-slogan, .partner-slogan, .project-subtitle):not(#services .division-card *) {
   font-family: 'Rubik', 'Segoe UI', Arial, sans-serif !important;
   font-size: var(--ch-fs) !important;
   font-weight: 700 !important;
@@ -8627,3 +8627,23 @@ html[dir] #about .ab-read .about-text h3.about-sub.about-sub--idea {
 
 /* #about: הכותרת "מאז ועד היום..." (מעל התמונות) — לבן */
 html[dir] body #main #about h3.about-media-title, html[dir] body #main #about h3.about-media-title * { color: #ffffff !important; }
+
+/* ==========================================================================
+   #services — כרטיסי החטיבות: קומפקטיים ושווים. גובה = תוכן (בלי min-height / height קבועים על הכרטיס); כל הכרטיסים נמתחים לגבוה שבהם (grid stretch).
+   החליף את הגדלים שנבעו מ"סולם כותרות התוכן" (1.343vw) ומשכבות min-height ישנות. רוחב, סדר, צבעים ומסגרת ירוקה — ללא שינוי.
+   ========================================================================== */
+#services .division-cards .division-card { display: flex; flex-direction: column; height: auto; align-self: stretch; }
+#services .division-cards .division-card .division-card-head { display: flex; align-items: center; justify-content: center; min-height: 0; padding: 14px 8px 10px; }
+#services .division-cards .division-card .card-title {
+  font-family: 'Rubik', 'Segoe UI', Arial, sans-serif; font-size: 20px; font-weight: 700; line-height: 1.35; letter-spacing: .02em;
+  color: #38bdf8; margin: 0; text-align: center; text-wrap: balance; white-space: normal; min-height: calc(2 * 1.35em);   /* שתי שורות שמורות — התמונות על קו אחד */
+  display: flex; align-items: center; justify-content: center;
+}
+#services .division-cards .division-card .card-media { aspect-ratio: auto; height: 110px; }
+#services .division-cards .division-card .card-media img { width: 100%; height: 100%; object-fit: cover; }
+#services .division-cards .division-card .card-body { display: flex; flex-direction: column; flex: 1; padding: 0; }
+#services .division-cards .division-card .card-tagline {
+  flex: 1; margin: 0; padding: 12px 12px 14px; text-align: center;
+  font-family: 'Rubik', 'Segoe UI', Arial, sans-serif; font-size: 16px; font-weight: 700; line-height: 1.45; letter-spacing: .02em;
+  color: #f2f5f7;
+}
