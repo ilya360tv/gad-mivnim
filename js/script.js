@@ -2493,7 +2493,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* ---------------------------------------------------------------
      10) כותרות העמוד (המשפט הגדול מתחת לגלולה) — כל העמודים. הגודל והריווח ב-CSS ("PAGE TITLE").
-         דסקטופ (≥769): שורה אחת; אם רחבה מהמקום הפנוי — מקטינים עד 20px; אם גם אז לא נכנס — שבירה רגילה (לעולם לא חותכים).
+         דסקטופ (≥769): שורה אחת; אם רחבה מהמקום הפנוי — מקטינים עד 16px; אם גם אז לא נכנס — שבירה רגילה (לעולם לא חותכים).
          מובייל (≤768): עד שתי שורות — מקטינים עד 18px אם צריך.
          דסקטופ (≥1024): מרכז גלולת העמוד = מרכז עיגול הלוגו; מרכז הכותרת השנייה = מרכז גלולת "דף הבית".
      --------------------------------------------------------------- */
@@ -2569,7 +2569,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (el.closest('.division-top')) { el.closest('.division-top').classList.remove('pt-stack'); }
         el.style.removeProperty('--pt-fit');
         if (gmHeadHost(el) !== el) gmHeadHost(el).style.removeProperty('--pt-fit');
-        var base = parseFloat(getComputedStyle(el).fontSize), fs = base, min = mobile ? 18 : 20;
+        var base = parseFloat(getComputedStyle(el).fontSize), fs = base, min = mobile ? 18 : 16;
         var set = function () {
           var px = fs.toFixed(1) + 'px';
           el.style.setProperty('--pt-fit', px);
