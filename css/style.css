@@ -8476,7 +8476,7 @@ html[dir] body #main :is(h2, h3, h4):not(.section-title):not(.page-eyebrow):not(
   letter-spacing: .02em;
   margin-block: 22px 6px;
 }
-html[dir] body #main :is(.division-slogan, .card-tagline, .teams-slogan, .partner-slogan, .project-subtitle):not(#services .division-card *):not(#partners .partner-chip *) {
+html[dir] body #main :is(.division-slogan, .card-tagline, .teams-slogan, .partner-slogan, .project-subtitle):not(#services .division-card *):not(#partners .partner-chip *):not(#podcast .partner-chip *) {
   font-family: 'Rubik', 'Segoe UI', Arial, sans-serif !important;
   font-size: var(--ch-fs) !important;
   font-weight: 700 !important;
@@ -8485,7 +8485,7 @@ html[dir] body #main :is(.division-slogan, .card-tagline, .teams-slogan, .partne
   letter-spacing: .02em;
   margin-block: 14px 4px;
 }
-html[dir] body #main .partner-chip:not(#partners .partner-chip) > strong {
+html[dir] body #main .partner-chip:not(#partners .partner-chip):not(#podcast .partner-chip) > strong {
   font-family: 'Rubik', 'Segoe UI', Arial, sans-serif !important;
   font-size: var(--ch-fs) !important;
   font-weight: 700 !important;
@@ -8735,3 +8735,35 @@ html[dir] body #main #about .about-text .about-quote { position: relative; z-ind
 
 /* #in-progress — שתי שורות נעות (שורה 2 בכיוון ההפוך; js/script.js סעיף 8). רווח 20px בין השורות: ריפוד 16/22 בכל שורה מקוזז במרווח שלילי */
 .has-js .in-progress .ip-marquee--2.is-on { margin-top: -18px; }
+
+/* ==========================================================================
+   #podcast — כרטיסי הפרקים, נמוכים יותר (היו ~454px ב-1920 בגלל "סולם כותרות התוכן" 1.343vw; הכרטיסים הוצאו ממנו, כמו #partners).
+   כותרת (תג "פרק N" + שם): 15px / שורה 1.35, עד 2 שורות, גובה אזור קבוע בכל הכרטיסים, ריפוד 12 / 10. תמונה 110px (90px במובייל), כפתור ▶ מוקטן.
+   שורת האורח: 14px / שורה 1.45, ממורכזת, ריפוד 10 / 12. בלי מרווח ריק בתחתית — הכרטיסים נמתחים לאותו גובה. רוחב, צבעים, תנועה ו-hover — ללא שינוי.
+   ========================================================================== */
+html[dir] body #podcast .partner-chip strong {
+  font-family: 'Rubik', 'Segoe UI', Arial, sans-serif; font-size: 15px; font-weight: 700; line-height: 1.35; letter-spacing: .02em; color: #38bdf8;
+  padding: 12px 10px 10px; min-height: calc(3 * 1.35 * 15px + 22px);
+}
+/* עברית: אזור כותרת קבוע (עד 3 שורות — כמה כותרות ארוכות לא נכנסות ב-2 ברוחב הכרטיס); שפות אחרות: כותרות ארוכות יותר — הגובה לפי הארוכה (--pt-title-h, js/script.js), בלי חיתוך */
+html[dir] body #podcast .pt-track .partner-chip strong { min-height: calc(3 * 1.35 * 15px + 22px); }
+html[dir] body:not(:lang(he)) #podcast .pt-track .partner-chip strong,
+html:not([lang="he"]) body #podcast .pt-track .partner-chip strong { min-height: var(--pt-title-h, auto); }
+#podcast .pod-card__title { -webkit-line-clamp: 3; line-clamp: 3; }
+html:not([lang="he"]) #podcast .pod-card__title { -webkit-line-clamp: unset; line-clamp: unset; display: block; overflow: visible; }
+html[dir] body #podcast .partner-chip .partner-slogan {
+  font-family: 'Rubik', 'Segoe UI', Arial, sans-serif; font-size: 14px; font-weight: 700; line-height: 1.45; letter-spacing: .02em; color: #f2f5f7;
+  min-height: 0; padding: 10px 12px 12px; display: flex; align-items: center; justify-content: center;
+}
+#podcast .partner-photo { aspect-ratio: auto; height: 110px; flex: none; }
+#podcast .pod-card__play { width: 38px; height: 38px; }
+#podcast .pod-card__play svg { width: 15px; height: 15px; }
+@media (max-width: 767.98px) {
+  #podcast .partner-photo { height: 90px; }
+  #podcast .pod-card__play { width: 34px; height: 34px; }
+}
+/* מסך צר (כרטיס ≤ 175px): גם בעברית כותרות ארוכות יותר — הגובה לפי הארוכה, בלי חיתוך */
+@media (max-width: 1399.98px) and (min-width: 768px) {
+  html[dir] body #podcast .pt-track .partner-chip strong { min-height: var(--pt-title-h, auto); }
+  #podcast .pod-card__title { -webkit-line-clamp: unset; line-clamp: unset; display: block; overflow: visible; }
+}
