@@ -2981,9 +2981,10 @@ document.addEventListener('DOMContentLoaded', function () {
           text.style.marginTop = (curM + (18 - gap)).toFixed(2) + 'px';
         }
       }
-      if (title && firstP) {                       // ראש "מאז ועד היום..." = ראש הפסקה הראשונה
+      if (title) {                                 // מרכז "מאז ועד היום..." = מרכז המשפט (= מרכז "דף הבית"); כל עמודת התמונות עולה יחד
+        var i2 = ideaEl.getBoundingClientRect();
         var t = title.getBoundingClientRect();
-        var d2 = (firstP.getBoundingClientRect().top - ideaShiftY(firstP)) - (t.top - ideaShiftY(title));
+        var d2 = (i2.top + i2.height / 2) - (t.top - ideaShiftY(title) + t.height / 2);
         if (Math.abs(d2) > 0.5) {
           var curT = parseFloat(title.style.marginTop) || 0;
           title.style.setProperty('margin-top', (curT + d2).toFixed(2) + 'px', 'important');

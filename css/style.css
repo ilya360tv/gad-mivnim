@@ -8624,3 +8624,6 @@ html[dir] #about .ab-read .about-text h3.about-sub.about-sub--idea {
   text-align-last: start !important;
   white-space: normal !important;
 }
+
+/* #about: הכותרת "מאז ועד היום..." (מעל התמונות) — לבן */
+html[dir] body #main #about h3.about-media-title, html[dir] body #main #about h3.about-media-title * { color: #ffffff !important; }
