@@ -8737,34 +8737,44 @@ html[dir] body #main #about .about-text .about-quote { position: relative; z-ind
 .has-js .in-progress .ip-marquee--2.is-on { margin-top: -18px; }
 
 /* ==========================================================================
-   #podcast — כרטיסי פרקים קצרים ונקיים. מבנה זהה בכל כרטיס, מלמעלה למטה:
-   1. תג "פרק N" לבד בשורה משלו (מימין, 12px)  2. כותרת 15px / 1.35 — בדיוק 2 שורות, נחתכת ב-"…" (הכותרת המלאה ב-title)
-   3. תמונה 120px, ▶ במרכז  4. שורה תחתונה אחת, 13px אפור בהיר: "אורח: …" מימין (נחתך ב-"…"), "N דק'" משמאל.  ריפוד 12px.
-   רוחב, צבעים, תנועה וקליק — ללא שינוי. (הגדלים הענקיים היו מ"סולם כותרות התוכן" 1.343vw — הכרטיסים הוצאו ממנו.)
+   #podcast — כרטיס פרק קלאסי ונקי. מלמעלה למטה, זהה בכל כרטיס:
+   1. תמונה 130px (פינות עליונות מעוגלות): תג "פרק N" בפינה הימנית-עליונה (גלולת זכוכית, 12px), צ'יפ משך "N דק'" בפינה השמאלית-תחתונה (זכוכית כהה, 12px, לבן), ▶ 48px במרכז.
+   2. כותרת: לבנה, 15px מודגש, שורה 1.35, בדיוק 2 שורות, "…" רק אם ארוכה יותר. ריפוד 12 / 12 / 4.
+   3. אורח: שורה משלו, 13px, #94a3b8, שורה אחת ("…" רק לארוכים מאוד). ריפוד 0 12 14.
+   רוחב, טקסטים, צבעים, תנועה וקליק — ללא שינוי. (הגדלים הענקיים היו מ"סולם כותרות התוכן" 1.343vw — הכרטיסים הוצאו ממנו.)
    ========================================================================== */
 html[dir] body #podcast .pod-card { padding: 0; gap: 0; }
-html[dir] body #podcast .pod-card .pod-card__badge {
-  display: block; flex: none; padding: 12px 12px 0; text-align: start !important; line-height: 1;
+#podcast .pod-card .partner-photo { aspect-ratio: auto; height: 130px; flex: none; border-radius: 14px 14px 0 0; }
+#podcast .pod-card .pod-card__badge {
+  position: absolute; z-index: 2; top: 8px; inset-inline-start: 8px; display: block; line-height: 1;
 }
-#podcast .pod-card .pod-card__chip { display: inline-block; font-size: 12px; line-height: 1.5; padding: 1px 9px; vertical-align: top; }
+#podcast .pod-card .pod-card__chip, #podcast .pod-card .pod-card__min {
+  display: inline-block; font-size: 12px; line-height: 1.5; padding: 2px 10px; border-radius: 999px; white-space: nowrap;
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+}
+#podcast .pod-card .pod-card__chip { background: rgba(255, 255, 255, .16); border: 1px solid rgba(255, 255, 255, .35); color: #fff; font-weight: 700; vertical-align: top; }
+#podcast .pod-card .pod-card__min {
+  position: absolute; z-index: 2; bottom: 8px; inset-inline-end: 8px;
+  background: rgba(8, 10, 12, .62); border: 1px solid rgba(255, 255, 255, .12); color: #fff; font-weight: 500;
+}
+#podcast .pod-card .pod-card__play { width: 48px; height: 48px; }
 html[dir] body #podcast .pt-track .pod-card strong,
 html[dir] body #podcast .pod-card strong {
   display: block; flex: none; box-sizing: border-box; min-height: 0;
-  height: calc(2 * 1.35 * 15px + 20px); padding: 8px 12px 12px; margin: 0 !important;
-  font-family: 'Rubik', 'Segoe UI', Arial, sans-serif; font-size: 15px; font-weight: 700; line-height: 1.35; letter-spacing: .02em;
+  height: calc(2 * 1.35 * 15px + 16px); padding: 12px 12px 4px; margin: 0 !important;
+  font-family: 'Rubik', 'Segoe UI', Arial, sans-serif; font-size: 15px; font-weight: 700; line-height: 1.35; letter-spacing: .02em; color: #ffffff;
   text-align: start !important; justify-content: flex-start;
 }
 #podcast .pod-card .pod-card__title {
-  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; text-overflow: ellipsis;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; text-overflow: ellipsis; color: #ffffff;
 }
-#podcast .pod-card .partner-photo { aspect-ratio: auto; height: 120px; flex: none; }
 html[dir] body #podcast .pod-card .partner-slogan {
-  display: flex; align-items: center; justify-content: space-between; gap: 8px; flex: none; min-height: 0; box-sizing: border-box;
-  padding: 12px; margin: 0 !important; text-align: start !important;
-  font-family: 'Rubik', 'Segoe UI', Arial, sans-serif; font-size: 13px; font-weight: 400; line-height: 1.4; letter-spacing: 0; color: #aeb6bf; white-space: nowrap;
+  display: block; flex: none; min-height: 0; box-sizing: border-box; padding: 0 12px 14px; margin: 0 !important; text-align: start !important;
+  font-family: 'Rubik', 'Segoe UI', Arial, sans-serif; font-size: 13px; font-weight: 400; line-height: 1.4; letter-spacing: 0; color: #94a3b8;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-#podcast .pod-card .pod-card__guest { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-#podcast .pod-card .pod-card__min { flex: none; }
+#podcast .pod-card .pod-card__guest { display: block; overflow: hidden; text-overflow: ellipsis; }
 @media (max-width: 767.98px) {
-  #podcast .pod-card .partner-photo { height: 100px; }
+  #podcast .pod-card .partner-photo { height: 110px; }
+  #podcast .pod-card .pod-card__play { width: 44px; height: 44px; }
 }
