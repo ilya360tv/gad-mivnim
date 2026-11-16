@@ -7891,15 +7891,29 @@ html.a11y-no-motion body.page-split > main { animation: none !important; }
    הריווח לתוכן שמתחתיה — זהה בכל העמודים.
    ========================================================================== */
 :root {
-  --pe-fs: clamp(1.05rem, 1.6vw, 1.35rem);        /* גודל הכתב (כמו התוויות עד היום) */
+  /* חצי מהגודל הקודם clamp(1.05rem, 1.6vw, 1.35rem). ריווח האותיות נשאר .14em — יורד ביחס לכתב. */
+  --pe-fs: clamp(0.525rem, 0.8vw, 0.675rem);
   --pe-lh: 1.6;                                   /* גובה השורה — קבוע, כדי לחשב את המרכז */
+  --pe-frame-y: 5px;                              /* חצי מ-10px: המסגרת מעל ומתחת לטקסט */
+  --pe-frame-x: 13px;                             /* חצי מ-26px: המסגרת משני הצדדים */
   --pe-top: 24px;                                 /* מובייל: מרווח מתחת לפס העליון */
   --pe-gap: 22px;                                 /* מובייל: מרווח לתוכן */
+  --pe-shift: 0px;                                /* פיצוי כדי שהתוכן מתחת לגלולה לא יזוז */
+}
+@media (max-width: 1023.98px) {
+  :root {
+    --pe-fs: max(12px, 0.525rem);                 /* חצי מ-1.05rem הוא 8.4px — לא יורדים מ-12px */
+    --pe-shift: calc((1.05rem - var(--pe-fs)) * var(--pe-lh) / 2);
+    --pe-top: calc(24px + var(--pe-shift));
+    --pe-gap: calc(22px + var(--pe-shift));
+  }
 }
 @media (min-width: 1024px) {
   :root {
     --pe-top: calc(var(--side-top) + var(--side-circle) / 2 - var(--pe-fs) * var(--pe-lh) / 2);
-    --pe-gap: 28px;
+    /* חצי מגובה הטקסט שהוסר — רק עמוד בלי כותרת צמודה (אודות) משתמש במרווח הזה */
+    --pe-gap: calc(28px + var(--pe-fs) * var(--pe-lh) / 2);
+    --pe-shift: 0px;
   }
 }
 /* הסקשן שמכיל את התווית מתחיל בדיוק בגובה המחושב (במקום הריפוד העליון הרגיל שלו) */
@@ -7929,7 +7943,7 @@ html[dir] body #main .section-eyebrow.page-eyebrow {
 html[dir] body #main .section-eyebrow.page-eyebrow::after {
   content: '';
   position: absolute;
-  inset: -10px max(-26px, calc((100% - 100vw) / 2 + 4px));   /* 26px מכל צד; במסך צר — לא יוצאת מהמסך */
+  inset: calc(var(--pe-frame-y) * -1) max(calc(var(--pe-frame-x) * -1), calc((100% - 100vw) / 2 + 4px));   /* 13px מכל צד; במסך צר — לא יוצאת מהמסך */
   z-index: -1;
   border-radius: 999px;
   background: linear-gradient(var(--lb-bg), var(--lb-bg)), rgba(10, 12, 14, .55);
@@ -8246,7 +8260,7 @@ html.a11y-no-motion .agr-reader__bar span { transition: none; }
    אוטומטית עד 20px אם לא נכנס, ואם גם אז לא — שבירה רגילה (לעולם לא חותך, בלי "..."). במובייל מקטינים עד 18px אם יש יותר משתי שורות.
    ריווח: גלולה → כותרת 32px · כותרת → התוכן 42px (מובייל 34px). ממורכז על ציר הגלולה.
    ========================================================================== */
-:root { --pt-fs: 18px; --pt-gap-top: 32px; --pt-gap-bottom: 34px; --pt-frame: 10px; }   /* --pt-frame: המסגרת של הגלולה יוצאת 10px מתחת לטקסט שלה — 32px נמדדים מקצה המסגרת */
+:root { --pt-fs: 18px; --pt-gap-top: 32px; --pt-gap-bottom: 34px; --pt-frame: 10px; }   /* נשאר 10px (קצה המסגרת הישנה) כדי שהכותרת שמתחת לגלולה לא תזוז. המסגרת הוויזואלית עצמה היא 5px. */
 @media (min-width: 769px) { :root { --pt-fs: 20px; --pt-gap-bottom: 42px; } }
 
 /* הגלולה לא מוסיפה רווח משלה מתחתיה — הריווח נקבע בכותרת */
@@ -8266,7 +8280,7 @@ html[dir] body #main :is(
   width: auto !important;
   max-width: 100% !important;
   box-sizing: border-box;
-  margin: calc(var(--pt-gap-top) + var(--pt-frame)) auto var(--pt-gap-bottom) !important;
+  margin: calc(var(--pt-gap-top) + var(--pt-frame) + var(--pe-shift, 0px)) auto var(--pt-gap-bottom) !important;
   padding: 0 !important;
   font-family: 'Rubik', 'Segoe UI', Arial, sans-serif !important;
   font-size: var(--pt-fit, var(--pt-fs)) !important;
@@ -8315,7 +8329,7 @@ html[dir] body #main .pod-head__count { text-align: center !important; margin-to
 html[dir] body #main .division-top-text .section-title + * { margin-top: 0 !important; }
 
 /* עמודי חטיבה / פרויקט: הכותרת במרכז, הכפתורים בקצה השמאלי של אותה שורה */
-html[dir] body #main .division-page .division-top { margin-top: calc(var(--pt-gap-top) + var(--pt-frame)) !important; }
+html[dir] body #main .division-page .division-top { margin-top: calc(var(--pt-gap-top) + var(--pt-frame) + var(--pe-shift, 0px)) !important; }
 @media (min-width: 1024px) {
   html[dir] body #main .division-page .division-top {
     margin-top: calc(
@@ -8367,7 +8381,7 @@ html[dir] body #main .pod-head {
   column-gap: 28px;
   row-gap: var(--pt-gap-bottom);
   align-items: center;
-  margin-top: calc(var(--pt-gap-top) + var(--pt-frame)) !important;
+  margin-top: calc(var(--pt-gap-top) + var(--pt-frame) + var(--pe-shift, 0px)) !important;
 }
 @media (min-width: 1024px) {
   html[dir] body #main .pod-head {
