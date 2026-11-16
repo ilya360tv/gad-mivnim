@@ -78,6 +78,12 @@
     clone.classList.remove('reveal', 'reveal-d1', 'is-visible');
     // שורת הסיום: במקום הפס הנע — הטקסט עצמו (כמו במצב "עצירת אנימציות")
     clone.querySelectorAll('.about-mq').forEach(function (n) { n.parentNode.removeChild(n); });
+    var idea = section.querySelector('.about-grid > .about-sub--idea');
+    if (idea) {
+      var h = idea.cloneNode(true);
+      h.removeAttribute('style');
+      clone.insertBefore(h, clone.firstChild);
+    }
     body.innerHTML = '';
     body.appendChild(clone);
     titleEl.textContent = t('about_eyebrow', 'אודות הקבוצה');
@@ -131,5 +137,9 @@
   if ('MutationObserver' in window) {
     new MutationObserver(function () { refit(); if (!m.hidden) { render(); } })
       .observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+  }
+  if ('ResizeObserver' in window) {
+    var ideaBox = section.querySelector('.about-grid > .about-sub--idea');
+    if (ideaBox) { new ResizeObserver(refit).observe(ideaBox); }
   }
 })();

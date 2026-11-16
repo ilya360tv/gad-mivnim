@@ -2615,7 +2615,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         el.classList.add('pt-wrap');                                           // לא נכנס גם ב-20px — שבירה רגילה (לא חותכים)
       });
-      if (typeof liftMedia === 'function') { liftMedia(); }
+      if (typeof fitIdea === 'function') { fitIdea(); }
       gmAlignHeads();
     };
     fitTitles();
@@ -2794,49 +2794,52 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
   /* ---------------------------------------------------------------
-     13) #about — הכותרת "מאז ועד היום..." (מעל התמונות) עולה לגובה של "מדוע נולד הרעיון..." (מחשב ≥1024)
+     13) #about — "מדוע נולד הרעיון..." בשורה אחת בדסקטופ (≥1024).
+         המשפט מעל עמודת הטקסט (לא בתוכה). רוחבו ב-CSS: עמודת הטקסט + הרווח עד התמונות.
+         גודל הכתב יורד מ-20px עד שהמשפט נכנס בשורה אחת, בכל שפה.
+         מתחת ל-1024 השבירה רגילה (ה-CSS). "מאז ועד היום..." מיושר ב-CSS לאותו קו עליון.
      --------------------------------------------------------------- */
-  var mdHead = document.querySelector('#about .about-media-title');
-  var mdRef = document.querySelector('#about .about-title');
-  if (mdHead && mdRef) {
-    var mdCol = mdHead.closest('.about-media') || mdHead.parentNode;   // כל העמודה עולה — התמונות נשארות צמודות לכותרת
-    var LM_MAX = 120;   // העמודה זזה לכל היותר 120px; ערך גדול יותר = מדידה שגויה — מתעלמים
-    var liftMedia = function () {
-      mdCol.style.marginTop = '';
+  var ideaEl = document.querySelector('#about .about-grid > .about-sub--idea');
+  var fitIdea = function () {};
+  if (ideaEl) {
+    var IDEA_MAX = 20, IDEA_MIN = 6;
+    fitIdea = function () {
+      ideaEl.style.fontSize = '';
       if (window.innerWidth < 1024) { return; }
-      // העמודה היא position: sticky — אחרי רענון באמצע הדף (הדפדפן משחזר את הגלילה) היא "תקועה" והמיקום שלה במסך שגוי.
-      // מודדים במיקום הטבעי: sticky כבוי לרגע המדידה (באותו פריים — בלי הבהוב), ואז מחזירים
-      var prevPos = mdCol.style.position;
-      mdCol.style.position = 'static';
-      // מגביהים רק אם הכותרת לא חופפת אופקית את עמודת התמונה (בשתי הכיוונים הכותרת יושבת מעל עמודת הטקסט בלבד)
-      var rg = document.createRange(); rg.selectNodeContents(mdRef);
-      var lines = rg.getClientRects();
-      var t = rg.getBoundingClientRect(), m = mdCol.getBoundingClientRect();
-      var d = 0;
-      if (t.right <= m.left + 0.5 || t.left >= m.right - 0.5) {
-        var a = (lines.length > 1 || document.documentElement.getAttribute('dir') === 'ltr') ? lines[0] : mdRef.getBoundingClientRect();   // כותרת בשורות מרובות — יישור לשורה הראשונה
-        var b = mdHead.getBoundingClientRect();
-        d = (a.top + a.height / 2) - (b.top + b.height / 2);
+      if (ideaEl.clientWidth < 40) { return; }
+      var size = IDEA_MAX;
+      ideaEl.style.fontSize = size.toFixed(1) + 'px';
+      var guard = 0;
+      while (ideaEl.scrollWidth > ideaEl.clientWidth + 0.5 && size > IDEA_MIN && guard < 50) {
+        size = Math.round((size - 0.5) * 10) / 10;
+        ideaEl.style.fontSize = size.toFixed(1) + 'px';
+        guard++;
       }
-      mdCol.style.position = prevPos;
-      if (Math.abs(d) > 0.5 && Math.abs(d) <= LM_MAX) { mdCol.style.marginTop = d.toFixed(1) + 'px'; }
+      if (ideaEl.scrollWidth > ideaEl.clientWidth + 0.5 && ideaEl.scrollWidth > 0) {
+        size = Math.max(IDEA_MIN, Math.floor(size * ideaEl.clientWidth / ideaEl.scrollWidth * 10) / 10);
+        ideaEl.style.fontSize = size.toFixed(1) + 'px';
+      }
     };
-    liftMedia();
-    window.addEventListener('load', liftMedia);
-    window.addEventListener('pageshow', function (e) { if (e.persisted) { liftMedia(); } });   // חזרה מ-bfcache
-    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(liftMedia); }
-    var lmW = window.innerWidth;
-    window.addEventListener('resize', function () { if (window.innerWidth !== lmW) { lmW = window.innerWidth; liftMedia(); } });
+    fitIdea();
+    window.addEventListener('load', fitIdea);
+    window.addEventListener('pageshow', function (e) { if (e.persisted) { fitIdea(); } });
+    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(fitIdea); }
+    var ideaW = window.innerWidth;
+    window.addEventListener('resize', function () {
+      if (window.innerWidth !== ideaW) { ideaW = window.innerWidth; fitIdea(); }
+    });
     if ('MutationObserver' in window) {
-      new MutationObserver(function () { setTimeout(liftMedia, 80); })
-        .observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+      var ideaT = 0;
+      var ideaRefit = function () { clearTimeout(ideaT); ideaT = setTimeout(fitIdea, 40); };
+      new MutationObserver(ideaRefit).observe(ideaEl, { childList: true, characterData: true, subtree: true });
+      new MutationObserver(ideaRefit).observe(document.documentElement, { attributes: true, attributeFilter: ['dir', 'lang'] });
     }
   }
 
   /* ---------------------------------------------------------------
      14) #about — הכותרת "מאז ועד היום..." כשורה נעה אינסופית (אותו מנוע initMarquee כמו שאר הפסים); התמונות סטטיות.
          הכותרת האמיתית נשארת פעם אחת ב-.about-hmq__src (מוסתרת ויזואלית); העותקים הנעים aria-hidden ונבנים מחדש
-         בהחלפת שפה ורק בשינוי רוחב אמיתי. אחרי הבנייה מריצים מחדש את liftMedia (סעיף 13).
+         בהחלפת שפה ורק בשינוי רוחב אמיתי. אחרי הבנייה מריצים מחדש את fitIdea (סעיף 13).
      --------------------------------------------------------------- */
   var hmqBox = document.querySelector('.about-hmq');
   var hmqTrack = hmqBox ? hmqBox.querySelector('.about-hmq__track') : null;
@@ -2857,7 +2860,7 @@ document.addEventListener('DOMContentLoaded', function () {
       hmqE.measure(reps);
       hmqBox.classList.add('is-ready');
       if (hmqBox.parentNode) { hmqBox.parentNode.classList.add('has-hmq'); }
-      if (typeof liftMedia === 'function') { liftMedia(); }
+      if (typeof fitIdea === 'function') { fitIdea(); }
     };
     hmqBuild();
     window.addEventListener('load', hmqBuild);
