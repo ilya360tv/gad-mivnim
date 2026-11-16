@@ -8595,10 +8595,7 @@ html[dir] body #main .ip-marquee .progress-card h3.progress-name.progress-name {
     grid-row: 1;
     align-self: start;
     justify-self: start;
-    /* 48px הוא ה-gap בין העמודות; 8px נשארים פנויים לפני התמונות */
-    width: calc(100% + 40px);
     max-width: none;
-    margin-inline-end: -40px;
   }
   #about .about-grid > .about-text { grid-column: 1; grid-row: 2; }
   #about .about-grid > .about-media {
@@ -8610,7 +8607,13 @@ html[dir] body #main .ip-marquee .progress-card h3.progress-name.progress-name {
 }
 @media (min-width: 1024px) {
   #about .about-media .about-media-title { margin-top: 0 !important; }
-  #about.is-clamped .about-grid { row-gap: 12px; }
+  #about.is-clamped .about-grid { row-gap: 18px; }
+  /* שורה אחת גם כש-Windows משנה את קנה המידה (1366 / 1536). הרוחב נקבע ב-JS. */
+  #about .about-grid > .about-sub--idea {
+    white-space: nowrap !important;
+    width: auto;
+    margin-inline: 0;
+  }
 }
 /* חלון "המשך קריאה": אותו משפט בראש הטקסט, נשבר לשורות (החלון צר משורת הדסקטופ) */
 html[dir] #about .ab-read .about-text h3.about-sub.about-sub--idea {
