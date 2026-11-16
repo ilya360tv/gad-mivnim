@@ -1703,13 +1703,18 @@ document.addEventListener('DOMContentLoaded', function () {
     var ptqTrack = ptqBox ? ptqBox.querySelector('.pt-track') : null;
     if (ptGrid && ptqBox && ptqTrack) {
       var ptqSrc = Array.prototype.slice.call(ptGrid.querySelectorAll('.partner-chip'));
-      var ptqE = initMarquee(ptqBox, ptqTrack, {
-        isPaused: function () {
+      // שתי שורות (כמו #projects / #in-progress): שורה 1 בכיוון הנוכחי, שורה 2 בכיוון ההפוך; אותו מנוע, שני מופעים, ~40px/s
+      var ptqBox2 = ptSec.querySelector('.pt-marquee--2');
+      var ptqTrack2 = ptqBox2 ? ptqBox2.querySelector('.pt-track') : null;
+      var ptqPaused = function (box) {
+        return function () {
           if (!ptm.hidden) { return true; }                                                   // החלון פתוח
-          try { if (ptqBox.querySelector(':focus-visible')) { return true; } } catch (err) {}   // פוקוס מקלדת עוצר את הפס
+          try { if (box.querySelector(':focus-visible')) { return true; } } catch (err) {}   // פוקוס מקלדת עוצר את הפס
           return false;
-        }
-      });
+        };
+      };
+      var ptqE = initMarquee(ptqBox, ptqTrack, { speed: 40, isPaused: ptqPaused(ptqBox) });
+      var ptqE2 = (ptqBox2 && ptqTrack2) ? initMarquee(ptqBox2, ptqTrack2, { speed: 40, dir: -1, isPaused: ptqPaused(ptqBox2) }) : null;
 
       var ptqBuild = function () {
         var iw = window.innerWidth;
@@ -1720,27 +1725,39 @@ document.addEventListener('DOMContentLoaded', function () {
         var cardW = iw < 768 ? 205
           : iw < 1024 ? Math.round((Math.min(vw, 900) - 20) / 2)
           : Math.round((vw - 4 * gap) / 5 * cardScale());
-        ptqBox.style.setProperty('--pt-card-w', cardW + 'px');
-        ptqBox.style.setProperty('--pt-card-gap', gap + 'px');
+        [ptqBox, ptqBox2].forEach(function (b) {
+          if (!b) { return; }
+          b.style.setProperty('--pt-card-w', cardW + 'px');
+          b.style.setProperty('--pt-card-gap', gap + 'px');
+        });
         var step = cardW + gap;
-        var reps = Math.max(1, Math.ceil((vw + step) / (step * ptqSrc.length)));
-        function set(hidden) {
-          var f = document.createDocumentFragment();
-          for (var r = 0; r < reps; r++) {
-            ptqSrc.forEach(function (c) {
-              var n = c.cloneNode(true);
-              var im = n.querySelector('img');
-              if (im) { im.setAttribute('draggable', 'false'); im.loading = 'eager'; }
-              if (hidden) { n.setAttribute('aria-hidden', 'true'); n.setAttribute('tabindex', '-1'); }
-              f.appendChild(n);
-            });
+        function fill(track, eng, list) {
+          var reps = Math.max(1, Math.ceil((vw + step) / (step * list.length)));
+          function set(hidden) {
+            var f = document.createDocumentFragment();
+            for (var r = 0; r < reps; r++) {
+              list.forEach(function (c) {
+                var n = c.cloneNode(true);
+                var im = n.querySelector('img');
+                if (im) { im.setAttribute('draggable', 'false'); im.loading = 'eager'; }
+                if (hidden || r > 0) { n.setAttribute('aria-hidden', 'true'); n.setAttribute('tabindex', '-1'); }   // עותקים כפולים: לא נקראים ולא נכנסים בטאב
+                f.appendChild(n);
+              });
+            }
+            return f;
           }
-          return f;
+          track.innerHTML = '';
+          track.appendChild(set(false));
+          track.appendChild(set(true));
+          eng.measure(reps * list.length);
         }
-        ptqTrack.innerHTML = '';
-        ptqTrack.appendChild(set(false));
-        ptqTrack.appendChild(set(true));
-        ptqE.measure(reps * ptqSrc.length);
+        if (ptqE2) {                                  // כרטיס 1 → שורה 1, כרטיס 2 → שורה 2, ...
+          ptqBox2.hidden = false; ptqBox2.classList.add('is-on');
+          fill(ptqTrack, ptqE, ptqSrc.filter(function (c, i) { return i % 2 === 0; }));
+          fill(ptqTrack2, ptqE2, ptqSrc.filter(function (c, i) { return i % 2 === 1; }));
+        } else {
+          fill(ptqTrack, ptqE, ptqSrc);
+        }
         if (window.setLanguage) { window.setLanguage(document.documentElement.getAttribute('lang') || 'he'); }
         ptqTitles();
       };
@@ -1750,6 +1767,11 @@ document.addEventListener('DOMContentLoaded', function () {
         var h = 0;
         ptqTrack.querySelectorAll('.partner-chip strong').forEach(function (t) { h = Math.max(h, t.offsetHeight); });
         if (h) { ptqBox.style.setProperty('--pt-title-h', h + 'px'); }
+        // כותרת וסלוגן נחתכים ב-"…" אחרי 2 שורות — הטקסט המלא ב-title
+        ptSec.querySelectorAll('.pt-track .partner-chip strong, .pt-track .partner-chip .partner-slogan').forEach(function (e) {
+          var t = e.textContent.replace(/\s+/g, ' ').trim();
+          if (e.getAttribute('title') !== t) { e.setAttribute('title', t); }
+        });
       };
       if (document.fonts && document.fonts.ready) { document.fonts.ready.then(function () { ptqTitles(); }); }
 

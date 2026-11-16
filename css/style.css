@@ -8778,3 +8778,21 @@ html[dir] body #podcast .pod-card .partner-slogan {
   #podcast .pod-card .partner-photo { height: 110px; }
   #podcast .pod-card .pod-card__play { width: 44px; height: 44px; }
 }
+
+/* ==========================================================================
+   #partners — שתי שורות נעות (שורה 2 בכיוון ההפוך; js/script.js 7ב). רווח 20px בין השורות: ריפוד 16/22 בכל שורה מקוזז במרווח שלילי.
+   כרטיס קומפקטי ואחיד בפס: תמונה 95px, כותרת 15px עד 2 שורות באזור קבוע, סלוגן 13px עד 2 שורות, ריפוד 10px; "…" רק אם ארוך יותר.
+   (הרשת הסטטית ב"עצירת אנימציות" — ללא שינוי.)
+   ========================================================================== */
+.has-js #partners .pt-marquee--2.is-on { margin-top: -18px; }
+html[dir] body #partners .pt-track .partner-chip strong {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; box-sizing: border-box; flex: none;
+  height: calc(2 * 1.3 * 15px + 14px); min-height: 0; padding: 10px 10px 4px; margin: 0 !important;
+  font-size: 15px; line-height: 1.3; text-align: center !important;
+}
+html[dir] body #partners .pt-track .partner-chip .partner-slogan {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; box-sizing: border-box; flex: none;
+  height: calc(2 * 1.4 * 13px + 18px); min-height: 0; padding: 8px 10px 10px; margin: 0 !important;
+  font-size: 13px; line-height: 1.4; text-align: center !important;
+}
+#partners .pt-track .partner-chip .partner-photo { height: 95px; flex: none; }
