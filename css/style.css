@@ -8732,3 +8732,6 @@ html[dir] body #main #about .about-text .about-quote { position: relative; z-ind
 .has-js #projects .marquee--2.is-on { margin-top: -24px; }
 .has-js #projects .marquee.is-static .marquee-track { margin-inline: auto; }
 .has-js #projects .marquee.is-static { cursor: auto; -webkit-mask-image: none; mask-image: none; }
+
+/* #in-progress — שתי שורות נעות (שורה 2 בכיוון ההפוך; js/script.js סעיף 8). רווח 20px בין השורות: ריפוד 16/22 בכל שורה מקוזז במרווח שלילי */
+.has-js .in-progress .ip-marquee--2.is-on { margin-top: -18px; }

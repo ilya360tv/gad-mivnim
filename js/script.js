@@ -1463,6 +1463,8 @@ document.addEventListener('DOMContentLoaded', function () {
       if (marquee2) { marquee2.classList.toggle('is-modal-paused', on); }
       var ipb = document.querySelector('#in-progress .ip-marquee');
       if (ipb) { ipb.classList.toggle('is-modal-paused', on); }
+      var ipb2 = document.querySelector('#in-progress .ip-marquee--2');
+      if (ipb2) { ipb2.classList.toggle('is-modal-paused', on); }
     }
 
     function openProject(btn) {
@@ -2314,40 +2316,55 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (ipSec && ipGrid && ipBox && ipTrack) {
     var ipSrc = Array.prototype.slice.call(ipGrid.querySelectorAll('.progress-card'));
-    var ipE = initMarquee(ipBox, ipTrack, {
-      isPaused: function () {
-        if (ipBox.classList.contains('is-modal-paused')) { return true; }
-        try { if (ipBox.querySelector(':focus-visible')) { return true; } } catch (err) {}   // כמו #projects
+    // שתי שורות (כמו #projects): שורה 1 בכיוון הנוכחי, שורה 2 בכיוון ההפוך; אותו מנוע, שני מופעים, ~40px/s
+    var ipBox2 = ipSec.querySelector('.ip-marquee--2');
+    var ipTrack2 = ipBox2 ? ipBox2.querySelector('.ip-track') : null;
+    var ipPaused = function (box) {
+      return function () {
+        if (box.classList.contains('is-modal-paused')) { return true; }
+        try { if (box.querySelector(':focus-visible')) { return true; } } catch (err) {}   // כמו #projects
         return false;
-      }
-    });
+      };
+    };
+    var ipE = initMarquee(ipBox, ipTrack, { speed: 40, isPaused: ipPaused(ipBox) });
+    var ipE2 = (ipBox2 && ipTrack2) ? initMarquee(ipBox2, ipTrack2, { speed: 40, dir: -1, isPaused: ipPaused(ipBox2) }) : null;
 
     var ipBuild = function () {
       var narrow = window.innerWidth < 768;
       var step = (narrow ? 115 : 145) + 16;   // אותו אריח כמו פס הלוגואים
       var vw = ipBox.clientWidth || window.innerWidth;
-      var reps = Math.max(1, Math.ceil((vw + step) / (step * ipSrc.length)));
-      function set(hidden) {
-        var f = document.createDocumentFragment();
-        for (var r = 0; r < reps; r++) {
-          ipSrc.forEach(function (c) {
-            var n = c.cloneNode(true);
-            if (hidden) { n.setAttribute('aria-hidden', 'true'); n.setAttribute('tabindex', '-1'); }
-            f.appendChild(n);
-          });
+      function fill(track, eng, list) {
+        var reps = Math.max(1, Math.ceil((vw + step) / (step * list.length)));
+        function set(hidden) {
+          var f = document.createDocumentFragment();
+          for (var r = 0; r < reps; r++) {
+            list.forEach(function (c) {
+              var n = c.cloneNode(true);
+              if (hidden || r > 0) { n.setAttribute('aria-hidden', 'true'); n.setAttribute('tabindex', '-1'); }
+              f.appendChild(n);
+            });
+          }
+          return f;
         }
-        return f;
+        track.innerHTML = '';
+        track.appendChild(set(false));
+        track.appendChild(set(true));
+        eng.measure(reps * list.length);
       }
-      ipTrack.innerHTML = '';
-      ipTrack.appendChild(set(false));
-      ipTrack.appendChild(set(true));
-      ipE.measure(reps * ipSrc.length);
+      if (ipE2 && ipSrc.length > 3) {         // כרטיס 1 → שורה 1, כרטיס 2 → שורה 2, ...
+        ipBox2.hidden = false; ipBox2.classList.add('is-on');
+        fill(ipTrack, ipE, ipSrc.filter(function (c, i) { return i % 2 === 0; }));
+        fill(ipTrack2, ipE2, ipSrc.filter(function (c, i) { return i % 2 === 1; }));
+      } else {
+        if (ipBox2) { ipBox2.classList.remove('is-on'); ipBox2.hidden = true; }
+        fill(ipTrack, ipE, ipSrc);
+      }
       if (window.setLanguage) { window.setLanguage(document.documentElement.getAttribute('lang') || 'he'); }
     };
 
     // שם / מיקום ארוכים נחתכים ב-"…" — הטקסט המלא ב-title (גם אחרי החלפת שפה)
     var ipTitles = function () {
-      Array.prototype.forEach.call(ipTrack.querySelectorAll('.progress-name, .progress-loc'), function (e) {
+      Array.prototype.forEach.call(ipSec.querySelectorAll('.ip-track .progress-name, .ip-track .progress-loc'), function (e) {
         var t = e.textContent.replace(/\s+/g, ' ').trim();
         if (e.getAttribute('title') !== t) { e.setAttribute('title', t); }
       });
@@ -2356,6 +2373,10 @@ document.addEventListener('DOMContentLoaded', function () {
     if ('MutationObserver' in window) {
       new MutationObserver(function () { clearTimeout(ipTitleTimer); ipTitleTimer = setTimeout(ipTitles, 30); })
         .observe(ipTrack, { childList: true, characterData: true, subtree: true });
+      if (ipTrack2) {
+        new MutationObserver(function () { clearTimeout(ipTitleTimer); ipTitleTimer = setTimeout(ipTitles, 30); })
+          .observe(ipTrack2, { childList: true, characterData: true, subtree: true });
+      }
     }
     ipBox.hidden = false;
     ipBox.classList.add('is-on');
