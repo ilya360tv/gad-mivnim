@@ -2323,6 +2323,18 @@ document.addEventListener('DOMContentLoaded', function () {
       if (window.setLanguage) { window.setLanguage(document.documentElement.getAttribute('lang') || 'he'); }
     };
 
+    // שם / מיקום ארוכים נחתכים ב-"…" — הטקסט המלא ב-title (גם אחרי החלפת שפה)
+    var ipTitles = function () {
+      Array.prototype.forEach.call(ipTrack.querySelectorAll('.progress-name, .progress-loc'), function (e) {
+        var t = e.textContent.replace(/\s+/g, ' ').trim();
+        if (e.getAttribute('title') !== t) { e.setAttribute('title', t); }
+      });
+    };
+    var ipTitleTimer;
+    if ('MutationObserver' in window) {
+      new MutationObserver(function () { clearTimeout(ipTitleTimer); ipTitleTimer = setTimeout(ipTitles, 30); })
+        .observe(ipTrack, { childList: true, characterData: true, subtree: true });
+    }
     ipBox.hidden = false;
     ipBox.classList.add('is-on');
     ipGrid.classList.add('is-replaced');

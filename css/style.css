@@ -4582,21 +4582,9 @@ html.modal-open body { overflow: hidden; }
   margin-inline-end: var(--strip-gap);
   border-radius: var(--strip-radius);
 }
-.ip-marquee .progress-media { aspect-ratio: auto; height: 52%; flex: none; }
 .ip-marquee .progress-media img { pointer-events: none; -webkit-user-drag: none; }
 .ip-marquee .status-badge { top: 5px; inset-inline-start: 5px; padding: 2px 7px; gap: 4px; font-size: .7rem; line-height: 1.2; box-shadow: none; }
 .ip-marquee .status-badge::before { width: 5px; height: 5px; box-shadow: none; }
-.ip-marquee .progress-body { flex: 1; min-height: 0; padding: 6px 10px 6px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
-.ip-marquee .progress-name { margin: 0; font-size: .9rem; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ip-marquee .progress-loc { margin: 0; gap: 4px; font-size: .75rem; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ip-marquee .progress-loc svg { width: 12px; height: 12px; }
-.ip-marquee .progress-meta { margin: 0; font-size: .7rem; line-height: 1.2; }
-.ip-marquee .progress-meta strong { font-size: .75rem; }
-.ip-marquee .progress-bar { height: 4px; margin: 3px 0 0; border: 0; }
-.ip-marquee .progress-name { text-align: center; }
-.ip-marquee .progress-loc { display: flex; justify-content: center; align-items: center; gap: 4px; }
-.ip-marquee .progress-meta { display: flex; justify-content: center; align-items: baseline; gap: 6px; }
-.ip-marquee .progress-bar { width: 100%; align-self: stretch; }
 /* פס ההתקדמות מתמלא כשהסקשן נכנס למסך (גם בעותק המשוכפל) */
 .has-js .in-progress.ip-in .ip-marquee .progress-fill { width: var(--p); }
 
@@ -8504,3 +8492,55 @@ html[dir] body #main :is(.division-slogan, .card-tagline, .teams-slogan, .partne
 }
 html[dir] body #main .page-eyebrow ~ .section-lead,
 html[dir] body #main .section-title + .section-lead { margin-top: 0 !important; }
+
+/* ==========================================================================
+   כרטיסי "בביצוע" (#in-progress, הפס הנע) — סידור פנימי נקי. גודל הכרטיס (--strip-tile), הפס, התג והצבעים לא משתנים.
+   מתחת לתמונה: מחסנית אנכית מיושרת לימין — שם (שורה אחת, ... אם ארוך) → מיקום → "התקדמות X%" → פס. התמונה תופסת את מה שנשאר
+   (object-fit: cover), כך שגובה הכרטיס הכולל קבוע. הכותרת (h3) הייתה מקבלת את גודל "כותרות התוכן" (1.343vw) וגובה שורה 1.8 — נקבע כאן מחדש.
+   ========================================================================== */
+.ip-marquee .progress-media { aspect-ratio: auto; flex: 1 1 0; min-height: 0; }
+.ip-marquee .progress-body {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0;
+  padding: 7px 10px 9px;
+  overflow: visible;
+  text-align: start;
+}
+html[dir] body #main .ip-marquee .progress-card h3.progress-name.progress-name {
+  margin: 0 !important;
+  font-size: 13px !important;
+  line-height: 1.25 !important;
+  text-align: start;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ip-marquee .progress-loc {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  margin: 3px 0 0;
+  font-size: 11.5px;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ip-marquee .progress-loc svg { width: 11px; height: 11px; flex: none; }
+.ip-marquee .progress-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 6px;
+  margin: 4px 0 0;
+  font-size: 11.5px;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+.ip-marquee .progress-meta > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.ip-marquee .progress-meta strong { flex: none; font-size: 11.5px; }
+.ip-marquee .progress-bar { width: 100%; height: 5px; margin: 3px 0 0; border: 0; flex: none; }
