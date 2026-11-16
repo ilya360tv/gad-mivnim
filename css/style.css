@@ -8547,3 +8547,7 @@ html[dir] body #main .ip-marquee .progress-card h3.progress-name.progress-name {
 
 /* #about: המשפט "מדוע נולד הרעיון..." חזר להיות כותרת-משנה בתוך טקסט האודות (כמו שאר ה-about-sub); ריווח המילים נשמר */
 #about .about-text h3.about-sub.about-sub--idea { word-spacing: .45em; margin-block-start: 0; }
+
+/* #about: משפט "מדוע נולד הרעיון..." ראשון בעמודת הטקסט — 16px עד הפסקה הראשונה, ראשו בקו העליון של עמודת התמונות */
+#about .about-text h3.about-sub.about-sub--idea { margin-block: 0 16px; padding-block-start: 0; }
+#about .about-text h3.about-sub.about-sub--idea > * { margin: 0; }
