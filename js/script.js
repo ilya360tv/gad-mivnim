@@ -1693,7 +1693,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var vw = ptqBox.clientWidth || iw;
         // רוחב כרטיס כמו ברשת (= כרטיסי #services): דסקטופ 5 בשורה, טאבלט 2 בשורה (עד 900px);
         // מובייל: מעט קטן יותר, אותן פרופורציות
-        var cardW = iw < 768 ? 240
+        var cardW = iw < 768 ? 205
           : iw < 1024 ? Math.round((Math.min(vw, 900) - 20) / 2)
           : Math.round((vw - 4 * gap) / 5 * cardScale());
         ptqBox.style.setProperty('--pt-card-w', cardW + 'px');
