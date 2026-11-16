@@ -8707,20 +8707,20 @@ html[dir] body #main #about .about-quote .aq-brush { color: #38bdf8 !important; 
    #about — שורת הסיום כסרט נע: פס כהה בהיר קצת (#12161b) עם קווי תכלת דקים למעלה ולמטה, ריפוד 10px; הכול מודגש (700), בהירות מלאה.
    הדהייה היחידה: מסכת 8% בקצוות הפס. בין חזרות — נקודה "•" תכלת. (צבעים: בלוק הקודם.)
    ========================================================================== */
-html[dir] body #main #about .about-text .about-quote {
-  background: #12161b;
-  border-top: 1px solid rgba(56, 189, 248, .35);
-  border-bottom: 1px solid rgba(56, 189, 248, .35);
-  padding: 10px 0;
-  opacity: 1;
-}
+html[dir] body #main #about .about-text .about-quote { opacity: 1; }   /* בלי סרט/קווים/רקע — הטקסט רץ על הרקע הרגיל */
 html[dir] body #main #about .about-quote .about-mq,
 html[dir] body #main #about .about-quote .about-mq__item,
 html[dir] body #main #about .about-quote .about-mq__item > * { opacity: 1 !important; filter: none !important; }
 html[dir] body #main #about .about-quote .about-mq__item > *,
 html[dir] body #main #about .about-quote .about-mq__item > * *,
-html[dir] body #main #about .about-quote .about-mq__item > .is-reg,
-html[dir] body #main #about .about-quote .about-mq__item .aq-brush { font-weight: 700 !important; }   /* גופן המכחול: אין לו משקל כבד יותר — הדפדפן מעבה אותו */
+html[dir] body #main #about .about-quote .about-mq__item > .is-reg { font-weight: 800 !important; }
+html[dir] body #main #about .about-quote .about-mq__item .aq-brush { font-weight: 700 !important; text-shadow: 0 0 .5px currentColor; }   /* גופן המכחול: אין לו משקל כבד יותר — הדפדפן מעבה אותו */
 html[dir] body #main #about .about-quote .about-mq__item::after {
   content: '\2022'; flex: none; color: #38bdf8; font-weight: 700; font-size: 1em; line-height: 1;
 }
+
+/* #about — מה שהחשיך את שורת הסיום: "דהייה רכה" (::after, 90px, גרדיאנט לרקע) של העמודה החתוכה, שיושבת מעל הטקסט האחרון — גם בעמוד וגם בעותק שבחלון הקריאה.
+   בחלון: בלי דהייה בכלל (העותק לא נחתך). בעמוד: השורה מעל הדהייה (z-index), הדהייה נשארת על הפסקאות שמעליה. */
+html[dir] body #main #about .about-text .about-quote { position: relative; z-index: 2; }
+#about.is-clamped .ab-read .about-text { overflow: visible; cursor: auto; }
+#about.is-clamped .ab-read .about-text::after { content: none; display: none; }
