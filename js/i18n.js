@@ -328,6 +328,13 @@
 
     d5_title:  { he: 'חטיבת המיוחדים שלנו', ru: 'Подразделение особых услуг', en: 'Our Specials Division', fr: 'Division de nos spécialités' },
     d5_slogan: { he: 'מובילים שינוי למבנה שלכם !', ru: 'Ведём перемены для вашего здания!', en: 'Leading change for your building!', fr: 'Nous menons le changement pour votre bâtiment !' },
+    d1_name:  { he: 'תכנון והנדסת בנייה', ru: 'Проектирование и инженерия', en: 'Planning & Engineering', fr: 'Planification et ingénierie' },
+    d2_name:  { he: 'בינוי ותשתיות', ru: 'Строительство и сети', en: 'Construction & Infrastructure', fr: 'Construction et infrastructures' },
+    d3_name:  { he: 'שותפויות נדל"ן', ru: 'Партнёрства в недвижимости', en: 'Real-Estate Partnerships', fr: 'Partenariats immobiliers' },
+    d4_name:  { he: 'השירותים שלנו', ru: 'Наши услуги', en: 'Our Services', fr: 'Nos services' },
+    d5_name:  { he: 'המיוחדים שלנו', ru: 'Особые услуги', en: 'Our Specials', fr: 'Nos spécialités' },
+    div_label: { he: 'חטיבה', ru: 'Подразделение', en: 'Division', fr: 'Division' },
+    div_more:  { he: 'לפרטים', ru: 'Подробнее', en: 'Details', fr: 'Détails' },
     c51:  { he: 'ניהול ואחזקת מבני מגורים ומסחר', ru: 'Управление и обслуживание жилых и коммерческих зданий', en: 'Management & Maintenance of Residential and Commercial Buildings', fr: 'Gestion et entretien de bâtiments résidentiels et commerciaux' },
     c51s: { he: 'משנים אתכם דרך לתחזוקה נכונה', ru: 'Меняем с вами путь к правильному обслуживанию', en: 'Changing the way to proper maintenance with you', fr: 'Nous changeons avec vous la voie vers un entretien juste' },
     c52:  { he: 'תיווך נכסים', ru: 'Посредничество в недвижимости', en: 'Property Brokerage', fr: 'Courtage immobilier' },

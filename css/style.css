@@ -8629,21 +8629,60 @@ html[dir] #about .ab-read .about-text h3.about-sub.about-sub--idea {
 html[dir] body #main #about h3.about-media-title, html[dir] body #main #about h3.about-media-title * { color: #ffffff !important; }
 
 /* ==========================================================================
-   #services — כרטיסי החטיבות: קומפקטיים ושווים. גובה = תוכן (בלי min-height / height קבועים על הכרטיס); כל הכרטיסים נמתחים לגבוה שבהם (grid stretch).
-   החליף את הגדלים שנבעו מ"סולם כותרות התוכן" (1.343vw) ומשכבות min-height ישנות. רוחב, סדר, צבעים ומסגרת ירוקה — ללא שינוי.
+   #services — כרטיסי החטיבות (עיצוב פרימיום, זהה בכל הכרטיסים). רוחב, סדר, טקסטים, תמונות וקישורים — ללא שינוי.
+   תמונה למעלה (190px, cover) עם גרדיאנט כהה; תווית "חטיבה" + שם (לבן) בפינה הימנית-תחתונה; מספר 01–05 בפינה שמאל-עליונה;
+   מתחת: סלוגן + "לפרטים ←". ריחוף/פוקוס: הרמה 6px, זום 1.06, זוהר תכלת, החץ זז. "עצירת אנימציות" — בלי תנועה.
    ========================================================================== */
-#services .division-cards .division-card { display: flex; flex-direction: column; height: auto; align-self: stretch; }
-#services .division-cards .division-card .division-card-head { display: flex; align-items: center; justify-content: center; min-height: 0; padding: 14px 8px 10px; }
-#services .division-cards .division-card .card-title {
-  font-family: 'Rubik', 'Segoe UI', Arial, sans-serif; font-size: 20px; font-weight: 700; line-height: 1.35; letter-spacing: .02em;
-  color: #38bdf8; margin: 0; text-align: center; text-wrap: balance; white-space: normal; min-height: calc(2 * 1.35em);   /* שתי שורות שמורות — התמונות על קו אחד */
+#services .division-cards .division-card {
+  display: flex; flex-direction: column; height: auto; align-self: stretch; overflow: hidden; padding: 0;
+  background: #12161b; border: 1px solid rgba(56, 189, 248, .18); border-radius: 16px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .35);
+  text-align: start; color: inherit; text-decoration: none;
+  transition: opacity .6s ease, transform .5s cubic-bezier(.22, .61, .36, 1), border-color .4s ease, box-shadow .4s ease;
+}
+#services .division-cards .division-card .card-media { position: relative; flex: none; aspect-ratio: auto; height: 190px; overflow: hidden; border: 0; border-radius: 16px 16px 0 0; }
+#services .division-cards .division-card .card-media img { width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1); transition: transform .4s cubic-bezier(.22, .61, .36, 1); }
+#services .division-cards .division-card .card-media::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10, 12, 14, 0) 38%, rgba(10, 12, 14, .9) 100%); pointer-events: none; }
+#services .division-cards .division-card .dc-num {
+  position: absolute; z-index: 2; top: 10px; left: 10px; width: 30px; height: 30px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
+  background: rgba(255, 255, 255, .10); border: 1px solid rgba(255, 255, 255, .22); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  font: 700 12px/1 'Rubik', 'Segoe UI', Arial, sans-serif; color: #38bdf8; letter-spacing: .02em;
 }
-#services .division-cards .division-card .card-media { aspect-ratio: auto; height: 110px; }
-#services .division-cards .division-card .card-media img { width: 100%; height: 100%; object-fit: cover; }
-#services .division-cards .division-card .card-body { display: flex; flex-direction: column; flex: 1; padding: 0; }
-#services .division-cards .division-card .card-tagline {
-  flex: 1; margin: 0; padding: 12px 12px 14px; text-align: center;
-  font-family: 'Rubik', 'Segoe UI', Arial, sans-serif; font-size: 16px; font-weight: 700; line-height: 1.45; letter-spacing: .02em;
-  color: #f2f5f7;
+#services .division-cards .division-card .dc-cap { position: absolute; z-index: 2; inset-inline: 12px; bottom: 10px; text-align: start; }
+#services .division-cards .division-card .dc-label { display: block; font: 700 12px/1.2 'Rubik', 'Segoe UI', Arial, sans-serif; letter-spacing: .14em; color: #38bdf8; margin-bottom: 3px; }
+html[dir] body #main #services .division-cards .division-card .card-title {
+  margin: 0 !important; font-family: 'Rubik', 'Segoe UI', Arial, sans-serif !important; font-size: 19px !important; font-weight: 700 !important; line-height: 1.25 !important;
+  letter-spacing: .01em; color: #ffffff !important; text-align: start !important; white-space: normal !important; text-wrap: balance;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden;
 }
+#services .division-cards .division-card .card-body { display: flex; flex-direction: column; flex: 1; min-height: 150px; padding: 14px; gap: 10px; text-align: center; }
+html[dir] body #main #services .division-cards .division-card .card-tagline {
+  flex: 1; margin: 0 !important; padding: 0; text-align: center; font-family: 'Rubik', 'Segoe UI', Arial, sans-serif !important; font-size: 15px !important; font-weight: 400 !important; line-height: 1.5 !important;
+  letter-spacing: normal; color: #cbd5e1 !important;
+}
+#services .division-cards .division-card .dc-more { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font: 700 14px/1 'Rubik', 'Segoe UI', Arial, sans-serif; color: #38bdf8; }
+#services .division-cards .division-card .dc-arrow::after { content: '\2190'; display: inline-block; transition: transform .3s ease; }
+html[dir="ltr"] #services .division-cards .division-card .dc-arrow::after { content: '\2192'; }
+#services .division-cards a.division-card:hover,
+#services .division-cards a.division-card:focus-visible {
+  border-color: #38bdf8; box-shadow: 0 0 0 1px rgba(56, 189, 248, .7), 0 0 26px rgba(56, 189, 248, .35), 0 22px 44px rgba(0, 0, 0, .55);
+}
+#services .division-cards.is-visible a.division-card:hover, #services .division-cards.is-visible a.division-card:focus-visible { transition-delay: 0s; }
+#services .division-cards a.division-card:focus-visible { outline: 2px solid #38bdf8; outline-offset: 3px; }
+@media (hover: hover) and (min-width: 1024px) {
+  html:not(.a11y-no-motion) #services .division-cards a.division-card:hover,
+  html:not(.a11y-no-motion) #services .division-cards a.division-card:focus-visible { transform: translateY(-6px); }
+  html:not(.a11y-no-motion) #services .division-cards a.division-card:hover .card-media img,
+  html:not(.a11y-no-motion) #services .division-cards a.division-card:focus-visible .card-media img { transform: scale(1.06); }
+  html:not(.a11y-no-motion) #services .division-cards a.division-card:hover .dc-arrow::after,
+  html:not(.a11y-no-motion) #services .division-cards a.division-card:focus-visible .dc-arrow::after { transform: translateX(-4px); }
+  html[dir="ltr"]:not(.a11y-no-motion) #services .division-cards a.division-card:hover .dc-arrow::after,
+  html[dir="ltr"]:not(.a11y-no-motion) #services .division-cards a.division-card:focus-visible .dc-arrow::after { transform: translateX(4px); }
+}
+/* כניסה: fade-up מדורג, 80ms בין כרטיס לכרטיס (רק #services) */
+.has-js #services .division-cards.reveal-group > *:nth-child(1) { transition-delay: 0s; }
+.has-js #services .division-cards.reveal-group > *:nth-child(2) { transition-delay: .08s; }
+.has-js #services .division-cards.reveal-group > *:nth-child(3) { transition-delay: .16s; }
+.has-js #services .division-cards.reveal-group > *:nth-child(4) { transition-delay: .24s; }
+.has-js #services .division-cards.reveal-group > *:nth-child(5) { transition-delay: .32s; }
