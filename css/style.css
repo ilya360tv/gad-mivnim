@@ -7742,6 +7742,22 @@ html.a11y-no-motion body.page-split > main { animation: none !important; }
 .ab-read__scroll:focus { outline: none; }
 .ab-read__scroll:focus-visible { outline: 2px solid var(--lb); outline-offset: -4px; }
 .ab-read__title { margin: 0 0 14px; padding-inline-end: 48px; font-size: 1.2rem; font-weight: 700; line-height: 1.4; letter-spacing: .14em; color: #38bdf8; }
+/* כותרת חלון הקריאה: ממורכזת, בתוך גלולה (אותה טבעת 1px ורקע כהה כמו גלולות הצד / .page-eyebrow). גודל/משקל/צבע/ריווח אותיות — ללא שינוי. לא לחיץ.
+   מתחתיה רווח של 2 שורות פסקה (2 × 1.85rem) לפני המשפט "מדוע נולד הרעיון…". */
+html[dir] #about .ab-read .ab-read__title {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin: 0 auto calc(2 * 1.85rem) !important;
+  padding: 10px 26px 10px calc(26px + .14em) !important;   /* .14em = ריווח האותיות — מאזן את הטקסט באמצע */
+  text-align: center;
+  background: linear-gradient(var(--lb-bg), var(--lb-bg)), rgba(10, 12, 14, .55);
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, .45);
+  border-radius: 999px;
+  cursor: default;
+  pointer-events: none;
+}
 #about .ab-read .about-text { max-width: none; }
 #about .ab-read .about-text > p,
 #about .ab-read .about-text h3.about-sub,
