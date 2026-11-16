@@ -7569,7 +7569,7 @@ html[dir] body #tenders:not(.is-members) .tn-demo-note { font-size: .85rem; }
   html[dir] body #tenders:not(.is-members) { padding-top: 104px; }
   html[dir] body #tenders:not(.is-members) .tn-layout {
     display: grid;
-    grid-template-columns: minmax(0, 45%) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 45%);   /* ימין: כרטיס כניסה (ממורכז בעמודה); שמאל: ההסבר (45%) */
     column-gap: 56px;
     align-items: start;
   }
@@ -8403,9 +8403,9 @@ html[dir] body #main .pod-head__count { grid-column: 2; grid-row: 2; text-align:
   }
   html[dir] body #tenders:not(.is-members) .tn-intro { display: contents; }
   html[dir] body #tenders:not(.is-members) .tn-intro > .section-title.section-title { grid-column: 1 / -1; grid-row: 1; margin-top: 0 !important; }
-  html[dir] body #tenders:not(.is-members) .tn-intro > .section-lead { grid-column: 1; grid-row: 2; }
-  html[dir] body #tenders:not(.is-members) .tn-intro > .tn-perks { grid-column: 1; grid-row: 3; align-self: start; }
-  html[dir] body #tenders:not(.is-members) .tn-stage { grid-column: 2; grid-row: 2 / span 2; }
+  html[dir] body #tenders:not(.is-members) .tn-intro > .section-lead { grid-column: 2; grid-row: 2; }
+  html[dir] body #tenders:not(.is-members) .tn-intro > .tn-perks { grid-column: 2; grid-row: 3; align-self: start; }
+  html[dir] body #tenders:not(.is-members) .tn-stage { grid-column: 1; grid-row: 2 / span 2; }
 }
 
 /* עמוד פרויקט: הכותרת במרכז, הלוגו בקצה הימני, הכפתורים בקצה השמאלי (≥1280); מתחת ל-1280 הכותרת קודמת ללוגו */
@@ -8647,4 +8647,12 @@ html:not([lang="he"]) #services .division-cards .division-card .card-title { min
   flex: 1; margin: 0; padding: 12px 12px 16px; text-align: center;
   font-family: 'Rubik', 'Segoe UI', Arial, sans-serif; font-size: 16px; font-weight: 700; line-height: 1.45; letter-spacing: .02em;
   color: #f2f5f7;
+}
+
+/* #tenders (לפני כניסה, <1024): הכותרת למעלה, כרטיס הכניסה ראשון, ההסבר מתחתיו */
+@media (max-width: 1023.98px) {
+  html[dir] body #tenders:not(.is-members) .tn-layout { display: flex; flex-direction: column; }
+  html[dir] body #tenders:not(.is-members) .tn-intro { display: contents; }
+  html[dir] body #tenders:not(.is-members) .tn-intro > .section-title { order: -2; }
+  html[dir] body #tenders:not(.is-members) .tn-stage { order: -1; margin-bottom: 26px; }
 }
