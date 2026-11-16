@@ -8551,8 +8551,8 @@ html[dir] body #main .ip-marquee .progress-card h3.progress-name.progress-name {
    #about — "מדוע נולד הרעיון..." (h3.about-sub--idea)
    בין גלולת העמוד ("אודות הקבוצה") לבין בלוק הטקסט, מחוץ לעמודת הטקסט.
    משמאל לו (ב-RTL) עמודת התמונות: "מאז ועד היום..." נשאר באותו קו עליון.
-   דסקטופ (≥1024): שורה אחת. הרוחב — מקצה התוכן עד תחילת עמודת התמונות —
-   וגודל הכתב נקבעים ב-js/script.js (סעיף 13), בכל שפה. מתחת ל-1024: שבירה רגילה.
+   טאבלט ודסקטופ (≥768): שורה אחת. הכתב מתכווץ כדי שהמשפט ייכנס (js/script.js סעיף 13),
+   בכל שפה. משתי עמודות (≥821) הרוחב הוא עד תחילת עמודת התמונות. מתחת ל-768: שבירה רגילה.
    ========================================================================== */
 #about .about-grid > .about-sub--idea {
   margin: 0 0 12px;
@@ -8572,8 +8572,19 @@ html[dir] body #main .ip-marquee .progress-card h3.progress-name.progress-name {
 @media (max-width: 767.98px) {
   #about .about-grid > .about-sub--idea { font-size: .92rem; }
 }
-/* שתי עמודות (מ-821, כמו .about-grid): המשפט בשורה מעל הטקסט, התמונות לצידן.
-   minmax(0, …fr) — רוחב מפורש של המשפט לא מרחיב את העמודה ולא דוחס את התמונות. */
+/* טאבלט ומעלה (≥768): שורה אחת בכל הרוחב הפנוי. הכתב מתכווץ ב-JS כדי לא לשבור שורה. */
+@media (min-width: 768px) {
+  #about .about-grid > .about-sub--idea {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    min-width: 0;
+    white-space: nowrap;
+    line-height: 1.25;
+  }
+}
+/* שתי עמודות (מ-821): המשפט מעל הטקסט ומסתיים 8px לפני עמודת התמונות.
+   minmax(0, …fr) — הרוחב המפורש לא מרחיב את העמודה ולא דוחס את התמונות. */
 @media (min-width: 821px) {
   #about .about-grid {
     grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
@@ -8582,10 +8593,12 @@ html[dir] body #main .ip-marquee .progress-card h3.progress-name.progress-name {
   #about .about-grid > .about-sub--idea {
     grid-column: 1;
     grid-row: 1;
-    margin: 0;
     align-self: start;
     justify-self: start;
-    min-width: 0;
+    /* 48px הוא ה-gap בין העמודות; 8px נשארים פנויים לפני התמונות */
+    width: calc(100% + 40px);
+    max-width: none;
+    margin-inline-end: -40px;
   }
   #about .about-grid > .about-text { grid-column: 1; grid-row: 2; }
   #about .about-grid > .about-media {
@@ -8597,14 +8610,6 @@ html[dir] body #main .ip-marquee .progress-card h3.progress-name.progress-name {
 }
 @media (min-width: 1024px) {
   #about .about-media .about-media-title { margin-top: 0 !important; }
-  #about .about-grid > .about-sub--idea {
-    /* 48px הוא ה-gap בין העמודות; 8px נשארים פנויים לפני התמונות */
-    width: calc(100% + 40px);
-    max-width: none;
-    margin-inline-end: -40px;
-    white-space: nowrap;
-    line-height: 1.25;
-  }
   #about.is-clamped .about-grid { row-gap: 12px; }
 }
 /* חלון "המשך קריאה": אותו משפט בראש הטקסט, נשבר לשורות (החלון צר משורת הדסקטופ) */

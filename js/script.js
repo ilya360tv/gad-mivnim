@@ -2794,10 +2794,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
   /* ---------------------------------------------------------------
-     13) #about — "מדוע נולד הרעיון..." בשורה אחת בדסקטופ (≥1024).
-         המשפט מעל עמודת הטקסט (לא בתוכה). רוחבו ב-CSS: עמודת הטקסט + הרווח עד התמונות.
-         גודל הכתב יורד מ-20px עד שהמשפט נכנס בשורה אחת, בכל שפה.
-         מתחת ל-1024 השבירה רגילה (ה-CSS). "מאז ועד היום..." מיושר ב-CSS לאותו קו עליון.
+     13) #about — "מדוע נולד הרעיון..." בשורה אחת בטאבלט ובדסקטופ (≥768).
+         המשפט מעל עמודת הטקסט (לא בתוכה). משתי עמודות רוחבו ב-CSS עד התמונות;
+         בטאבלט של עמודה אחת — כל רוחב התוכן. הכתב יורד מ-20px עד שהמשפט נכנס, בכל שפה.
+         מתחת ל-768 השבירה רגילה (ה-CSS). "מאז ועד היום..." מיושר ב-CSS לאותו קו עליון.
      --------------------------------------------------------------- */
   var ideaEl = document.querySelector('#about .about-grid > .about-sub--idea');
   var fitIdea = function () {};
@@ -2805,7 +2805,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var IDEA_MAX = 20, IDEA_MIN = 6;
     fitIdea = function () {
       ideaEl.style.fontSize = '';
-      if (window.innerWidth < 1024) { return; }
+      if (window.innerWidth < 768) { return; }
       if (ideaEl.clientWidth < 40) { return; }
       var size = IDEA_MAX;
       ideaEl.style.fontSize = size.toFixed(1) + 'px';
