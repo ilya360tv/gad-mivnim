@@ -2188,10 +2188,11 @@ document.addEventListener('DOMContentLoaded', function () {
         c.setAttribute('role', 'button');
         c.setAttribute('tabindex', '0');
         c.innerHTML =
-          '<strong><span class="pod-card__title"><span class="pod-card__chip"></span> <span class="pod-card__t"></span></span></strong>' +
+          '<span class="pod-card__badge"><span class="pod-card__chip"></span></span>' +
+          '<strong><span class="pod-card__title"><span class="pod-card__t"></span></span></strong>' +
           '<div class="partner-photo"><img src="' + PC_IMG + '" alt="" loading="lazy" decoding="async" draggable="false">' +
             '<span class="pod-card__play">' + PC_PLAY + '</span></div>' +
-          '<span class="partner-slogan"></span>';
+          '<span class="partner-slogan"><span class="pod-card__guest"></span><span class="pod-card__min"></span></span>';
         pcGrid.appendChild(c);
       });
       pcSec.addEventListener('click', function (e) {
@@ -2219,7 +2220,10 @@ document.addEventListener('DOMContentLoaded', function () {
           if (!d) { return; }
           c.querySelector('.pod-card__chip').textContent = PL(PCUI.ep) + ' ' + d.n;
           c.querySelector('.pod-card__t').textContent = PL(d.title);
-          c.querySelector('.partner-slogan').textContent = PL(d.guest) + ' · ' + pcMin(d);
+          c.querySelector('.pod-card__title').setAttribute('title', PL(d.title));       // הכותרת המלאה (בכרטיס היא נחתכת ב-"…" אחרי 2 שורות)
+          c.querySelector('.pod-card__guest').textContent = PL(d.guest);
+          c.querySelector('.pod-card__guest').setAttribute('title', PL(d.guest));
+          c.querySelector('.pod-card__min').textContent = pcMin(d);
           c.setAttribute('aria-label', pcMetaTxt(d) + ' – ' + PL(d.title));
         });
       }

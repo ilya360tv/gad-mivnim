@@ -8476,7 +8476,7 @@ html[dir] body #main :is(h2, h3, h4):not(.section-title):not(.page-eyebrow):not(
   letter-spacing: .02em;
   margin-block: 22px 6px;
 }
-html[dir] body #main :is(.division-slogan, .card-tagline, .teams-slogan, .partner-slogan, .project-subtitle):not(#services .division-card *):not(#partners .partner-chip *) {
+html[dir] body #main :is(.division-slogan, .card-tagline, .teams-slogan, .partner-slogan, .project-subtitle):not(#services .division-card *):not(#partners .partner-chip *):not(#podcast .partner-chip *) {
   font-family: 'Rubik', 'Segoe UI', Arial, sans-serif !important;
   font-size: var(--ch-fs) !important;
   font-weight: 700 !important;
@@ -8485,7 +8485,7 @@ html[dir] body #main :is(.division-slogan, .card-tagline, .teams-slogan, .partne
   letter-spacing: .02em;
   margin-block: 14px 4px;
 }
-html[dir] body #main .partner-chip:not(#partners .partner-chip) > strong {
+html[dir] body #main .partner-chip:not(#partners .partner-chip):not(#podcast .partner-chip) > strong {
   font-family: 'Rubik', 'Segoe UI', Arial, sans-serif !important;
   font-size: var(--ch-fs) !important;
   font-weight: 700 !important;
@@ -8735,3 +8735,36 @@ html[dir] body #main #about .about-text .about-quote { position: relative; z-ind
 
 /* #in-progress — שתי שורות נעות (שורה 2 בכיוון ההפוך; js/script.js סעיף 8). רווח 20px בין השורות: ריפוד 16/22 בכל שורה מקוזז במרווח שלילי */
 .has-js .in-progress .ip-marquee--2.is-on { margin-top: -18px; }
+
+/* ==========================================================================
+   #podcast — כרטיסי פרקים קצרים ונקיים. מבנה זהה בכל כרטיס, מלמעלה למטה:
+   1. תג "פרק N" לבד בשורה משלו (מימין, 12px)  2. כותרת 15px / 1.35 — בדיוק 2 שורות, נחתכת ב-"…" (הכותרת המלאה ב-title)
+   3. תמונה 120px, ▶ במרכז  4. שורה תחתונה אחת, 13px אפור בהיר: "אורח: …" מימין (נחתך ב-"…"), "N דק'" משמאל.  ריפוד 12px.
+   רוחב, צבעים, תנועה וקליק — ללא שינוי. (הגדלים הענקיים היו מ"סולם כותרות התוכן" 1.343vw — הכרטיסים הוצאו ממנו.)
+   ========================================================================== */
+html[dir] body #podcast .pod-card { padding: 0; gap: 0; }
+html[dir] body #podcast .pod-card .pod-card__badge {
+  display: block; flex: none; padding: 12px 12px 0; text-align: start !important; line-height: 1;
+}
+#podcast .pod-card .pod-card__chip { display: inline-block; font-size: 12px; line-height: 1.5; padding: 1px 9px; vertical-align: top; }
+html[dir] body #podcast .pt-track .pod-card strong,
+html[dir] body #podcast .pod-card strong {
+  display: block; flex: none; box-sizing: border-box; min-height: 0;
+  height: calc(2 * 1.35 * 15px + 20px); padding: 8px 12px 12px; margin: 0 !important;
+  font-family: 'Rubik', 'Segoe UI', Arial, sans-serif; font-size: 15px; font-weight: 700; line-height: 1.35; letter-spacing: .02em;
+  text-align: start !important; justify-content: flex-start;
+}
+#podcast .pod-card .pod-card__title {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; text-overflow: ellipsis;
+}
+#podcast .pod-card .partner-photo { aspect-ratio: auto; height: 120px; flex: none; }
+html[dir] body #podcast .pod-card .partner-slogan {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px; flex: none; min-height: 0; box-sizing: border-box;
+  padding: 12px; margin: 0 !important; text-align: start !important;
+  font-family: 'Rubik', 'Segoe UI', Arial, sans-serif; font-size: 13px; font-weight: 400; line-height: 1.4; letter-spacing: 0; color: #aeb6bf; white-space: nowrap;
+}
+#podcast .pod-card .pod-card__guest { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+#podcast .pod-card .pod-card__min { flex: none; }
+@media (max-width: 767.98px) {
+  #podcast .pod-card .partner-photo { height: 100px; }
+}
