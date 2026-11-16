@@ -8551,3 +8551,18 @@ html[dir] body #main .ip-marquee .progress-card h3.progress-name.progress-name {
 /* #about: משפט "מדוע נולד הרעיון..." ראשון בעמודת הטקסט — 16px עד הפסקה הראשונה, ראשו בקו העליון של עמודת התמונות */
 #about .about-text h3.about-sub.about-sub--idea { margin-block: 0 16px; padding-block-start: 0; }
 #about .about-text h3.about-sub.about-sub--idea > * { margin: 0; }
+
+/* #about (≥1024): יישור אנכי של שתי העמודות — שורת "מאז ועד היום..." באותו Y כמו ראש המשפט; הרווח משפט↔פסקה (12–24px) מקרב את סוף הפסקה לסוף התמונות; קצה ימני זהה לפסקה */
+@media (min-width: 1024px) {
+  #about .about-media .about-media-title { margin-top: 0 !important; }
+  #about .about-text h3.about-sub.about-sub--idea {
+    margin-inline: 0 !important;
+    margin-block: 0 24px;
+    text-align: start !important;
+    text-align-last: start !important;
+  }
+}
+@media (min-width: 1700px) {
+  #about .about-text h3.about-sub.about-sub--idea { margin-block-end: 12px; }
+}
+html[dir="rtl"] #about .about-text h3.about-sub.about-sub--idea { margin-inline-start: 0 !important; }
