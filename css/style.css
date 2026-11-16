@@ -7763,9 +7763,9 @@ html[dir] #about .ab-read .ab-read__title {
 #about .ab-read .about-text h3.about-sub,
 #about .ab-read .about-text h4.about-sub--sm,
 #about .ab-read .about-text .about-quote { font-size: 1rem !important; line-height: 1.85 !important; }
-/* שורת הסיום — הטקסט עצמו (במקום הפס הנע), ממורכז */
-#about .ab-read .about-text .about-quote { overflow: visible; }
-#about .ab-read .about-mq__src {
+/* שורת הסיום בחלון: פס נע (כמו בעמוד, נבנה ב-js/about.js). הטקסט הסטטי הממורכז — רק ב"עצירת אנימציות" */
+html.a11y-no-motion #about .ab-read .about-text .about-quote { overflow: visible; }
+html.a11y-no-motion #about .ab-read .about-mq__src {
   position: static !important;
   width: auto;
   height: auto;
@@ -7776,7 +7776,7 @@ html[dir] #about .ab-read .ab-read__title {
   display: block;
   text-align: center;
 }
-#about .ab-read .about-mq__src > * { display: inline-block; margin-inline: 12px; }
+html.a11y-no-motion #about .ab-read .about-mq__src > * { display: inline-block; margin-inline: 12px; }
 @media (max-width: 767.98px) {
   .ab-read__scroll { padding: 26px 22px; }
 }

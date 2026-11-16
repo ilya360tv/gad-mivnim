@@ -76,8 +76,8 @@
     clone.removeAttribute('tabindex');
     clone.removeAttribute('aria-haspopup');
     clone.classList.remove('reveal', 'reveal-d1', 'is-visible');
-    // שורת הסיום: במקום הפס הנע — הטקסט עצמו (כמו במצב "עצירת אנימציות")
-    clone.querySelectorAll('.about-mq').forEach(function (n) { n.parentNode.removeChild(n); });
+    // שורת הסיום: הפס הנע נשאר בעותק (נבנה מחדש ב-open, אחרי שהחלון מוצג) — מנקים את העותקים שהועתקו
+    clone.querySelectorAll('.about-mq__track').forEach(function (n) { n.innerHTML = ''; n.removeAttribute('style'); });
     var idea = section.querySelector('.about-grid > .about-sub--idea');
     if (idea) {
       var h = idea.cloneNode(true);
@@ -86,8 +86,14 @@
     }
     body.innerHTML = '';
     body.appendChild(clone);
+    if (!m.hidden) { startMq(); }                 // החלפת שפה בזמן שהחלון פתוח
     titleEl.textContent = t('about_eyebrow', 'אודות הקבוצה');
     xBtn.setAttribute('aria-label', t('pm_close', 'סגירה'));
+  }
+  // פס שורת הסיום בתוך החלון: מאותחל רק כשהחלון גלוי (רוחב 0 כשהוא מוסתר). נעצר מעצמו כשהחלון נסגר (הפס יוצא מהמסך / ה-DOM מוחלף)
+  function startMq() {
+    var mq = body.querySelector('.about-mq');
+    if (mq && typeof window.gmAboutMq === 'function') { window.gmAboutMq(mq); }
   }
   function open(from) {
     opener = from || document.activeElement;
@@ -98,6 +104,7 @@
     scroller.scrollTop = 0;
     void m.offsetWidth;
     m.classList.add('is-open');
+    startMq();
   }
   function close() {
     if (m.hidden) { return; }

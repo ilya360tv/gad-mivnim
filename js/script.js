@@ -2417,10 +2417,11 @@ document.addEventListener('DOMContentLoaded', function () {
          הטקסט האמיתי נשאר פעם אחת ב-.about-mq__src (מוסתר ויזואלית); העותקים הנעים aria-hidden
          ונבנים מחדש בהחלפת שפה ורק בשינוי רוחב אמיתי.
      --------------------------------------------------------------- */
-  var aqBox = document.querySelector('.about-mq');
-  var aqTrack = aqBox ? aqBox.querySelector('.about-mq__track') : null;
-  var aqSrc = document.querySelector('.about-mq__src');
-  if (aqBox && aqTrack && aqSrc) {
+  // aqSetup(box): בונה פס נע לשורת הסיום. משמש גם את העותק שבחלון "המשך קריאה" (js/about.js קורא לו אחרי שהחלון מוצג, כשהרוחב ניתן למדידה)
+  function aqSetup(aqBox) {
+    var aqTrack = aqBox ? aqBox.querySelector('.about-mq__track') : null;
+    var aqSrc = aqBox && aqBox.parentNode ? aqBox.parentNode.querySelector('.about-mq__src') : null;
+    if (!(aqBox && aqTrack && aqSrc)) { return; }
     var aqE = initMarquee(aqBox, aqTrack, { speed: 45 });   // ~45px/s, רק לפס הזה
     var aqItem = function () {
       var one = document.createElement('span');
@@ -2434,7 +2435,7 @@ document.addEventListener('DOMContentLoaded', function () {
       return one;
     };
     var aqBuild = function () {
-      if (!aqSrc.children.length) { return; }
+      if (!aqSrc.children.length || !aqBox.isConnected) { return; }
       aqTrack.innerHTML = '';
       var first = aqItem(); aqTrack.appendChild(first);
       var w = first.getBoundingClientRect().width || 600;
@@ -2458,6 +2459,8 @@ document.addEventListener('DOMContentLoaded', function () {
         .observe(aqSrc, { childList: true, subtree: true, characterData: true });
     }
   }
+  window.gmAboutMq = aqSetup;
+  aqSetup(document.querySelector('.about-mq'));
 
 
   /* ---------------------------------------------------------------
