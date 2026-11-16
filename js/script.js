@@ -2593,7 +2593,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var ws = 0.45;
         var setWs = function () { el.style.setProperty('--pt-ws', ws.toFixed(2) + 'em'); };
         if (mobile) {
-          while (el.getBoundingClientRect().height > fs * 1.3 * 2.2 && ws > 0.3) { ws = Math.max(0.3, ws - 0.05); setWs(); }
+          while (el.getBoundingClientRect().height > fs * 1.3 * 2.2 && ws > 0) { ws = Math.max(0, ws - 0.05); setWs(); }   // מובייל: עד שתי שורות — מצמצמים עד 0
           while (el.getBoundingClientRect().height > fs * 1.3 * 2.2 && fs > min) { fs -= 0.5; set(); }
           return;
         }
