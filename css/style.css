@@ -7879,18 +7879,18 @@ html.a11y-no-motion body.page-split > main { animation: none !important; }
    הריווח לתוכן שמתחתיה — זהה בכל העמודים.
    ========================================================================== */
 :root {
-  /* חצי מהגודל הקודם clamp(1.05rem, 1.6vw, 1.35rem). ריווח האותיות נשאר .14em — יורד ביחס לכתב. */
-  --pe-fs: clamp(0.525rem, 0.8vw, 0.675rem);
+  /* 60% מהמקור clamp(1.05rem, 1.6vw, 1.35rem). ריווח האותיות נשאר .14em. */
+  --pe-fs: clamp(0.63rem, 0.96vw, 0.81rem);
   --pe-lh: 1.6;                                   /* גובה השורה — קבוע, כדי לחשב את המרכז */
-  --pe-frame-y: 5px;                              /* חצי מ-10px: המסגרת מעל ומתחת לטקסט */
-  --pe-frame-x: 13px;                             /* חצי מ-26px: המסגרת משני הצדדים */
+  --pe-frame-y: 6px;                              /* 60% מ-10px: המסגרת מעל ומתחת לטקסט */
+  --pe-frame-x: 16px;                             /* 60% מ-26px (15.6, מעוגל): המסגרת משני הצדדים */
   --pe-top: 24px;                                 /* מובייל: מרווח מתחת לפס העליון */
   --pe-gap: 22px;                                 /* מובייל: מרווח לתוכן */
   --pe-shift: 0px;                                /* פיצוי כדי שהתוכן מתחת לגלולה לא יזוז */
 }
 @media (max-width: 1023.98px) {
   :root {
-    --pe-fs: max(12px, 0.525rem);                 /* חצי מ-1.05rem הוא 8.4px — לא יורדים מ-12px */
+    --pe-fs: max(12px, 0.63rem);                  /* 60% מ-1.05rem הוא 10.08px — לא יורדים מ-12px */
     --pe-shift: calc((1.05rem - var(--pe-fs)) * var(--pe-lh) / 2);
     --pe-top: calc(24px + var(--pe-shift));
     --pe-gap: calc(22px + var(--pe-shift));
@@ -7899,8 +7899,8 @@ html.a11y-no-motion body.page-split > main { animation: none !important; }
 @media (min-width: 1024px) {
   :root {
     --pe-top: calc(var(--side-top) + var(--side-circle) / 2 - var(--pe-fs) * var(--pe-lh) / 2);
-    /* חצי מגובה הטקסט שהוסר — רק עמוד בלי כותרת צמודה (אודות) משתמש במרווח הזה */
-    --pe-gap: calc(28px + var(--pe-fs) * var(--pe-lh) / 2);
+    /* (גובה הטקסט המקורי − החדש) / 2. ב-60% זה pe-fs × lh / 3. רק אודות משתמש במרווח הזה */
+    --pe-gap: calc(28px + var(--pe-fs) * var(--pe-lh) / 3);
     --pe-shift: 0px;
   }
 }
@@ -7931,7 +7931,7 @@ html[dir] body #main .section-eyebrow.page-eyebrow {
 html[dir] body #main .section-eyebrow.page-eyebrow::after {
   content: '';
   position: absolute;
-  inset: calc(var(--pe-frame-y) * -1) max(calc(var(--pe-frame-x) * -1), calc((100% - 100vw) / 2 + 4px));   /* 13px מכל צד; במסך צר — לא יוצאת מהמסך */
+  inset: calc(var(--pe-frame-y) * -1) max(calc(var(--pe-frame-x) * -1), calc((100% - 100vw) / 2 + 4px));   /* 16px מכל צד; במסך צר — לא יוצאת מהמסך */
   z-index: -1;
   border-radius: 999px;
   background: linear-gradient(var(--lb-bg), var(--lb-bg)), rgba(10, 12, 14, .55);
