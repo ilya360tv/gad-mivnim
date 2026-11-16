@@ -8691,3 +8691,14 @@ html[dir] body #partners .partner-chip .partner-slogan {
 }
 #partners .partner-photo { aspect-ratio: auto; height: 105px; }
 @media (max-width: 767.98px) { #partners .partner-photo { height: 90px; } }
+
+/* ==========================================================================
+   #about — שורת הסיום ("בכל מקום במפה · GAD MIVNIM · משנים את הדרך לבניה נכונה !"): "בכל מקום במפה" לבן; GAD MIVNIM ו"משנים את הדרך…" בתכלת המותג.
+   רק צבע — גופנים, גדלים, ריווח וטקסטים ללא שינוי.
+   ========================================================================== */
+html[dir] body #main #about .about-quote .aq-l,
+html[dir] body #main #about .about-quote .aq-l:not(:has(.aq-brush)) { color: #ffffff !important; }
+html[dir] body #main #about .about-quote bdi,
+html[dir] body #main #about .about-quote bdi *,
+html[dir] body #main #about .about-quote .aq-l:has(.aq-brush),
+html[dir] body #main #about .about-quote .aq-brush { color: #38bdf8 !important; }

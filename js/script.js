@@ -2421,7 +2421,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var aqTrack = aqBox ? aqBox.querySelector('.about-mq__track') : null;
   var aqSrc = document.querySelector('.about-mq__src');
   if (aqBox && aqTrack && aqSrc) {
-    var aqE = initMarquee(aqBox, aqTrack, {});
+    var aqE = initMarquee(aqBox, aqTrack, { speed: 40 });   // ~40px/s, רק לפס הזה
     var aqItem = function () {
       var one = document.createElement('span');
       one.className = 'about-mq__item';
