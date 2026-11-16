@@ -8544,3 +8544,6 @@ html[dir] body #main .ip-marquee .progress-card h3.progress-name.progress-name {
 .ip-marquee .progress-meta > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .ip-marquee .progress-meta strong { flex: none; font-size: 11.5px; }
 .ip-marquee .progress-bar { width: 100%; height: 5px; margin: 3px 0 0; border: 0; flex: none; }
+
+/* #about: המשפט "מדוע נולד הרעיון..." חזר להיות כותרת-משנה בתוך טקסט האודות (כמו שאר ה-about-sub); ריווח המילים נשמר */
+#about .about-text h3.about-sub.about-sub--idea { word-spacing: .45em; margin-block-start: 0; }
