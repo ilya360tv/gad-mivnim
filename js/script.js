@@ -2537,6 +2537,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!desktop) {
       if (sec) sec.style.removeProperty('padding-top');
       Array.prototype.forEach.call(titles, function (el) { gmHeadHost(el).style.removeProperty('margin-top'); });
+      if (typeof alignIdea === 'function') alignIdea();
       return;
     }
     if (pill && sec && pill.offsetHeight) {
@@ -2562,6 +2563,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
     pass();
     pass();
+    if (typeof alignIdea === 'function') alignIdea();
   }
   var ptSel = '#main .page-eyebrow + .section-title, #main .division-top-text > .section-title, #main .project-head-text > .section-title, #main .pod-head__text > .section-title, #main .tn-intro > .section-title';
   var ptTitles = document.querySelectorAll(ptSel);
@@ -2794,33 +2796,174 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
   /* ---------------------------------------------------------------
-     13) #about — "מדוע נולד הרעיון..." בשורה אחת בטאבלט ובדסקטופ (≥768).
-         המשפט מעל עמודת הטקסט (לא בתוכה). משתי עמודות רוחבו ב-CSS עד התמונות;
-         בטאבלט של עמודה אחת — כל רוחב התוכן. הכתב יורד מ-20px עד שהמשפט נכנס, בכל שפה.
-         מתחת ל-768 השבירה רגילה (ה-CSS). "מאז ועד היום..." מיושר ב-CSS לאותו קו עליון.
+     13) #about — "מדוע נולד הרעיון..." בשורה אחת (≥768), ובדסקטופ (≥1024) מרכז השורה
+         בגובה מרכז גלולת הניווט "אודות הקבוצה" (הגלולה השנייה מימין). הכתב — הגדול ביותר
+         שנכנס בשורה; מ-1440 לפחות 20px כשהרוחב מרשה. "מאז ועד היום..." באותו קו.
+         מתחת ל-768 השבירה רגילה.
      --------------------------------------------------------------- */
   var ideaEl = document.querySelector('#about .about-grid > .about-sub--idea');
   var fitIdea = function () {};
+  var alignIdea = function () {};
   if (ideaEl) {
-    var IDEA_MAX = 20, IDEA_MIN = 6;
-    fitIdea = function () {
+    var IDEA_MIN = 6;
+    var ideaGrid = ideaEl.parentElement;
+    var ideaTitle = document.querySelector('#about .about-media-title');
+    var placeIdeaSpan = function (nav) {
+      var tiles = document.querySelector('#about .about-tiles');
+      var textCol = ideaGrid.querySelector('.about-text');
+      if (!tiles || !textCol || window.innerWidth < 1024) {
+        ideaEl.style.marginInlineStart = '';
+        ideaEl.style.marginInlineEnd = '';
+        ideaEl.style.width = '';
+        ideaEl.style.maxWidth = '';
+        return;
+      }
+      var rtl0 = document.documentElement.getAttribute('dir') !== 'ltr';
+      var tile0 = tiles.getBoundingClientRect();
+      var pill0 = nav.getBoundingClientRect();
+      var wantRight = rtl0 ? pill0.left - 20 : tile0.left - 10;
+      var wantLeft = rtl0 ? tile0.right + 10 : textCol.getBoundingClientRect().left;
+      var now = ideaEl.getBoundingClientRect();
+      if (Math.abs(now.right - wantRight) <= 1.5 && Math.abs(now.left - wantLeft) <= 1.5 && ideaEl.style.width) return;
+      ideaEl.style.marginInlineStart = '0px';
+      ideaEl.style.marginInlineEnd = '0px';
+      ideaEl.style.width = '100%';
+      ideaEl.style.maxWidth = 'none';
+      var cell = textCol.getBoundingClientRect();
+      var tile = tiles.getBoundingClientRect();
+      var pill = nav.getBoundingClientRect();
+      var rtl = document.documentElement.getAttribute('dir') !== 'ltr';
+      var GAP_PILL = 20;
+      var GAP_PHOTO = 10;
+      var left, right;
+      if (rtl) {
+        right = pill.left - GAP_PILL;
+        left = tile.right + GAP_PHOTO;
+      } else {
+        left = cell.left;
+        right = tile.left - GAP_PHOTO;
+      }
+      var width = Math.max(80, right - left);
+      var anchor = rtl ? cell.right : cell.left;
+      var shift = rtl ? (right - anchor) : (anchor - left);
+      ideaEl.style.marginInlineStart = (-shift).toFixed(1) + 'px';
+      ideaEl.style.width = width.toFixed(1) + 'px';
+    };
+    var fitIdeaFont = function () {
       ideaEl.style.fontSize = '';
-      if (window.innerWidth < 768) { return; }
-      if (ideaEl.clientWidth < 40) { return; }
-      var size = IDEA_MAX;
+      if (window.innerWidth < 768) return;
+      if (ideaEl.clientWidth < 40) return;
+      var size = window.innerWidth >= 1366 ? 28 : 22;
       ideaEl.style.fontSize = size.toFixed(1) + 'px';
       var guard = 0;
-      while (ideaEl.scrollWidth > ideaEl.clientWidth + 0.5 && size > IDEA_MIN && guard < 50) {
+      while (ideaEl.scrollWidth > ideaEl.clientWidth + 0.5 && size > IDEA_MIN && guard < 80) {
         size = Math.round((size - 0.5) * 10) / 10;
         ideaEl.style.fontSize = size.toFixed(1) + 'px';
         guard++;
       }
-      if (ideaEl.scrollWidth > ideaEl.clientWidth + 0.5 && ideaEl.scrollWidth > 0) {
-        size = Math.max(IDEA_MIN, Math.floor(size * ideaEl.clientWidth / ideaEl.scrollWidth * 10) / 10);
+      while (ideaEl.scrollWidth > ideaEl.clientWidth + 0.5 && size > IDEA_MIN) {
+        size = Math.round((size - 0.1) * 10) / 10;
         ideaEl.style.fontSize = size.toFixed(1) + 'px';
       }
     };
+    fitIdea = function () {
+      if (window.innerWidth < 768) {
+        ideaEl.style.marginInlineStart = '';
+        ideaEl.style.marginInlineEnd = '';
+        ideaEl.style.width = '';
+        ideaEl.style.fontSize = '';
+        alignIdea();
+        return;
+      }
+      if (window.innerWidth < 1024) {
+        ideaEl.style.marginInlineStart = '';
+        ideaEl.style.marginInlineEnd = '';
+        ideaEl.style.width = '';
+        fitIdeaFont();
+        return;
+      }
+      alignIdea();
+    };
+    var ideaLock = false;
+    var ideaShiftY = function (el) {
+      var ty = 0;
+      for (var n = el; n && n !== document.body; n = n.parentElement) {
+        var tr = getComputedStyle(n).transform;
+        if (!tr || tr === 'none') continue;
+        var mx = tr.match(/matrix\(([^)]+)\)/);
+        if (!mx) continue;
+        var parts = mx[1].split(',');
+        if (parts.length === 6) ty += parseFloat(parts[5]) || 0;
+      }
+      return ty;
+    };
+    alignIdea = function () {
+      var title = ideaTitle;
+      var text = ideaGrid && ideaGrid.querySelector('.about-text');
+      var nav = document.querySelector('.site-header .main-nav a[data-i18n="nav_about"]');
+      if (ideaLock) return;
+      if (window.innerWidth < 1024 || !nav || !ideaGrid || window.scrollY > 2) {
+        if (window.innerWidth < 1024 && ideaGrid) {
+          ideaGrid.style.removeProperty('padding-top');
+          if (title) title.style.removeProperty('margin-top');
+          if (text) text.style.marginTop = '';
+        }
+        return;
+      }
+      ideaLock = true;
+      placeIdeaSpan(nav);
+      fitIdeaFont();
+      // sidePillDrop מזיז את הגלולה ב-translateY בזמן הנפילה. מחשבים את מקום המנוחה
+      // (בלי לגעת ב-animation, כדי לא להפעיל אותה מחדש).
+      var pill = nav.getBoundingClientRect();
+      var ty = 0;
+      var tr = getComputedStyle(nav).transform;
+      if (tr && tr !== 'none') {
+        var mx = tr.match(/matrix\(([^)]+)\)/);
+        if (mx) {
+          var parts = mx[1].split(',');
+          if (parts.length === 6) ty = parseFloat(parts[5]) || 0;
+        }
+      }
+      var pillCY = pill.top - ty + pill.height / 2;
+      var idea = ideaEl.getBoundingClientRect();
+      var err = pillCY - (idea.top + idea.height / 2);
+      if (Math.abs(err) > 0.5) {
+        var cur = parseFloat(ideaGrid.style.paddingTop) || 0;
+        ideaGrid.style.setProperty('padding-top', Math.max(0, cur + err).toFixed(2) + 'px', 'important');
+      }
+      if (title) {
+        var i2 = ideaEl.getBoundingClientRect();
+        var t = title.getBoundingClientRect();
+        var d2 = (i2.top + i2.height / 2) - (t.top - ideaShiftY(title) + t.height / 2);
+        if (Math.abs(d2) > 1) {
+          var curT = parseFloat(title.style.marginTop) || 0;
+          title.style.setProperty('margin-top', (curT + d2).toFixed(2) + 'px', 'important');
+        }
+      }
+      var firstP = text && text.querySelector('p');
+      if (firstP) {
+        var ib = ideaEl.getBoundingClientRect();
+        var gap = (firstP.getBoundingClientRect().top - ideaShiftY(firstP)) - ib.bottom;
+        if (Math.abs(gap - 18) > 1) {
+          var curM = parseFloat(text.style.marginTop) || 0;
+          text.style.marginTop = (curM + (18 - gap)).toFixed(2) + 'px';
+        }
+      }
+      ideaLock = false;
+    };
     fitIdea();
+    var ideaNav = document.querySelector('.site-header .main-nav a[data-i18n="nav_about"]');
+    if (ideaNav) ideaNav.addEventListener('animationend', function () { alignIdea(); });
+    if ('ResizeObserver' in window) {
+      var ideaWatch = new ResizeObserver(function () { alignIdea(); });
+      var ideaEye = document.querySelector('#about .page-eyebrow');
+      var ideaSec = document.getElementById('about');
+      var ideaLogo = document.querySelector('.site-header .logo-img');
+      if (ideaEye) ideaWatch.observe(ideaEye);
+      if (ideaSec) ideaWatch.observe(ideaSec);
+      if (ideaLogo) ideaWatch.observe(ideaLogo);
+    }
     window.addEventListener('load', fitIdea);
     window.addEventListener('pageshow', function (e) { if (e.persisted) { fitIdea(); } });
     if (document.fonts && document.fonts.ready) { document.fonts.ready.then(fitIdea); }
