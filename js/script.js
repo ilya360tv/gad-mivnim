@@ -2825,6 +2825,10 @@ document.addEventListener('DOMContentLoaded', function () {
       var wantLeft = rtl0 ? tile0.right + 10 : textCol.getBoundingClientRect().left;
       var now = ideaEl.getBoundingClientRect();
       if (Math.abs(now.right - wantRight) <= 1.5 && Math.abs(now.left - wantLeft) <= 1.5 && ideaEl.style.width) return;
+      textCol.style.marginInlineStart = '0px';
+      textCol.style.width = '';
+      textCol.style.maxWidth = '';
+      textCol.style.justifySelf = '';
       ideaEl.style.marginInlineStart = '0px';
       ideaEl.style.marginInlineEnd = '0px';
       ideaEl.style.width = '100%';
@@ -2897,6 +2901,26 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       return ty;
     };
+    var alignTextToIdea = function () {
+      var text = ideaGrid && ideaGrid.querySelector('.about-text');
+      var more = ideaGrid && ideaGrid.querySelector('.about-more-link');
+      if (!text) return;
+      if (window.innerWidth < 1024) return;
+      var rtl = document.documentElement.getAttribute('dir') !== 'ltr';
+      var ideaR = ideaEl.getBoundingClientRect();
+      var textR = text.getBoundingClientRect();
+      var ideaStart = rtl ? ideaR.right : ideaR.left;
+      var textStart = rtl ? textR.right : textR.left;
+      var delta = rtl ? (ideaStart - textStart) : (textStart - ideaStart);
+      if (Math.abs(delta) > 0.5) {
+        var curM = parseFloat(text.style.marginInlineStart) || 0;
+        text.style.maxWidth = 'none';
+        text.style.justifySelf = 'start';
+        text.style.marginInlineStart = (curM - delta).toFixed(2) + 'px';
+        text.style.width = (textR.width + delta).toFixed(2) + 'px';
+      }
+      if (more) more.style.marginInlineStart = text.style.marginInlineStart;
+    };
     alignIdea = function () {
       var title = ideaTitle;
       var text = ideaGrid && ideaGrid.querySelector('.about-text');
@@ -2906,7 +2930,15 @@ document.addEventListener('DOMContentLoaded', function () {
         if (window.innerWidth < 1024 && ideaGrid) {
           ideaGrid.style.removeProperty('padding-top');
           if (title) title.style.removeProperty('margin-top');
-          if (text) text.style.marginTop = '';
+          if (text) {
+            text.style.marginTop = '';
+            text.style.marginInlineStart = '';
+            text.style.width = '';
+            text.style.maxWidth = '';
+            text.style.justifySelf = '';
+          }
+          var moreOff = ideaGrid.querySelector('.about-more-link');
+          if (moreOff) moreOff.style.marginInlineStart = '';
         }
         return;
       }
@@ -2950,6 +2982,7 @@ document.addEventListener('DOMContentLoaded', function () {
           text.style.marginTop = (curM + (18 - gap)).toFixed(2) + 'px';
         }
       }
+      alignTextToIdea();
       ideaLock = false;
     };
     fitIdea();
