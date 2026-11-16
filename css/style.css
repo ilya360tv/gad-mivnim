@@ -6478,15 +6478,14 @@ html[lang="he"] #info .info-title .info-brush {
 }
 
 /* ----- #info כותרת: מרווחת יותר (רווח בין מילים + רווח לפני "חשבנו בשבילכם...") ----- */
-#info .info-title { word-spacing: .14em; letter-spacing: .01em; }
-#info .info-title .info-brush { margin-inline-start: .45em; word-spacing: .08em; }
+#info .info-title { letter-spacing: .01em; }
+#info .info-title .info-brush { margin-inline-start: .45em; }
 
 /* ----- #info כותרת — סידור נקי: ריווח רגיל בכותרת, ביטוי המכחול באותו גובה ויזואלי,
          בלי רווחים מוגזמים בין המילים, מודגש בתכלת ומופרד ברווח נעים ----- */
-#info .info-title { word-spacing: normal !important; letter-spacing: 0 !important; }
+#info .info-title { letter-spacing: 0 !important; }
 html[lang="he"] #info .info-title .info-brush {
   font-size: 1.08em !important;
-  word-spacing: normal !important;
   letter-spacing: 0 !important;
   margin-inline-start: .55em !important;
   color: #38bdf8;
@@ -8271,6 +8270,7 @@ html[dir] body #main :is(
   padding: 0 !important;
   font-family: 'Rubik', 'Segoe UI', Arial, sans-serif !important;
   font-size: var(--pt-fit, var(--pt-fs)) !important;
+  word-spacing: var(--pt-ws, .45em) !important;      /* ריווח בין מילים — כלל אחד לכל הכותרות; js/script.js מקטין עד .3em רק אם כותרת לא נכנסת בשורה */
   font-weight: 700 !important;
   line-height: 1.3 !important;
   letter-spacing: normal !important;

@@ -2581,6 +2581,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (el.closest('.division-top')) { el.closest('.division-top').classList.remove('pt-stack'); }
         el.style.removeProperty('--pt-fit');
         if (gmHeadHost(el) !== el) gmHeadHost(el).style.removeProperty('--pt-fit');
+        el.style.removeProperty('--pt-ws');
         var base = parseFloat(getComputedStyle(el).fontSize), fs = base, min = mobile ? 18 : 16;
         var set = function () {
           var px = fs.toFixed(1) + 'px';
@@ -2588,7 +2589,11 @@ document.addEventListener('DOMContentLoaded', function () {
           var host = gmHeadHost(el);
           if (host !== el) host.style.setProperty('--pt-fit', px);
         };
+        // קודם מצמצמים את הריווח בין המילים (עד .3em); רק אם עדיין לא נכנס — מקטינים גופן
+        var ws = 0.45;
+        var setWs = function () { el.style.setProperty('--pt-ws', ws.toFixed(2) + 'em'); };
         if (mobile) {
+          while (el.getBoundingClientRect().height > fs * 1.3 * 2.2 && ws > 0.3) { ws = Math.max(0.3, ws - 0.05); setWs(); }
           while (el.getBoundingClientRect().height > fs * 1.3 * 2.2 && fs > min) { fs -= 0.5; set(); }
           return;
         }
@@ -2600,6 +2605,7 @@ document.addEventListener('DOMContentLoaded', function () {
         };
         var avail = ptAvail(el);
         if (!avail) { return; }
+        while (el.getBoundingClientRect().width > avail + 0.5 && ws > 0.3) { ws = Math.max(0.3, ws - 0.05); setWs(); }
         if (shrink(avail)) { return; }
         // עמוד חטיבה: אם לא נכנס בין הכפתורים — הכפתורים יורדים מתחת לכותרת והיא מקבלת את כל הרוחב
         var dtop = el.closest('.division-top');
