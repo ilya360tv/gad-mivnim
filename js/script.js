@@ -2822,7 +2822,7 @@ document.addEventListener('DOMContentLoaded', function () {
       var tile0 = tiles.getBoundingClientRect();
       var pill0 = nav.getBoundingClientRect();
       var wantRight = rtl0 ? pill0.left - 20 : tile0.left - 10;
-      var wantLeft = rtl0 ? tile0.right + 10 : textCol.getBoundingClientRect().left;
+      var wantLeft = textCol.getBoundingClientRect().left;                 // קצה שמאלי = קצה שמאלי של הפסקה
       var now = ideaEl.getBoundingClientRect();
       if (Math.abs(now.right - wantRight) <= 1.5 && Math.abs(now.left - wantLeft) <= 1.5 && ideaEl.style.width) return;
       textCol.style.marginInlineStart = '0px';
@@ -2842,7 +2842,7 @@ document.addEventListener('DOMContentLoaded', function () {
       var left, right;
       if (rtl) {
         right = pill.left - GAP_PILL;
-        left = tile.right + GAP_PHOTO;
+        left = cell.left;                                                     // ה-"!" מסתיים בקצה שמאל הפסקה (לא נכנס לעמודת התמונות)
       } else {
         left = cell.left;
         right = tile.left - GAP_PHOTO;
@@ -2868,6 +2868,13 @@ document.addEventListener('DOMContentLoaded', function () {
       while (ideaEl.scrollWidth > ideaEl.clientWidth + 0.5 && size > IDEA_MIN) {
         size = Math.round((size - 0.1) * 10) / 10;
         ideaEl.style.fontSize = size.toFixed(1) + 'px';
+      }
+      // כוונון סופי: הטקסט ממלא את רוחב הפסקה במדויק (שורה אחת, משנים רק את גודל הכתב)
+      var rgI = document.createRange(); rgI.selectNodeContents(ideaEl);
+      var wI = rgI.getBoundingClientRect().width;
+      if (wI > 20 && ideaEl.clientWidth > 40 && size > IDEA_MIN) {
+        var fine = Math.floor(size * ideaEl.clientWidth / wI * 100) / 100;
+        if (fine < size + 1.5 && fine >= IDEA_MIN) { ideaEl.style.fontSize = fine.toFixed(2) + 'px'; }
       }
     };
     fitIdea = function () {
@@ -2947,9 +2954,10 @@ document.addEventListener('DOMContentLoaded', function () {
       fitIdeaFont();
       // sidePillDrop מזיז את הגלולה ב-translateY בזמן הנפילה. מחשבים את מקום המנוחה
       // (בלי לגעת ב-animation, כדי לא להפעיל אותה מחדש).
-      var pill = nav.getBoundingClientRect();
+      var homePill = document.querySelector('.site-header .main-nav a[data-i18n="nav_home"]') || nav;   // מרכז = מרכז הגלולה "דף הבית"
+      var pill = homePill.getBoundingClientRect();
       var ty = 0;
-      var tr = getComputedStyle(nav).transform;
+      var tr = getComputedStyle(homePill).transform;
       if (tr && tr !== 'none') {
         var mx = tr.match(/matrix\(([^)]+)\)/);
         if (mx) {
@@ -2964,15 +2972,6 @@ document.addEventListener('DOMContentLoaded', function () {
         var cur = parseFloat(ideaGrid.style.paddingTop) || 0;
         ideaGrid.style.setProperty('padding-top', Math.max(0, cur + err).toFixed(2) + 'px', 'important');
       }
-      if (title) {
-        var i2 = ideaEl.getBoundingClientRect();
-        var t = title.getBoundingClientRect();
-        var d2 = (i2.top + i2.height / 2) - (t.top - ideaShiftY(title) + t.height / 2);
-        if (Math.abs(d2) > 1) {
-          var curT = parseFloat(title.style.marginTop) || 0;
-          title.style.setProperty('margin-top', (curT + d2).toFixed(2) + 'px', 'important');
-        }
-      }
       var firstP = text && text.querySelector('p');
       if (firstP) {
         var ib = ideaEl.getBoundingClientRect();
@@ -2980,6 +2979,14 @@ document.addEventListener('DOMContentLoaded', function () {
         if (Math.abs(gap - 18) > 1) {
           var curM = parseFloat(text.style.marginTop) || 0;
           text.style.marginTop = (curM + (18 - gap)).toFixed(2) + 'px';
+        }
+      }
+      if (title && firstP) {                       // ראש "מאז ועד היום..." = ראש הפסקה הראשונה
+        var t = title.getBoundingClientRect();
+        var d2 = (firstP.getBoundingClientRect().top - ideaShiftY(firstP)) - (t.top - ideaShiftY(title));
+        if (Math.abs(d2) > 0.5) {
+          var curT = parseFloat(title.style.marginTop) || 0;
+          title.style.setProperty('margin-top', (curT + d2).toFixed(2) + 'px', 'important');
         }
       }
       alignTextToIdea();
