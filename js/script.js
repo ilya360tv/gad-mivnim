@@ -126,6 +126,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     box.addEventListener('pointermove', function (e) {
       if (e.pointerId !== pid || vertical) { return; }
+      if (!s.W) { return; }                  // פס סטטי (בלי לולאה) — לא גוררים
       var dx = (Y ? e.clientY : e.clientX) - lastX;
       if (!s.dragging && e.pointerType !== 'mouse') {
         // מגע: תנועה ראשונה בעיקר אנכית = גלילת הדף, לא גרירת הפס (ובלי setPointerCapture)
@@ -182,28 +183,33 @@ document.addEventListener('DOMContentLoaded', function () {
     return { state: s, measure: measure, wrap: wrap, apply: apply };
   }
 
-  var mqE = (marquee && mqTrack) ? initMarquee(marquee, mqTrack, {
-    isPaused: function () {
-      if (marquee.classList.contains('is-modal-paused')) { return true; }
-      try { if (marquee.querySelector(':focus-visible')) { return true; } } catch (err) {}   // פוקוס מקלדת עוצר את הפס
+  // שתי שורות: שורה 1 בכיוון הנוכחי, שורה 2 בכיוון ההפוך (opts.dir = -1). אותו מנוע, שני מופעים; ~40px/s. עם ≤3 כרטיסים — שורה אחת סטטית וממורכזת (.is-static).
+  var marquee2 = projSection ? projSection.querySelector('.marquee--2') : null;
+  var mqTrack2 = marquee2 ? marquee2.querySelector('.marquee-track') : null;
+  function mqPaused(box) {
+    return function () {
+      if (box.classList.contains('is-modal-paused') || box.classList.contains('is-static')) { return true; }
+      try { if (box.querySelector(':focus-visible')) { return true; } } catch (err) {}   // פוקוס מקלדת עוצר את הפס
       return false;
-    }
-  }) : null;
+    };
+  }
+  var mqE = (marquee && mqTrack) ? initMarquee(marquee, mqTrack, { speed: 40, isPaused: mqPaused(marquee) }) : null;
+  var mqE2 = (marquee2 && mqTrack2) ? initMarquee(marquee2, mqTrack2, { speed: 40, dir: -1, isPaused: mqPaused(marquee2) }) : null;
   var mq = mqE ? mqE.state : {};
 
   function buildMarquee() {
     var cards = matching();
     if (!marquee || !mqTrack || !cards.length) { return; }
+    var two = !!(marquee2 && mqTrack2 && mqE2) && cards.length > 3;     // ≤3 כרטיסים: שורה אחת סטטית וממורכזת
 
     var vw = marquee.clientWidth || window.innerWidth;
     var cardW = window.innerWidth < 768 ? 115 : 145;
     var step  = cardW + 16;
-    var reps  = Math.max(1, Math.ceil((vw + step) / (step * cards.length)));
 
-    function makeSet(hidden) {
+    function makeSet(list, reps, hidden) {
       var frag = document.createDocumentFragment();
       for (var r = 0; r < reps; r++) {
-        cards.forEach(function (c) {
+        list.forEach(function (c) {
           var n = c.cloneNode(true);
           n.classList.remove('is-hidden', 'reveal');
           var im = n.querySelector('img');
@@ -216,7 +222,7 @@ document.addEventListener('DOMContentLoaded', function () {
             im.parentNode.insertBefore(wrap, im);
             wrap.appendChild(im);
           }
-          if (hidden) {
+          if (hidden || r > 0) {                                  // עותקים כפולים: לא נקראים ולא נכנסים בטאב
             n.setAttribute('aria-hidden', 'true');
             if (n.tagName === 'A' || n.tagName === 'BUTTON') { n.setAttribute('tabindex', '-1'); }
           }
@@ -225,11 +231,26 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       return frag;
     }
+    function fill(box, track, eng, list, stat) {
+      box.classList.toggle('is-static', !!stat);
+      track.innerHTML = '';
+      if (stat) { track.appendChild(makeSet(list, 1, false)); eng.measure(0); eng.state.offset = 0; eng.apply(); return; }
+      var reps = Math.max(1, Math.ceil((vw + step) / (step * list.length)));
+      track.appendChild(makeSet(list, reps, false));
+      track.appendChild(makeSet(list, reps, true));
+      eng.measure(reps * list.length);
+    }
 
-    mqTrack.innerHTML = '';
-    mqTrack.appendChild(makeSet(false));
-    mqTrack.appendChild(makeSet(true));
-    mqE.measure(reps * cards.length);
+    if (two) {
+      var row1 = cards.filter(function (c, i) { return i % 2 === 0; });
+      var row2 = cards.filter(function (c, i) { return i % 2 === 1; });
+      marquee2.hidden = false; marquee2.classList.add('is-on');
+      fill(marquee, mqTrack, mqE, row1, false);
+      fill(marquee2, mqTrack2, mqE2, row2, false);
+    } else {
+      if (marquee2) { marquee2.classList.remove('is-on'); marquee2.hidden = true; if (mqTrack2) { mqTrack2.innerHTML = ''; } }
+      fill(marquee, mqTrack, mqE, cards, true);
+    }
   }
 
   // מציג את התוכן של הלשונית הנוכחית: פס/רשת, או הודעת "בקרוב" כשאין לקוחות במגזר
@@ -1439,6 +1460,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function pmSetPaused(on) {
       if (marquee) { marquee.classList.toggle('is-modal-paused', on); }
+      if (marquee2) { marquee2.classList.toggle('is-modal-paused', on); }
       var ipb = document.querySelector('#in-progress .ip-marquee');
       if (ipb) { ipb.classList.toggle('is-modal-paused', on); }
     }

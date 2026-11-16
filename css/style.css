@@ -8724,3 +8724,11 @@ html[dir] body #main #about .about-quote .about-mq__item::after {
 html[dir] body #main #about .about-text .about-quote { position: relative; z-index: 2; }
 #about.is-clamped .ab-read .about-text { overflow: visible; cursor: auto; }
 #about.is-clamped .ab-read .about-text::after { content: none; display: none; }
+
+/* ==========================================================================
+   #projects — שתי שורות נעות (שורה 2 בכיוון ההפוך; js/script.js 1ב). רווח 20px בין השורות (הריפוד הפנימי של כל שורה — 18/26 — מקזזים במרווח שלילי).
+   עד 3 כרטיסים: שורה אחת סטטית וממורכזת (.is-static).
+   ========================================================================== */
+.has-js #projects .marquee--2.is-on { margin-top: -24px; }
+.has-js #projects .marquee.is-static .marquee-track { margin-inline: auto; }
+.has-js #projects .marquee.is-static { cursor: auto; -webkit-mask-image: none; mask-image: none; }
