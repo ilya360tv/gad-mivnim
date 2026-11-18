@@ -8835,3 +8835,8 @@ html[dir] body #partners .pt-track .partner-chip .partner-slogan {
 }
 @media (min-width: 1700px) { .hero .hero-showroom-img { width: 360px; } }
 @media (max-width: 768px) { .hero .hero-showroom-img { width: 78%; max-width: 360px; margin-top: -12px; } }
+
+/* Hero: הכותרת הנעה + הלוגו העגול — למעלה, למרכז שורת הגלולות הראשונה (js/script.js מחשב --hero-title-lift). מקום הכותרת בזרימה נשמר, אז שאר ה-Hero לא זז. */
+@media (min-width: 769px) {
+  .hero .hero-title.hero-title--mq { position: relative; top: calc(-1 * var(--hero-title-lift, 40px)); }
+}

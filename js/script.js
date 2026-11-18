@@ -3377,3 +3377,41 @@ function cardScale() {
     }).catch(function () {});
   }
 })();
+
+/* Hero (דסקטופ >768): הכותרת הנעה "בכל מקום במפה" + הלוגו העגול שבמרכזה — מרכז אנכי = מרכז שורת הגלולות הראשונה ("דף הבית" / "מידע לאזרח ולבונה").
+   מזיזים רק את הכותרת (position:relative; top:-lift) — שאר ה-Hero נשאר במקומו. ה-lift מחושב כאן ומוזן ל-CSS כמשתנה --hero-title-lift. */
+(function () {
+  var title = document.querySelector('.hero .hero-title');
+  var nav = document.querySelector('.site-header .main-nav');
+  if (!title || !nav) { return; }
+  var root = document.documentElement;
+  var mq = window.matchMedia('(min-width: 769px)');
+  function restY(el) {                                   // מרכז אנכי בלי הזזות transform (אנימציית הנפילה של הגלולות)
+    var r = el.getBoundingClientRect(), ty = 0;
+    for (var n = el; n && n !== document.body; n = n.parentElement) {
+      var t = getComputedStyle(n).transform;
+      var m = t && t !== 'none' && t.match(/matrix\(([^)]+)\)/);
+      if (m) { var a = m[1].split(','); if (a.length === 6) { ty += parseFloat(a[5]) || 0; } }
+    }
+    return (r.top + r.bottom) / 2 - ty;
+  }
+  function fit() {
+    if (!mq.matches) { root.style.removeProperty('--hero-title-lift'); return; }
+    var pills = nav.querySelectorAll('ul li a');
+    var home = nav.querySelector('a[data-i18n="nav_home"]') || pills[0];
+    if (!home || !home.getBoundingClientRect().height) { return; }
+    var cur = parseFloat(getComputedStyle(title).top) || 0;               // ההזזה הנוכחית (top) — נכללת במדידה
+    var logo = title.querySelector('.hero-mq__item .hero-title__logo') || title;   // מרכז הלוגו = מרכז הכותרת
+    var base = restY(logo) - cur;                                         // מקום הלוגו כש-top = 0
+    var lift = base - restY(home);                                        // כמה למעלה כדי להגיע למרכז הגלולה
+    root.style.setProperty('--hero-title-lift', lift.toFixed(2) + 'px');
+  }
+  var tm;
+  var refit = function () { clearTimeout(tm); tm = setTimeout(fit, 60); };
+  fit();
+  window.addEventListener('load', function () { fit(); setTimeout(fit, 1200); });
+  window.addEventListener('resize', refit);
+  if (mq.addEventListener) { mq.addEventListener('change', fit); }
+  if (document.fonts && document.fonts.ready) { document.fonts.ready.then(fit); }
+  if ('MutationObserver' in window) { new MutationObserver(refit).observe(root, { attributes: true, attributeFilter: ['lang', 'dir'] }); }
+})();
