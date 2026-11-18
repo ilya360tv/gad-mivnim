@@ -8822,7 +8822,9 @@ html[dir] body #partners .pt-track .partner-chip .partner-slogan {
 .about-mq__track { gap: var(--aq-gap); }
 
 /* ===== Hero: תמונת הצצה לאולם התצוגה — מתחת לשורת "הרצליה ישראל", ממורכזת, 18px רווח ===== */
-.hero .hero-showroom-img {
+.hero .hero-showroom-frame {
+  position: relative;
+  overflow: hidden;                           /* Ken Burns: התמונה זזה בתוך המסגרת */
   display: block;
   box-sizing: border-box;
   width: 380px;
@@ -8833,8 +8835,8 @@ html[dir] body #partners .pt-track .partner-chip .partner-slogan {
   border: 1px solid rgba(56, 189, 248, .35);
   box-shadow: 0 14px 40px rgba(0, 0, 0, .55), 0 0 28px rgba(56, 189, 248, .18);
 }
-@media (min-width: 1700px) { .hero .hero-showroom-img { width: 455px; } }
-@media (max-width: 768px) { .hero .hero-showroom-img { width: min(94.4%, 90vw); max-width: 510px; margin-top: -12px; } }
+@media (min-width: 1700px) { .hero .hero-showroom-frame { width: 455px; } }
+@media (max-width: 768px) { .hero .hero-showroom-frame { width: min(94.4%, 90vw); max-width: 510px; margin-top: -12px; } }
 
 /* Hero: הכותרת הנעה + הלוגו העגול — למעלה, למרכז שורת הגלולות הראשונה (js/script.js מחשב --hero-title-lift). מקום הכותרת בזרימה נשמר, אז שאר ה-Hero לא זז. */
 @media (min-width: 769px) {
@@ -8845,10 +8847,10 @@ html[dir] body #partners .pt-track .partner-chip .partner-slogan {
 html:has(body[data-page="hero"]) { height: 100%; overflow: hidden; }
 body[data-page="hero"] { height: 100%; min-height: 0; overflow: hidden; }
 /* מסך נמוך: תמונת האולם קטנה יותר (לא נחתכת) */
-@media (min-width: 769px) and (max-height: 800px) { .hero .hero-showroom-img { width: 329px; } }
-@media (min-width: 769px) and (max-height: 680px) { .hero .hero-showroom-img { width: 278px; } }
-@media (max-width: 768px) and (max-height: 700px) { .hero .hero-showroom-img { width: 72.6%; } }
-@media (max-width: 768px) and (max-height: 600px) { .hero .hero-showroom-img { width: 53.2%; } }
+@media (min-width: 769px) and (max-height: 800px) { .hero .hero-showroom-frame { width: 329px; } }
+@media (min-width: 769px) and (max-height: 680px) { .hero .hero-showroom-frame { width: 278px; } }
+@media (max-width: 768px) and (max-height: 700px) { .hero .hero-showroom-frame { width: 72.6%; } }
+@media (max-width: 768px) and (max-height: 600px) { .hero .hero-showroom-frame { width: 53.2%; } }
 
 /* ==========================================================================
    בלי גלילת עמוד בכל העמודים (js/page-scroll.js): העמוד ממלא בדיוק מסך אחד; התוכן שמתחת לגלולת הכותרת ולכותרת הגדולה —
@@ -8887,3 +8889,29 @@ html[dir] body #main .page-eyebrow ~ .page-scroll > .section-lead { margin-top: 
   }
   html[dir] body #main .page-eyebrow ~ .page-scroll > .badges-row + * { margin-top: 0 !important; }
 }
+
+/* Hero: תנועת "סרט" (Ken Burns) בתמונת האולם — רק transform/opacity. המסגרת (.hero-showroom-frame) לא משנה גודל, התמונה זזה בתוכה.
+   זום 1.0→1.15 עם תזוזה ימינה, חזרה שמאלה (זום 1.1), וחזרה להתחלה; 18 שניות בלולאה. תזוזה ≤ (זום−1)/2 מהרוחב — בלי קצוות ריקים. */
+.hero .hero-showroom-frame > img { display: block; width: 100%; height: auto; transform-origin: 50% 50%; will-change: transform; animation: showroomKB 18s ease-in-out infinite; }
+@keyframes showroomKB {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  30%  { transform: translate3d(6%, 0, 0) scale(1.15); }
+  65%  { transform: translate3d(-4.5%, 0, 0) scale(1.1); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+/* שכבת ברק קלה (אלכסון) שעוברת על התמונה כל ~6 שניות — שקיפות עד 0.12 */
+.hero .hero-showroom-frame::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, .12) 50%, transparent 62%);
+  transform: translate3d(-110%, 0, 0);
+  animation: showroomShine 6s ease-in-out infinite;
+}
+@keyframes showroomShine {
+  0%, 55% { transform: translate3d(-110%, 0, 0); }
+  100%    { transform: translate3d(110%, 0, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero .hero-showroom-frame > img, .hero .hero-showroom-frame::after { animation: none; }
+}
+html.a11y-no-motion .hero .hero-showroom-frame > img,
+html.a11y-no-motion .hero .hero-showroom-frame::after { animation: none !important; transform: none !important; }
