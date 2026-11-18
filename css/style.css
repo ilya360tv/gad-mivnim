@@ -8700,9 +8700,10 @@ html[dir] body #partners .partner-chip .partner-slogan {
 html[dir] body #main #about .about-quote .aq-l,
 html[dir] body #main #about .about-quote .aq-l:not(:has(.aq-brush)) { color: #ffffff !important; }
 html[dir] body #main #about .about-quote bdi,
-html[dir] body #main #about .about-quote bdi *,
+html[dir] body #main #about .about-quote bdi * { color: #38bdf8 !important; }
+/* "משנים את הדרך…" (כתב יד) — לבן */
 html[dir] body #main #about .about-quote .aq-l:has(.aq-brush),
-html[dir] body #main #about .about-quote .aq-brush { color: #38bdf8 !important; }
+html[dir] body #main #about .about-quote .aq-brush { color: #ffffff !important; }
 
 /* ==========================================================================
    #about — שורת הסיום כסרט נע: פס כהה בהיר קצת (#12161b) עם קווי תכלת דקים למעלה ולמטה, ריפוד 10px; הכול מודגש (700), בהירות מלאה.
@@ -8716,9 +8717,8 @@ html[dir] body #main #about .about-quote .about-mq__item > *,
 html[dir] body #main #about .about-quote .about-mq__item > * *,
 html[dir] body #main #about .about-quote .about-mq__item > .is-reg { font-weight: 800 !important; }
 html[dir] body #main #about .about-quote .about-mq__item .aq-brush { font-weight: 700 !important; text-shadow: 0 0 .5px currentColor; }   /* גופן המכחול: אין לו משקל כבד יותר — הדפדפן מעבה אותו */
-html[dir] body #main #about .about-quote .about-mq__item::after {
-  content: '\2022'; flex: none; color: #38bdf8; font-weight: 700; font-size: 1em; line-height: 1;
-}
+/* בין חזרות — רווח נקי של 48px (בלי נקודה) */
+html[dir] body #main #about .about-quote .about-mq__item { padding-inline-end: 48px; }
 
 /* #about — מה שהחשיך את שורת הסיום: "דהייה רכה" (::after, 90px, גרדיאנט לרקע) של העמודה החתוכה, שיושבת מעל הטקסט האחרון — גם בעמוד וגם בעותק שבחלון הקריאה.
    בחלון: בלי דהייה בכלל (העותק לא נחתך). בעמוד: השורה מעל הדהייה (z-index), הדהייה נשארת על הפסקאות שמעליה. */
