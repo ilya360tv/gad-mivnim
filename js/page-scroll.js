@@ -33,6 +33,7 @@
   var box = document.createElement('div');
   box.className = 'page-scroll';
   box.setAttribute('data-page-scroll', '');
+  box.style.setProperty('margin-top', '-16px', 'important');   // מתקזז עם ה-padding-top (16px) — המיקום נשאר בדיוק כמו קודם (גם מול כללי `+ *` של CSS)
   if (tail.length) {
     container.insertBefore(box, tail[0]);
     tail.forEach(function (n) { box.appendChild(n); });

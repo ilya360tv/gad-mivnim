@@ -189,7 +189,7 @@ Object.keys(SUBPAGES).forEach((file) => {
   const oldHeader = between(s, '<header class="site-header">', '</header>');
   s = s.replace(oldHeader, markCurrent(rewriteLinks(header), SUBPAGES[file]));
   s = s.replace(/\n?[ \t]*<footer class="site-footer">[\s\S]*?<\/footer>\n?/, '\n');   // בלי פוטר/שורת זכויות (רק ב-contact.html)
-  if (s.indexOf('js/page-scroll.js') < 0) { s = s.replace(/(\n[ \t]*)(<script src="js\/i18n\.js)/, '$1<script src="js/page-scroll.js?v=20261119ps3"></script>$1$2'); }
+  if (s.indexOf('js/page-scroll.js') < 0) { s = s.replace(/(\n[ \t]*)(<script src="js\/i18n\.js)/, '$1<script src="js/page-scroll.js?v=20261119ps5"></script>$1$2'); }
   s = rewriteLinks(s);
   const h = s.indexOf('</head>');
   s = addNavSeen(s.slice(0, h)) + s.slice(h);

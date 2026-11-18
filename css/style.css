@@ -8876,3 +8876,14 @@ html.a11y-no-motion .page-scroll { scroll-behavior: auto; }
 
 /* #about: התוכן כבר נחתך בגובה הפנוי ("המשך קריאה") — בלי פס גלילה נוסף בקופסה כשהעמוד חתוך */
 #about.is-clamped .page-scroll { overflow-y: hidden; }
+
+/* קופסת הגלילה (.page-scroll) עוטפת את מה שהיה אחים של הכותרת — כללי השכנות שלמעלה (`+ *`, `~ .badges-row`) צריכים להמשיך לחול על הילדים שבתוכה, כדי שהמרווחים יישארו בדיוק כמו קודם */
+html[dir] body #main .page-eyebrow ~ .page-scroll > :first-child { margin-top: 0 !important; }
+html[dir] body #main .page-eyebrow ~ .page-scroll > .section-lead { margin-top: 0 !important; text-align: center !important; margin-inline: auto !important; }
+@media (min-width: 1024px) {
+  html[dir] body #main .page-eyebrow ~ .page-scroll > .badges-row {
+    justify-content: center !important;
+    margin: 0 auto 28px !important;
+  }
+  html[dir] body #main .page-eyebrow ~ .page-scroll > .badges-row + * { margin-top: 0 !important; }
+}
