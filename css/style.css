@@ -5203,8 +5203,8 @@ html[dir="rtl"] #about .about-text h3.about-sub { margin-inline-start: -.14em !i
 }
 .about-mq.is-dragging { cursor: grabbing; }
 .about-mq__track { display: flex; align-items: center; width: max-content; will-change: transform; }
-.about-mq { --aq-gap: 32px; }                /* רווח זהה בין החלקים ובין החזרות */
-.about-mq__item { flex: none; display: inline-flex; align-items: center; gap: var(--aq-gap); padding-inline-end: var(--aq-gap); direction: rtl; white-space: nowrap; }
+.about-mq { --aq-gap: 36px; }                /* רווח זהה בין החלקים ובין החזרות */
+.about-mq__item { flex: none; display: inline-flex; align-items: center; gap: var(--aq-gap); padding: 0; direction: rtl; white-space: nowrap; }
 
 /* כפתור הנגישות "עצירת אנימציות": שורה סטטית וממורכזת (שבירת שורה מותרת) */
 html.a11y-no-motion .about-mq { display: none; }
@@ -8729,7 +8729,7 @@ html[dir] body #main #about .about-quote .about-mq__item > * *,
 html[dir] body #main #about .about-quote .about-mq__item > .is-reg { font-weight: 800 !important; }
 html[dir] body #main #about .about-quote .about-mq__item .aq-brush { font-weight: 700 !important; text-shadow: 0 0 .5px currentColor; }   /* גופן המכחול: אין לו משקל כבד יותר — הדפדפן מעבה אותו */
 /* בין חזרות — רווח נקי של 48px (בלי נקודה) */
-html[dir] body #main #about .about-quote .about-mq__item { padding-inline-end: 48px; }
+html[dir] body #main #about .about-quote .about-mq__item { padding: 0; }
 
 /* #about — מה שהחשיך את שורת הסיום: "דהייה רכה" (::after, 90px, גרדיאנט לרקע) של העמודה החתוכה, שיושבת מעל הטקסט האחרון — גם בעמוד וגם בעותק שבחלון הקריאה.
    בחלון: בלי דהייה בכלל (העותק לא נחתך). בעמוד: השורה מעל הדהייה (z-index), הדהייה נשארת על הפסקאות שמעליה. */
@@ -8816,5 +8816,7 @@ html[dir] body #partners .pt-track .partner-chip .partner-slogan {
 }
 
 /* #about — שני לוגואים בפס הנע (בין "בכל מקום במפה" ל"משנים את הדרך…" ואחריו): גובה 44px, ממורכז אנכית, 24px מכל צד (gap 32 − 8); לא לחיץ. הרווח בין חזרות (48px) כמו קודם */
-.about-mq__logo { flex: none; display: block; height: 58px; width: auto; margin-inline: -8px; pointer-events: none; -webkit-user-drag: none; }
-.about-mq__logo:last-child { margin-inline-end: 0; }   /* הלוגו האחרון: הרווח בין חזרות (48px) כמו קודם */
+.about-mq__logo { flex: none; display: block; height: 58px; width: auto; margin: 0; pointer-events: none; -webkit-user-drag: none; }
+
+/* #about — פס הסלוגן: רווח אחד שווה (36px) בין כל שני פריטים, כולל התפר בין חזרות — gap יחיד על ה-track ועל הפריט, בלי margin/padding */
+.about-mq__track { gap: var(--aq-gap); }
