@@ -4010,7 +4010,7 @@ body .contact-label {
 /* כפתור "לכל השירותים" בכרטיס "תשתיות ופיתוח" — בתחתית, אחרי המשפט */
 .division-page .cards-row > .card::after { min-height: 16px; }
 
-/* home-services: השורה השנייה מתחילה מהצד הימני (תחילת RTL), מתחת לכרטיסים שמעליה */
+/* construction (15 קטגוריות): השורה השנייה מתחילה מהצד הימני (תחילת RTL), מתחת לכרטיסים שמעליה */
 .division-page .cards-row.cards-row--start { justify-content: flex-start; }
 
 /* ----- כל רשתות הכרטיסים מיושרות לימין (תחילת RTL) — בלי מרכוז שורות ----- */
@@ -8917,7 +8917,7 @@ html.a11y-no-motion .hero .hero-showroom-frame > img,
 html.a11y-no-motion .hero .hero-showroom-frame::after { animation: none !important; transform: none !important; }
 
 /* ==========================================================================
-   עמודי השירותים/חטיבות (planning, construction, real-estate, home-services, special, infrastructure, partners-*): כרטיסי .card
+   עמודי השירותים/חטיבות (planning, construction, real-estate, special, infrastructure, partners-*): כרטיסי .card
    כלל משותף אחד — כותרת בראש הכרטיס (16px, עד 2 שורות, ממורכזת, לא נחתכת ולא רחבה מהכרטיס) · תמונה · משפט (15px).
    כל הכרטיסים באותו גובה (גריד עם שורות שוות), בלי רווח ריק בתחתית. רוחב, תמונות, צבעים, סדר וקישורים — ללא שינוי.
    ========================================================================== */
@@ -8961,3 +8961,11 @@ html[dir] body #main#main#main#main#main#main .division-page .cards-row > .card 
   overflow-wrap: break-word;
 }
 html[dir] body #main .division-page .cards-row > .card::after { min-height: 0 !important; }
+
+/* ===== services.html: 4 חטיבות — שורה אחת ממורכזת, אותו גודל כרטיס כמו קודם (חמישית מהרוחב פחות הרווחים), בגובה שווה ===== */
+@media (min-width: 1024px) {
+  #services .division-cards {
+    grid-template-columns: repeat(4, calc((100% - 4 * 16px) / 5));
+    justify-content: center;
+  }
+}

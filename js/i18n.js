@@ -270,7 +270,7 @@
     svc_b3: { he: 'מתאמים לכם פרויקט מושלם', ru: 'Координируем для вас идеальный проект', en: 'Coordinating a perfect project for you', fr: 'Nous coordonnons pour vous un projet parfait' },
     svc_b4: { he: 'חשיבה מחוץ לקופסא', ru: 'Мышление вне рамок', en: 'Thinking outside the box', fr: 'Penser hors du cadre' },
 
-    d1_title:  { he: 'חטיבת תכנון והנדסת בנייה', ru: 'Подразделение проектирования и строительной инженерии', en: 'Planning & Construction Engineering Division', fr: 'Division planification et ingénierie de construction' },
+    d1_title:  { he: 'חטיבת תכנון והנדסה', ru: 'Подразделение проектирования и инженерии', en: 'Planning & Engineering Division', fr: 'Division planification et ingénierie' },
     d1_slogan: { he: 'תכנון נכון , חיסכון מוכח', ru: 'Правильное проектирование — доказанная экономия', en: 'Right planning, proven savings', fr: 'Une bonne planification, une économie prouvée' },
     c11:  { he: 'תאום פרויקטים', ru: 'Координация проектов', en: 'Project Coordination', fr: 'Coordination de projets' },
     c11s: { he: 'מתאמים אתכם פרויקט מושלם', ru: 'Координируем с вами идеальный проект', en: 'Coordinating a perfect project with you', fr: 'Nous coordonnons avec vous un projet parfait' },
@@ -305,9 +305,6 @@
     c32:  { he: 'פינוי בינוי', ru: 'Снос и новая застройка', en: 'Urban Renewal (Pinui-Binui)', fr: 'Rénovation urbaine (Pinui-Binui)' },
     c32s: { he: 'תמיד כיף לקבל חדש !', ru: 'Всегда приятно получать новое!', en: 'It is always fun to get something new!', fr: 'C’est toujours un plaisir de recevoir du neuf !' },
 
-    d4_title:  { he: 'חטיבת השירותים שלנו', ru: 'Подразделение наших услуг', en: 'Our Services Division', fr: 'Division de nos services' },
-    d4_slogan: { he: 'שירות מכל הלב', ru: 'Сервис от всего сердца', en: 'Service from the heart', fr: 'Un service de tout cœur' },
-    d4_extra:  { he: 'ישראל שלנו  הארץ שלנו', ru: 'Наш Израиль — наша земля', en: 'Our Israel, our land', fr: 'Notre Israël, notre pays' },
     c41:  { he: 'מערכות בידוד ואיטום', ru: 'Системы изоляции и гидроизоляции', en: 'Insulation & Waterproofing Systems', fr: 'Systèmes d’isolation et d’étanchéité' },
     c41s: { he: 'תמיד חשוב מבנה יבש', ru: 'Сухое здание — всегда важно', en: 'A dry building always matters', fr: 'Un bâtiment sec, c’est toujours important' },
     c42:  { he: 'עבודות בגבהים', ru: 'Высотные работы', en: 'Work at Heights', fr: 'Travaux en hauteur' },
@@ -326,7 +323,7 @@
     c48:  { he: 'אינסטלציה וביוב', ru: 'Сантехника и канализация', en: 'Plumbing & Sewage', fr: 'Plomberie et assainissement' },
     c49:  { he: 'חשמל ותקשורת', ru: 'Электрика и связь', en: 'Electricity & Communications', fr: 'Électricité et communications' },
 
-    d5_title:  { he: 'חטיבת המיוחדים שלנו', ru: 'Подразделение особых услуг', en: 'Our Specials Division', fr: 'Division de nos spécialités' },
+    d5_title:  { he: 'חטיבת אחזקה וניהול פרויקטים', ru: 'Подразделение эксплуатации и управления проектами', en: 'Maintenance & Project Management Division', fr: 'Division maintenance et gestion de projets' },
     d5_slogan: { he: 'מובילים שינוי למבנה שלכם !', ru: 'Ведём перемены для вашего здания!', en: 'Leading change for your building!', fr: 'Nous menons le changement pour votre bâtiment !' },
     c51:  { he: 'ניהול ואחזקת מבני מגורים ומסחר', ru: 'Управление и обслуживание жилых и коммерческих зданий', en: 'Management & Maintenance of Residential and Commercial Buildings', fr: 'Gestion et entretien de bâtiments résidentiels et commerciaux' },
     c51s: { he: 'משנים אתכם דרך לתחזוקה נכונה', ru: 'Меняем с вами путь к правильному обслуживанию', en: 'Changing the way to proper maintenance with you', fr: 'Nous changeons avec vous la voie vers un entretien juste' },
@@ -413,11 +410,10 @@
 
     /* ----- דפי חטיבות ----- */
     svc_back:     { he: 'חזרה לכל השירותים', ru: 'Назад ко всем услугам', en: 'Back to all services', fr: 'Retour à tous les services' },
-    pg_d1: { he: 'חטיבת תכנון והנדסת בנייה | GAD MIVNIM', ru: 'Подразделение проектирования и строительной инженерии | GAD MIVNIM', en: 'Planning & Construction Engineering Division | GAD MIVNIM', fr: 'Division planification et ingénierie de construction | GAD MIVNIM' },
+    pg_d1: { he: 'חטיבת תכנון והנדסה | GAD MIVNIM', ru: 'Подразделение проектирования и инженерии | GAD MIVNIM', en: 'Planning & Engineering Division | GAD MIVNIM', fr: 'Division planification et ingénierie | GAD MIVNIM' },
     pg_d2: { he: 'חטיבת בינוי ותשתיות | GAD MIVNIM', ru: 'Подразделение строительства и инфраструктуры | GAD MIVNIM', en: 'Construction & Infrastructure Division | GAD MIVNIM', fr: 'Division construction et infrastructures | GAD MIVNIM' },
     pg_d3: { he: 'חטיבת שותפויות נדל"ן | GAD MIVNIM', ru: 'Подразделение партнёрств в недвижимости | GAD MIVNIM', en: 'Real-Estate Partnerships Division | GAD MIVNIM', fr: 'Division partenariats immobiliers | GAD MIVNIM' },
-    pg_d4: { he: 'חטיבת השירותים שלנו | GAD MIVNIM', ru: 'Подразделение наших услуг | GAD MIVNIM', en: 'Our Services Division | GAD MIVNIM', fr: 'Division de nos services | GAD MIVNIM' },
-    pg_d5: { he: 'חטיבת המיוחדים שלנו | GAD MIVNIM', ru: 'Подразделение особых услуг | GAD MIVNIM', en: 'Our Specials Division | GAD MIVNIM', fr: 'Division de nos spécialités | GAD MIVNIM' },
+    pg_d5: { he: 'חטיבת אחזקה וניהול פרויקטים | GAD MIVNIM', ru: 'Подразделение эксплуатации и управления проектами | GAD MIVNIM', en: 'Maintenance & Project Management Division | GAD MIVNIM', fr: 'Division maintenance et gestion de projets | GAD MIVNIM' },
 
     /* ----- שותפים: קבוצות ודפים ----- */
     pgrp_back: { he: 'חזרה לכל השותפים', ru: 'Назад ко всем партнёрам', en: 'Back to all partners', fr: 'Retour à tous les partenaires' },

@@ -55,7 +55,7 @@ const FILE_OF = Object.fromEntries(PAGES.map((p) => [p.id, p.file]));
 // עמודי המשנה הקיימים — איזו גלולה מסומנת בהם
 const SUBPAGES = {
   'planning.html': 'services', 'construction.html': 'services', 'real-estate.html': 'services',
-  'home-services.html': 'services', 'special.html': 'services', 'infrastructure.html': 'services',
+  'special.html': 'services', 'infrastructure.html': 'services',
   'commercial.html': 'services', 'partners-kitchens.html': 'partners', 'partners-doors.html': 'partners',
   'partners-finishes.html': 'partners', 'partners-gates-frames.html': 'partners',
   'partners-bath-lighting.html': 'partners', 'project.html': 'projects'
