@@ -132,7 +132,7 @@ function promoteH1(sec, id) {
 }
 
 function scriptsFor(page) {
-  const want = new Set(['i18n', 'premium', 'script', 'a11y'].concat(page.data));
+  const want = new Set(['i18n', 'premium', 'script', 'a11y'].concat(page.data, page.id === 'hero' ? [] : ['page-scroll']));
   return SCRIPT_TAGS.filter((tag) => {
     const m = /src="js\/([a-z0-9-]+)\.js/.exec(tag);
     return m && want.has(m[1]);
@@ -175,7 +175,7 @@ PAGES.forEach((page) => {
       .replace(/<meta name="description" content="[^"]*">/, '<meta name="description" content="' + page.desc.replace(/"/g, '&quot;') + '">\n  <link rel="canonical" href="' + SITE + page.file + '">');
   }
   let post = page.id === 'contact' ? POST_MAIN : sharedFooter(POST_MAIN);   // קישורים ובלוק הסיום — רק בעמוד שירות לקוחות
-  if (isHome) { post = post.replace(/\n?  <footer class="site-footer">[\s\S]*?<\/footer>\n?/, '\n'); }   // דף הבית: בלי פוטר (שורת הזכויות הייתה בו) — אין גובה מתחת ל-Hero
+  if (page.id !== 'contact') { post = post.replace(/\n?  <footer class="site-footer">[\s\S]*?<\/footer>\n?/, '\n'); }   // שורת הזכויות (הפוטר) — רק ב-contact.html; בכל שאר העמודים אין פוטר
   if (page.id !== 'careers') { post = post.replace(/\n  <!--[^\n]*-->\n  <form name="careers-application"[\s\S]*?<\/form>\n/, '\n').replace(/  <form name="careers-application"[\s\S]*?<\/form>\n/, ''); }
   const body = PRE_MAIN.replace(header, markCurrent(rewriteLinks(header), page.id)) + '\n\n' + promoteH1(SECTIONS[page.id], page.id) + MAIN_TAIL + post;
   const html = head + '</head>\n<body class="page-split" data-page="' + page.id + '">' + rewriteLinks(body) + scriptsFor(page) + '\n</body>\n</html>\n';
@@ -187,8 +187,9 @@ PAGES.forEach((page) => {
 Object.keys(SUBPAGES).forEach((file) => {
   let s = read(file);
   const oldHeader = between(s, '<header class="site-header">', '</header>');
-  const oldFooter = between(s, '<footer class="site-footer">', '</footer>');
-  s = s.replace(oldHeader, markCurrent(rewriteLinks(header), SUBPAGES[file])).replace(oldFooter, rewriteLinks(sharedFooter(footer)));
+  s = s.replace(oldHeader, markCurrent(rewriteLinks(header), SUBPAGES[file]));
+  s = s.replace(/\n?[ \t]*<footer class="site-footer">[\s\S]*?<\/footer>\n?/, '\n');   // בלי פוטר/שורת זכויות (רק ב-contact.html)
+  if (s.indexOf('js/page-scroll.js') < 0) { s = s.replace(/(\n[ \t]*)(<script src="js\/i18n\.js)/, '$1<script src="js/page-scroll.js?v=20261119ps1"></script>$1$2'); }
   s = rewriteLinks(s);
   const h = s.indexOf('</head>');
   s = addNavSeen(s.slice(0, h)) + s.slice(h);

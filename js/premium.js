@@ -183,14 +183,17 @@
     if (backTop) {
       var btTicking = false;
       var updateBackTop = function () {
-        backTop.classList.toggle('is-visible', window.scrollY > 600);
+        var psb = document.querySelector('.page-scroll');                 // בעמודים בלי גלילת עמוד — הגלילה בקופסת התוכן
+        backTop.classList.toggle('is-visible', (psb ? psb.scrollTop : window.scrollY) > 600);
         btTicking = false;
       };
-      window.addEventListener('scroll', function () {
+      document.addEventListener('scroll', function () {
         if (!btTicking) { requestAnimationFrame(updateBackTop); btTicking = true; }
-      }, { passive: true });
+      }, { passive: true, capture: true });
 
       backTop.addEventListener('click', function () {
+        var psb2 = document.querySelector('.page-scroll');
+        if (psb2) { psb2.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' }); }
         window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
       });
     }

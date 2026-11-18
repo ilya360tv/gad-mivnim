@@ -8849,3 +8849,31 @@ body[data-page="hero"] { height: 100%; min-height: 0; overflow: hidden; }
 @media (min-width: 769px) and (max-height: 680px) { .hero .hero-showroom-img { width: 242px; } }
 @media (max-width: 768px) and (max-height: 700px) { .hero .hero-showroom-img { width: 66%; } }
 @media (max-width: 768px) and (max-height: 600px) { .hero .hero-showroom-img { width: 48.4%; } }
+
+/* ==========================================================================
+   בלי גלילת עמוד בכל העמודים (js/page-scroll.js): העמוד ממלא בדיוק מסך אחד; התוכן שמתחת לגלולת הכותרת ולכותרת הגדולה —
+   בקופסת גלילה משלו (.page-scroll). הפרישה זהה למה שהיה: הקופסה "מתרחבת" ב-24px לכל צד (ושוליים שליליים) רק כדי שצללים/הילות של כרטיסים לא ייחתכו.
+   ========================================================================== */
+html.ps-on, html.ps-on body { height: 100%; overflow: hidden; }
+html.ps-body, html.ps-body body { height: 100%; }
+html.ps-body body { overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(56, 189, 248, .5) transparent; }
+.page-scroll {
+  box-sizing: border-box;
+  margin: -16px -24px 0;
+  padding: 16px 24px 28px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;                                  /* Firefox */
+  scrollbar-color: rgba(56, 189, 248, .5) transparent;
+}
+.page-scroll::-webkit-scrollbar { width: 8px; }
+.page-scroll::-webkit-scrollbar-track { background: transparent; }
+.page-scroll::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, .45); border-radius: 8px; }
+.page-scroll::-webkit-scrollbar-thumb:hover { background: rgba(56, 189, 248, .7); }
+.page-scroll:focus { outline: none; }
+html.a11y-no-motion .page-scroll { scroll-behavior: auto; }
+
+/* #about: התוכן כבר נחתך בגובה הפנוי ("המשך קריאה") — בלי פס גלילה נוסף בקופסה כשהעמוד חתוך */
+#about.is-clamped .page-scroll { overflow-y: hidden; }
