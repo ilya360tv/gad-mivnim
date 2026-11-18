@@ -8805,3 +8805,6 @@ html[dir] body #partners .pt-track .partner-chip .partner-slogan {
   html[dir] #about .about-sub--idea,
   html[dir] #about .ab-read .about-text h3.about-sub.about-sub--idea { text-align: center !important; text-align-last: center !important; }
 }
+
+/* #about — הלוגו בפס הנע: אחרי המשפט, גובה 44px, ממורכז אנכית, 24px מהמשפט; לא לחיץ. הרווח בין חזרות (48px) כמו קודם */
+.about-mq__logo { flex: none; display: block; height: 44px; width: auto; margin-inline-start: -8px; pointer-events: none; -webkit-user-drag: none; }

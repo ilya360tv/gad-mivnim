@@ -2502,6 +2502,13 @@ document.addEventListener('DOMContentLoaded', function () {
         if (i === parts.length - 1) { p.classList.add('is-reg'); }          // "משנים את הדרך..." — לא מודגש
         one.appendChild(p);
       }
+      var logo = document.createElement('img');                           // הלוגו אחרי המשפט — אותו קובץ כמו בהדר
+      logo.src = 'images/gad_mivnim_logo.svg';
+      logo.alt = 'GAD MIVNIM';
+      logo.className = 'about-mq__logo';
+      logo.draggable = false;
+      logo.decoding = 'async';
+      one.appendChild(logo);
       return one;
     };
     var aqBuild = function () {
