@@ -17,7 +17,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Gveret+Levin&family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 
   <!-- העיצוב שלנו -->
-  <link rel="stylesheet" href="css/style.css?v=20261119gf2">
+  <link rel="stylesheet" href="css/style.css?v=20261119pl1">
   <link rel="stylesheet" href="css/field-select.css?v=2">
   <meta name="theme-color" content="#0b0d10">
   <link rel="icon" href="/favicon.ico" sizes="any">
@@ -89,12 +89,6 @@
     <div class="container">
       <span class="section-eyebrow page-eyebrow reveal" data-i18n="svc_eyebrow">השירותים שלנו</span>
       <h1 class="section-title reveal reveal-d1" data-i18n="svc_lead">רמת תכנון תיאום ניהול פיקוח וביצוע מהגבוהות ביותר !</h1>
-      <div class="badges-row reveal reveal-d2">
-        <span class="badge-chip" data-i18n="svc_b3">מתאמים לכם פרויקט מושלם</span>
-        <span class="badge-chip" data-i18n="svc_b4">חשיבה מחוץ לקופסא</span>
-        <span class="badge-chip" data-i18n="svc_b1">אבטחה סגורה במעגל סגור 24/7</span>
-      </div>
-
       <!-- חטיבות השירותים — כל חטיבה בדף משלה -->
       <div class="division-cards reveal-group">
         <a class="card division-card" href="planning.html">
@@ -125,6 +119,16 @@
             <p class="card-tagline" data-i18n="d5_slogan">מובילים שינוי למבנה שלכם !</p>
           </div>
         </a>
+      </div>
+
+      <!-- ✓ מאפיינים — פס נע מתחת לכרטיסי החטיבות (js/script.js: svcMqSetup). הטקסט האמיתי פעם אחת ב-.svc-pills__src; העותקים הנעים aria-hidden -->
+      <div class="svc-pills reveal reveal-d2">
+        <div class="svc-pills__src">
+          <span class="badge-chip" data-i18n="svc_b3">מתאמים לכם פרויקט מושלם</span>
+          <span class="badge-chip" data-i18n="svc_b4">חשיבה מחוץ לקופסא</span>
+          <span class="badge-chip" data-i18n="svc_b1">אבטחה סגורה במעגל סגור 24/7</span>
+        </div>
+        <div class="svc-mq" aria-hidden="true"><div class="svc-mq__track"></div></div>
       </div>
 
     </div>
@@ -239,7 +243,7 @@
   <script src="js/page-scroll.js?v=20261119cd4"></script>
   <script src="js/i18n.js?v=20261119dv2"></script>
   <script src="js/premium.js?v=20261119ps1"></script>
-  <script src="js/script.js?v=20261118sw2"></script>
+  <script src="js/script.js?v=20261119pl1"></script>
   <script src="js/a11y.js?v=20261118fab1"></script>
 </body>
 </html>

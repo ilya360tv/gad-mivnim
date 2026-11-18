@@ -2543,6 +2543,48 @@ document.addEventListener('DOMContentLoaded', function () {
   window.gmAboutMq = aqSetup;
   aqSetup(document.querySelector('.about-mq'));
 
+  /* ---------------------------------------------------------------
+     9ב') #services — שלוש ה-✓ ("מתאמים לכם פרויקט מושלם" · "חשיבה מחוץ לקופסא" · "אבטחה סגורה ...") כפס נע מתחת לכרטיסי החטיבות.
+         אותו מנוע initMarquee (דהייה בקצוות, עצירה במעבר עכבר, גרירה; "עצירת אנימציות" — סטטי). ~40px/s, רווח 16px (גם בתפר הלולאה).
+         הטקסט האמיתי נשאר פעם אחת ב-.svc-pills__src; העותקים הנעים aria-hidden ונבנים מחדש בהחלפת שפה / שינוי רוחב.
+     --------------------------------------------------------------- */
+  (function () {
+    var box = document.querySelector('.svc-mq');
+    var track = box ? box.querySelector('.svc-mq__track') : null;
+    var src = box ? box.parentNode.querySelector('.svc-pills__src') : null;
+    if (!(box && track && src)) { return; }
+    var eng = initMarquee(box, track, { speed: 40 });
+    var item = function () {
+      var one = document.createElement('span');
+      one.className = 'svc-mq__item';
+      for (var i = 0; i < src.children.length; i++) { one.appendChild(src.children[i].cloneNode(true)); }
+      return one;
+    };
+    var build = function () {
+      if (!src.children.length || !box.isConnected) { return; }
+      track.innerHTML = '';
+      var first = item(); track.appendChild(first);
+      var w = first.getBoundingClientRect().width || 600;
+      var vw = box.clientWidth || window.innerWidth;
+      var reps = Math.max(1, Math.ceil((vw + w) / (w + 16)));
+      track.innerHTML = '';
+      for (var k = 0; k < reps * 2; k++) { track.appendChild(item()); }
+      eng.measure(reps);
+    };
+    build();
+    window.addEventListener('load', build);
+    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(build); }
+    var ww = window.innerWidth, tm;
+    window.addEventListener('resize', function () {
+      if (window.innerWidth === ww) { return; }
+      ww = window.innerWidth; clearTimeout(tm); tm = setTimeout(build, 200);
+    });
+    if ('MutationObserver' in window) {
+      new MutationObserver(function () { clearTimeout(tm); tm = setTimeout(build, 50); })
+        .observe(src, { childList: true, subtree: true, characterData: true });
+    }
+  })();
+
 
   /* ---------------------------------------------------------------
      9ג) #info — הכותרת "עם קצת ידע... חשבנו בשבילכם על הכל..." כשורה נעה (אותו מנוע initMarquee כמו ה-Hero ו-#about).

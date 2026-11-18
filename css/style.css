@@ -8980,3 +8980,28 @@ html[lang="he"][dir] body #main#main #services .section-title[data-i18n="svc_lea
   font-weight: 400 !important;
   font-size: calc(var(--pt-fit, var(--pt-fs)) * 1.15) !important;   /* גופן מכחול נראה קטן יותר — אותו גודל קריאה כמו קודם */
 }
+
+/* ===== services.html: שלוש ה-✓ כפס נע מתחת לכרטיסי החטיבות (28px מתחתם). אותו עיצוב כמו .badge-chip, רווח 16px (גם בתפר), דהייה בקצוות ===== */
+html[dir] body #main .division-cards { margin-top: 0 !important; }
+.svc-pills { position: relative; margin-top: 28px; }
+.svc-pills__src {
+  position: absolute !important; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+.svc-mq {
+  display: block; direction: ltr; overflow: hidden; cursor: grab; touch-action: pan-y;
+  -webkit-user-select: none; user-select: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+  padding-block: 4px;
+}
+.svc-mq.is-dragging { cursor: grabbing; }
+.svc-mq__track { display: flex; align-items: center; gap: 16px; width: max-content; will-change: transform; }
+.svc-mq__item { flex: none; display: inline-flex; align-items: center; gap: 16px; direction: rtl; white-space: nowrap; }
+.svc-mq .badge-chip { flex: none; }
+/* "עצירת אנימציות": שורה סטטית וממורכזת */
+html.a11y-no-motion .svc-mq { display: none; }
+html.a11y-no-motion .svc-pills__src {
+  position: static !important; width: auto; height: auto; overflow: visible; clip: auto; clip-path: none; white-space: normal;
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 16px;
+}
