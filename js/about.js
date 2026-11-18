@@ -86,9 +86,33 @@
     }
     body.innerHTML = '';
     body.appendChild(clone);
-    if (!m.hidden) { startMq(); }                 // החלפת שפה בזמן שהחלון פתוח
+    if (!m.hidden) { startMq(); fitModalIdea(); } // החלפת שפה בזמן שהחלון פתוח
     titleEl.textContent = t('about_eyebrow', 'אודות הקבוצה');
     xBtn.setAttribute('aria-label', t('pm_close', 'סגירה'));
+  }
+  // "מדוע נולד הרעיון…" בחלון: שורה אחת שמתמלאת בדיוק לרוחב הפסקה (משנים רק את גודל הכתב). מתחת ל-768 — שבירה רגילה, ממורכז.
+  function fitModalIdea() {
+    var h = body.querySelector('.about-sub--idea');
+    if (!h || m.hidden) { return; }
+    if (window.innerWidth < 768) {
+      h.style.removeProperty('white-space'); h.style.removeProperty('font-size'); h.style.removeProperty('width');
+      return;
+    }
+    h.style.setProperty('white-space', 'nowrap', 'important');
+    h.style.width = '100%';
+    var fs = 16;
+    for (var i = 0; i < 4; i++) {
+      h.style.setProperty('font-size', fs.toFixed(3) + 'px', 'important');
+      var box = h.getBoundingClientRect();
+      var ratio = h.offsetWidth ? box.width / h.offsetWidth : 1;
+      var rg = document.createRange(); rg.selectNodeContents(h);
+      var tw = rg.getBoundingClientRect().width / (ratio || 1);
+      if (tw < 20 || !h.clientWidth) { return; }
+      var next = fs * h.clientWidth / tw;
+      if (Math.abs(next - fs) < 0.01) { break; }
+      fs = next;
+    }
+    h.style.setProperty('font-size', (Math.floor(fs * 100) / 100).toFixed(2) + 'px', 'important');
   }
   // פס שורת הסיום בתוך החלון: מאותחל רק כשהחלון גלוי (רוחב 0 כשהוא מוסתר). נעצר מעצמו כשהחלון נסגר (הפס יוצא מהמסך / ה-DOM מוחלף)
   function startMq() {
@@ -105,6 +129,7 @@
     void m.offsetWidth;
     m.classList.add('is-open');
     startMq();
+    fitModalIdea();
   }
   function close() {
     if (m.hidden) { return; }
@@ -140,6 +165,7 @@
   fit();
   window.addEventListener('load', refit);
   window.addEventListener('resize', refit);
+  window.addEventListener('resize', function () { fitModalIdea(); });
   if (document.fonts && document.fonts.ready) { document.fonts.ready.then(refit); }
   if ('MutationObserver' in window) {
     new MutationObserver(function () { refit(); if (!m.hidden) { render(); } })

@@ -5039,7 +5039,9 @@ body .site-header .main-nav.is-open ul li a { color: var(--lb); }
 /* ----- #about v2: מראה כמו קובץ ה-Word — ריווח אותיות בתוויות/כותרות, GAD, 1995; כותרות קטנות (h4) ושורת סיום בשלוש שורות ----- */
 #about .about-text h3.about-sub { letter-spacing: .14em; }
 #about .gad-sp,
+#about .bh-sp,
 #about .yr-sp { letter-spacing: .3em; }
+#about .bh-sp { font-weight: 700; }
 #about .about-text h4.about-sub--sm {
   margin: 18px 0 6px;
   font-size: 1.05rem;
@@ -8797,3 +8799,9 @@ html[dir] body #partners .pt-track .partner-chip .partner-slogan {
   font-size: 13px; line-height: 1.4; text-align: center !important;
 }
 #partners .pt-track .partner-chip .partner-photo { height: 95px; flex: none; }
+
+/* #about — "מדוע נולד הרעיון…": במובייל (<768) שבירה לשתי שורות, ממורכז (בעמוד ובחלון "המשך קריאה") */
+@media (max-width: 767.98px) {
+  html[dir] #about .about-sub--idea,
+  html[dir] #about .ab-read .about-text h3.about-sub.about-sub--idea { text-align: center !important; text-align-last: center !important; }
+}
