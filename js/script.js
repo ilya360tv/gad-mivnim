@@ -3428,7 +3428,7 @@ function cardScale() {
     return rg.getBoundingClientRect().width;
   }
   function fit() {
-    ['fontSize', 'height', 'display', 'alignItems', 'justifyContent', 'whiteSpace', 'textAlign'].forEach(function (k) { line1.style[k] = ''; });
+    ['fontSize', 'height', 'display', 'alignItems', 'justifyContent', 'whiteSpace', 'textAlign', 'maxWidth', 'marginInline'].forEach(function (k) { line1.style[k] = ''; });
     var h0 = line1.getBoundingClientRect().height;          // גובה המקורי — נשמר
     var want = textW(line2);
     if (!(want > 20) || !(h0 > 0)) { return; }
@@ -3447,6 +3447,8 @@ function cardScale() {
       line1.style.fontSize = MIN + 'px';
       line1.style.whiteSpace = 'normal';
       line1.style.textAlign = 'center';
+      line1.style.maxWidth = (want + 2).toFixed(1) + 'px';        // השבירה בתוך רוחב השורה התחתונה
+      line1.style.marginInline = 'auto';
     } else {
       line1.style.fontSize = size.toFixed(2) + 'px';
     }
