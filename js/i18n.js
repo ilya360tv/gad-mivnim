@@ -323,7 +323,7 @@
     c48:  { he: 'אינסטלציה וביוב', ru: 'Сантехника и канализация', en: 'Plumbing & Sewage', fr: 'Plomberie et assainissement' },
     c49:  { he: 'חשמל ותקשורת', ru: 'Электрика и связь', en: 'Electricity & Communications', fr: 'Électricité et communications' },
 
-    d5_title:  { he: 'חטיבת אחזקה וניהול פרויקטים', ru: 'Подразделение эксплуатации и управления проектами', en: 'Maintenance & Project Management Division', fr: 'Division maintenance et gestion de projets' },
+    d5_title:  { he: 'חטיבת אחזקה וניהול מבנים', ru: 'Подразделение эксплуатации и управления зданиями', en: 'Building Maintenance & Management Division', fr: 'Division maintenance et gestion des bâtiments' },
     d5_slogan: { he: 'מובילים שינוי למבנה שלכם !', ru: 'Ведём перемены для вашего здания!', en: 'Leading change for your building!', fr: 'Nous menons le changement pour votre bâtiment !' },
     c51:  { he: 'ניהול ואחזקת מבני מגורים ומסחר', ru: 'Управление и обслуживание жилых и коммерческих зданий', en: 'Management & Maintenance of Residential and Commercial Buildings', fr: 'Gestion et entretien de bâtiments résidentiels et commerciaux' },
     c51s: { he: 'משנים אתכם דרך לתחזוקה נכונה', ru: 'Меняем с вами путь к правильному обслуживанию', en: 'Changing the way to proper maintenance with you', fr: 'Nous changeons avec vous la voie vers un entretien juste' },
@@ -413,7 +413,7 @@
     pg_d1: { he: 'חטיבת תכנון והנדסה | GAD MIVNIM', ru: 'Подразделение проектирования и инженерии | GAD MIVNIM', en: 'Planning & Engineering Division | GAD MIVNIM', fr: 'Division planification et ingénierie | GAD MIVNIM' },
     pg_d2: { he: 'חטיבת בינוי ותשתיות | GAD MIVNIM', ru: 'Подразделение строительства и инфраструктуры | GAD MIVNIM', en: 'Construction & Infrastructure Division | GAD MIVNIM', fr: 'Division construction et infrastructures | GAD MIVNIM' },
     pg_d3: { he: 'חטיבת שותפויות נדל"ן | GAD MIVNIM', ru: 'Подразделение партнёрств в недвижимости | GAD MIVNIM', en: 'Real-Estate Partnerships Division | GAD MIVNIM', fr: 'Division partenariats immobiliers | GAD MIVNIM' },
-    pg_d5: { he: 'חטיבת אחזקה וניהול פרויקטים | GAD MIVNIM', ru: 'Подразделение эксплуатации и управления проектами | GAD MIVNIM', en: 'Maintenance & Project Management Division | GAD MIVNIM', fr: 'Division maintenance et gestion de projets | GAD MIVNIM' },
+    pg_d5: { he: 'חטיבת אחזקה וניהול מבנים | GAD MIVNIM', ru: 'Подразделение эксплуатации и управления зданиями | GAD MIVNIM', en: 'Building Maintenance & Management Division | GAD MIVNIM', fr: 'Division maintenance et gestion des bâtiments | GAD MIVNIM' },
 
     /* ----- שותפים: קבוצות ודפים ----- */
     pgrp_back: { he: 'חזרה לכל השותפים', ru: 'Назад ко всем партнёрам', en: 'Back to all partners', fr: 'Retour à tous les partenaires' },
