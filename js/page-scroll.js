@@ -74,3 +74,39 @@
   }
   window.gmPageScroll = { box: box, size: size };
 })();
+
+/* ==========================================================================
+   כרטיסי השירותים (.division-page .cards-row): אזור הכותרת בגובה אחד לכל הכרטיסים בעמוד = הכותרת הגבוהה ביותר (מינימום שתי שורות).
+   כך שום כותרת לא נחתכת או דורסת את התמונה (גם בשפות עם כותרות ארוכות), והתמונות באותו קו. מחושב מחדש: טעינה, שינוי רוחב, החלפת שפה.
+   ========================================================================== */
+(function () {
+  'use strict';
+  var rows = document.querySelectorAll('.division-page .cards-row');
+  if (!rows.length) { return; }
+  function fit() {
+    Array.prototype.forEach.call(rows, function (row) {
+      var titles = row.querySelectorAll('.card .card-title');
+      row.style.removeProperty('--ct-h');
+      var max = 0;
+      Array.prototype.forEach.call(titles, function (t) {
+        var rg = document.createRange(); rg.selectNodeContents(t);
+        var h = Math.ceil(rg.getBoundingClientRect().height);
+        if (h > max) { max = h; }
+      });
+      row.style.setProperty('--ct-h', Math.max(66, max + 14) + 'px');   // לפחות 66px (שתי שורות); אחרת — הגבוהה + אוויר
+      
+    });
+  }
+  var tm;
+  function refit() { clearTimeout(tm); tm = setTimeout(fit, 40); }
+  fit();
+  window.addEventListener('load', function () { fit(); setTimeout(fit, 500); });
+  window.addEventListener('resize', refit);
+  if (document.fonts && document.fonts.ready) { document.fonts.ready.then(fit); }
+  if ('MutationObserver' in window) {
+    var mo = new MutationObserver(refit);
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['lang', 'dir'] });
+    Array.prototype.forEach.call(rows, function (row) { mo.observe(row, { childList: true, characterData: true, subtree: true }); });
+  }
+  if ('ResizeObserver' in window) { Array.prototype.forEach.call(rows, function (row) { new ResizeObserver(refit).observe(row); }); }
+})();
