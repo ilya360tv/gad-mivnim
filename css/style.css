@@ -8873,6 +8873,7 @@ html.ps-body body { overflow-y: auto; scrollbar-width: thin; scrollbar-color: rg
 .page-scroll::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, .45); border-radius: 8px; }
 .page-scroll::-webkit-scrollbar-thumb:hover { background: rgba(56, 189, 248, .7); }
 .page-scroll:focus { outline: none; }
+.page-scroll:focus-visible { outline: 2px solid rgba(56, 189, 248, .55); outline-offset: -2px; border-radius: 10px; }
 html.a11y-no-motion .page-scroll { scroll-behavior: auto; }
 
 /* #about: התוכן כבר נחתך בגובה הפנוי ("המשך קריאה") — בלי פס גלילה נוסף בקופסה כשהעמוד חתוך */

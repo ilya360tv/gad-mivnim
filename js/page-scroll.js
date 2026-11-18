@@ -43,7 +43,13 @@
   var footer = document.querySelector('body > .site-footer');
   if (footer) { box.appendChild(footer); }
 
+  box.setAttribute('tabindex', '0');                 // מקלדת: חיצים / PageDown / Space גוללים בתוך הקופסה
   root.classList.add('ps-on');
+  // בטעינה — המיקוד על הקופסה (אם אין מיקוד אחר), כדי שהחיצים יעבדו מיד בלי ללחוץ קודם
+  window.addEventListener('load', function () {
+    var ae = document.activeElement;
+    if (!ae || ae === body || ae === root) { try { box.focus({ preventScroll: true }); } catch (e) { /* ignore */ } }
+  });
 
   var BOTTOM = 14;                                    // מרווח בתחתית המסך
   function size() {
