@@ -3415,3 +3415,54 @@ function cardScale() {
   if (document.fonts && document.fonts.ready) { document.fonts.ready.then(fit); }
   if ('MutationObserver' in window) { new MutationObserver(refit).observe(root, { attributes: true, attributeFilter: ['lang', 'dir'] }); }
 })();
+
+/* Hero: השורה "לרשותכם אולם תצוגה…" באותו רוחב בדיוק כמו "הרצליה ישראל | HERZLIYA ISRAEL" (fit-text: משנים רק את גודל הכתב של השורה הראשונה).
+   גובה השורה נשמר כמו שהיה (flex ממורכז), כך שהבאדג', התמונה והכותרת לא זזים. מתחת ל-14px — השורה נשברת לשתי שורות ממורכזות. */
+(function () {
+  var line1 = document.querySelector('.hero .hero-showroom');
+  var line2 = document.querySelector('.hero .hero-location');
+  if (!line1 || !line2) { return; }
+  var MIN = 14;
+  function textW(el) {
+    var rg = document.createRange(); rg.selectNodeContents(el);
+    return rg.getBoundingClientRect().width;
+  }
+  function fit() {
+    ['fontSize', 'height', 'display', 'alignItems', 'justifyContent', 'whiteSpace', 'textAlign'].forEach(function (k) { line1.style[k] = ''; });
+    var h0 = line1.getBoundingClientRect().height;          // גובה המקורי — נשמר
+    var want = textW(line2);
+    if (!(want > 20) || !(h0 > 0)) { return; }
+    line1.style.whiteSpace = 'nowrap';
+    var base = parseFloat(getComputedStyle(line1).fontSize) || 16;
+    var size = base;
+    for (var i = 0; i < 3; i++) {                           // התכנסות (הרוחב לינארי בגודל הכתב)
+      line1.style.fontSize = size.toFixed(3) + 'px';
+      var w = textW(line1);
+      if (!(w > 20)) { return; }
+      var next = size * want / w;
+      if (Math.abs(next - size) < 0.02) { size = next; break; }
+      size = next;
+    }
+    if (size < MIN) {                                       // קטן מדי — נשבר לשתי שורות, ממורכז
+      line1.style.fontSize = MIN + 'px';
+      line1.style.whiteSpace = 'normal';
+      line1.style.textAlign = 'center';
+    } else {
+      line1.style.fontSize = size.toFixed(2) + 'px';
+    }
+    line1.style.display = 'flex'; line1.style.alignItems = 'center'; line1.style.justifyContent = 'center';
+    line1.style.height = h0.toFixed(2) + 'px';
+  }
+  var tm;
+  var refit = function () { clearTimeout(tm); tm = setTimeout(fit, 40); };
+  fit();
+  window.addEventListener('load', fit);
+  window.addEventListener('resize', refit);
+  if (document.fonts && document.fonts.ready) { document.fonts.ready.then(fit); }
+  if ('MutationObserver' in window) {
+    var mo = new MutationObserver(refit);
+    mo.observe(line1, { childList: true, characterData: true, subtree: true });
+    mo.observe(line2, { childList: true, characterData: true, subtree: true });
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['lang', 'dir'] });
+  }
+})();
