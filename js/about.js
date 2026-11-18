@@ -86,9 +86,44 @@
     }
     body.innerHTML = '';
     body.appendChild(clone);
-    if (!m.hidden) { startMq(); fitModalIdea(); } // החלפת שפה בזמן שהחלון פתוח
+    if (!m.hidden) { positionReader(); startMq(); fitModalIdea(); } // החלפת שפה בזמן שהחלון פתוח
     titleEl.textContent = t('about_eyebrow', 'אודות הקבוצה');
     xBtn.setAttribute('aria-label', t('pm_close', 'סגירה'));
+  }
+  // דסקטופ (≥1024): החלון נפתח מעל עמודת הטקסט (בצד שלה), עמודת התמונות נשארת גלויה. מיקום פיזי: ב-RTL הקצה הימני = הקצה הימני של העמודה.
+  // הקופסה ב-zoom (--reader-scale), לכן כל מידה מקומית = מידה על המסך / scale. רוחב = רוחב העמודה (+עד 40px, בלי לכסות את התמונות).
+  function positionReader() {
+    var bd = m.querySelector('.proj-modal__backdrop');
+    var reset = function () {
+      ['position', 'top', 'right', 'left', 'width', 'maxWidth', 'maxHeight'].forEach(function (k) { box.style[k] = ''; });
+      bd.style.background = '';
+    };
+    if (m.hidden || window.innerWidth < 1024) { reset(); return; }
+    var sc = parseFloat(getComputedStyle(m).getPropertyValue('--reader-scale')) || 1;
+    var rtl = document.documentElement.getAttribute('dir') !== 'ltr';
+    var vw = document.documentElement.clientWidth, vh = window.innerHeight;
+    var cr = col.getBoundingClientRect();
+    var idea = section.querySelector('.about-grid > .about-sub--idea');
+    var ir = idea ? idea.getBoundingClientRect() : cr;
+    var tiles = section.querySelector('.about-tiles');
+    var tr = tiles ? tiles.getBoundingClientRect() : null;
+    var W = cr.width + 40;
+    if (tr) { W = Math.min(W, rtl ? cr.right - (tr.right + 8) : (tr.left - 8) - cr.left); }
+    W = Math.max(W, 320);
+    var top = Math.max(12, ir.top);
+    box.style.position = 'absolute';
+    box.style.top = (top / sc).toFixed(2) + 'px';
+    box.style.width = (W / sc).toFixed(2) + 'px';
+    box.style.maxWidth = 'none';
+    box.style.maxHeight = (Math.max(200, vh - top - 16) / sc).toFixed(2) + 'px';
+    var edge;                                                           // קצה החלון על המסך בצד העמודה
+    if (rtl) { box.style.left = 'auto'; box.style.right = ((vw - cr.right) / sc).toFixed(2) + 'px'; edge = cr.right - W; }
+    else { box.style.right = 'auto'; box.style.left = (cr.left / sc).toFixed(2) + 'px'; edge = cr.left + W; }
+    // הרקע: כהה כמו קודם מאחורי החלון ומעבר לו; בצד התמונות — בהיר (התמונות נראות בבירור)
+    var dark = 'rgba(0,0,0,.65)', light = 'rgba(0,0,0,.12)';
+    bd.style.background = rtl
+      ? 'linear-gradient(90deg,' + light + ' ' + edge.toFixed(0) + 'px,' + dark + ' ' + edge.toFixed(0) + 'px)'
+      : 'linear-gradient(90deg,' + dark + ' ' + edge.toFixed(0) + 'px,' + light + ' ' + edge.toFixed(0) + 'px)';
   }
   // "מדוע נולד הרעיון…" בחלון: שורה אחת שמתמלאת בדיוק לרוחב הפסקה (משנים רק את גודל הכתב). מתחת ל-768 — שבירה רגילה, ממורכז.
   function fitModalIdea() {
@@ -128,6 +163,7 @@
     scroller.scrollTop = 0;
     void m.offsetWidth;
     m.classList.add('is-open');
+    positionReader();
     startMq();
     fitModalIdea();
   }
@@ -165,7 +201,7 @@
   fit();
   window.addEventListener('load', refit);
   window.addEventListener('resize', refit);
-  window.addEventListener('resize', function () { fitModalIdea(); });
+  window.addEventListener('resize', function () { positionReader(); fitModalIdea(); });
   if (document.fonts && document.fonts.ready) { document.fonts.ready.then(refit); }
   if ('MutationObserver' in window) {
     new MutationObserver(function () { refit(); if (!m.hidden) { render(); } })
