@@ -175,6 +175,7 @@ PAGES.forEach((page) => {
       .replace(/<meta name="description" content="[^"]*">/, '<meta name="description" content="' + page.desc.replace(/"/g, '&quot;') + '">\n  <link rel="canonical" href="' + SITE + page.file + '">');
   }
   let post = page.id === 'contact' ? POST_MAIN : sharedFooter(POST_MAIN);   // קישורים ובלוק הסיום — רק בעמוד שירות לקוחות
+  if (isHome) { post = post.replace(/\n?  <footer class="site-footer">[\s\S]*?<\/footer>\n?/, '\n'); }   // דף הבית: בלי פוטר (שורת הזכויות הייתה בו) — אין גובה מתחת ל-Hero
   if (page.id !== 'careers') { post = post.replace(/\n  <!--[^\n]*-->\n  <form name="careers-application"[\s\S]*?<\/form>\n/, '\n').replace(/  <form name="careers-application"[\s\S]*?<\/form>\n/, ''); }
   const body = PRE_MAIN.replace(header, markCurrent(rewriteLinks(header), page.id)) + '\n\n' + promoteH1(SECTIONS[page.id], page.id) + MAIN_TAIL + post;
   const html = head + '</head>\n<body class="page-split" data-page="' + page.id + '">' + rewriteLinks(body) + scriptsFor(page) + '\n</body>\n</html>\n';

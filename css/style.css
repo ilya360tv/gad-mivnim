@@ -8840,3 +8840,12 @@ html[dir] body #partners .pt-track .partner-chip .partner-slogan {
 @media (min-width: 769px) {
   .hero .hero-title.hero-title--mq { position: relative; top: calc(-1 * var(--hero-title-lift, 40px)); }
 }
+
+/* ===== דף הבית בלבד (body[data-page="hero"]): בלי גלילה — ה-Hero ממלא בדיוק את המסך ===== */
+html:has(body[data-page="hero"]) { height: 100%; overflow: hidden; }
+body[data-page="hero"] { height: 100%; min-height: 0; overflow: hidden; }
+/* מסך נמוך: תמונת האולם קטנה יותר (לא נחתכת) */
+@media (min-width: 769px) and (max-height: 800px) { .hero .hero-showroom-img { width: 260px; } }
+@media (min-width: 769px) and (max-height: 680px) { .hero .hero-showroom-img { width: 220px; } }
+@media (max-width: 768px) and (max-height: 700px) { .hero .hero-showroom-img { width: 60%; } }
+@media (max-width: 768px) and (max-height: 600px) { .hero .hero-showroom-img { width: 44%; } }
