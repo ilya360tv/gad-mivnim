@@ -2587,6 +2587,50 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
   /* ---------------------------------------------------------------
+     9ב'') #services — הסלוגן של כל חטיבה רץ כפס נע על תחתית התמונה (מדרג כהה). מנוע initMarquee, מופע לכל כרטיס: ~35px/s,
+         רווח 40px בלי "•", עצירה במעבר עכבר על הכרטיס. הטקסט האמיתי פעם אחת ב-.slogan-src; העותקים הנעים aria-hidden.
+         "עצירת אנימציות" / prefers-reduced-motion — סלוגן סטטי ממורכז (CSS).
+     --------------------------------------------------------------- */
+  Array.prototype.forEach.call(document.querySelectorAll('#services .division-card'), function (card) {
+    var box = card.querySelector('.slogan-mq');
+    var track = box ? box.querySelector('.slogan-mq__track') : null;
+    var src = card.querySelector('.slogan-src');
+    if (!(box && track && src)) { return; }
+    var eng = initMarquee(box, track, { speed: 35, isPaused: function () { return card.matches(':hover'); } });
+    var GAP = 40;
+    var item = function () {
+      var one = document.createElement('span');
+      one.className = 'slogan-mq__item';
+      one.textContent = src.textContent;
+      return one;
+    };
+    var build = function () {
+      if (!src.textContent.trim() || !box.isConnected) { return; }
+      track.innerHTML = '';
+      var first = item(); track.appendChild(first);
+      var w = first.getBoundingClientRect().width || 200;
+      var vw = box.clientWidth || card.clientWidth || 200;
+      var reps = Math.max(1, Math.ceil((vw + w) / (w + GAP)));
+      track.innerHTML = '';
+      for (var k = 0; k < reps * 2; k++) { track.appendChild(item()); }
+      eng.measure(reps);
+    };
+    build();
+    window.addEventListener('load', build);
+    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(build); }
+    var ww = window.innerWidth, tm;
+    window.addEventListener('resize', function () {
+      if (window.innerWidth === ww) { return; }
+      ww = window.innerWidth; clearTimeout(tm); tm = setTimeout(build, 200);
+    });
+    if ('MutationObserver' in window) {
+      new MutationObserver(function () { clearTimeout(tm); tm = setTimeout(build, 50); })
+        .observe(src, { childList: true, subtree: true, characterData: true });
+    }
+  });
+
+
+  /* ---------------------------------------------------------------
      9ג) #info — הכותרת "עם קצת ידע... חשבנו בשבילכם על הכל..." כשורה נעה (אותו מנוע initMarquee כמו ה-Hero ו-#about).
          ה-<h2> האמיתי נשאר פעם אחת ב-.info-mq__src (מוסתר ויזואלית); העותקים הנעים aria-hidden.
      --------------------------------------------------------------- */
