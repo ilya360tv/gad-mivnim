@@ -2591,29 +2591,49 @@ document.addEventListener('DOMContentLoaded', function () {
          רווח 40px בלי "•", עצירה במעבר עכבר על הכרטיס. הטקסט האמיתי פעם אחת ב-.slogan-src; העותקים הנעים aria-hidden.
          "עצירת אנימציות" / prefers-reduced-motion — סלוגן סטטי ממורכז (CSS).
      --------------------------------------------------------------- */
-  Array.prototype.forEach.call(document.querySelectorAll('#services .division-card'), function (card) {
-    var box = card.querySelector('.slogan-mq');
+  // כרטיסי הקטגוריות בעמודי החטיבות (.division-page .cards-row > .card): בונים את אותו פס סלוגן על התמונה — ה-<p class="card-tagline"> עצמו
+  // (עם data-i18n, כך שהתרגום ממשיך לעבוד) עובר לתוך הפס כטקסט האמיתי; הכרטיס נגמר מיד אחרי התמונה. כרטיס בלי סלוגן — בלי פס.
+  Array.prototype.forEach.call(document.querySelectorAll('.division-page .cards-row > .card'), function (card) {
+    var media = card.querySelector('.card-media');
+    var tags = card.querySelectorAll('.card-tagline');
+    if (!media || !tags.length || media.querySelector('.slogan-band')) { return; }
+    var band = document.createElement('div'); band.className = 'slogan-band';
+    Array.prototype.forEach.call(tags, function (p) { p.classList.remove('card-tagline'); p.classList.add('slogan-src'); band.appendChild(p); });
+    var mq = document.createElement('div'); mq.className = 'slogan-mq'; mq.setAttribute('aria-hidden', 'true');
+    var tr = document.createElement('div'); tr.className = 'slogan-mq__track'; mq.appendChild(tr); band.appendChild(mq);
+    media.appendChild(band);
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('.slogan-band'), function (bandEl) {
+    var card = bandEl.closest('.card');
+    var box = bandEl.querySelector('.slogan-mq');
     var track = box ? box.querySelector('.slogan-mq__track') : null;
-    var src = card.querySelector('.slogan-src');
-    if (!(box && track && src)) { return; }
+    var srcs = bandEl.querySelectorAll('.slogan-src');
+    var src = bandEl;
+    if (!(card && box && track && srcs.length)) { return; }
     var eng = initMarquee(box, track, { speed: 35, isPaused: function () { return card.matches(':hover'); } });
     var GAP = 40;
-    var item = function () {
-      var one = document.createElement('span');
-      one.className = 'slogan-mq__item';
-      one.textContent = src.textContent;
-      return one;
+    // עותק אחד = כל הסלוגנים של הכרטיס (בכרטיס עם שני משפטים — זה אחר זה), 40px ביניהם
+    var addCopy = function () {
+      Array.prototype.forEach.call(srcs, function (p) {
+        var one = document.createElement('span');
+        one.className = 'slogan-mq__item';
+        one.textContent = p.textContent;
+        track.appendChild(one);
+      });
     };
     var build = function () {
-      if (!src.textContent.trim() || !box.isConnected) { return; }
+      var txt = ''; Array.prototype.forEach.call(srcs, function (p) { txt += p.textContent.trim(); });
+      if (!txt || !box.isConnected) { return; }
       track.innerHTML = '';
-      var first = item(); track.appendChild(first);
-      var w = first.getBoundingClientRect().width || 200;
+      addCopy();
+      var n = track.children.length;
+      var w = (track.children[n - 1].getBoundingClientRect().right - track.children[0].getBoundingClientRect().left) || 200;
       var vw = box.clientWidth || card.clientWidth || 200;
       var reps = Math.max(1, Math.ceil((vw + w) / (w + GAP)));
       track.innerHTML = '';
-      for (var k = 0; k < reps * 2; k++) { track.appendChild(item()); }
-      eng.measure(reps);
+      for (var k = 0; k < reps * 2; k++) { addCopy(); }
+      eng.measure(reps * n);
     };
     build();
     window.addEventListener('load', build);
@@ -2624,8 +2644,8 @@ document.addEventListener('DOMContentLoaded', function () {
       ww = window.innerWidth; clearTimeout(tm); tm = setTimeout(build, 200);
     });
     if ('MutationObserver' in window) {
-      new MutationObserver(function () { clearTimeout(tm); tm = setTimeout(build, 50); })
-        .observe(src, { childList: true, subtree: true, characterData: true });
+      var moS = new MutationObserver(function () { clearTimeout(tm); tm = setTimeout(build, 50); });
+      Array.prototype.forEach.call(srcs, function (p) { moS.observe(p, { childList: true, subtree: true, characterData: true }); });
     }
   });
 
