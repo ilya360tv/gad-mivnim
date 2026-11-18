@@ -8816,5 +8816,6 @@ html[dir] body #partners .pt-track .partner-chip .partner-slogan {
   html[dir] #about .ab-read .about-text h3.about-sub.about-sub--idea { text-align: center !important; text-align-last: center !important; }
 }
 
-/* #about — הלוגו בפס הנע: אחרי המשפט, גובה 44px, ממורכז אנכית, 24px מהמשפט; לא לחיץ. הרווח בין חזרות (48px) כמו קודם */
-.about-mq__logo { flex: none; display: block; height: 44px; width: auto; margin-inline-start: -8px; pointer-events: none; -webkit-user-drag: none; }
+/* #about — שני לוגואים בפס הנע (בין "בכל מקום במפה" ל"משנים את הדרך…" ואחריו): גובה 44px, ממורכז אנכית, 24px מכל צד (gap 32 − 8); לא לחיץ. הרווח בין חזרות (48px) כמו קודם */
+.about-mq__logo { flex: none; display: block; height: 44px; width: auto; margin-inline: -8px; pointer-events: none; -webkit-user-drag: none; }
+.about-mq__logo:last-child { margin-inline-end: 0; }   /* הלוגו האחרון: הרווח בין חזרות (48px) כמו קודם */

@@ -2497,18 +2497,22 @@ document.addEventListener('DOMContentLoaded', function () {
       var one = document.createElement('span');
       one.className = 'about-mq__item';
       var parts = aqSrc.children;
+      var mkLogo = function (decor) {                                      // אותו קובץ לוגו כמו בהדר
+        var logo = document.createElement('img');
+        logo.src = 'images/gad_mivnim_logo.svg';
+        logo.className = 'about-mq__logo';
+        logo.draggable = false;
+        logo.decoding = 'async';
+        if (decor) { logo.alt = ''; logo.setAttribute('aria-hidden', 'true'); } else { logo.alt = 'GAD MIVNIM'; }
+        return logo;
+      };
       for (var i = 0; i < parts.length; i++) {
         var p = parts[i].cloneNode(true);
         if (i === parts.length - 1) { p.classList.add('is-reg'); }          // "משנים את הדרך..." — לא מודגש
+        if (i === 1) { one.appendChild(mkLogo(false)); }                    // לוגו בין "בכל מקום במפה" ל"משנים את הדרך…"
         one.appendChild(p);
       }
-      var logo = document.createElement('img');                           // הלוגו אחרי המשפט — אותו קובץ כמו בהדר
-      logo.src = 'images/gad_mivnim_logo.svg';
-      logo.alt = 'GAD MIVNIM';
-      logo.className = 'about-mq__logo';
-      logo.draggable = false;
-      logo.decoding = 'async';
-      one.appendChild(logo);
+      one.appendChild(mkLogo(true));                                        // לוגו שני אחרי "משנים את הדרך…" (דקורטיבי)
       return one;
     };
     var aqBuild = function () {
