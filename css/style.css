@@ -5515,7 +5515,8 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
      תחתית הגלולה האחרונה = 2×ריווח עליון + עיגול + 7 גלולות + 6 רווחים */
   :root {
     --pill-last-b: calc(2 * var(--side-top) + var(--side-circle) + 7 * var(--pill-h) + 6 * var(--side-gap));
-    --fab-top: calc(var(--pill-last-b) + 16px);
+    /* תחתית הכפתור 32px מעל תחתית המסך; במסך נמוך — 24px מתחת לגלולה האחרונה */
+    --fab-top: max(calc(var(--pill-last-b) + 24px), calc(100vh - 32px - 56px));
   }
   .a11y-fab {
     left: calc((var(--side-w) - 56px) / 2) !important;
@@ -5528,7 +5529,7 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
     right: auto !important;
     inset-inline-start: auto;
     bottom: auto !important;
-    top: calc(var(--fab-top) + 56px + 12px) !important;
+    top: calc(var(--fab-top) - 54px - 12px) !important;   /* מעל כפתור הנגישות, 12px רווח */
   }
   /* הפאנל נפתח ליד הכפתור, לכיוון מרכז הדף; התחתית שלו בגובה תחתית הכפתור, כולו בתוך המסך */
   .a11y-panel {

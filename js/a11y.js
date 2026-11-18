@@ -258,7 +258,7 @@
     }
 
     // דסקטופ (≥1024): הכפתור תמיד ממורכז על ציר העמודה השמאלית, 16px מתחת ל"שירות לקוחות" (css/style.css).
-    // "חזרה למעלה" מתחתיו — רק אם יש מקום לשניהם עד תחתית המסך (16+56+12+54+16 = 154px מתחת לגלולה).
+    // "חזרה למעלה" מתחתיו — רק אם יש מקום לשניהם עד תחתית המסך (24+54+12+56+32 = 178px מתחת לגלולה).
     // אם אין — html.a11y-short: "חזרה למעלה" עובר לתחתית העמודה הימנית (ממורכז על הציר שלה) ולא עולה על הגלולות.
     var deskMq = window.matchMedia('(min-width: 1024px)');
     var fitShort = function () {
@@ -266,7 +266,7 @@
       if (deskMq.matches) {
         var last = document.querySelector('.site-header .main-nav a[href*="contact"]');
         var r = last && last.getBoundingClientRect();
-        if (r && r.height) { short = window.innerHeight - r.bottom < 154; }
+        if (r && r.height) { short = window.innerHeight - r.bottom < 178; }
       }
       root.classList.toggle('a11y-short', short);
     };
