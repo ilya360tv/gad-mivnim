@@ -8820,3 +8820,18 @@ html[dir] body #partners .pt-track .partner-chip .partner-slogan {
 
 /* #about — פס הסלוגן: רווח אחד שווה (36px) בין כל שני פריטים, כולל התפר בין חזרות — gap יחיד על ה-track ועל הפריט, בלי margin/padding */
 .about-mq__track { gap: var(--aq-gap); }
+
+/* ===== Hero: תמונת הצצה לאולם התצוגה — מתחת לשורת "הרצליה ישראל", ממורכזת, 18px רווח ===== */
+.hero .hero-showroom-img {
+  display: block;
+  box-sizing: border-box;
+  width: 300px;
+  max-width: 100%;
+  height: auto;
+  margin: -12px auto 0;                       /* שורת המיקום מסתיימת ב-margin-bottom של 30px → רווח נטו 18px */
+  border-radius: 16px;
+  border: 1px solid rgba(56, 189, 248, .35);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, .55), 0 0 28px rgba(56, 189, 248, .18);
+}
+@media (min-width: 1700px) { .hero .hero-showroom-img { width: 360px; } }
+@media (max-width: 768px) { .hero .hero-showroom-img { width: 78%; max-width: 360px; margin-top: -12px; } }
