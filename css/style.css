@@ -7783,6 +7783,16 @@ html.a11y-no-motion #about .ab-read .about-mq__src > * { display: inline-block; 
 @media (max-width: 767.98px) {
   .ab-read__scroll { padding: 26px 22px; }
 }
+/* חלון הקריאה ב-80% מהגודל (דסקטופ/טאבלט >768): `zoom` מקטין את כל הפריסה (גדלי כתב, ריווחים, רוחב/גובה, הלוגו) ביחס אחד, והדפדפן
+   מצייר מחדש את הטקסט בגודל החדש — חד (בניגוד ל-transform:scale שמתרגם תמונה מוגדלת/מוקטנת ועלול לטשטש). מגבלת הרוחב מחולקת ב-0.8 (vw לא מוקטן), הגובה נשאר 86vh מקומי = 80% על המסך. במובייל (≤768) — ללא שינוי, מסך מלא. */
+@media (min-width: 769px) {
+  .ab-read { --reader-scale: .8; }
+  .ab-read .ab-read__box {
+    zoom: var(--reader-scale);
+    max-width: calc((100vw - 24px) / var(--reader-scale));
+    max-height: 86vh;                     /* בתוך zoom: vh לא מוקטן — 86vh מקומי = 80% מהגובה הקודם על המסך */
+  }
+}
 
 /* ----- #careers "הצטרפות כקבלן בית": תחום מקצועי — צ'יפים (עד 3, או "קבלן כללי"); js/script.js ----- */
 .tn-fields { margin: 0; padding: 0; border: 0; min-width: 0; }
