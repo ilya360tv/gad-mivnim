@@ -8825,7 +8825,7 @@ html[dir] body #partners .pt-track .partner-chip .partner-slogan {
 .hero .hero-showroom-img {
   display: block;
   box-sizing: border-box;
-  width: 330px;
+  width: 380px;
   max-width: 100%;
   height: auto;
   margin: -12px auto 0;                       /* שורת המיקום מסתיימת ב-margin-bottom של 30px → רווח נטו 18px */
@@ -8833,8 +8833,8 @@ html[dir] body #partners .pt-track .partner-chip .partner-slogan {
   border: 1px solid rgba(56, 189, 248, .35);
   box-shadow: 0 14px 40px rgba(0, 0, 0, .55), 0 0 28px rgba(56, 189, 248, .18);
 }
-@media (min-width: 1700px) { .hero .hero-showroom-img { width: 396px; } }
-@media (max-width: 768px) { .hero .hero-showroom-img { width: 85.8%; max-width: 396px; margin-top: -12px; } }
+@media (min-width: 1700px) { .hero .hero-showroom-img { width: 455px; } }
+@media (max-width: 768px) { .hero .hero-showroom-img { width: min(94.4%, 90vw); max-width: 510px; margin-top: -12px; } }
 
 /* Hero: הכותרת הנעה + הלוגו העגול — למעלה, למרכז שורת הגלולות הראשונה (js/script.js מחשב --hero-title-lift). מקום הכותרת בזרימה נשמר, אז שאר ה-Hero לא זז. */
 @media (min-width: 769px) {
@@ -8845,10 +8845,10 @@ html[dir] body #partners .pt-track .partner-chip .partner-slogan {
 html:has(body[data-page="hero"]) { height: 100%; overflow: hidden; }
 body[data-page="hero"] { height: 100%; min-height: 0; overflow: hidden; }
 /* מסך נמוך: תמונת האולם קטנה יותר (לא נחתכת) */
-@media (min-width: 769px) and (max-height: 800px) { .hero .hero-showroom-img { width: 286px; } }
-@media (min-width: 769px) and (max-height: 680px) { .hero .hero-showroom-img { width: 242px; } }
-@media (max-width: 768px) and (max-height: 700px) { .hero .hero-showroom-img { width: 66%; } }
-@media (max-width: 768px) and (max-height: 600px) { .hero .hero-showroom-img { width: 48.4%; } }
+@media (min-width: 769px) and (max-height: 800px) { .hero .hero-showroom-img { width: 329px; } }
+@media (min-width: 769px) and (max-height: 680px) { .hero .hero-showroom-img { width: 278px; } }
+@media (max-width: 768px) and (max-height: 700px) { .hero .hero-showroom-img { width: 72.6%; } }
+@media (max-width: 768px) and (max-height: 600px) { .hero .hero-showroom-img { width: 53.2%; } }
 
 /* ==========================================================================
    בלי גלילת עמוד בכל העמודים (js/page-scroll.js): העמוד ממלא בדיוק מסך אחד; התוכן שמתחת לגלולת הכותרת ולכותרת הגדולה —
