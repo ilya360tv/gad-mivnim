@@ -8969,3 +8969,14 @@ html[dir] body #main .division-page .cards-row > .card::after { min-height: 0 !i
     justify-content: center;
   }
 }
+
+/* ===== services.html: "רמת תכנון תיאום ניהול פיקוח וביצוע מהגבוהות ביותר !" — גופן המכחול של האתר (Guttman Yad-Brush; גיבוי Gveret Levin, כמו הפס ב-about) + תכלת המותג ===== */
+html[dir] body #main#main #services .section-title[data-i18n="svc_lead"] {
+  color: #38bdf8 !important;
+  letter-spacing: normal !important;
+}
+html[lang="he"][dir] body #main#main #services .section-title[data-i18n="svc_lead"] {
+  font-family: "Guttman Yad-Brush", "Gveret Levin", "Rubik", sans-serif !important;
+  font-weight: 400 !important;
+  font-size: calc(var(--pt-fit, var(--pt-fs)) * 1.15) !important;   /* גופן מכחול נראה קטן יותר — אותו גודל קריאה כמו קודם */
+}
