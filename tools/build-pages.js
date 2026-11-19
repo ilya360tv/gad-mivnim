@@ -34,7 +34,7 @@ const PAGES = [
   { id: 'teams',       file: 'teams.html',       nav: 'nav_teams',         data: [],
     desc: 'הצוותים של GAD MIVNIM — צוותי שטח ואנשי מקצוע. מצוינות ללא פשרות.' },
   { id: 'partners',    file: 'partners.html',    nav: 'nav_partners',      data: ['partners-data'],
-    desc: 'השותפים של GAD MIVNIM — המותגים והחברות המובילים בישראל: מטבחים, נגרות, ריצוף, תאורה, דלתות ועוד.' },
+    desc: 'השותפים של GAD MIVNIM — המותגים והחברות המובילים בישראל ובעולם: מטבחים, נגרות, ריצוף, תאורה, דלתות ועוד.' },
   { id: 'info',        file: 'info.html',        nav: 'nav_info',          data: ['info-data'],
     desc: 'מידע לאזרח ולבונה — עם קצת ידע והכוונה נכונה כל אחד יכול לבנות את מבנה חייו. מדריכים וטיפים מ-GAD MIVNIM.' },
   { id: 'podcast',     file: 'podcast.html',     nav: 'nav_podcast',       data: ['podcast-data'],

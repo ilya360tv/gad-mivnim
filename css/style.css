@@ -9056,3 +9056,12 @@ html.a11y-no-motion .slogan-src {
 .division-page .slogan-mq__item { color: #f2f5f7; }
 html.a11y-no-motion .division-page .slogan-src { color: #f2f5f7; }
 @media (prefers-reduced-motion: reduce) { .division-page .slogan-src { color: #f2f5f7; } }
+
+/* ===== partners.html: ה-h2 נמחק — שני ה-✓ עולים למקומו (אותו מרווח מגלולת "השותפים שלנו" שהיה לו); הכרטיסים עולים איתם, מרווח הגלולות→כרטיסים ללא שינוי ===== */
+html[dir] body #main #partners .page-eyebrow { margin-bottom: 0 !important; }
+html[dir] body #main #partners .badges-row { margin-top: calc(var(--pt-gap-top) + var(--pt-frame) + var(--pe-shift, 0px)) !important; }
+@media (min-width: 1024px) {
+  html[dir] body #main #partners .badges-row {
+    margin-top: calc(var(--side-top) + var(--side-circle) / 2 + var(--pill-h) / 2 - var(--pt-fs) * 1.3 / 2 - var(--pe-fs) * var(--pe-lh) / 2) !important;
+  }
+}

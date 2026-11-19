@@ -345,8 +345,7 @@
     p9: { he: 'מבנים מיוחדים', ru: 'Особые здания', en: 'Special Buildings', fr: 'Bâtiments spéciaux' },
 
     /* ----- השותפים שלנו ----- */
-    partners_sub:   { he: 'המותגים והחברות המובלים בישראל', ru: 'Ведущие бренды и компании Израиля', en: 'The leading brands and companies in Israel', fr: 'Les marques et entreprises leaders en Israël' },
-    partners_badge: { he: 'המותגים המובלים', ru: 'Ведущие бренды', en: 'The leading brands', fr: 'Les marques leaders' },
+    partners_badge: { he: 'המותגים והחברות המובילים בישראל ובעולם', ru: 'Ведущие бренды и компании Израиля и мира', en: 'The leading brands and companies in Israel and worldwide', fr: 'Les marques et entreprises leaders en Israël et dans le monde' },
     partners_lead:  { he: 'בית טוב זה משפחה', ru: 'Хороший дом — это семья', en: 'A good home is family', fr: 'Une bonne maison, c’est une famille' },
     pt1:  { he: 'מטבחים', ru: 'Кухни', en: 'Kitchens', fr: 'Cuisines' },
     pt1s: { he: 'המטבח זה הלב של הבית', ru: 'Кухня — сердце дома', en: 'The kitchen is the heart of the home', fr: 'La cuisine est le cœur de la maison' },
