@@ -9057,6 +9057,26 @@ html.a11y-no-motion .slogan-src {
 html.a11y-no-motion .division-page .slogan-src { color: #f2f5f7; }
 @media (prefers-reduced-motion: reduce) { .division-page .slogan-src { color: #f2f5f7; } }
 
+/* ===== partners.html: הסלוגן של כל כרטיס — אותו פס נע באמצע התמונה (js/script.js). הכרטיס נגמר מיד אחרי התמונה (פינות מעוגלות), בלי קו תחתון ===== */
+#partners .partner-photo { position: relative; border-bottom: 0; }
+#partners .slogan-mq__item { color: #f2f5f7; }
+#partners .slogan-mq__item.is-soon { color: #aeb7bf; font-style: italic; }
+html[dir] body #partners .partner-chip .slogan-band .partner-slogan.slogan-src {   /* הטקסט האמיתי: מוסתר ויזואלית (נשאר לקוראי מסך, לחלון ולתרגום) */
+  position: absolute !important; display: block; flex: none; box-sizing: content-box; width: 1px; height: 1px; min-height: 0; padding: 0; margin: 0 !important;
+  overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+/* "עצירת אנימציות" / prefers-reduced-motion: סלוגן סטטי ממורכז (עד 2 שורות) */
+html.a11y-no-motion #partners .partner-chip .slogan-band .partner-slogan.slogan-src {
+  position: static !important; display: -webkit-box; box-sizing: border-box; width: 100%; height: auto; padding: 6px 8px; overflow: visible; clip: auto; clip-path: none; white-space: normal;
+  -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; font-size: 13px; line-height: 1.3; text-align: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  html[dir] body #partners .partner-chip .slogan-band .partner-slogan.slogan-src {
+    position: static !important; display: -webkit-box; box-sizing: border-box; width: 100%; height: auto; padding: 6px 8px; overflow: visible; clip: auto; clip-path: none; white-space: normal;
+    -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; font-size: 13px; line-height: 1.3; text-align: center;
+  }
+}
+
 /* ===== partners.html: ה-h2 נמחק — שני ה-✓ עולים למקומו (אותו מרווח מגלולת "השותפים שלנו" שהיה לו); הכרטיסים עולים איתם, מרווח הגלולות→כרטיסים ללא שינוי ===== */
 html[dir] body #main #partners .page-eyebrow { margin-bottom: 0 !important; }
 html[dir] body #main #partners .badges-row { margin-top: calc(var(--pt-gap-top) + var(--pt-frame) + var(--pe-shift, 0px)) !important; }

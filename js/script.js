@@ -1702,6 +1702,45 @@ document.addEventListener('DOMContentLoaded', function () {
     var ptqBox = ptSec.querySelector('.pt-marquee');
     var ptqTrack = ptqBox ? ptqBox.querySelector('.pt-track') : null;
     if (ptGrid && ptqBox && ptqTrack) {
+      // הסלוגן של כל כרטיס עובר לפס באמצע התמונה (אותו פס כמו ב-#services / עמודי החטיבות). הכרטיס נגמר מיד אחרי התמונה.
+      // ה-<span class="partner-slogan"> עצמו (עם data-i18n, וכך החלון והתרגום ממשיכים לעבוד) הופך לטקסט האמיתי ב-.slogan-src.
+      Array.prototype.forEach.call(ptGrid.querySelectorAll('.partner-chip'), function (chip) {
+        var photo = chip.querySelector('.partner-photo'), sl = chip.querySelector('.partner-slogan');
+        if (!photo || !sl || photo.querySelector('.slogan-band')) { return; }
+        var band = document.createElement('div'); band.className = 'slogan-band';
+        sl.classList.add('slogan-src'); band.appendChild(sl);
+        var mq = document.createElement('div'); mq.className = 'slogan-mq'; mq.setAttribute('aria-hidden', 'true');
+        var tr = document.createElement('div'); tr.className = 'slogan-mq__track'; mq.appendChild(tr); band.appendChild(mq);
+        photo.appendChild(band);
+      });
+      // מופע מנוע אחד לכל כרטיס בפס (~35px/s, רווח 40px, עצירה במעבר עכבר). כרטיס מחוץ למסך — המנוע עוצר את הלולאה בעצמו (IntersectionObserver על הפס).
+      var ptqSloganRun = function (chip) {
+        var band = chip.querySelector('.slogan-band');
+        var box = band && band.querySelector('.slogan-mq');
+        var track = box && box.querySelector('.slogan-mq__track');
+        var src = band && band.querySelector('.slogan-src');
+        if (!(box && track && src)) { return; }
+        if (!chip._sq) {
+          var eng = initMarquee(box, track, { speed: 35, isPaused: function () { return chip.matches(':hover'); } });
+          var addItem = function () {
+            var one = document.createElement('span');
+            one.className = 'slogan-mq__item' + (src.classList.contains('is-soon') ? ' is-soon' : '');
+            one.textContent = src.textContent;
+            track.appendChild(one);
+          };
+          chip._sq = function () {
+            if (!src.textContent.trim() || !box.isConnected) { return; }
+            track.innerHTML = '';
+            addItem();
+            var w = track.children[0].getBoundingClientRect().width || 200;
+            var reps = Math.max(1, Math.ceil(((box.clientWidth || chip.clientWidth || 200) + w) / (w + 40)));
+            track.innerHTML = '';
+            for (var k = 0; k < reps * 2; k++) { addItem(); }
+            eng.measure(reps);
+          };
+        }
+        chip._sq();
+      };
       var ptqSrc = Array.prototype.slice.call(ptGrid.querySelectorAll('.partner-chip'));
       // שתי שורות (כמו #projects / #in-progress): שורה 1 בכיוון הנוכחי, שורה 2 בכיוון ההפוך; אותו מנוע, שני מופעים, ~40px/s
       var ptqBox2 = ptSec.querySelector('.pt-marquee--2');
@@ -1759,6 +1798,7 @@ document.addEventListener('DOMContentLoaded', function () {
           fill(ptqTrack, ptqE, ptqSrc);
         }
         if (window.setLanguage) { window.setLanguage(document.documentElement.getAttribute('lang') || 'he'); }
+        Array.prototype.forEach.call(ptSec.querySelectorAll('.pt-track .partner-chip'), ptqSloganRun);
         ptqTitles();
       };
       // כל אזורי הכותרת בגובה הכותרת הגבוהה ביותר (כותרת ארוכה נשברת לשתי שורות) — התמונות נשארות על קו אחד
@@ -1773,7 +1813,7 @@ document.addEventListener('DOMContentLoaded', function () {
           if (e.getAttribute('title') !== t) { e.setAttribute('title', t); }
         });
       };
-      if (document.fonts && document.fonts.ready) { document.fonts.ready.then(function () { ptqTitles(); }); }
+      if (document.fonts && document.fonts.ready) { document.fonts.ready.then(function () { ptqTitles(); Array.prototype.forEach.call(ptSec.querySelectorAll('.pt-track .partner-chip'), ptqSloganRun); }); }
 
       ptqBox.hidden = false;
       ptqBox.classList.add('is-on');
