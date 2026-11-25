@@ -27,7 +27,7 @@ function readEnvFile(name) {
     return out;
   } catch (e) { return {}; }
 }
-const fileEnv = Object.assign({}, readEnvFile('.env.local'), readEnvFile('.env'));
+const fileEnv = Object.assign({}, readEnvFile('.env.seed.local'), readEnvFile('.env.local'), readEnvFile('.env'));
 const KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || fileEnv.SUPABASE_SERVICE_ROLE_KEY || '';
 let URL_ = (process.env.SUPABASE_URL || fileEnv.SUPABASE_URL || '').replace(/\/+$/, '');
 if (!URL_) {
@@ -54,7 +54,7 @@ async function upload(localName) {
   const remote = 'ads/demo-' + localName;
   const body = fs.readFileSync(path.join(DEMO_DIR, localName));
   const r = await fetch(URL_ + '/storage/v1/object/' + BUCKET + '/' + remote, {
-    method: 'POST', headers: Object.assign({ 'Content-Type': MIME[ext], 'x-upsert': 'true' }, H), body
+    method: 'POST', headers: Object.assign({ 'Content-Type': MIME[ext], 'x-upsert': 'true', 'cache-control': 'public, max-age=31536000, immutable' }, H), body
   });
   if (!r.ok) { throw new Error('העלאה נכשלה: ' + localName + ' (' + r.status + ')'); }
   return remote;

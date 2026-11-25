@@ -14,7 +14,10 @@
   window.__gmPromoStarted = true;
 
   var POS_KEY = 'gm:ads-pos', LARGE_KEY = 'gm:ads-large-at', CLOSED_KEY = 'gm:ads-closed';
-  var OPEN_DELAY = 4000, ROTATE_MS = 7000, DAY_MS = 24 * 60 * 60 * 1000, MARGIN = 12;
+  // תדירות פתיחת החלון הגדול (מסך מלא): 'session' = פעם אחת בכל ביקור (sessionStorage), '24h' = פעם ב-24 שעות לדפדפן (localStorage)
+  var ADS_LARGE_FREQUENCY = 'session';
+  var LARGE_SESSION_KEY = 'gm:ads-large-shown';
+  var ROTATE_MS = 7000, DAY_MS = 24 * 60 * 60 * 1000, MARGIN = 12;
   var BUCKET_URL = String(CFG.url).replace(/\/+$/, '') + '/storage/v1/object/public/site-ads/';
 
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
@@ -41,8 +44,9 @@
 
   /* ---------- טעינת הפרסומות (מפתח ציבורי; ה-RLS מחזיר רק פעילות בטווח התאריכים) ---------- */
   var query = '/rest/v1/ads?select=id,title,advertiser,media_path,media_type,poster_path,alt_text,link_url,cta_text&order=sort_order.asc,created_at.asc&limit=30';
-  fetch(String(CFG.url).replace(/\/+$/, '') + query, { headers: { apikey: CFG.key, Authorization: 'Bearer ' + CFG.key } })
-    .then(function (r) { return r.ok ? r.json() : []; })
+  var listPromise = window.__gmAdsList || fetch(String(CFG.url).replace(/\/+$/, '') + query, { headers: { apikey: CFG.key, Authorization: 'Bearer ' + CFG.key } })
+    .then(function (r) { return r.ok ? r.json() : []; });
+  listPromise
     .then(function (rows) {
       var ads = (Array.isArray(rows) ? rows : []).filter(function (a) { return a && a.media_path && (a.media_type === 'image' || a.media_type === 'video'); });
       if (!ads.length) { return; }                                  // אין פרסומות פעילות — לא מופיע כלום
@@ -50,13 +54,18 @@
     })
     .catch(function (e) { if (window.console) { console.warn('promo window: לא נטענו פרסומות', e && e.message); } });
 
+  // נפתח מיד (בלי השהיה). הסקריפט נטען ב-defer, אז ה-DOM כבר קיים; למקרה אחר — מחכים ל-DOMContentLoaded
   function start(ads) {
-    var first = ads[0];
-    var firstSrc = BUCKET_URL + (first.media_type === 'video' ? (first.poster_path || '') : first.media_path);
-    var go = function () { setTimeout(function () { init(ads); }, OPEN_DELAY); };
-    // מחכים 4 שניות מהטעינה; התמונה הראשונה נטענת מראש כדי שלא תהיה הבהוב
-    if (firstSrc !== BUCKET_URL) { var im = new Image(); im.src = firstSrc; }
-    go();
+    var go = function () { cssReady(function () { init(ads); }); };
+    if (document.body) { go(); } else { document.addEventListener('DOMContentLoaded', go); }
+  }
+  // קובץ העיצוב נטען בלי לחסום רינדור (media=print → all); לא פותחים את החלון לפני שהוא מוכן, כדי שלא יהיה הבהוב לא מעוצב
+  function cssReady(cb) {
+    var done = false, fire = function () { if (!done) { done = true; cb(); } };
+    var l = document.querySelector('link[href*="promo.css"]');
+    if (!l || l.media === 'all' || l.media === '') { fire(); return; }
+    l.addEventListener('load', function () { setTimeout(fire, 0); });
+    setTimeout(fire, 2500);
   }
 
   function init(ads) {
@@ -110,8 +119,10 @@
       if (a.media_type === 'video') {
         inner = '<video muted playsinline preload="none" aria-label="' + esc(a.alt_text) + '"' + (a.poster_path ? ' poster="' + esc(BUCKET_URL + a.poster_path) + '"' : '') + (multi ? '' : ' loop') + '></video>';
       } else {
-        inner = '<img alt="' + esc(a.alt_text) + '" decoding="async" loading="lazy" draggable="false">';
+        inner = '<img alt="' + esc(a.alt_text) + '" decoding="async"' + (i === 0 ? ' fetchpriority="high"' : '') + ' draggable="false">';
       }
+      // רקע: עותק מטושטש ומוחשך של אותה מדיה (לסרטון — תמונת הפתיחה), כדי שבמסך מלא לא יהיו פסים שחורים ושום דבר לא ייחתך
+      inner = '<img class="gmpr-bg" alt="" aria-hidden="true" decoding="async" draggable="false">' + inner;
       if (href) {
         var ext = isExternal(href);
         el.innerHTML = '<a href="' + esc(href) + '"' + (ext ? ' target="_blank" rel="noopener sponsored"' : ' rel="sponsored"') + ' tabindex="-1">' + inner + '</a>';
@@ -129,14 +140,18 @@
     });
 
     function mediaSrcOf(i) { return BUCKET_URL + ads[i].media_path; }
-    function ensureLoaded(i) {
+    function ensureLoaded(i, heavy) {
       var a = ads[i], el = slides[i];
+      var bg = el.querySelector('.gmpr-bg');
       if (a.media_type === 'video') {
         var v = el.querySelector('video');
-        if (v && !v.getAttribute('src')) { v.preload = 'metadata'; v.src = mediaSrcOf(i); }
+        if (bg && !bg.getAttribute('src') && a.poster_path) { bg.src = BUCKET_URL + a.poster_path; }
+        if (v && !v.getAttribute('src')) { v.preload = heavy ? 'auto' : 'metadata'; v.src = mediaSrcOf(i); }
+        else if (v && heavy) { v.preload = 'auto'; }
       } else {
-        var im = el.querySelector('img');
+        var im = el.querySelector('img:not(.gmpr-bg)');
         if (im && !im.getAttribute('src')) { im.src = mediaSrcOf(i); }
+        if (bg && !bg.getAttribute('src')) { bg.src = mediaSrcOf(i); }
       }
     }
 
@@ -159,7 +174,7 @@
         if (v && !on) { try { v.pause(); v.currentTime = 0; } catch (e) { /* ignore */ } }
       });
       ensureLoaded(idx);
-      if (multi) { ensureLoaded((idx + 1) % ads.length); }
+      if (multi) { ensureLoaded((idx + 1) % ads.length, true); }
       var a = ads[idx], href = safeHref(a.link_url);
       ttl.textContent = a.title;
       adv.textContent = a.advertiser || '';
@@ -310,7 +325,7 @@
         if (before) { flip(before, after); }
         else { card.animate([{ opacity: 0, transform: 'scale(.88)' }, { opacity: 1, transform: 'none' }], { duration: 320, easing: 'cubic-bezier(.2,.8,.2,1)' }); }
       }
-      lsSet(LARGE_KEY, String(Date.now()));
+      if (ADS_LARGE_FREQUENCY === 'session') { ssSet(LARGE_SESSION_KEY, '1'); } else { lsSet(LARGE_KEY, String(Date.now())); }
       showAd(idx);
       card.querySelector('.gmpr-shrink').focus();
     }
@@ -328,7 +343,7 @@
       if (before && animate) { flip(before, card.getBoundingClientRect()); }
       showAd(idx);
       if (focusIt) {
-        var f = isMobile() ? handle : card.querySelector('.gmpr-enlarge');
+        var f = card.querySelector('.gmpr-enlarge');
         (f || handle).focus();
       }
     }
@@ -360,7 +375,7 @@
     }
 
     card.querySelector('.gmpr-shrink').addEventListener('click', function () { toSmall(true, true); });
-    card.querySelector('.gmpr-enlarge').addEventListener('click', function () { if (!isMobile()) { toLarge(true); } });
+    card.querySelector('.gmpr-enlarge').addEventListener('click', function () { toLarge(true); });
     card.querySelector('.gmpr-min').addEventListener('click', toMin);
     card.querySelector('.gmpr-close').addEventListener('click', closeAll);
     tab.addEventListener('click', function () { toSmall(false, true); });
@@ -434,7 +449,6 @@
     function onResize() {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(function () {
-        if (state === 'large' && isMobile()) { toSmall(false, false); return; }
         if (state === 'small') { var s = sizeSmall(); pos = settle(pos.x, pos.y, s.w, s.h); applyPos(); savePos(); }
         if (state === 'min') { toMinReposition(); }
       }, 120);
@@ -457,9 +471,12 @@
 
     /* ---------- פתיחה ראשונה ---------- */
     updatePauseBtn();
-    ensureLoaded(0);
+    ensureLoaded(0, true);
+    for (var fv = 0; fv < ads.length; fv++) { if (ads[fv].media_type === 'video') { ensureLoaded(fv, true); break; } }   // הסרטון הראשון מתחיל להיטען בזמן שהתמונה הראשונה מוצגת
     var lastLarge = parseInt(lsGet(LARGE_KEY) || '0', 10) || 0;
-    var wantLarge = !isMobile() && (Date.now() - lastLarge >= DAY_MS || lastLarge > Date.now());
+    var wantLarge = ADS_LARGE_FREQUENCY === 'session'
+      ? ssGet(LARGE_SESSION_KEY) !== '1'
+      : (Date.now() - lastLarge >= DAY_MS || lastLarge > Date.now());                // מסך מלא גם במובייל
     pos = loadPos();
     if (wantLarge) {
       // ממקמים מראש את הקטן (המיקום שאליו ההקטנה תנוע), ואז פותחים את הגדול

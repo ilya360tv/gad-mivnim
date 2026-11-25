@@ -21,6 +21,38 @@
   <link rel="stylesheet" href="css/style.css?v=20261119sl2">
   <link rel="stylesheet" href="css/field-select.css?v=2">
   <meta name="theme-color" content="#0b0d10">
+  <!-- פרסומות: חיבור מוקדם ל-Supabase + בקשת רשימת הפרסומות מיד (לפני טעינת שאר הדף). לא חוסם רינדור; בלי מעקב -->
+  <link rel="preconnect" href="https://sihttuieondsukpjdsvv.supabase.co" crossorigin>
+  <script>
+  (function () {
+    try {
+      var closed = false;
+      try { closed = sessionStorage.getItem('gm:ads-closed') === '1'; } catch (e) { /* ignore */ }
+      if (closed || !window.fetch) { return; }
+      var U = 'https://sihttuieondsukpjdsvv.supabase.co', K = 'sb_publishable_LHWYdDvkw_uK83ZE8RyxPQ_1G5vClXN';
+      window.__gmAdsList = fetch(U + '/rest/v1/ads?select=id,title,advertiser,media_path,media_type,poster_path,alt_text,link_url,cta_text&order=sort_order.asc,created_at.asc&limit=30',
+        { headers: { apikey: K, Authorization: 'Bearer ' + K } })
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (rows) {
+          rows = Array.isArray(rows) ? rows : [];
+          var f = rows[0];
+          var p = f && (f.media_type === 'video' ? f.poster_path : f.media_path);
+          if (p) {                                         // התמונה הראשונה (או תמונת הפתיחה של הסרטון) — preload מיד
+            var l = document.createElement('link');
+            l.rel = 'preload'; l.as = 'image'; l.href = U + '/storage/v1/object/public/site-ads/' + p;
+            document.head.appendChild(l);
+          }
+          return rows;
+        });
+      window.__gmAdsList.catch(function () {});
+    } catch (e) { /* ignore */ }
+  })();
+  </script>
+  <!-- סקריפט וסגנון החלון: async/defer — לא חוסמים את רינדור הדף ואת סרטון ה-Hero -->
+  <link rel="stylesheet" href="css/promo.css?v=3" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="css/promo.css?v=3"></noscript>
+  <script src="js/supabase-config.js?v=1" defer></script>
+  <script src="js/promo-window.js?v=3" defer></script>
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
   <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
@@ -227,17 +259,5 @@
   <script src="js/script.js?v=20261119sl3"></script>
   <script src="js/a11y.js?v=20261118fab1"></script>
 
-  <!-- חלון פרסומות (של החברה ושל שותפיה): נטען רק אחרי שהדף נטען — אין השפעה על ה-Hero -->
-  <script>
-  window.addEventListener('load', function () {
-    var l = document.createElement('link');
-    l.rel = 'stylesheet'; l.href = 'css/promo.css?v=2';
-    document.head.appendChild(l);
-    var c = document.createElement('script');
-    c.src = 'js/supabase-config.js?v=1';
-    c.onload = function () { var a = document.createElement('script'); a.src = 'js/promo-window.js?v=2'; document.body.appendChild(a); };
-    document.body.appendChild(c);
-  });
-  </script>
 </body>
 </html>

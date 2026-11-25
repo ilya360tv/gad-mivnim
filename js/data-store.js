@@ -532,7 +532,7 @@
       var ext = extOf(file.name);
       return callApi('/api/upload-url', { action: 'ads-sign', kind: kind, ext: ext, size: file.size }).then(function (r) {
         return client().then(function (sb) {
-          return sb.storage.from('site-ads').uploadToSignedUrl(r.path, r.token, file, { contentType: kind === 'video' ? 'video/mp4' : (MIME[ext] || 'image/jpeg') }).then(unwrap);
+          return sb.storage.from('site-ads').uploadToSignedUrl(r.path, r.token, file, { contentType: kind === 'video' ? 'video/mp4' : (MIME[ext] || 'image/jpeg'), cacheControl: '31536000' }).then(unwrap);
         }).then(function () { return callApi('/api/upload-url', { action: 'ads-verify', kind: kind, path: r.path }); });
       });
     },
