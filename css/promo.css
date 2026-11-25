@@ -85,11 +85,11 @@
 .gmpr-slide > a, .gmpr-slide > div { display: block; width: 100%; height: 100%; }
 .gmpr-slide img, .gmpr-slide video { width: 100%; height: 100%; object-fit: cover; display: block; }
 /* מסך מלא: המדיה במלואה (contain) מעל עותק מטושטש ומוחשך שלה — בלי חיתוך ובלי פסים שחורים */
-.gmpr-card[data-state="large"] .gmpr-slide, .gmpr-card[data-state="inline"] .gmpr-slide { background: #05080c; }
-.gmpr-card[data-state="large"] .gmpr-slide > a > img:not(.gmpr-bg), .gmpr-card[data-state="large"] .gmpr-slide > a > video, .gmpr-card[data-state="inline"] .gmpr-slide > a > img:not(.gmpr-bg), .gmpr-card[data-state="inline"] .gmpr-slide > a > video,
-.gmpr-card[data-state="large"] .gmpr-slide > div > img:not(.gmpr-bg), .gmpr-card[data-state="large"] .gmpr-slide > div > video, .gmpr-card[data-state="inline"] .gmpr-slide > div > img:not(.gmpr-bg), .gmpr-card[data-state="inline"] .gmpr-slide > div > video { position: relative; z-index: 1; object-fit: contain; }
+.gmpr-card[data-state="large"] .gmpr-slide, .gmpr-card[data-state="inline"] .gmpr-slide, .gmpr-card[data-state="small"] .gmpr-slide { background: #05080c; }
+.gmpr-card[data-state="large"] .gmpr-slide > a > img:not(.gmpr-bg), .gmpr-card[data-state="large"] .gmpr-slide > a > video, .gmpr-card[data-state="inline"] .gmpr-slide > a > img:not(.gmpr-bg), .gmpr-card[data-state="inline"] .gmpr-slide > a > video, .gmpr-card[data-state="small"] .gmpr-slide > a > img:not(.gmpr-bg), .gmpr-card[data-state="small"] .gmpr-slide > a > video,
+.gmpr-card[data-state="large"] .gmpr-slide > div > img:not(.gmpr-bg), .gmpr-card[data-state="large"] .gmpr-slide > div > video, .gmpr-card[data-state="inline"] .gmpr-slide > div > img:not(.gmpr-bg), .gmpr-card[data-state="inline"] .gmpr-slide > div > video, .gmpr-card[data-state="small"] .gmpr-slide > div > img:not(.gmpr-bg), .gmpr-card[data-state="small"] .gmpr-slide > div > video { position: relative; z-index: 1; object-fit: contain; }
 .gmpr-slide .gmpr-bg { position: absolute; inset: -6%; width: 112%; height: 112%; z-index: 0; object-fit: cover; filter: blur(34px) brightness(.45) saturate(1.1); display: none; pointer-events: none; }
-.gmpr-card[data-state="large"] .gmpr-slide .gmpr-bg, .gmpr-card[data-state="inline"] .gmpr-slide .gmpr-bg { display: block; }
+.gmpr-card[data-state="large"] .gmpr-slide .gmpr-bg, .gmpr-card[data-state="inline"] .gmpr-slide .gmpr-bg, .gmpr-card[data-state="small"] .gmpr-slide .gmpr-bg { display: block; }
 .gmpr-slide > a, .gmpr-slide > div { position: relative; }
 
 /* ----- כותרת + כפתור (גדול בלבד) ----- */
