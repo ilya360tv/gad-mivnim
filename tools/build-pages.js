@@ -61,6 +61,29 @@ const SUBPAGES = {
   'partners-bath-lighting.html': 'partners', 'project.html': 'projects'
 };
 
+/* ---------- חלון הפרסומות המשותף: משובץ ב-<head> של כל עמוד ציבורי (מקור יחיד: js/promo-boot.js + js/promo-window.js + css/promo.css) ---------- */
+const ADS_VER = '5';
+function adsBlock() {
+  const boot = read('js/promo-boot.js').replace(/\/\*[\s\S]*?\*\//, '').trim();   // בלי הערת הכותרת (חוסך משקל בכל עמוד)
+  return '  <!-- gm-ads:start — חלון פרסומות משותף (נבנה ע"י tools/build-pages.js; לא עורכים ידנית) -->\n' +
+    '  <link rel="preconnect" href="https://sihttuieondsukpjdsvv.supabase.co" crossorigin>\n' +
+    '  <script>\n' + boot + '\n  </script>\n' +
+    '  <link rel="stylesheet" href="css/promo.css?v=' + ADS_VER + '" media="print" onload="this.media=\'all\'">\n' +
+    '  <noscript><link rel="stylesheet" href="css/promo.css?v=' + ADS_VER + '"></noscript>\n' +
+    '  <script src="js/promo-window.js?v=' + ADS_VER + '" defer></script>\n' +
+    '  <!-- gm-ads:end -->\n';
+}
+// idempotent: מחליף בלוק קיים או מוסיף לפני </head> (headOnly = מחרוזת ה-head בלי </head>)
+function withAds(html, headOnly) {
+  const block = adsBlock();
+  const re = /[ \t]*<!-- gm-ads:start[\s\S]*?<!-- gm-ads:end -->\n?/;
+  if (re.test(html)) { return html.replace(re, () => block); }
+  if (headOnly) { return html.replace(/\n*$/, '\n') + block; }
+  return html.replace(/<\/head>/, () => block + '</head>');
+}
+// עמודים שאינם נבנים מהתבנית אבל ציבוריים (לא admin / resubmit / _hostshot)
+const EXTRA_PUBLIC = ['privacy.html'];
+
 /* ---------- עזרים ---------- */
 const between = (s, a, b) => { const i = s.indexOf(a); const j = s.indexOf(b, i); if (i < 0 || j < 0) { throw new Error('missing ' + a); } return s.slice(i, j + b.length); };
 
@@ -178,6 +201,7 @@ PAGES.forEach((page) => {
   if (page.id !== 'contact') { post = post.replace(/\n?  <footer class="site-footer">[\s\S]*?<\/footer>\n?/, '\n'); }   // שורת הזכויות (הפוטר) — רק ב-contact.html; בכל שאר העמודים אין פוטר
   if (page.id !== 'careers') { post = post.replace(/\n  <!--[^\n]*-->\n  <form name="careers-application"[\s\S]*?<\/form>\n/, '\n').replace(/  <form name="careers-application"[\s\S]*?<\/form>\n/, ''); }
   const body = PRE_MAIN.replace(header, markCurrent(rewriteLinks(header), page.id)) + '\n\n' + promoteH1(SECTIONS[page.id], page.id) + MAIN_TAIL + post;
+  head = withAds(head, true);
   const html = head + '</head>\n<body class="page-split" data-page="' + page.id + '">' + rewriteLinks(body) + scriptsFor(page) + '\n</body>\n</html>\n';
   write(page.file, html);
   console.log('built', page.file);
@@ -193,9 +217,12 @@ Object.keys(SUBPAGES).forEach((file) => {
   s = rewriteLinks(s);
   const h = s.indexOf('</head>');
   s = addNavSeen(s.slice(0, h)) + s.slice(h);
+  s = withAds(s, false);
   write(file, s);
   console.log('updated', file);
 });
+
+EXTRA_PUBLIC.forEach((file) => { write(file, withAds(read(file), false)); console.log('ads block:', file); });
 
 /* ---------- sitemap.xml ---------- */
 const urls = PAGES.map((p) => (p.id === 'hero' ? SITE : SITE + p.file)).concat(Object.keys(SUBPAGES).filter((f) => f !== 'project.html').map((f) => SITE + f));

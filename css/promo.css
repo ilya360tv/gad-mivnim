@@ -1,0 +1,125 @@
+/* ==========================================================================
+   GAD MIVNIM — חלון הפרסומות בדף הבית (js/ads-window.js). נטען רק אחרי שהדף נטען, ורק בדף הבית.
+   מצבים (data-state על .gmpr-card): large | small. מזעור = לשונית .gmpr-tab. הכול position: fixed — אין השפעה על הפריסה ואין גלילה.
+   ========================================================================== */
+.gmpr-root { --gm-blue: #38bdf8; --gm-bg: #0e1216; --gm-line: rgba(56, 189, 248, .75); font-family: 'Rubik', 'Segoe UI', Arial, sans-serif; direction: rtl; }
+.gmpr-root[hidden] { display: none; }
+.gmpr-root *, .gmpr-root *::before, .gmpr-root *::after { box-sizing: border-box; }
+
+/* ----- רקע כהה רך (רק בגדול) ----- */
+.gmpr-backdrop { position: fixed; inset: 0; z-index: 3490; background: rgba(5, 8, 12, .55); opacity: 0; transition: opacity .3s ease; }
+.gmpr-backdrop.is-on { opacity: 1; }
+.gmpr-backdrop[hidden] { display: none; }
+
+/* ----- הכרטיס ----- */
+.gmpr-card {
+  position: fixed;
+  z-index: 1900;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: #fff;
+  background: var(--gm-bg);
+  border: 2px solid var(--gm-line);
+  border-radius: 16px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, .55), 0 0 0 1px rgba(0, 0, 0, .4);
+}
+.gmpr-card[hidden] { display: none; }
+.gmpr-card:focus { outline: none; }
+
+.gmpr-card[data-state="large"] {
+  z-index: 3500;                                   /* מעל הכול: גם תפריט השפות (3000), הנגישות (2000–2100) ולינק הדילוג */
+  inset: 0;
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  max-width: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.gmpr-card[data-state="small"] { inset: auto; margin: 0; width: 320px; height: 200px; left: var(--gm-x, 16px); top: var(--gm-y, 16px); }
+@media (max-width: 768px) { .gmpr-card[data-state="small"] { width: 260px; height: 160px; } }
+.gmpr-card.is-sliding { transition: left .28s ease, top .28s ease; }
+
+/* ----- פס עליון ----- */
+.gmpr-bar { display: flex; align-items: center; gap: 4px; padding: 6px 8px; z-index: 3; }
+.gmpr-card[data-state="large"] .gmpr-bar {
+  position: absolute; top: 0; inset-inline: 0; padding: 14px 18px; gap: 10px; min-height: 64px;
+  background: linear-gradient(rgba(5, 8, 12, .8), rgba(5, 8, 12, .45) 70%, rgba(5, 8, 12, 0));
+}
+.gmpr-card[data-state="large"] .gmpr-label { padding: 6px 16px; font-size: 1rem; }
+.gmpr-card[data-state="large"] .gmpr-btn { min-width: 48px; height: 48px; padding: 0 16px; font-size: 1.05rem; background: rgba(10, 14, 20, .7); border-width: 2px; }
+.gmpr-card[data-state="small"] .gmpr-bar {
+  position: absolute; top: 0; inset-inline: 0; padding: 4px 6px;
+  background: linear-gradient(rgba(8, 11, 15, .88), rgba(8, 11, 15, .55) 70%, rgba(8, 11, 15, 0));
+}
+.gmpr-label { flex: none; padding: 2px 9px; font-size: .75rem; font-weight: 700; letter-spacing: .02em; color: #0a0c0e; background: var(--gm-blue); border-radius: 999px; }
+.gmpr-spacer { flex: 1 1 auto; }
+.gmpr-handle {
+  flex: 1 1 auto; min-width: 20px; height: 30px; display: grid; place-items: center;
+  color: #cbd5df; font: inherit; font-size: 1.1rem; line-height: 1; letter-spacing: 2px;
+  background: transparent; border: 0; border-radius: 8px; cursor: grab; touch-action: none; -webkit-user-select: none; user-select: none;
+}
+.gmpr-handle.is-dragging { cursor: grabbing; }
+.gmpr-card[data-state="large"] .gmpr-handle { display: none; }
+.gmpr-card[data-state="small"] .gmpr-spacer { display: none; }
+.gmpr-btn {
+  flex: none; min-width: 30px; height: 30px; padding: 0 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+  font: inherit; font-size: .82rem; font-weight: 700; line-height: 1; color: #fff; cursor: pointer;
+  background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .28); border-radius: 8px;
+}
+.gmpr-btn:hover { background: rgba(56, 189, 248, .35); border-color: var(--gm-blue); }
+.gmpr-btn:focus-visible, .gmpr-handle:focus-visible, .gmpr-cta:focus-visible, .gmpr-tab:focus-visible, .gmpr-slide a:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+.gmpr-card[data-state="small"] .gmpr-only-large { display: none; }
+.gmpr-card[data-state="large"] .gmpr-only-small { display: none; }
+.gmpr-card[data-state="small"] .gmpr-btn { min-width: 28px; height: 28px; padding: 0 6px; }
+
+/* ----- מדיה (16:10) ----- */
+.gmpr-media { position: relative; width: 100%; aspect-ratio: 16 / 10; background: #000; overflow: hidden; flex: none; }
+.gmpr-card[data-state="large"] .gmpr-media { position: absolute; inset: 0; aspect-ratio: auto; height: 100%; }
+.gmpr-card[data-state="small"] .gmpr-media { position: absolute; inset: 0; aspect-ratio: auto; height: 100%; }
+.gmpr-slide { position: absolute; inset: 0; overflow: hidden; opacity: 0; visibility: hidden; transition: opacity .7s ease, visibility 0s linear .7s; }
+.gmpr-slide.is-on { opacity: 1; visibility: visible; transition: opacity .7s ease; }
+.gmpr-slide > a, .gmpr-slide > div { display: block; width: 100%; height: 100%; }
+.gmpr-slide img, .gmpr-slide video { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* מסך מלא: המדיה במלואה (contain) מעל עותק מטושטש ומוחשך שלה — בלי חיתוך ובלי פסים שחורים */
+.gmpr-card[data-state="large"] .gmpr-slide { background: #05080c; }
+.gmpr-card[data-state="large"] .gmpr-slide > a > img:not(.gmpr-bg), .gmpr-card[data-state="large"] .gmpr-slide > a > video,
+.gmpr-card[data-state="large"] .gmpr-slide > div > img:not(.gmpr-bg), .gmpr-card[data-state="large"] .gmpr-slide > div > video { position: relative; z-index: 1; object-fit: contain; }
+.gmpr-slide .gmpr-bg { position: absolute; inset: -6%; width: 112%; height: 112%; z-index: 0; object-fit: cover; filter: blur(34px) brightness(.45) saturate(1.1); display: none; pointer-events: none; }
+.gmpr-card[data-state="large"] .gmpr-slide .gmpr-bg { display: block; }
+.gmpr-slide > a, .gmpr-slide > div { position: relative; }
+
+/* ----- כותרת + כפתור (גדול בלבד) ----- */
+.gmpr-foot { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 18px; background: #161b22; }
+.gmpr-card[data-state="large"] .gmpr-foot { position: absolute; bottom: 0; inset-inline: 0; z-index: 3; padding: 28px 24px 22px; background: linear-gradient(rgba(5, 8, 12, 0), rgba(5, 8, 12, .8)); pointer-events: none; }
+.gmpr-card[data-state="large"] .gmpr-foot a { pointer-events: auto; }
+.gmpr-card[data-state="large"] .gmpr-ttl strong { font-size: 1.3rem; text-shadow: 0 2px 8px rgba(0, 0, 0, .8); }
+.gmpr-card[data-state="large"] .gmpr-cta { min-height: 52px; padding: 0 28px; font-size: 1.1rem; }
+.gmpr-card[data-state="small"] .gmpr-foot { display: none; }
+.gmpr-ttl { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.gmpr-ttl strong { font-size: 1.1rem; overflow-wrap: anywhere; }
+.gmpr-ttl span { font-size: .82rem; color: #aab3bd; }
+.gmpr-cta {
+  flex: none; display: inline-flex; align-items: center; min-height: 42px; padding: 0 20px; font-weight: 700; color: #0a0c0e; text-decoration: none;
+  background: var(--gm-blue); border-radius: 999px; box-shadow: 0 6px 18px rgba(56, 189, 248, .35);
+}
+.gmpr-cta:hover { background: #7dd3fc; }
+.gmpr-cta[hidden] { display: none; }
+
+/* ----- לשונית מזעור ----- */
+.gmpr-tab {
+  position: fixed; z-index: 1900; left: var(--gm-x, 16px); top: var(--gm-y, auto); min-height: 34px; padding: 0 14px;
+  font: inherit; font-size: .88rem; font-weight: 700; color: #fff; cursor: pointer;
+  background: var(--gm-bg); border: 2px solid var(--gm-line); border-radius: 12px; box-shadow: 0 8px 22px rgba(0, 0, 0, .5);
+}
+.gmpr-tab[hidden] { display: none; }
+.gmpr-tab:hover { background: #172433; }
+
+/* ----- תנועה: "עצירת אנימציות" / prefers-reduced-motion — בלי זום, בלי הקטנה מונפשת, בלי מעבר רך ----- */
+html.a11y-no-motion .gmpr-backdrop, html.a11y-no-motion .gmpr-slide, html.a11y-no-motion .gmpr-slide.is-on, html.a11y-no-motion .gmpr-card.is-sliding { transition: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  .gmpr-backdrop, .gmpr-slide, .gmpr-slide.is-on, .gmpr-card.is-sliding { transition: none !important; }
+}

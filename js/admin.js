@@ -143,13 +143,13 @@
   });
 
   /* ---------- נתונים (נטענים מהשרת; הרינדור מהעותק האחרון) ---------- */
-  var data = { tenders: [], applicants: [], applications: [], contractors: [] };
+  var data = { tenders: [], applicants: [], applications: [], contractors: [], ads: [] };
   var tempByProfile = {};
   var PASS_MASK = '••••••••';
   var loaded = false;
   function loadAll() {
-    return Promise.all([store.tenders.list(), store.applicants.list(), store.applications.list(), store.contractors.list()]).then(function (r) {
-      data = { tenders: r[0], applicants: r[1], applications: r[2], contractors: r[3] };
+    return Promise.all([store.tenders.list(), store.applicants.list(), store.applications.list(), store.contractors.list(), store.ads.list()]).then(function (r) {
+      data = { tenders: r[0], applicants: r[1], applications: r[2], contractors: r[3], ads: r[4] };
       loaded = true;
     });
   }
@@ -276,7 +276,7 @@
   });
   $('admLogout').addEventListener('click', function () {
     store.signOut();
-    data = { tenders: [], applicants: [], applications: [], contractors: [] };
+    data = { tenders: [], applicants: [], applications: [], contractors: [], ads: [] };
     tempByProfile = {};
     loaded = false;
     history.replaceState(null, '', location.pathname);
@@ -290,6 +290,7 @@
     applicants: { title: 'בקשות הצטרפות', render: renderApplicants },
     contractors: { title: 'קבלנים מאושרים', render: renderContractors },
     applications: { title: 'מועמדויות', render: renderApplications },
+    ads: { title: 'פרסומות', render: renderAds },
     settings: { title: 'הגדרות', render: renderSettings }
   };
   var current = 'dashboard';
@@ -1011,7 +1012,296 @@
     }).join('');
   }
 
-  /* ======================= 5) הגדרות ======================= */
+  /* ======================= 5) פרסומות (חלון הפרסומות בדף הבית) ======================= */
+  var ADS_STATUS = { active: 'פעילה', scheduled: 'מתוזמנת', ended: 'הסתיימה', off: 'כבויה' };
+  var ADS_CHIP = { active: 'active', scheduled: 'pending', ended: 'closed', off: 'draft' };
+  function adStatus(a) {
+    var t = todayIso();
+    if (!a.active) { return 'off'; }
+    if (a.ends_at && a.ends_at < t) { return 'ended'; }
+    if (a.starts_at && a.starts_at > t) { return 'scheduled'; }
+    return 'active';
+  }
+  var adById = function (id) { return (data.ads || []).filter(function (a) { return a.id === id; })[0] || null; };
+  var adThumb = function (a) {
+    var src = store.ads.publicUrl(a.media_type === 'video' ? a.poster_path : a.media_path);
+    return src ? '<img src="' + esc(src) + '" alt="" loading="lazy" width="96" height="60">' : '<span class="adm-ad-nothumb">—</span>';
+  };
+
+  function renderAds() {
+    var list = data.ads || [];
+    content.innerHTML =
+      '<div class="adm-toolbar"><p class="adm-note adm-ads-hint">גרירה (⠿) או החצים ↑↓ משנים את סדר ההצגה. הפרסומות מתחלפות באתר לפי הסדר הזה.</p>' +
+        (list.some(function (a) { return a.is_demo; }) ? '<button type="button" class="adm-btn adm-btn-danger" id="adDemoDel">מחיקת כל פרסומות הדוגמה</button>' : '') +
+        '<button type="button" class="adm-btn adm-btn-primary" id="adNew">+ הוספת פרסומת</button></div>' +
+      (list.length ? '<ul class="adm-ads" id="adList">' + list.map(function (a, i) {
+        var st = adStatus(a);
+        return '<li class="adm-ad adm-card" data-id="' + esc(a.id) + '" draggable="true">' +
+          '<span class="adm-ad-grip" aria-hidden="true" title="גרירה">⠿</span>' +
+          '<span class="adm-ad-thumb">' + adThumb(a) + '</span>' +
+          '<span class="adm-ad-main"><strong>' + esc(a.title) + (a.is_demo ? ' ' + chip('pending', 'דוגמה') : '') + '</strong><span class="adm-muted">' + esc(a.advertiser) + ' · ' +
+            (a.media_type === 'video' ? 'סרטון' : 'תמונה') + '</span>' +
+            '<span class="adm-muted">' + (a.starts_at || a.ends_at ? fmtDate(a.starts_at) + ' – ' + fmtDate(a.ends_at) : 'ללא הגבלת תאריכים') + '</span></span>' +
+          '<span class="adm-ad-status">' + chip(ADS_CHIP[st], ADS_STATUS[st]) + '</span>' +
+          '<label class="adm-switch"><input type="checkbox" data-act="toggle"' + (a.active ? ' checked' : '') + '><span>פעילה</span></label>' +
+          '<span class="adm-acts">' +
+            '<button type="button" class="adm-btn adm-btn-sm adm-btn-ghost" data-act="up" aria-label="העלאה למעלה"' + (i === 0 ? ' disabled' : '') + '>↑</button>' +
+            '<button type="button" class="adm-btn adm-btn-sm adm-btn-ghost" data-act="down" aria-label="הורדה למטה"' + (i === list.length - 1 ? ' disabled' : '') + '>↓</button>' +
+            '<button type="button" class="adm-btn adm-btn-sm" data-act="edit">עריכה</button>' +
+            '<button type="button" class="adm-btn adm-btn-sm adm-btn-danger" data-act="delete">מחיקה</button>' +
+          '</span></li>';
+      }).join('') + '</ul>' : '<p class="adm-empty adm-card">אין פרסומות עדיין. לחצו על "הוספת פרסומת".</p>');
+    $('adNew').addEventListener('click', function () { adForm(null); });
+    if ($('adDemoDel')) { $('adDemoDel').addEventListener('click', adDeleteDemo); }
+  }
+  // מחיקת כל פרסומות הדוגמה (השורות והקבצים) — כשמגיעות הפרסומות האמיתיות
+  function adDeleteDemo() {
+    var demo = (data.ads || []).filter(function (a) { return a.is_demo; });
+    if (!demo.length) { return; }
+    openModal('מחיקת פרסומות הדוגמה',
+      '<p class="adm-p">למחוק את כל ' + demo.length + ' פרסומות הדוגמה, כולל הקבצים שלהן? לא ניתן לבטל. פרסומות רגילות לא יימחקו.</p>' +
+      '<p class="adm-error" id="adDemoErr" role="alert" hidden></p>' +
+      '<div class="adm-form-actions"><button type="button" class="adm-btn adm-btn-danger" id="adDemoGo">מחיקת כל פרסומות הדוגמה</button>' +
+      '<button type="button" class="adm-btn adm-btn-ghost" data-close>ביטול</button></div>');
+    $('adDemoGo').addEventListener('click', function () {
+      var btn = $('adDemoGo');
+      btn.disabled = true;
+      store.ads.remove(demo.map(function (a) { return a.id; })).then(function () { toast('פרסומות הדוגמה נמחקו'); closeModal(); refresh(); }, function () {
+        btn.disabled = false;
+        $('adDemoErr').textContent = 'המחיקה נכשלה, נסו שוב';
+        $('adDemoErr').hidden = false;
+      });
+    });
+  }
+
+  function saveOrder(ids) {
+    var byId = {};
+    (data.ads || []).forEach(function (a) { byId[a.id] = a; });
+    data.ads = ids.map(function (id, i) { byId[id].sort_order = i + 1; return byId[id]; });
+    return store.ads.reorder(ids).then(function () { toast('הסדר נשמר'); }, function () { failed(); return refresh(); });
+  }
+
+  content.addEventListener('change', function (e) {
+    var cb = e.target.closest('[data-act="toggle"]');
+    if (!cb || current !== 'ads') { return; }
+    var a = adById(cb.closest('.adm-ad').getAttribute('data-id'));
+    if (!a) { return; }
+    cb.disabled = true;
+    store.ads.update(a.id, { active: cb.checked }).then(function () {
+      toast(cb.checked ? 'הפרסומת הופעלה' : 'הפרסומת כובתה');
+      return refresh();
+    }, function () { cb.checked = !cb.checked; cb.disabled = false; failed(); });
+  });
+  content.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-act]');
+    if (!b || current !== 'ads' || b.type === 'checkbox') { return; }
+    var row = b.closest('.adm-ad');
+    if (!row) { return; }
+    var id = row.getAttribute('data-id'), a = adById(id), act = b.getAttribute('data-act');
+    if (!a) { return; }
+    if (act === 'edit') { adForm(a); return; }
+    if (act === 'up' || act === 'down') {
+      var ids = data.ads.map(function (x) { return x.id; }), i = ids.indexOf(id), j = act === 'up' ? i - 1 : i + 1;
+      if (j < 0 || j >= ids.length) { return; }
+      ids.splice(j, 0, ids.splice(i, 1)[0]);
+      saveOrder(ids);
+      renderAds();
+      var nb = content.querySelector('[data-id="' + id + '"] [data-act="' + act + '"]');
+      if (nb && !nb.disabled) { nb.focus(); } else { var other = content.querySelector('[data-id="' + id + '"] [data-act="edit"]'); if (other) { other.focus(); } }
+      return;
+    }
+    if (act === 'delete') { adDelete(a); }
+  });
+  // גרירה לשינוי סדר (עכבר). במגע ובמקלדת — כפתורי ↑↓
+  var dragId = null;
+  content.addEventListener('dragstart', function (e) {
+    var row = e.target.closest && e.target.closest('.adm-ad');
+    if (!row || current !== 'ads') { return; }
+    dragId = row.getAttribute('data-id');
+    row.classList.add('is-dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    try { e.dataTransfer.setData('text/plain', dragId); } catch (err) { /* ignore */ }
+  });
+  content.addEventListener('dragover', function (e) {
+    if (dragId && e.target.closest('.adm-ad')) { e.preventDefault(); }
+  });
+  content.addEventListener('drop', function (e) {
+    var row = e.target.closest && e.target.closest('.adm-ad');
+    if (!dragId || !row) { return; }
+    e.preventDefault();
+    var ids = data.ads.map(function (x) { return x.id; }), from = ids.indexOf(dragId), to = ids.indexOf(row.getAttribute('data-id'));
+    dragId = null;
+    if (from < 0 || to < 0 || from === to) { renderAds(); return; }
+    ids.splice(to, 0, ids.splice(from, 1)[0]);
+    saveOrder(ids);
+    renderAds();
+  });
+  content.addEventListener('dragend', function () { dragId = null; var d = content.querySelector('.is-dragging'); if (d) { d.classList.remove('is-dragging'); } });
+
+  function adDelete(a) {
+    openModal('מחיקת פרסומת',
+      '<p class="adm-p">למחוק את הפרסומת "<strong>' + esc(a.title) + '</strong>"? הפרסומת והקבצים שלה יימחקו לצמיתות. לא ניתן לבטל.</p>' +
+      '<p class="adm-error" id="adDelErr" role="alert" hidden></p>' +
+      '<div class="adm-form-actions"><button type="button" class="adm-btn adm-btn-danger" id="adDelGo">מחיקה</button>' +
+      '<button type="button" class="adm-btn adm-btn-ghost" data-close>ביטול</button></div>');
+    $('adDelGo').addEventListener('click', function () {
+      var btn = $('adDelGo');
+      btn.disabled = true;
+      store.ads.remove([a.id]).then(function () { toast('הפרסומת נמחקה'); closeModal(); refresh(); }, function () {
+        btn.disabled = false;
+        $('adDelErr').textContent = 'המחיקה נכשלה, נסו שוב';
+        $('adDelErr').hidden = false;
+      });
+    });
+  }
+
+  var AD_IMG_EXT = ['jpg', 'jpeg', 'png', 'webp'];
+  var extOfName = function (n) { var m = /\.([a-z0-9]+)$/i.exec(n || ''); return m ? m[1].toLowerCase() : ''; };
+  var validAdLink = function (v) { return !v || /^https:\/\/[^\s]+$/i.test(v) || /^\/[^\s\/\\][^\s]*$/.test(v); };
+
+  function adForm(a) {
+    var v = a || { title: '', advertiser: 'GAD MIVNIM', alt_text: '', link_url: '', cta_text: '', starts_at: '', ends_at: '', active: false };
+    var pick = { media: null, poster: null };                    // קבצים חדשים שנבחרו (File)
+    var blobs = [];
+    var mediaNow = function () { return pick.media ? (extOfName(pick.media.name) === 'mp4' ? 'video' : 'image') : (a ? a.media_type : ''); };
+    openModal(a ? 'עריכת פרסומת' : 'הוספת פרסומת',
+      '<form id="adForm" class="adm-form" novalidate>' +
+        '<p class="adm-note">פורמט מומלץ: 1600×1000 (יחס 16:10), טקסט ולוגו במרכז התמונה, סרטון 6–15 שניות בלי קול. תמונה עד 2MB (JPG / PNG / WEBP), סרטון MP4 עד 15MB.</p>' +
+        '<div class="adm-field" data-fe-host><label for="adMedia">תמונה או סרטון ' + (a ? '(להחלפה — לא חובה)' : '*') + '</label>' +
+          '<input type="file" id="adMedia" class="adm-input" accept=".jpg,.jpeg,.png,.webp,.mp4,image/jpeg,image/png,image/webp,video/mp4">' +
+          (a ? '<span class="adm-note">קובץ נוכחי: ' + (a.media_type === 'video' ? 'סרטון' : 'תמונה') + '</span>' : '') + '</div>' +
+        '<div class="adm-field" id="adPosterWrap" data-fe-host hidden><label for="adPoster">תמונת פתיחה לסרטון (פוסטר) ' + (a && a.poster_path ? '(להחלפה — לא חובה)' : '*') + '</label>' +
+          '<input type="file" id="adPoster" class="adm-input" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"></div>' +
+        '<div class="adm-row">' +
+          '<div class="adm-field" data-fe-host><label for="adTitle">כותרת *</label><input id="adTitle" class="adm-input" maxlength="80" value="' + esc(v.title) + '"></div>' +
+          '<div class="adm-field" data-fe-host><label for="adAdv">שם המפרסם *</label><input id="adAdv" class="adm-input" maxlength="80" value="' + esc(v.advertiser) + '"></div>' +
+        '</div>' +
+        '<div class="adm-field" data-fe-host><label for="adAlt">תיאור התמונה לקוראי מסך (alt) *</label><input id="adAlt" class="adm-input" maxlength="150" value="' + esc(v.alt_text) + '"></div>' +
+        '<div class="adm-row">' +
+          '<div class="adm-field" data-fe-host><label for="adLink">קישור (לא חובה)</label><input id="adLink" class="adm-input" dir="ltr" maxlength="500" placeholder="https://..." value="' + esc(v.link_url || '') + '"><span class="adm-note">חיצוני — חייב להתחיל ב-https:// ונפתח בלשונית חדשה. עמוד באתר — למשל /contact.html.</span></div>' +
+          '<div class="adm-field" data-fe-host><label for="adCta">טקסט כפתור (לא חובה)</label><input id="adCta" class="adm-input" maxlength="40" placeholder="לתיאום ביקור" value="' + esc(v.cta_text || '') + '"></div>' +
+        '</div>' +
+        '<div class="adm-row">' +
+          '<div class="adm-field" data-fe-host><label for="adStart">תאריך התחלה (לא חובה)</label><input type="date" id="adStart" class="adm-input" value="' + esc(v.starts_at || '') + '"></div>' +
+          '<div class="adm-field" data-fe-host><label for="adEnd">תאריך סיום (לא חובה)</label><input type="date" id="adEnd" class="adm-input" value="' + esc(v.ends_at || '') + '"></div>' +
+        '</div>' +
+        '<label class="adm-switch adm-switch-lg"><input type="checkbox" id="adActive"' + (v.active ? ' checked' : '') + '><span>פעילה (מוצגת באתר)</span></label>' +
+        '<div class="adm-pv"><h3 class="adm-pv-h">תצוגה מקדימה</h3><div class="adm-pv-grid">' +
+          '<div><p class="adm-note">החלון הגדול</p><div class="adm-pv-large"><div class="adm-pv-bar"><span>פרסומת</span><span>הקטנה ⤡ ✕</span></div><div class="adm-pv-media" id="pvLM"></div>' +
+            '<div class="adm-pv-foot"><strong id="pvLT"></strong><span class="adm-pv-cta" id="pvLC" hidden></span></div></div></div>' +
+          '<div><p class="adm-note">החלון הקטן</p><div class="adm-pv-small"><div class="adm-pv-bar"><span>פרסומת</span><span>⤢ – ✕</span></div><div class="adm-pv-media" id="pvSM"></div></div></div>' +
+        '</div></div>' +
+        '<p class="adm-error" id="adErr" role="alert" hidden></p>' +
+        '<div class="adm-form-actions"><button type="submit" class="adm-btn adm-btn-primary">' + (a ? 'שמירה' : 'הוספה') + '</button>' +
+        '<button type="button" class="adm-btn adm-btn-ghost" data-close>ביטול</button></div>' +
+      '</form>');
+    modal.querySelector('.adm-modal-box').classList.add('adm-modal-wide');
+
+    function paint() {
+      blobs.forEach(function (u) { URL.revokeObjectURL(u); });
+      blobs = [];
+      var type = mediaNow(), src = '', poster = '';
+      if (pick.media) { src = URL.createObjectURL(pick.media); blobs.push(src); } else if (a) { src = store.ads.publicUrl(a.media_path); }
+      if (pick.poster) { poster = URL.createObjectURL(pick.poster); blobs.push(poster); } else if (a && a.poster_path) { poster = store.ads.publicUrl(a.poster_path); }
+      $('adPosterWrap').hidden = type !== 'video';
+      var html = !src ? '<span class="adm-pv-empty">אין מדיה</span>' :
+        (type === 'video' ? '<video src="' + esc(src) + '" ' + (poster ? 'poster="' + esc(poster) + '" ' : '') + 'muted playsinline preload="metadata"></video>'
+          : '<img src="' + esc(src) + '" alt="' + esc($('adAlt').value) + '">');
+      $('pvLM').innerHTML = html;
+      $('pvSM').innerHTML = html;
+      $('pvLT').textContent = $('adTitle').value || 'כותרת הפרסומת';
+      $('pvLC').hidden = !$('adLink').value.trim();
+      $('pvLC').textContent = '→ ' + ($('adCta').value.trim() || 'לפרטים');
+    }
+    ['adTitle', 'adAlt', 'adLink', 'adCta'].forEach(function (id) { $(id).addEventListener('input', paint); });
+    $('adMedia').addEventListener('change', function () { pick.media = this.files[0] || null; paint(); });
+    $('adPoster').addEventListener('change', function () { pick.poster = this.files[0] || null; paint(); });
+    paint();
+    modal.addEventListener('click', function cleanup(e) {
+      if (e.target.closest('[data-close]')) { blobs.forEach(function (u) { URL.revokeObjectURL(u); }); modal.removeEventListener('click', cleanup); }
+    });
+
+    var fileMsg = function (f, kind) {
+      if (!f) { return ''; }
+      var ext = extOfName(f.name);
+      if (kind === 'poster' || ext !== 'mp4') {
+        if (AD_IMG_EXT.indexOf(ext) === -1) { return kind === 'poster' ? 'תמונת הפתיחה חייבת להיות JPG, PNG או WEBP' : 'יש לבחור תמונה (JPG, PNG, WEBP) או סרטון MP4'; }
+        if (f.size > 2 * 1024 * 1024) { return 'התמונה גדולה מדי — המקסימום 2MB'; }
+      } else if (f.size > 15 * 1024 * 1024) { return 'הסרטון גדול מדי — המקסימום 15MB'; }
+      return '';
+    };
+    var hasPoster = function () { return !!pick.poster || !!(a && a.poster_path); };
+    var rules = [
+      { el: $('adMedia'), check: function () { return pick.media ? fileMsg(pick.media, 'media') : (a ? '' : 'יש לבחור תמונה או סרטון'); } },
+      { el: $('adPoster'), check: function () {
+        if (mediaNow() !== 'video') { return ''; }
+        return pick.poster ? fileMsg(pick.poster, 'poster') : (hasPoster() ? '' : 'לסרטון חובה תמונת פתיחה');
+      } },
+      { el: $('adTitle'), check: function () { return $('adTitle').value.trim() ? '' : 'יש למלא כותרת'; } },
+      { el: $('adAdv'), check: function () { return $('adAdv').value.trim() ? '' : 'יש למלא את שם המפרסם'; } },
+      { el: $('adAlt'), check: function () { return $('adAlt').value.trim() ? '' : 'יש למלא תיאור לקוראי מסך (alt)'; } },
+      { el: $('adLink'), check: function () { return validAdLink($('adLink').value.trim()) ? '' : 'הקישור חייב להתחיל ב-https:// (או / לעמוד באתר)'; } },
+      { el: $('adEnd'), check: function () { return $('adStart').value && $('adEnd').value && $('adEnd').value < $('adStart').value ? 'תאריך הסיום חייב להיות אחרי תאריך ההתחלה' : ''; } }
+    ];
+    var adFE = FE ? FE.attach($('adForm'), rules) : null;
+    // קבצים: בדיקה מיד בבחירה (watch של הספרייה בודק רק ערך טקסט)
+    ['adMedia', 'adPoster'].forEach(function (id, i) {
+      $(id).addEventListener('change', function () {
+        if (!FE) { return; }
+        var m = rules[i].check();
+        if (m) { FE.set($(id), m); } else { FE.clear($(id)); }
+      });
+    });
+
+    $('adForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (adFE && !adFE.check()) { $('adErr').hidden = true; return; }
+      var btn = $('adForm').querySelector('button[type="submit"]'), errEl = $('adErr'), uploaded = [];
+      btn.disabled = true;
+      btn.textContent = 'שומר…';
+      errEl.hidden = true;
+      var fail = function (el, msg) {
+        btn.disabled = false;
+        btn.textContent = a ? 'שמירה' : 'הוספה';
+        if (el && FE) { FE.set(el, msg); FE.jump(el); } else { errEl.textContent = msg; errEl.hidden = false; }
+        if (uploaded.length) { store.ads.removeFiles(uploaded).catch(function () {}); uploaded = []; }
+      };
+      var up = function (file, kind, el) {
+        if (!file) { return Promise.resolve(null); }
+        return store.ads.upload(file, kind).then(function (r) { uploaded.push(r.path); return r.path; }, function (err) {
+          fail(el, err && err.he ? err.he : 'ההעלאה נכשלה, נסו שוב');
+          throw null;
+        });
+      };
+      var type = mediaNow();
+      up(pick.media, type === 'video' ? 'video' : 'image', $('adMedia')).then(function (mp) {
+        return up(type === 'video' ? pick.poster : null, 'image', $('adPoster')).then(function (pp) { return [mp, pp]; });
+      }).then(function (paths) {
+        var row = {
+          title: $('adTitle').value.trim(), advertiser: $('adAdv').value.trim(), alt_text: $('adAlt').value.trim(),
+          link_url: $('adLink').value.trim() || null, cta_text: $('adCta').value.trim() || null,
+          starts_at: $('adStart').value || null, ends_at: $('adEnd').value || null, active: $('adActive').checked,
+          media_type: type
+        };
+        if (paths[0]) { row.media_path = paths[0]; }
+        if (type === 'video') { if (paths[1]) { row.poster_path = paths[1]; } } else { row.poster_path = null; }
+        var oldFiles = [];
+        if (a) {
+          if (paths[0] && a.media_path) { oldFiles.push(a.media_path); }
+          if (a.poster_path && (paths[1] || type !== 'video')) { oldFiles.push(a.poster_path); }
+        } else { row.sort_order = (data.ads || []).reduce(function (m, x) { return Math.max(m, x.sort_order || 0); }, 0) + 1; }
+        return (a ? store.ads.update(a.id, row) : store.ads.add(row)).then(function () {
+          if (oldFiles.length) { store.ads.removeFiles(oldFiles).catch(function () {}); }
+          uploaded = [];
+          toast(a ? 'הפרסומת עודכנה' : 'הפרסומת נוספה');
+          closeModal();
+          refresh();
+        }, function () { fail(null, 'השמירה נכשלה, נסו שוב'); });
+      }).catch(function (err) { if (err !== null) { fail(null, 'השמירה נכשלה, נסו שוב'); } });
+    });
+  }
+
+  /* ======================= 6) הגדרות ======================= */
   function renderSettings() {
     content.innerHTML =
       '<div class="adm-cols">' +

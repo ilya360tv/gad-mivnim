@@ -38,3 +38,6 @@ node_modules/
 
 # Supabase CLI — קבצים מקומיים (קישור לפרויקט), לא נכנסים ל-git
 supabase/.temp/
+
+# קובץ זמני למשיכת משתני סביבה — לא עולה ל-git
+.env.seed.local
