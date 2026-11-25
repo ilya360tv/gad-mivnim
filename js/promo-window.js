@@ -97,8 +97,8 @@
       '<div class="gmpr-backdrop" hidden></div>' +
       '<div class="gmpr-card" data-state="small" tabindex="-1" hidden>' +
         '<div class="gmpr-bar">' +
-          '<span class="gmpr-label">פרסומת</span>' +
           '<span class="gmpr-spacer"></span>' +
+          '<span class="gmpr-label">פרסומת</span>' +
           '<button type="button" class="gmpr-btn gmpr-pause" aria-label="השהיית החלפת הפרסומות">⏸</button>' +
           (multi ? '<button type="button" class="gmpr-btn gmpr-next" aria-label="לפרסומת הבאה">›</button>' : '') +
           '<button type="button" class="gmpr-btn gmpr-shrink gmpr-only-large" aria-label="הקטנת החלון">הקטנה ⤡</button>' +
