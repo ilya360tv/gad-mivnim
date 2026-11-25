@@ -372,7 +372,7 @@
         return fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify(body) })
           .then(function (res) {
             return res.json().catch(function () { return {}; }).then(function (data) {
-              if (!res.ok) { var e = new Error(data.error || ('http_' + res.status)); e.status = res.status; throw e; }
+              if (!res.ok) { var e = new Error(data.error || ('http_' + res.status)); e.status = res.status; e.he = data.message || ''; throw e; }
               return data;
             });
           });
@@ -511,6 +511,36 @@
     }
   };
 
+  /* ---------- פרסומות בדף הבית (מנהל) ----------
+     הטבלה public.ads (RLS: מנהל מלא; הציבור רואה רק פעילות בטווח תאריכים). הקבצים בבאקט הציבורי site-ads.
+     העלאה: /api/upload-url (ads-sign → העלאה חתומה → ads-verify בודק MAGIC BYTES וגודל בשרת). מחיקה: ads-delete (שורה + קבצים). */
+  var ads = {
+    list: function () {
+      return client().then(function (sb) {
+        return sb.from('ads').select('*').order('sort_order', { ascending: true }).order('created_at', { ascending: true }).then(unwrap);
+      });
+    },
+    add: function (row) { return client().then(function (sb) { return sb.from('ads').insert(row).select().single().then(unwrap); }); },
+    update: function (id, patch) { return client().then(function (sb) { return sb.from('ads').update(patch).eq('id', id).then(unwrap); }); },
+    reorder: function (ids) {
+      return client().then(function (sb) {
+        return Promise.all(ids.map(function (id, i) { return sb.from('ads').update({ sort_order: i + 1 }).eq('id', id).then(unwrap); }));
+      });
+    },
+    // kind: 'image' | 'video' (תמונת פוסטר = 'image'). מחזיר את הנתיב בבאקט אחרי שהשרת אישר את הקובץ.
+    upload: function (file, kind) {
+      var ext = extOf(file.name);
+      return callApi('/api/upload-url', { action: 'ads-sign', kind: kind, ext: ext, size: file.size }).then(function (r) {
+        return client().then(function (sb) {
+          return sb.storage.from('site-ads').uploadToSignedUrl(r.path, r.token, file, { contentType: kind === 'video' ? 'video/mp4' : (MIME[ext] || 'image/jpeg') }).then(unwrap);
+        }).then(function () { return callApi('/api/upload-url', { action: 'ads-verify', kind: kind, path: r.path }); });
+      });
+    },
+    remove: function (ids) { return callApi('/api/upload-url', { action: 'ads-delete', ids: ids }); },
+    removeFiles: function (paths) { return callApi('/api/upload-url', { action: 'ads-remove-files', paths: paths }); },
+    publicUrl: function (path) { return path ? String(CFG.url || '').replace(/\/+$/, '') + '/storage/v1/object/public/site-ads/' + path : ''; }
+  };
+
   window.dataStore = {
     FIELDS: FIELDS, TENDER_FIELDS: TENDER_FIELDS, GENERAL: GENERAL, MAX_FIELDS: MAX_FIELDS, MAX_FILE: MAX_FILE,
     fieldByName: function (name) { return FIELDS.filter(function (f) { return f.name === name; })[0] || null; },
@@ -518,6 +548,6 @@
     checkFile: checkFile, rateLimited: rateLimited, submitApplicant: submitApplicant,
     signInContractor: signInContractor, currentContractor: currentContractor, signInAdmin: signInAdmin, currentAdmin: currentAdmin,
     signOut: signOut, changePassword: changePassword,
-    tenders: tenders, applications: applications, applicants: applicants, contractors: contractors, contractorJoin: contractorJoin
+    tenders: tenders, applications: applications, applicants: applicants, contractors: contractors, contractorJoin: contractorJoin, ads: ads
   };
 })();
