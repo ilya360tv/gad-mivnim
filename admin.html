@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=12">
+  <link rel="stylesheet" href="css/admin.css?v=13">
   <link rel="stylesheet" href="css/field-select.css?v=2">
 </head>
 <body>
@@ -32,6 +32,45 @@
       </div>
       <button type="submit" class="adm-btn adm-btn-primary adm-btn-block">כניסה</button>
       <p class="adm-error" id="admLoginError" role="alert" hidden>אימייל או סיסמה שגויים, או שאין הרשאת מנהל</p>
+      <p class="adm-error" id="admLinkError" role="alert" hidden>הקישור לאיפוס הסיסמה אינו תקף, פג תוקפו או שכבר נעשה בו שימוש. אפשר לבקש קישור חדש דרך "שכחתי סיסמה".</p>
+      <p class="adm-ok" id="admResetDone" role="status" hidden>הסיסמה עודכנה ✓ — אפשר להיכנס עם הסיסמה החדשה.</p>
+      <button type="button" class="adm-linkbtn" id="admForgot">שכחתי סיסמה</button>
+    </form>
+  </main>
+
+  <!-- ===== שכחתי סיסמה (Supabase Auth) ===== -->
+  <main class="adm-login" id="admForgotView" hidden>
+    <form class="adm-card adm-login-card" id="admForgotForm" novalidate autocomplete="off">
+      <h1 class="adm-login-title">איפוס סיסמה</h1>
+      <p class="adm-note">נא להזין את כתובת האימייל של חשבון המנהל.</p>
+      <div class="adm-field" data-fe-host>
+        <label for="admForgotEmail">אימייל</label>
+        <input type="email" id="admForgotEmail" autocomplete="username" dir="ltr">
+      </div>
+      <button type="submit" class="adm-btn adm-btn-primary adm-btn-block" id="admForgotSend">שליחת קישור לאיפוס</button>
+      <p class="adm-ok" id="admForgotMsg" role="status" hidden>אם הכתובת שייכת לחשבון מנהל, נשלח אליה קישור לאיפוס הסיסמה (בתוקף לזמן מוגבל).</p>
+      <button type="button" class="adm-linkbtn" id="admForgotBack">חזרה לכניסה</button>
+    </form>
+  </main>
+
+  <!-- ===== בחירת סיסמה חדשה (אחרי הקישור מהמייל — אירוע PASSWORD_RECOVERY) ===== -->
+  <main class="adm-login" id="admResetView" hidden>
+    <form class="adm-card adm-login-card" id="admResetForm" novalidate autocomplete="off">
+      <h1 class="adm-login-title" id="admResetTitle" tabindex="-1">בחירת סיסמה חדשה</h1>
+      <p class="adm-note">לפחות 12 תווים, כולל אות וספרה.</p>
+      <div class="adm-field" data-fe-host>
+        <label for="admNewPass">סיסמה חדשה</label>
+        <div class="adm-passwrap"><input type="password" id="admNewPass" autocomplete="new-password" dir="ltr">
+          <button type="button" class="adm-icon-btn" data-eye aria-pressed="false" aria-label="הצגת הסיסמה">👁</button></div>
+      </div>
+      <div class="adm-field" data-fe-host>
+        <label for="admNewPass2">אימות סיסמה</label>
+        <div class="adm-passwrap"><input type="password" id="admNewPass2" autocomplete="new-password" dir="ltr">
+          <button type="button" class="adm-icon-btn" data-eye aria-pressed="false" aria-label="הצגת האימות">👁</button></div>
+      </div>
+      <button type="submit" class="adm-btn adm-btn-primary adm-btn-block" id="admResetSave">שמירת הסיסמה</button>
+      <p class="adm-error" id="admResetError" role="alert" hidden></p>
+      <p class="adm-ok" id="admResetOk" role="status" hidden>הסיסמה עודכנה ✓</p>
     </form>
   </main>
 
@@ -80,10 +119,10 @@
   <p class="adm-toast" id="admToast" role="status" aria-live="polite"></p>
 
   <script src="js/supabase-config.js?v=1"></script>
-  <script src="js/data-store.js?v=11"></script>
+  <script src="js/data-store.js?v=12"></script>
   <script src="js/field-select.js?v=2"></script>
   <script src="js/form-errors.js?v=2"></script>
   <script src="js/contractor-docs.js?v=2"></script>
-  <script src="js/admin.js?v=13"></script>
+  <script src="js/admin.js?v=14"></script>
 </body>
 </html>

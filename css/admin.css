@@ -563,3 +563,11 @@ input[type="date"].adm-input { color-scheme: dark; }
 .adm-rpick { margin: 10px 0; padding: 10px 12px; border: 1px solid #d0d5db; border-radius: 10px; display: grid; gap: 6px; }
 .adm-rpick[hidden] { display: none; }
 .adm-rpick legend { font-weight: 700; padding: 0 6px; }
+
+/* ----- שכחתי סיסמה ----- */
+.adm-linkbtn { align-self: center; padding: 6px 8px; font: inherit; font-weight: 500; color: var(--lb); background: none; border: 0; cursor: pointer; text-decoration: underline; }
+.adm-linkbtn:hover { color: var(--lb-hover); }
+.adm-linkbtn:focus-visible { outline: 3px solid #fff; outline-offset: 3px; border-radius: 6px; }
+.adm-ok { padding: 10px 12px; font-size: .92rem; color: var(--ok); background: rgba(45, 212, 191, .1); border: 1px solid rgba(45, 212, 191, .55); border-radius: 10px; }
+.adm-passwrap { display: flex; align-items: center; gap: 8px; }
+.adm-passwrap input { flex: 1 1 auto; }

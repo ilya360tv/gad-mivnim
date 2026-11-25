@@ -156,6 +156,88 @@
   var tenderById = function (id) { return data.tenders.filter(function (t) { return t.id === id; })[0] || null; };
   var applicantById = function (id) { return data.applicants.filter(function (a) { return a.id === id; })[0] || null; };
 
+  /* ---------- שכחתי סיסמה / בחירת סיסמה חדשה (Supabase Auth בלבד) ---------- */
+  var forgotView = $('admForgotView'), resetView = $('admResetView'), RS = store.adminReset;
+  function showOnly(view) {
+    [loginView, appView, forgotView, resetView].forEach(function (v) { v.hidden = v !== view; });
+  }
+  var forgotFE = FE ? FE.attach($('admForgotForm'), [
+    { el: $('admForgotEmail'), check: function () { return FE.V.email($('admForgotEmail').value); } }
+  ]) : null;
+  $('admForgot').addEventListener('click', function () {
+    $('admForgotMsg').hidden = true;
+    $('admForgotEmail').value = $('admUser').value.trim();
+    showOnly(forgotView);
+    $('admForgotEmail').focus();
+  });
+  $('admForgotBack').addEventListener('click', function () { showLogin(); });
+  $('admForgotForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (forgotFE && !forgotFE.check()) { $('admForgotMsg').hidden = true; return; }
+    var btn = $('admForgotSend');
+    btn.disabled = true;
+    // תמיד אותה הודעה — לא מגלים אם הכתובת קיימת
+    RS.request($('admForgotEmail').value).then(function () {
+      btn.disabled = false;
+      $('admForgotMsg').hidden = false;
+    });
+  });
+  document.querySelectorAll('#admResetForm [data-eye]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var input = b.parentNode.querySelector('input'), show = input.type === 'password';
+      input.type = show ? 'text' : 'password';
+      b.setAttribute('aria-pressed', show ? 'true' : 'false');
+      b.setAttribute('aria-label', (show ? 'הסתרת ' : 'הצגת ') + (input.id === 'admNewPass' ? 'הסיסמה' : 'האימות'));
+    });
+  });
+  var resetFE = FE ? FE.attach($('admResetForm'), [
+    { el: $('admNewPass'), check: function () {
+      var v = $('admNewPass').value;
+      return v.length >= 12 && /[A-Za-z\u0590-\u05FF]/.test(v) && /[0-9]/.test(v) ? '' : 'הסיסמה חייבת להכיל לפחות 12 תווים, כולל אות וספרה';
+    } },
+    { el: $('admNewPass2'), check: function () { return $('admNewPass2').value === $('admNewPass').value ? '' : 'האימות אינו זהה לסיסמה'; } }
+  ]) : null;
+  var RESET_ERR = {
+    same: 'הסיסמה החדשה זהה לסיסמה הקודמת — יש לבחור סיסמה אחרת',
+    weak: 'הסיסמה נחשבת חלשה או מוכרת — יש לבחור סיסמה אחרת וחזקה יותר',
+    expired: 'הקישור פג תוקף או שכבר נעשה בו שימוש — יש לבקש קישור חדש דרך "שכחתי סיסמה"',
+    other: 'עדכון הסיסמה נכשל, נסו שוב'
+  };
+  function showReset() {
+    showOnly(resetView);
+    $('admResetTitle').focus();
+  }
+  function linkProblem() {
+    showLogin();
+    $('admLinkError').hidden = false;
+  }
+  $('admResetForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    $('admResetError').hidden = true;
+    if (resetFE && !resetFE.check()) { return; }
+    var btn = $('admResetSave'), pass = $('admNewPass').value;
+    btn.disabled = true;
+    RS.setPassword(pass).then(function (code) {
+      if (code) {
+        btn.disabled = false;
+        $('admResetError').textContent = RESET_ERR[code] || RESET_ERR.other;
+        $('admResetError').hidden = false;
+        return;
+      }
+      $('admNewPass').value = '';
+      $('admNewPass2').value = '';
+      $('admResetOk').hidden = false;
+      RS.finish().then(function () {
+        setTimeout(function () {
+          btn.disabled = false;
+          $('admResetOk').hidden = true;
+          showLogin();
+          $('admResetDone').hidden = false;
+        }, 1500);
+      });
+    });
+  });
+
   /* ---------- כניסה / יציאה ---------- */
   var cleaned = false;
   function showApp() {
@@ -165,8 +247,9 @@
     go(location.hash.replace('#', '') || 'dashboard', false);
   }
   function showLogin() {
-    appView.hidden = true;
-    loginView.hidden = false;
+    showOnly(loginView);
+    $('admLinkError').hidden = true;
+    $('admResetDone').hidden = true;
     $('admUser').focus();
   }
   var loginFE = FE ? FE.attach($('admLoginForm'), [
@@ -957,5 +1040,11 @@
   }
 
   /* ---------- התחלה: כניסה שמורה (עד "יציאה" / סגירת הדפדפן) ---------- */
-  store.currentAdmin().then(function (p) { if (p) { showApp(); } else { showLogin(); } }, showLogin);
+  if (RS.isRecovery || RS.linkError) {
+    // נפתח מקישור האיפוס במייל: לא נכנסים למערכת — מציגים בחירת סיסמה חדשה (או שגיאה ברורה אם הקישור לא תקף)
+    if (RS.linkError && !RS.isRecovery) { history.replaceState(null, '', location.pathname); linkProblem(); }
+    else { RS.watch(function () { history.replaceState(null, '', location.pathname); showReset(); }, linkProblem); }
+  } else {
+    store.currentAdmin().then(function (p) { if (p) { showApp(); } else { showLogin(); } }, showLogin);
+  }
 })();

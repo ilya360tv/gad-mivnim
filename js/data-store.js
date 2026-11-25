@@ -61,7 +61,7 @@
       try { store = window.sessionStorage; store.getItem('x'); } catch (e) { store = undefined; }
       clientPromise = import(LIB).then(function (mod) {
         return mod.createClient(CFG.url, CFG.key, {
-          auth: { storageKey: 'gm-auth-' + area, storage: store, persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
+          auth: { storageKey: 'gm-auth-' + area, storage: store, persistSession: true, autoRefreshToken: true, detectSessionInUrl: area === 'admin' }
         });
       });
       clientPromise.catch(function () { clientPromise = null; });   // כשל רשת — ניסיון חוזר בפעם הבאה
@@ -269,6 +269,52 @@
   function signOut() {
     return client().then(function (sb) { return sb.auth.signOut(); }).catch(function () {});
   }
+  /* ---------- איפוס סיסמת מנהל — רק Supabase Auth המובנה (resetPasswordForEmail / PASSWORD_RECOVERY / updateUser) ---------- */
+  var RESET_KEY = 'gm-admin-reset-at', RESET_GAP_MS = 60 * 1000;
+  var resetHash = area === 'admin' ? String(location.hash || '') : '';          // נקרא לפני ש-supabase-js מנקה את הכתובת
+  var adminReset = {
+    isRecovery: /[#&]type=recovery(&|$)/.test(resetHash) && /access_token=/.test(resetHash),
+    linkError: /[#&]error(_code)?=/.test(resetHash),
+    // בקשה אחת לדקה לכל דפדפן (ועוד המגבלות של Supabase). לא מגלים אם הכתובת קיימת — המסך מציג תמיד אותה הודעה.
+    request: function (email) {
+      var last = 0;
+      try { last = parseInt(localStorage.getItem(RESET_KEY) || '0', 10) || 0; } catch (e) {}
+      if (Date.now() - last < RESET_GAP_MS) { return Promise.resolve(); }
+      try { localStorage.setItem(RESET_KEY, String(Date.now())); } catch (e) {}
+      return client().then(function (sb) {
+        return sb.auth.resetPasswordForEmail(String(email).trim(), { redirectTo: location.origin + '/admin.html' });
+      }).then(function () {}, function () {});
+    },
+    // מאזין ל-PASSWORD_RECOVERY; אם האירוע כבר עבר והסשן קיים — קורא ל-cb בכל זאת. onNone: אין סשן (קישור פג/נוצל).
+    watch: function (cb, onNone) {
+      var fired = false;
+      var once = function () { if (!fired) { fired = true; cb(); } };
+      return client().then(function (sb) {
+        sb.auth.onAuthStateChange(function (ev) { if (ev === 'PASSWORD_RECOVERY') { once(); } });
+        return sb.auth.getSession().then(function (r) {
+          if (r.data && r.data.session) { once(); } else if (!fired) { onNone(); }
+        });
+      }, onNone);
+    },
+    // מחזיר '' בהצלחה, או קוד שגיאה: same | weak | expired | other
+    setPassword: function (password) {
+      return client().then(function (sb) {
+        return sb.auth.updateUser({ password: password }).then(function (r) {
+          if (!r.error) { return ''; }
+          var m = String(r.error.message || '').toLowerCase();
+          if (m.indexOf('different') !== -1 || m.indexOf('same') !== -1) { return 'same'; }
+          if (m.indexOf('weak') !== -1 || m.indexOf('least') !== -1 || m.indexOf('pwned') !== -1) { return 'weak'; }
+          if (m.indexOf('session') !== -1 || m.indexOf('jwt') !== -1 || r.error.status === 401) { return 'expired'; }
+          return 'other';
+        });
+      }, function () { return 'other'; });
+    },
+    // אחרי שינוי: מנתק את כל הסשנים (כולל זה) — חוזרים למסך הכניסה
+    finish: function () {
+      return client().then(function (sb) { return sb.auth.signOut({ scope: 'global' }); }).catch(function () {});
+    }
+  };
+
   // סיסמה חדשה (כניסה ראשונה עם סיסמה זמנית).
   // מחיקת השורה מ-temp_credentials נעשית בטריגר כשה-hash באמת משתנה — לא בבקשה נפרדת,
   // כדי שקבלן לא יוכל להסתיר מהמנהל סיסמה זמנית שעדיין עובדת.
@@ -517,7 +563,7 @@
     fieldsOf: fieldsOf, isGeneral: isGeneral, normalizeFields: normalizeFields,
     checkFile: checkFile, rateLimited: rateLimited, submitApplicant: submitApplicant,
     signInContractor: signInContractor, currentContractor: currentContractor, signInAdmin: signInAdmin, currentAdmin: currentAdmin,
-    signOut: signOut, changePassword: changePassword,
+    signOut: signOut, changePassword: changePassword, adminReset: adminReset,
     tenders: tenders, applications: applications, applicants: applicants, contractors: contractors, contractorJoin: contractorJoin
   };
 })();
