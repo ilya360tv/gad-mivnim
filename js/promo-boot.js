@@ -14,7 +14,8 @@
     try { if (v === undefined) { return sessionStorage.getItem(k); } sessionStorage.setItem(k, v); } catch (e) { /* ignore */ }
     return null;
   }
-  if (ss('gm:ads-closed') === '1' || !window.fetch) { G.list = Promise.resolve([]); return; }
+  try { sessionStorage.removeItem('gm:ads-closed'); localStorage.removeItem('gm:ads-closed'); } catch (e) { /* ignore */ }   // סימון 'נסגר' ישן — מנוקה
+  if (!window.fetch) { G.list = Promise.resolve([]); return; }
   var firstPage = ss('gm:ads-large-shown') !== '1';
   function preload(rows) {
     var f = rows[0], p = f && (f.media_type === 'video' ? f.poster_path : f.media_path);

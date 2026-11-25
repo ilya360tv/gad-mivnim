@@ -7,7 +7,7 @@
    פרסומות של החברה ושל שותפיה בלבד. בלי רשתות פרסום, בלי מעקב, בלי עוגיות, בלי סטטיסטיקה (גרסה 1).
    מצבים: LARGE (מחשב/טאבלט ≥769px) → SMALL (קבוע, לא נגרר) → MINIMIZED (לשונית) → CLOSED (✕, עד סוף הביקור).
    אחסון: localStorage gm:ads-geo (גודל לפי מסך), gm:ads-large-at (מתי נפתח הגדול לאחרונה);
-          sessionStorage gm:ads-closed (נסגר בביקור הזה). הכול פונקציונלי — לא נשלח לשום מקום.
+          sessionStorage gm:ads-large-shown / gm:ads-state / gm:ads-list. ✕ סוגר רק את תצוגת העמוד הנוכחי (אין סימון 'נסגר' לביקור). הכול פונקציונלי — לא נשלח לשום מקום.
    ========================================================================== */
 (function () {
   'use strict';
@@ -40,7 +40,7 @@
   function ssSet(k, v) { try { sessionStorage.setItem(k, v); } catch (e) { /* ignore */ } }
 
   try { localStorage.removeItem(POS_KEY); } catch (e) { /* ignore */ }   // מיקום ישן שנשמר בעבר — נמחק (המסך כבר לא נגרר)
-  if (ssGet(CLOSED_KEY) === '1') { return; }                       // נסגר ב-✕ בביקור הזה
+  try { sessionStorage.removeItem(CLOSED_KEY); localStorage.removeItem(CLOSED_KEY); } catch (e) { /* ignore */ }   // סימון 'נסגר' ישן — מנוקה (✕ סוגר רק את העמוד הנוכחי)
 
   var isMobile = function () { return window.matchMedia('(max-width: 768px)').matches; };
   var calmNow = function () {
@@ -81,7 +81,6 @@
   }
 
   function init(ads) {
-    if (ssGet(CLOSED_KEY) === '1') { return; }
 
     var multi = ads.length > 1;
     var saved0 = readState() || {};
@@ -433,7 +432,6 @@
       if (quiet !== true) { tab.focus(); }
     }
     function closeAll() {
-      ssSet(CLOSED_KEY, '1');
       state = 'closed';
       clearTimeout(timer);
       slides.forEach(function (el) { var v = el.querySelector('video'); if (v) { v.pause(); } });
@@ -447,7 +445,9 @@
     card.querySelector('.gmpr-shrink').addEventListener('click', leaveLarge);
     card.querySelector('.gmpr-enlarge').addEventListener('click', function () { toLarge(true); });
     card.querySelector('.gmpr-min').addEventListener('click', function () { toMin(); saveState({ mode: 'min' }); });
-    card.querySelector('.gmpr-close').addEventListener('click', function () { if (INLINE) { leaveLarge(); } else { closeAll(); } });
+    // דף הבית: אין כפתור ✕ בכלל (המשבצת חלק מהעמוד; בצד מסך מלא — "הקטנה" / Esc). בשאר העמודים ✕ סוגר רק את תצוגת העמוד הנוכחי.
+    var closeBtn = card.querySelector('.gmpr-close');
+    if (INLINE) { closeBtn.remove(); } else { closeBtn.addEventListener('click', closeAll); }
     tab.addEventListener('click', function () { toSmall(false, true); saveState({ mode: 'small' }); });
     backdrop.addEventListener('click', function () { if (state === 'large') { leaveLarge(); } });
 
