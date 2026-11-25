@@ -1,7 +1,8 @@
 /* ==========================================================================
    GAD MIVNIM — חלון הפרסומות בכל העמודים הציבוריים (קובץ משותף יחיד; הקבצים נקראים promo כדי שחוסמי פרסומות לא יחסמו אותם).
    נטען ב-defer (לא חוסם רינדור). הרשימה והטעינה המוקדמת — js/promo-boot.js (משובץ ב-<head> ע"י tools/build-pages.js).
-   מסך מלא — פעם אחת בביקור, בעמוד הראשון שנפתח. בכל עמוד אחר: הכרטיס הקטן באותו מיקום ובאותה פרסומת/שנייה (sessionStorage gm:ads-state).
+   דף הבית (index.html): אין חלון קופץ — אותו נגן חי בתוך מסגרת תמונת האולם (.hero-showroom-frame, מצב inline). 'הגדלה' פותחת את הפרסומת במסך מלא; Esc / ✕ / הקטנה חוזרים למסגרת. בלי פרסומות פעילות — תמונת האולם המקורית נשארת.
+   בשאר העמודים: מסך מלא — פעם אחת בביקור, בעמוד הראשון שנפתח. בכל עמוד אחר: הכרטיס הקטן באותו מיקום ובאותה פרסומת/שנייה (sessionStorage gm:ads-state).
    בעמודי טפסים (careers / contact / tenders) הכרטיס מתחיל ממוזער. באזור החברים של tenders אחרי כניסה — לא מוצג.
    פרסומות של החברה ושל שותפיה בלבד. בלי רשתות פרסום, בלי מעקב, בלי עוגיות, בלי סטטיסטיקה (גרסה 1).
    מצבים: LARGE (מחשב/טאבלט ≥769px) → SMALL (נגרר) → MINIMIZED (לשונית) → CLOSED (✕, עד סוף הביקור).
@@ -23,6 +24,8 @@
   var BUCKET_URL = G.bucket;
   var STATE_KEY = 'gm:ads-state';
   var FORM_PAGE = /\/(careers|contact|tenders)(\.html)?$/.test(location.pathname);
+  var SLOT = document.body && document.body.getAttribute('data-page') === 'hero' ? document.querySelector('.hero-showroom-frame') : null;   // דף הבית: משבצת במקום תמונת האולם
+  var INLINE = !!SLOT;
 
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* ignore */ } }
@@ -163,7 +166,7 @@
     }
 
     /* ---------- הצגת פרסומת + סיבוב ---------- */
-    function visibleNow() { return (state === 'large' || state === 'small') && !document.hidden && !gated; }
+    function visibleNow() { return (state === 'large' || state === 'small' || state === 'inline') && !document.hidden && !gated; }
     function updatePauseBtn() {
       btnPause.textContent = paused ? '▶' : '⏸';
       btnPause.setAttribute('aria-label', paused ? 'הפעלת החלפת הפרסומות' : 'השהיית החלפת הפרסומות');
@@ -324,7 +327,8 @@
       }
     }
     function toLarge(animate) {
-      var before = state === 'small' && !card.hidden ? card.getBoundingClientRect() : null;
+      var before = (state === 'small' || state === 'inline') && !card.hidden ? card.getBoundingClientRect() : null;
+      if (card.parentNode !== root) { root.appendChild(card); }
       lastFocus = document.activeElement;
       state = 'large';
       tab.hidden = true;
@@ -362,6 +366,27 @@
         (f || handle).focus();
       }
     }
+    // דף הבית: חזרה למסגרת (במקום תמונת האולם)
+    function toInline(animate, focusIt) {
+      var before = state === 'large' ? card.getBoundingClientRect() : null;
+      state = 'inline';
+      backdrop.classList.remove('is-on');
+      backdrop.hidden = true;
+      setInert(false);
+      tab.hidden = true;
+      SLOT.appendChild(card);
+      SLOT.classList.add('has-ads');
+      card.hidden = false;
+      card.dataset.state = 'inline';
+      setRole();
+      if (before && animate) { flip(before, card.getBoundingClientRect()); }
+      showAd(idx);
+      if (focusIt) { card.querySelector('.gmpr-enlarge').focus(); }
+    }
+    // יציאה ממסך מלא: בדף הבית — חזרה למסגרת; בשאר העמודים — הכרטיס הקטן
+    function leaveLarge() {
+      if (INLINE) { toInline(true, true); } else { toSmall(true, true); saveState({ mode: 'small' }); }
+    }
     function toMin(quiet) {
       var r = card.getBoundingClientRect();
       var h = 36, w = 130, b = bounds(w, h), bottom = r.top + r.height / 2 > window.innerHeight / 2;
@@ -389,16 +414,16 @@
       if (lastFocus && document.body.contains(lastFocus)) { try { lastFocus.focus(); } catch (e) { /* ignore */ } }
     }
 
-    card.querySelector('.gmpr-shrink').addEventListener('click', function () { toSmall(true, true); saveState({ mode: 'small' }); });
+    card.querySelector('.gmpr-shrink').addEventListener('click', leaveLarge);
     card.querySelector('.gmpr-enlarge').addEventListener('click', function () { toLarge(true); });
     card.querySelector('.gmpr-min').addEventListener('click', function () { toMin(); saveState({ mode: 'min' }); });
-    card.querySelector('.gmpr-close').addEventListener('click', closeAll);
+    card.querySelector('.gmpr-close').addEventListener('click', function () { if (INLINE) { leaveLarge(); } else { closeAll(); } });
     tab.addEventListener('click', function () { toSmall(false, true); saveState({ mode: 'small' }); });
-    backdrop.addEventListener('click', function () { if (state === 'large') { toSmall(true, true); saveState({ mode: 'small' }); } });
+    backdrop.addEventListener('click', function () { if (state === 'large') { leaveLarge(); } });
 
     function onKey(e) {
       if (state !== 'large') { return; }
-      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); toSmall(true, true); saveState({ mode: 'small' }); return; }
+      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); leaveLarge(); return; }
       if (e.key !== 'Tab') { return; }
       var f = Array.prototype.filter.call(card.querySelectorAll('button, a[href]'), function (el) { return el.offsetParent !== null && !el.disabled && el.tabIndex !== -1; });
       if (!f.length) { return; }
@@ -522,7 +547,10 @@
     ensureLoaded(idx, wantLarge);
     if (wantLarge) { for (var fv = 0; fv < ads.length; fv++) { if (ads[fv].media_type === 'video') { ensureLoaded(fv, true); break; } } }   // הסרטון הראשון מתחיל להיטען בזמן שהתמונה מוצגת
     pos = loadPos();
-    if (wantLarge) {
+    if (INLINE) {
+      ssSet(LARGE_SESSION_KEY, '1');                                // דף הבית = ההצגה הראשונה; בעמודים הבאים נפתח הכרטיס הקטן ישר
+      toInline(false, false);
+    } else if (wantLarge) {
       // ממקמים מראש את הקטן (המיקום שאליו ההקטנה תנוע), ואז פותחים את הגדול
       card.hidden = false; card.dataset.state = 'small'; placeSmall(true); card.hidden = true;
       toLarge(true);
