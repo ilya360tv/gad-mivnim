@@ -949,13 +949,14 @@
     var list = data.ads || [];
     content.innerHTML =
       '<div class="adm-toolbar"><p class="adm-note adm-ads-hint">גרירה (⠿) או החצים ↑↓ משנים את סדר ההצגה. הפרסומות מתחלפות באתר לפי הסדר הזה.</p>' +
+        (list.some(function (a) { return a.is_demo; }) ? '<button type="button" class="adm-btn adm-btn-danger" id="adDemoDel">מחיקת כל פרסומות הדוגמה</button>' : '') +
         '<button type="button" class="adm-btn adm-btn-primary" id="adNew">+ הוספת פרסומת</button></div>' +
       (list.length ? '<ul class="adm-ads" id="adList">' + list.map(function (a, i) {
         var st = adStatus(a);
         return '<li class="adm-ad adm-card" data-id="' + esc(a.id) + '" draggable="true">' +
           '<span class="adm-ad-grip" aria-hidden="true" title="גרירה">⠿</span>' +
           '<span class="adm-ad-thumb">' + adThumb(a) + '</span>' +
-          '<span class="adm-ad-main"><strong>' + esc(a.title) + '</strong><span class="adm-muted">' + esc(a.advertiser) + ' · ' +
+          '<span class="adm-ad-main"><strong>' + esc(a.title) + (a.is_demo ? ' ' + chip('pending', 'דוגמה') : '') + '</strong><span class="adm-muted">' + esc(a.advertiser) + ' · ' +
             (a.media_type === 'video' ? 'סרטון' : 'תמונה') + '</span>' +
             '<span class="adm-muted">' + (a.starts_at || a.ends_at ? fmtDate(a.starts_at) + ' – ' + fmtDate(a.ends_at) : 'ללא הגבלת תאריכים') + '</span></span>' +
           '<span class="adm-ad-status">' + chip(ADS_CHIP[st], ADS_STATUS[st]) + '</span>' +
@@ -968,6 +969,26 @@
           '</span></li>';
       }).join('') + '</ul>' : '<p class="adm-empty adm-card">אין פרסומות עדיין. לחצו על "הוספת פרסומת".</p>');
     $('adNew').addEventListener('click', function () { adForm(null); });
+    if ($('adDemoDel')) { $('adDemoDel').addEventListener('click', adDeleteDemo); }
+  }
+  // מחיקת כל פרסומות הדוגמה (השורות והקבצים) — כשמגיעות הפרסומות האמיתיות
+  function adDeleteDemo() {
+    var demo = (data.ads || []).filter(function (a) { return a.is_demo; });
+    if (!demo.length) { return; }
+    openModal('מחיקת פרסומות הדוגמה',
+      '<p class="adm-p">למחוק את כל ' + demo.length + ' פרסומות הדוגמה, כולל הקבצים שלהן? לא ניתן לבטל. פרסומות רגילות לא יימחקו.</p>' +
+      '<p class="adm-error" id="adDemoErr" role="alert" hidden></p>' +
+      '<div class="adm-form-actions"><button type="button" class="adm-btn adm-btn-danger" id="adDemoGo">מחיקת כל פרסומות הדוגמה</button>' +
+      '<button type="button" class="adm-btn adm-btn-ghost" data-close>ביטול</button></div>');
+    $('adDemoGo').addEventListener('click', function () {
+      var btn = $('adDemoGo');
+      btn.disabled = true;
+      store.ads.remove(demo.map(function (a) { return a.id; })).then(function () { toast('פרסומות הדוגמה נמחקו'); closeModal(); refresh(); }, function () {
+        btn.disabled = false;
+        $('adDemoErr').textContent = 'המחיקה נכשלה, נסו שוב';
+        $('adDemoErr').hidden = false;
+      });
+    });
   }
 
   function saveOrder(ids) {
