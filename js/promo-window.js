@@ -1,5 +1,5 @@
 /* ==========================================================================
-   GAD MIVNIM — חלון הפרסומות בדף הבית (index.html בלבד).
+   GAD MIVNIM — חלון הפרסומות בדף הבית (index.html בלבד; הקבצים נקראים promo כדי שחוסמי פרסומות לא יחסמו אותם).
    נטען רק אחרי שהדף נטען (טעינת הסקריפט נעשית מ-index.html באירוע load) — אין השפעה על ה-Hero.
    פרסומות של החברה ושל שותפיה בלבד. בלי רשתות פרסום, בלי מעקב, בלי עוגיות, בלי סטטיסטיקה (גרסה 1).
    מצבים: LARGE (מחשב/טאבלט ≥769px) → SMALL (נגרר) → MINIMIZED (לשונית) → CLOSED (✕, עד סוף הביקור).
@@ -10,6 +10,8 @@
   'use strict';
   var CFG = window.GM_SUPABASE || {};
   if (!CFG.url || !CFG.key || !window.fetch) { return; }
+  if (window.__gmPromoStarted) { return; }                         // הגנה מהרצה כפולה
+  window.__gmPromoStarted = true;
 
   var POS_KEY = 'gm:ads-pos', LARGE_KEY = 'gm:ads-large-at', CLOSED_KEY = 'gm:ads-closed';
   var OPEN_DELAY = 4000, ROTATE_MS = 7000, DAY_MS = 24 * 60 * 60 * 1000, MARGIN = 12;
@@ -46,7 +48,7 @@
       if (!ads.length) { return; }                                  // אין פרסומות פעילות — לא מופיע כלום
       start(ads);
     })
-    .catch(function () { /* בלי פרסומות — האתר ממשיך כרגיל */ });
+    .catch(function (e) { if (window.console) { console.warn('promo window: לא נטענו פרסומות', e && e.message); } });
 
   function start(ads) {
     var first = ads[0];
@@ -67,41 +69,41 @@
 
     /* ---------- בניית ה-DOM ---------- */
     root = document.createElement('div');
-    root.className = 'gmads-root';
+    root.className = 'gmpr-root';
     root.innerHTML =
-      '<div class="gmads-backdrop" hidden></div>' +
-      '<div class="gmads-card" data-state="small" tabindex="-1" hidden>' +
-        '<div class="gmads-bar">' +
-          '<span class="gmads-label">פרסומת</span>' +
-          '<span class="gmads-spacer"></span>' +
-          '<button type="button" class="gmads-handle gmads-only-small" aria-label="גרירת חלון הפרסומות — מקשי החצים מזיזים (Shift = קפיצה גדולה)">⠿⠿⠿</button>' +
-          '<button type="button" class="gmads-btn gmads-pause" aria-label="השהיית החלפת הפרסומות">⏸</button>' +
-          (multi ? '<button type="button" class="gmads-btn gmads-next" aria-label="לפרסומת הבאה">›</button>' : '') +
-          '<button type="button" class="gmads-btn gmads-shrink gmads-only-large" aria-label="הקטנת החלון">הקטנה ⤡</button>' +
-          '<button type="button" class="gmads-btn gmads-enlarge gmads-only-small" aria-label="הגדלת החלון">הגדלה ⤢</button>' +
-          '<button type="button" class="gmads-btn gmads-min gmads-only-small" aria-label="מזעור החלון">–</button>' +
-          '<button type="button" class="gmads-btn gmads-close" aria-label="סגירת הפרסומות">✕</button>' +
+      '<div class="gmpr-backdrop" hidden></div>' +
+      '<div class="gmpr-card" data-state="small" tabindex="-1" hidden>' +
+        '<div class="gmpr-bar">' +
+          '<span class="gmpr-label">פרסומת</span>' +
+          '<span class="gmpr-spacer"></span>' +
+          '<button type="button" class="gmpr-handle gmpr-only-small" aria-label="גרירת חלון הפרסומות — מקשי החצים מזיזים (Shift = קפיצה גדולה)">⠿⠿⠿</button>' +
+          '<button type="button" class="gmpr-btn gmpr-pause" aria-label="השהיית החלפת הפרסומות">⏸</button>' +
+          (multi ? '<button type="button" class="gmpr-btn gmpr-next" aria-label="לפרסומת הבאה">›</button>' : '') +
+          '<button type="button" class="gmpr-btn gmpr-shrink gmpr-only-large" aria-label="הקטנת החלון">הקטנה ⤡</button>' +
+          '<button type="button" class="gmpr-btn gmpr-enlarge gmpr-only-small" aria-label="הגדלת החלון">הגדלה ⤢</button>' +
+          '<button type="button" class="gmpr-btn gmpr-min gmpr-only-small" aria-label="מזעור החלון">–</button>' +
+          '<button type="button" class="gmpr-btn gmpr-close" aria-label="סגירת הפרסומות">✕</button>' +
         '</div>' +
-        '<div class="gmads-media"></div>' +
-        '<div class="gmads-foot"><div class="gmads-ttl"><strong></strong><span></span></div><a class="gmads-cta" hidden></a></div>' +
+        '<div class="gmpr-media"></div>' +
+        '<div class="gmpr-foot"><div class="gmpr-ttl"><strong></strong><span></span></div><a class="gmpr-cta" hidden></a></div>' +
       '</div>' +
-      '<button type="button" class="gmads-tab" hidden aria-label="פתיחת הפרסומות">פרסומות ▲</button>';
+      '<button type="button" class="gmpr-tab" hidden aria-label="פתיחת הפרסומות">פרסומות ▲</button>';
     document.body.appendChild(root);
-    backdrop = root.querySelector('.gmads-backdrop');
-    card = root.querySelector('.gmads-card');
-    tab = root.querySelector('.gmads-tab');
-    media = root.querySelector('.gmads-media');
-    ttl = root.querySelector('.gmads-ttl strong');
-    adv = root.querySelector('.gmads-ttl span');
-    cta = root.querySelector('.gmads-cta');
-    btnPause = root.querySelector('.gmads-pause');
-    btnNext = root.querySelector('.gmads-next');
-    handle = root.querySelector('.gmads-handle');
+    backdrop = root.querySelector('.gmpr-backdrop');
+    card = root.querySelector('.gmpr-card');
+    tab = root.querySelector('.gmpr-tab');
+    media = root.querySelector('.gmpr-media');
+    ttl = root.querySelector('.gmpr-ttl strong');
+    adv = root.querySelector('.gmpr-ttl span');
+    cta = root.querySelector('.gmpr-cta');
+    btnPause = root.querySelector('.gmpr-pause');
+    btnNext = root.querySelector('.gmpr-next');
+    handle = root.querySelector('.gmpr-handle');
 
     // שקופיות: תמונה/סרטון, עטופות בקישור אם יש link_url
     var slides = ads.map(function (a, i) {
       var el = document.createElement('div');
-      el.className = 'gmads-slide';
+      el.className = 'gmpr-slide';
       el.setAttribute('aria-hidden', 'true');
       var href = safeHref(a.link_url);
       var inner;
@@ -310,7 +312,7 @@
       }
       lsSet(LARGE_KEY, String(Date.now()));
       showAd(idx);
-      card.querySelector('.gmads-shrink').focus();
+      card.querySelector('.gmpr-shrink').focus();
     }
     function toSmall(animate, focusIt) {
       var before = state === 'large' ? card.getBoundingClientRect() : null;
@@ -326,7 +328,7 @@
       if (before && animate) { flip(before, card.getBoundingClientRect()); }
       showAd(idx);
       if (focusIt) {
-        var f = isMobile() ? handle : card.querySelector('.gmads-enlarge');
+        var f = isMobile() ? handle : card.querySelector('.gmpr-enlarge');
         (f || handle).focus();
       }
     }
@@ -357,10 +359,10 @@
       if (lastFocus && document.body.contains(lastFocus)) { try { lastFocus.focus(); } catch (e) { /* ignore */ } }
     }
 
-    card.querySelector('.gmads-shrink').addEventListener('click', function () { toSmall(true, true); });
-    card.querySelector('.gmads-enlarge').addEventListener('click', function () { if (!isMobile()) { toLarge(true); } });
-    card.querySelector('.gmads-min').addEventListener('click', toMin);
-    card.querySelector('.gmads-close').addEventListener('click', closeAll);
+    card.querySelector('.gmpr-shrink').addEventListener('click', function () { toSmall(true, true); });
+    card.querySelector('.gmpr-enlarge').addEventListener('click', function () { if (!isMobile()) { toLarge(true); } });
+    card.querySelector('.gmpr-min').addEventListener('click', toMin);
+    card.querySelector('.gmpr-close').addEventListener('click', closeAll);
     tab.addEventListener('click', function () { toSmall(false, true); });
     backdrop.addEventListener('click', function () { if (state === 'large') { toSmall(true, true); } });
 
