@@ -49,7 +49,6 @@
 .hero .hero-showroom-frame.has-ads { overflow: visible; border-color: transparent; box-shadow: none; }
 .hero .hero-showroom-frame.has-ads > img { visibility: hidden; }
 .hero .hero-showroom-frame.has-ads::after { display: none; }
-.gmpr-card.is-sliding { transition: left .28s ease, top .28s ease; }
 
 /* ----- פס עליון ----- */
 .gmpr-bar { display: flex; align-items: center; gap: 4px; padding: 6px 8px; z-index: 3; }
@@ -65,25 +64,17 @@
 }
 .gmpr-label { flex: none; padding: 2px 9px; font-size: .75rem; font-weight: 700; letter-spacing: .02em; color: #0a0c0e; background: var(--gm-blue); border-radius: 999px; }
 .gmpr-spacer { flex: 1 1 auto; }
-.gmpr-handle {
-  flex: 1 1 auto; min-width: 20px; height: 30px; display: grid; place-items: center;
-  color: #cbd5df; font: inherit; font-size: 1.1rem; line-height: 1; letter-spacing: 2px;
-  background: transparent; border: 0; border-radius: 8px; cursor: grab; touch-action: none; -webkit-user-select: none; user-select: none;
-}
-.gmpr-handle.is-dragging { cursor: grabbing; }
-.gmpr-card[data-state="large"] .gmpr-handle { display: none; }
-.gmpr-card[data-state="small"] .gmpr-spacer { display: none; }
 .gmpr-btn {
   flex: none; min-width: 30px; height: 30px; padding: 0 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px;
   font: inherit; font-size: .82rem; font-weight: 700; line-height: 1; color: #fff; cursor: pointer;
   background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .28); border-radius: 8px;
 }
 .gmpr-btn:hover { background: rgba(56, 189, 248, .35); border-color: var(--gm-blue); }
-.gmpr-btn:focus-visible, .gmpr-handle:focus-visible, .gmpr-cta:focus-visible, .gmpr-tab:focus-visible, .gmpr-slide a:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+.gmpr-btn:focus-visible, .gmpr-cta:focus-visible, .gmpr-tab:focus-visible, .gmpr-slide a:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
 .gmpr-card[data-state="small"] .gmpr-only-large, .gmpr-card[data-state="inline"] .gmpr-only-large { display: none; }
 .gmpr-card[data-state="large"] .gmpr-only-small { display: none; }
 .gmpr-card[data-state="small"] .gmpr-btn, .gmpr-card[data-state="inline"] .gmpr-btn { min-width: 28px; height: 28px; padding: 0 6px; }
-.gmpr-card[data-state="inline"] .gmpr-handle, .gmpr-card[data-state="inline"] .gmpr-min, .gmpr-card[data-state="inline"] .gmpr-close { display: none; }
+.gmpr-card[data-state="inline"] .gmpr-min, .gmpr-card[data-state="inline"] .gmpr-close { display: none; }
 
 /* ----- מדיה (16:10) ----- */
 .gmpr-media { position: relative; width: 100%; aspect-ratio: 16 / 10; background: #000; overflow: hidden; flex: none; }
@@ -128,7 +119,7 @@
 .gmpr-tab:hover { background: #172433; }
 
 /* ----- תנועה: "עצירת אנימציות" / prefers-reduced-motion — בלי זום, בלי הקטנה מונפשת, בלי מעבר רך ----- */
-html.a11y-no-motion .gmpr-backdrop, html.a11y-no-motion .gmpr-slide, html.a11y-no-motion .gmpr-slide.is-on, html.a11y-no-motion .gmpr-card.is-sliding { transition: none !important; }
+html.a11y-no-motion .gmpr-backdrop, html.a11y-no-motion .gmpr-slide, html.a11y-no-motion .gmpr-slide.is-on { transition: none !important; }
 @media (prefers-reduced-motion: reduce) {
-  .gmpr-backdrop, .gmpr-slide, .gmpr-slide.is-on, .gmpr-card.is-sliding { transition: none !important; }
+  .gmpr-backdrop, .gmpr-slide, .gmpr-slide.is-on
 }

@@ -5,8 +5,8 @@
    בשאר העמודים: מסך מלא — פעם אחת בביקור, בעמוד הראשון שנפתח. בכל עמוד אחר: הכרטיס הקטן באותו מיקום ובאותה פרסומת/שנייה (sessionStorage gm:ads-state).
    בעמודי טפסים (careers / contact / tenders) הכרטיס מתחיל ממוזער. באזור החברים של tenders אחרי כניסה — לא מוצג.
    פרסומות של החברה ושל שותפיה בלבד. בלי רשתות פרסום, בלי מעקב, בלי עוגיות, בלי סטטיסטיקה (גרסה 1).
-   מצבים: LARGE (מחשב/טאבלט ≥769px) → SMALL (נגרר) → MINIMIZED (לשונית) → CLOSED (✕, עד סוף הביקור).
-   אחסון: localStorage gm:ads-pos (מיקום הכרטיס הקטן), gm:ads-large-at (מתי נפתח הגדול לאחרונה);
+   מצבים: LARGE (מחשב/טאבלט ≥769px) → SMALL (קבוע, לא נגרר) → MINIMIZED (לשונית) → CLOSED (✕, עד סוף הביקור).
+   אחסון: localStorage gm:ads-geo (גודל לפי מסך), gm:ads-large-at (מתי נפתח הגדול לאחרונה);
           sessionStorage gm:ads-closed (נסגר בביקור הזה). הכול פונקציונלי — לא נשלח לשום מקום.
    ========================================================================== */
 (function () {
@@ -39,6 +39,7 @@
   function ssGet(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } }
   function ssSet(k, v) { try { sessionStorage.setItem(k, v); } catch (e) { /* ignore */ } }
 
+  try { localStorage.removeItem(POS_KEY); } catch (e) { /* ignore */ }   // מיקום ישן שנשמר בעבר — נמחק (המסך כבר לא נגרר)
   if (ssGet(CLOSED_KEY) === '1') { return; }                       // נסגר ב-✕ בביקור הזה
 
   var isMobile = function () { return window.matchMedia('(max-width: 768px)').matches; };
@@ -84,7 +85,7 @@
 
     var multi = ads.length > 1;
     var saved0 = readState() || {};
-    var state = 'small', idx = 0, paused = calmNow() || !!saved0.paused, timer = null, root, card, backdrop, tab, media, ttl, adv, cta, btnPause, btnNext, handle;
+    var state = 'small', idx = 0, paused = calmNow() || !!saved0.paused, timer = null, root, card, backdrop, tab, media, ttl, adv, cta, btnPause, btnNext;
     var lastFocus = null, inertEls = [], firstVisit = false, resumeT = 0, gated = false;
     var geo = { w: 320, h: 200, b: 16 };                           // גודל ומרווח תחתון של מסך הפרסומות (אותו חישוב בכל העמודים)
     var pos = null;                                                  // { x, y } של הכרטיס הקטן (פיקסלים)
@@ -98,7 +99,6 @@
         '<div class="gmpr-bar">' +
           '<span class="gmpr-label">פרסומת</span>' +
           '<span class="gmpr-spacer"></span>' +
-          '<button type="button" class="gmpr-handle gmpr-only-small" aria-label="גרירת חלון הפרסומות — מקשי החצים מזיזים (Shift = קפיצה גדולה)">⠿⠿⠿</button>' +
           '<button type="button" class="gmpr-btn gmpr-pause" aria-label="השהיית החלפת הפרסומות">⏸</button>' +
           (multi ? '<button type="button" class="gmpr-btn gmpr-next" aria-label="לפרסומת הבאה">›</button>' : '') +
           '<button type="button" class="gmpr-btn gmpr-shrink gmpr-only-large" aria-label="הקטנת החלון">הקטנה ⤡</button>' +
@@ -120,7 +120,6 @@
     cta = root.querySelector('.gmpr-cta');
     btnPause = root.querySelector('.gmpr-pause');
     btnNext = root.querySelector('.gmpr-next');
-    handle = root.querySelector('.gmpr-handle');
 
     // שקופיות: תמונה/סרטון, עטופות בקישור אם יש link_url
     var slides = ads.map(function (a, i) {
@@ -307,20 +306,13 @@
       var b = bounds(w, h), vw = document.documentElement.clientWidth || window.innerWidth;
       return { x: clamp(Math.round(vw / 2 - w / 2), b.minX, b.maxX), y: clamp(Math.round(window.innerHeight - geo.b - h), b.minY, b.maxY) };   // באמצע, באותו מרחק מהתחתית כמו בדף הבית
     }
-    function loadPos() {
-      var st = readState();
-      if (st && isFinite(st.x) && isFinite(st.y) && st.x !== null && st.y !== null) { return { x: +st.x, y: +st.y }; }
-      return null;
-    }
-    function savePos() { if (pos) { saveState({ x: Math.round(pos.x), y: Math.round(pos.y) }); } }
     function applyPos() {
       card.style.setProperty('--gm-x', Math.round(pos.x) + 'px');
       card.style.setProperty('--gm-y', Math.round(pos.y) + 'px');
     }
     function placeSmall(useSaved) {
       var s = sizeSmall();
-      var saved = useSaved ? (pos || loadPos()) : null;
-      pos = saved ? settle(saved.x, saved.y, s.w, s.h) : defaultPos(s.w, s.h);
+      pos = defaultPos(s.w, s.h);                                  // המסך קבוע: אותו מקום בכל העמודים (לא נגרר, לא נשמר)
       applyPos();
     }
 
@@ -388,7 +380,7 @@
       showAd(idx);
       if (focusIt) {
         var f = card.querySelector('.gmpr-enlarge');
-        (f || handle).focus();
+        if (f) { f.focus(); }
       }
     }
     // דף הבית: חזרה למסגרת (במקום תמונת האולם)
@@ -472,64 +464,13 @@
     }
     document.addEventListener('keydown', onKey, true);
 
-    /* ---------- גרירה (Pointer Events) + מקלדת — רק בקטן ---------- */
-    var drag = null;
-    handle.addEventListener('pointerdown', function (e) {
-      if (state !== 'small' || (e.pointerType === 'mouse' && e.button !== 0)) { return; }
-      e.preventDefault();
-      var s = sizeSmall();
-      drag = { id: e.pointerId, dx: e.clientX - pos.x, dy: e.clientY - pos.y, w: s.w, h: s.h };
-      handle.setPointerCapture(e.pointerId);
-      handle.classList.add('is-dragging');
-      card.classList.remove('is-sliding');
-      document.documentElement.style.userSelect = 'none';
-    });
-    handle.addEventListener('pointermove', function (e) {
-      if (!drag || e.pointerId !== drag.id) { return; }
-      e.preventDefault();
-      var b = bounds(drag.w, drag.h);
-      pos = { x: clamp(e.clientX - drag.dx, b.minX, b.maxX), y: clamp(e.clientY - drag.dy, b.minY, b.maxY) };
-      applyPos();
-    });
-    function endDrag(e) {
-      if (!drag || (e && e.pointerId !== drag.id)) { return; }
-      try { handle.releasePointerCapture(drag.id); } catch (err) { /* ignore */ }
-      handle.classList.remove('is-dragging');
-      document.documentElement.style.userSelect = '';
-      var s = { w: drag.w, h: drag.h };
-      drag = null;
-      slideToFree(s);
-    }
-    handle.addEventListener('pointerup', endDrag);
-    handle.addEventListener('pointercancel', endDrag);
-    handle.addEventListener('contextmenu', function (e) { e.preventDefault(); });
-    function slideToFree(s) {
-      var spot = settle(pos.x, pos.y, s.w, s.h);
-      if (Math.abs(spot.x - pos.x) > 1 || Math.abs(spot.y - pos.y) > 1) { card.classList.add('is-sliding'); pos = spot; applyPos(); setTimeout(function () { card.classList.remove('is-sliding'); }, 320); }
-      else { pos = spot; applyPos(); }
-      savePos();
-    }
-    var keyTimer = null;
-    handle.addEventListener('keydown', function (e) {
-      var step = e.shiftKey ? 50 : 10, dx = 0, dy = 0;
-      if (e.key === 'ArrowLeft') { dx = -step; } else if (e.key === 'ArrowRight') { dx = step; }
-      else if (e.key === 'ArrowUp') { dy = -step; } else if (e.key === 'ArrowDown') { dy = step; } else { return; }
-      e.preventDefault();
-      var s = sizeSmall(), b = bounds(s.w, s.h);
-      pos = { x: clamp(pos.x + dx, b.minX, b.maxX), y: clamp(pos.y + dy, b.minY, b.maxY) };
-      applyPos();
-      clearTimeout(keyTimer);
-      keyTimer = setTimeout(function () { slideToFree(s); }, 500);   // אחרי שהמשתמש מפסיק — מתרחקים מגלולות/לוגו/נגישות
-    });
-
     /* ---------- שינוי גודל / סיבוב מסך / "עצירת אנימציות" ---------- */
     var resizeTimer = null;
     function onResize() {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(function () {
-        var oldW = geo.w, oldH = geo.h;
         applyGeo();
-        if (state === 'small') { var s = sizeSmall(); pos = (oldW !== geo.w || oldH !== geo.h) ? defaultPos(s.w, s.h) : settle(pos.x, pos.y, s.w, s.h); applyPos(); savePos(); }
+        if (state === 'small') { var s = sizeSmall(); pos = defaultPos(s.w, s.h); applyPos(); }
         if (state === 'min') { toMinReposition(); }
       }, 120);
     }
@@ -555,7 +496,6 @@
       var v = slides[idx] && slides[idx].querySelector('video');
       var patch = { adId: ads[idx].id, t: v ? Math.round(v.currentTime * 10) / 10 : 0 };
       if (!calmNow()) { patch.paused = paused; }
-      if (pos) { patch.x = Math.round(pos.x); patch.y = Math.round(pos.y); }
       saveState(patch);
     }
     window.addEventListener('pagehide', saveNow);
@@ -586,7 +526,6 @@
     updatePauseBtn();
     ensureLoaded(idx, wantLarge);
     if (wantLarge) { for (var fv = 0; fv < ads.length; fv++) { if (ads[fv].media_type === 'video') { ensureLoaded(fv, true); break; } } }   // הסרטון הראשון מתחיל להיטען בזמן שהתמונה מוצגת
-    pos = loadPos();
     applyGeo();
     if (INLINE) {
       // המדידה מתעדכנת אחרי שהפריסה מתייצבת (פונטים / טעינה) ובשינוי גודל
