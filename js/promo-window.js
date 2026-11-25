@@ -22,10 +22,12 @@
   var LARGE_SESSION_KEY = 'gm:ads-large-shown';
   var ROTATE_MS = 7000, DAY_MS = 24 * 60 * 60 * 1000, MARGIN = 12;
   var BUCKET_URL = G.bucket;
-  var STATE_KEY = 'gm:ads-state';
+  var STATE_KEY = 'gm:ads-state', GEO_KEY = 'gm:ads-geo', RATIO = 510 / 272;   // יחס התמונה המקורית של המשבצת
   var FORM_PAGE = /\/(careers|contact|tenders)(\.html)?$/.test(location.pathname);
   var SLOT = document.body && document.body.getAttribute('data-page') === 'hero' ? document.querySelector('.hero-showroom-frame') : null;   // דף הבית: משבצת במקום תמונת האולם
   var INLINE = !!SLOT;
+  // מיקום אמיתי בפריסה (בלי טרנספורם של אנימציות הכניסה): סכום offsetTop
+  function layoutTop(el) { var t = 0; while (el) { t += el.offsetTop || 0; el = el.offsetParent; } return t; }
 
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* ignore */ } }
@@ -84,6 +86,7 @@
     var saved0 = readState() || {};
     var state = 'small', idx = 0, paused = calmNow() || !!saved0.paused, timer = null, root, card, backdrop, tab, media, ttl, adv, cta, btnPause, btnNext, handle;
     var lastFocus = null, inertEls = [], firstVisit = false, resumeT = 0, gated = false;
+    var geo = { w: 320, h: 200, b: 16 };                           // גודל ומרווח תחתון של מסך הפרסומות (אותו חישוב בכל העמודים)
     var pos = null;                                                  // { x, y } של הכרטיס הקטן (פיקסלים)
 
     /* ---------- בניית ה-DOM ---------- */
@@ -220,7 +223,33 @@
     document.addEventListener('visibilitychange', schedule);
 
     /* ---------- מיקום ---------- */
-    function sizeSmall() { return isMobile() ? { w: 260, h: 160 } : { w: 320, h: 200 }; }
+    /* ---------- גודל: הגדול ביותר שנכנס בין שורת "הרצליה ישראל" לתחתית המסך (דף הבית). בשאר העמודים — אותו גודל בדיוק ---------- */
+    function computeGeo() {
+      var vw = document.documentElement.clientWidth || window.innerWidth, vh = window.innerHeight, cx = vw / 2;
+      var cached = null;
+      try { var cg = JSON.parse(lsGet(GEO_KEY) || 'null'); if (cg && cg.vw === vw && cg.vh === vh && cg.w > 0) { cached = cg; } } catch (e) { /* ignore */ }
+      if (!INLINE && cached) { return cached; }                      // בדיוק מה שחושב בדף הבית לגודל מסך הזה
+      var top = INLINE ? layoutTop(SLOT) : Math.round(vh * 0.56);    // עד שדף הבית נמדד: הערכה
+      var b = 16, w = Math.min(vw - 24, (vh - top - b) * RATIO);
+      var chrome = chromeRects(), fab = rectsOf(['#a11yFab'])[0];
+      // כפתור הנגישות: אם המסך היה מכסה אותו — מרימים את המסך מעליו (מובייל)
+      if (fab && cx + w / 2 + 8 > fab.l && cx - w / 2 - 8 < fab.r && vh - b > fab.t - 8) {
+        b = Math.max(b, Math.round(vh - fab.t + 10));
+        w = Math.min(w, (vh - top - b) * RATIO);
+      }
+      // גלולות הניווט / לוגו / עיגול השפה: מצמצמים עד שאין חפיפה (שומרים יחס)
+      for (var n = 0; n < 80 && w > 180 && hit(cx - w / 2, top, w, w / RATIO, chrome, 8); n++) { w -= 10; }
+      w = Math.max(160, Math.floor(w));
+      var g = { vw: vw, vh: vh, w: w, h: Math.floor(w / RATIO), b: b };
+      if (INLINE) { lsSet(GEO_KEY, JSON.stringify(g)); }
+      return g;
+    }
+    function applyGeo() {
+      geo = computeGeo();
+      card.style.setProperty('--ads-w', geo.w + 'px');
+      card.style.setProperty('--ads-h', geo.h + 'px');
+    }
+    function sizeSmall() { return { w: geo.w, h: geo.h }; }
     function vis(el) {
       if (!el || el.hidden) { return null; }
       var cs = getComputedStyle(el);
@@ -275,19 +304,15 @@
       return { x: clamp(x, b.minX, b.maxX), y: clamp(y, b.minY, b.maxY) };
     }
     function defaultPos(w, h) {
-      var b = bounds(w, h), wantX = b.maxX, wantY = b.maxY;           // תחתית אזור התוכן, צד ימין
-      var spot = nearestFree(wantX, wantY, w, h, chromeRects().concat(heroRects()), 8, false) || nearestFree(wantX, wantY, w, h, chromeRects(), 6, false);
-      return spot || { x: wantX, y: wantY };
+      var b = bounds(w, h), vw = document.documentElement.clientWidth || window.innerWidth;
+      return { x: clamp(Math.round(vw / 2 - w / 2), b.minX, b.maxX), y: clamp(Math.round(window.innerHeight - geo.b - h), b.minY, b.maxY) };   // באמצע, באותו מרחק מהתחתית כמו בדף הבית
     }
     function loadPos() {
       var st = readState();
       if (st && isFinite(st.x) && isFinite(st.y) && st.x !== null && st.y !== null) { return { x: +st.x, y: +st.y }; }
-      var raw = lsGet(POS_KEY);
-      if (!raw) { return null; }
-      try { var p = JSON.parse(raw); if (p && isFinite(p.x) && isFinite(p.y)) { return { x: +p.x, y: +p.y }; } } catch (e) { /* ignore */ }
       return null;
     }
-    function savePos() { if (pos) { lsSet(POS_KEY, JSON.stringify({ x: Math.round(pos.x), y: Math.round(pos.y) })); saveState({ x: Math.round(pos.x), y: Math.round(pos.y) }); } }
+    function savePos() { if (pos) { saveState({ x: Math.round(pos.x), y: Math.round(pos.y) }); } }
     function applyPos() {
       card.style.setProperty('--gm-x', Math.round(pos.x) + 'px');
       card.style.setProperty('--gm-y', Math.round(pos.y) + 'px');
@@ -386,6 +411,19 @@
     // יציאה ממסך מלא: בדף הבית — חזרה למסגרת; בשאר העמודים — הכרטיס הקטן
     function leaveLarge() {
       if (INLINE) { toInline(true, true); } else { toSmall(true, true); saveState({ mode: 'small' }); }
+    }
+    // האם המסך היה מכסה תוכן של העמוד (כותרות, טקסט, שדות, תמונות)? — אם כן, מתחילים ממוזער
+    function coversContent() {
+      var r = { l: pos.x, t: pos.y, r: pos.x + geo.w, b: pos.y + geo.h };
+      var nodes = document.querySelectorAll('main h1, main h2, main h3, main p, main li, main label, main input, main textarea, main select, main button, main img, main video, main .card');
+      for (var i = 0; i < nodes.length; i++) {
+        if (root.contains(nodes[i]) || nodes[i].closest('.gmpr-card')) { continue; }
+        var v = vis(nodes[i]);
+        if (!v) { continue; }
+        var w = Math.min(r.r, v.r) - Math.max(r.l, v.l), h = Math.min(r.b, v.b) - Math.max(r.t, v.t);
+        if (w > 24 && h > 12) { return true; }
+      }
+      return false;
     }
     function toMin(quiet) {
       var r = card.getBoundingClientRect();
@@ -489,7 +527,9 @@
     function onResize() {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(function () {
-        if (state === 'small') { var s = sizeSmall(); pos = settle(pos.x, pos.y, s.w, s.h); applyPos(); savePos(); }
+        var oldW = geo.w, oldH = geo.h;
+        applyGeo();
+        if (state === 'small') { var s = sizeSmall(); pos = (oldW !== geo.w || oldH !== geo.h) ? defaultPos(s.w, s.h) : settle(pos.x, pos.y, s.w, s.h); applyPos(); savePos(); }
         if (state === 'min') { toMinReposition(); }
       }, 120);
     }
@@ -547,6 +587,13 @@
     ensureLoaded(idx, wantLarge);
     if (wantLarge) { for (var fv = 0; fv < ads.length; fv++) { if (ads[fv].media_type === 'video') { ensureLoaded(fv, true); break; } } }   // הסרטון הראשון מתחיל להיטען בזמן שהתמונה מוצגת
     pos = loadPos();
+    applyGeo();
+    if (INLINE) {
+      // המדידה מתעדכנת אחרי שהפריסה מתייצבת (פונטים / טעינה) ובשינוי גודל
+      window.addEventListener('load', function () { applyGeo(); });
+      if (document.fonts && document.fonts.ready) { document.fonts.ready.then(function () { applyGeo(); }); }
+      setTimeout(applyGeo, 1200);
+    }
     if (INLINE) {
       ssSet(LARGE_SESSION_KEY, '1');                                // דף הבית = ההצגה הראשונה; בעמודים הבאים נפתח הכרטיס הקטן ישר
       toInline(false, false);
@@ -557,7 +604,7 @@
     } else {
       card.hidden = false;
       toSmall(false, false);
-      if (FORM_PAGE || saved0.mode === 'min') {
+      if (FORM_PAGE || saved0.mode === 'min' || (saved0.mode !== 'small' && coversContent())) {
         toMin(true);                                                // בעמודי טפסים / אחרי מזעור — לשונית "פרסומות ▲"; לא נשמר כבחירת משתמש
       } else if (!calmNow() && card.animate) {
         card.animate([{ opacity: 0, transform: 'translateY(12px)' }, { opacity: 1, transform: 'none' }], { duration: 300, easing: 'ease-out' });

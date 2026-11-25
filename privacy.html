@@ -61,9 +61,9 @@
   G.list.catch(function () { /* בלי פרסומות — האתר ממשיך כרגיל */ });
 })();
   </script>
-  <link rel="stylesheet" href="css/promo.css?v=6" media="print" onload="this.media='all'">
-  <noscript><link rel="stylesheet" href="css/promo.css?v=6"></noscript>
-  <script src="js/promo-window.js?v=6" defer></script>
+  <link rel="stylesheet" href="css/promo.css?v=7" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="css/promo.css?v=7"></noscript>
+  <script src="js/promo-window.js?v=7" defer></script>
   <!-- gm-ads:end -->
 </head>
 <body>
@@ -91,7 +91,7 @@
     <p>[לאישור עורך הדין] בדף הבית מוצגות פרסומות של החברה ושל שותפיה, המסומנות כ'פרסומת'. לחיצה על פרסומת מעבירה לאתר המפרסם, שמדיניותו חלה עליו. הצגת הפרסומות אינה כרוכה באיסוף מידע עליכם.</p>
 
     <h2>7. אחסון פונקציונלי בדפדפן</h2>
-    <p>[לאישור עורך הדין] האתר שומר בדפדפן שלכם, לצורך תפעול בלבד ובלי שליחה לשום גורם, נתונים כמו העדפות נגישות ושפה. בנוגע לחלון הפרסומות נשמרים שני נתונים נוספים ב-localStorage: מיקום חלון הפרסומות הקטן (gm:ads-pos) ומועד הפתיחה האחרון של החלון הגדול (gm:ads-large-at, בהגדרת תדירות של 24 שעות), וכן סימונים בזיכרון הזמני של הדפדפן (sessionStorage: gm:ads-closed — החלון נסגר בביקור הנוכחי, gm:ads-large-shown — החלון הגדול כבר הוצג בביקור הנוכחי). אין בהם מידע אישי.</p>
+    <p>[לאישור עורך הדין] האתר שומר בדפדפן שלכם, לצורך תפעול בלבד ובלי שליחה לשום גורם, נתונים כמו העדפות נגישות ושפה. בנוגע לחלון הפרסומות נשמרים שני נתונים נוספים ב-localStorage: גודל חלון הפרסומות שחושב לגודל המסך (gm:ads-geo) ומועד הפתיחה האחרון של החלון הגדול (gm:ads-large-at, בהגדרת תדירות של 24 שעות), וכן סימונים בזיכרון הזמני של הדפדפן (sessionStorage: gm:ads-state — מיקום ומצב החלון בין עמודים באותו ביקור, gm:ads-list — רשימת הפרסומות לביקור, gm:ads-closed — החלון נסגר בביקור הנוכחי, gm:ads-large-shown — החלון הגדול כבר הוצג בביקור הנוכחי). אין בהם מידע אישי.</p>
 
     <p class="muted">עדכון אחרון: [תאריך]</p>
     <a class="back" href="careers.html">→ חזרה לאתר</a>
