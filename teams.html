@@ -23,6 +23,48 @@
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
   <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <!-- gm-ads:start — חלון פרסומות משותף (נבנה ע"י tools/build-pages.js; לא עורכים ידנית) -->
+  <link rel="preconnect" href="https://sihttuieondsukpjdsvv.supabase.co" crossorigin>
+  <script>
+(function () {
+  var U = 'https://sihttuieondsukpjdsvv.supabase.co', K = 'sb_publishable_LHWYdDvkw_uK83ZE8RyxPQ_1G5vClXN';
+  var TTL = 10 * 60 * 1000;
+  var G = window.GMAds = { url: U, key: K, bucket: U + '/storage/v1/object/public/site-ads/', list: null };
+  function ss(k, v) {
+    try { if (v === undefined) { return sessionStorage.getItem(k); } sessionStorage.setItem(k, v); } catch (e) { /* ignore */ }
+    return null;
+  }
+  if (ss('gm:ads-closed') === '1' || !window.fetch) { G.list = Promise.resolve([]); return; }
+  var firstPage = ss('gm:ads-large-shown') !== '1';
+  function preload(rows) {
+    var f = rows[0], p = f && (f.media_type === 'video' ? f.poster_path : f.media_path);
+    if (!firstPage || !p) { return; }
+    var l = document.createElement('link');
+    l.rel = 'preload'; l.as = 'image'; l.href = G.bucket + p;
+    document.head.appendChild(l);
+  }
+  var cached = null;
+  try {
+    var c = JSON.parse(ss('gm:ads-list') || 'null');
+    if (c && Array.isArray(c.rows) && c.t <= Date.now() && Date.now() - c.t < TTL) { cached = c.rows; }
+  } catch (e) { /* ignore */ }
+  if (cached) { G.list = Promise.resolve(cached); preload(cached); return; }
+  G.list = fetch(U + '/rest/v1/ads?select=id,title,advertiser,media_path,media_type,poster_path,alt_text,link_url,cta_text&order=sort_order.asc,created_at.asc&limit=30',
+    { headers: { apikey: K, Authorization: 'Bearer ' + K } })
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error('http_' + r.status)); })
+    .then(function (rows) {
+      rows = Array.isArray(rows) ? rows : [];
+      ss('gm:ads-list', JSON.stringify({ t: Date.now(), rows: rows }));
+      preload(rows);
+      return rows;
+    });
+  G.list.catch(function () { /* בלי פרסומות — האתר ממשיך כרגיל */ });
+})();
+  </script>
+  <link rel="stylesheet" href="css/promo.css?v=5" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="css/promo.css?v=5"></noscript>
+  <script src="js/promo-window.js?v=5" defer></script>
+  <!-- gm-ads:end -->
 </head>
 <body class="page-split" data-page="teams">
 

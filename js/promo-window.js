@@ -1,6 +1,8 @@
 /* ==========================================================================
-   GAD MIVNIM — חלון הפרסומות בדף הבית (index.html בלבד; הקבצים נקראים promo כדי שחוסמי פרסומות לא יחסמו אותם).
-   נטען רק אחרי שהדף נטען (טעינת הסקריפט נעשית מ-index.html באירוע load) — אין השפעה על ה-Hero.
+   GAD MIVNIM — חלון הפרסומות בכל העמודים הציבוריים (קובץ משותף יחיד; הקבצים נקראים promo כדי שחוסמי פרסומות לא יחסמו אותם).
+   נטען ב-defer (לא חוסם רינדור). הרשימה והטעינה המוקדמת — js/promo-boot.js (משובץ ב-<head> ע"י tools/build-pages.js).
+   מסך מלא — פעם אחת בביקור, בעמוד הראשון שנפתח. בכל עמוד אחר: הכרטיס הקטן באותו מיקום ובאותה פרסומת/שנייה (sessionStorage gm:ads-state).
+   בעמודי טפסים (careers / contact / tenders) הכרטיס מתחיל ממוזער. באזור החברים של tenders אחרי כניסה — לא מוצג.
    פרסומות של החברה ושל שותפיה בלבד. בלי רשתות פרסום, בלי מעקב, בלי עוגיות, בלי סטטיסטיקה (גרסה 1).
    מצבים: LARGE (מחשב/טאבלט ≥769px) → SMALL (נגרר) → MINIMIZED (לשונית) → CLOSED (✕, עד סוף הביקור).
    אחסון: localStorage gm:ads-pos (מיקום הכרטיס הקטן), gm:ads-large-at (מתי נפתח הגדול לאחרונה);
@@ -8,8 +10,8 @@
    ========================================================================== */
 (function () {
   'use strict';
-  var CFG = window.GM_SUPABASE || {};
-  if (!CFG.url || !CFG.key || !window.fetch) { return; }
+  var G = window.GMAds;                                            // נוצר ע"י js/promo-boot.js
+  if (!G || !G.list || !window.fetch) { return; }
   if (window.__gmPromoStarted) { return; }                         // הגנה מהרצה כפולה
   window.__gmPromoStarted = true;
 
@@ -18,10 +20,17 @@
   var ADS_LARGE_FREQUENCY = 'session';
   var LARGE_SESSION_KEY = 'gm:ads-large-shown';
   var ROTATE_MS = 7000, DAY_MS = 24 * 60 * 60 * 1000, MARGIN = 12;
-  var BUCKET_URL = String(CFG.url).replace(/\/+$/, '') + '/storage/v1/object/public/site-ads/';
+  var BUCKET_URL = G.bucket;
+  var STATE_KEY = 'gm:ads-state';
+  var FORM_PAGE = /\/(careers|contact|tenders)(\.html)?$/.test(location.pathname);
 
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* ignore */ } }
+  // מצב הכרטיס לאורך הביקור (בין עמודים): { mode, adId, t, paused, x, y }
+  function readState() { try { var o = JSON.parse(sessionStorage.getItem(STATE_KEY) || 'null'); return o && typeof o === 'object' ? o : null; } catch (e) { return null; } }
+  function saveState(patch) {
+    try { var o = readState() || {}; Object.keys(patch).forEach(function (k) { o[k] = patch[k]; }); sessionStorage.setItem(STATE_KEY, JSON.stringify(o)); } catch (e) { /* ignore */ }
+  }
   function ssGet(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } }
   function ssSet(k, v) { try { sessionStorage.setItem(k, v); } catch (e) { /* ignore */ } }
 
@@ -43,10 +52,7 @@
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
 
   /* ---------- טעינת הפרסומות (מפתח ציבורי; ה-RLS מחזיר רק פעילות בטווח התאריכים) ---------- */
-  var query = '/rest/v1/ads?select=id,title,advertiser,media_path,media_type,poster_path,alt_text,link_url,cta_text&order=sort_order.asc,created_at.asc&limit=30';
-  var listPromise = window.__gmAdsList || fetch(String(CFG.url).replace(/\/+$/, '') + query, { headers: { apikey: CFG.key, Authorization: 'Bearer ' + CFG.key } })
-    .then(function (r) { return r.ok ? r.json() : []; });
-  listPromise
+  G.list
     .then(function (rows) {
       var ads = (Array.isArray(rows) ? rows : []).filter(function (a) { return a && a.media_path && (a.media_type === 'image' || a.media_type === 'video'); });
       if (!ads.length) { return; }                                  // אין פרסומות פעילות — לא מופיע כלום
@@ -72,8 +78,9 @@
     if (ssGet(CLOSED_KEY) === '1') { return; }
 
     var multi = ads.length > 1;
-    var state = 'small', idx = 0, paused = calmNow(), timer = null, root, card, backdrop, tab, media, ttl, adv, cta, btnPause, btnNext, handle;
-    var lastFocus = null, inertEls = [];
+    var saved0 = readState() || {};
+    var state = 'small', idx = 0, paused = calmNow() || !!saved0.paused, timer = null, root, card, backdrop, tab, media, ttl, adv, cta, btnPause, btnNext, handle;
+    var lastFocus = null, inertEls = [], firstVisit = false, resumeT = 0, gated = false;
     var pos = null;                                                  // { x, y } של הכרטיס הקטן (פיקסלים)
 
     /* ---------- בניית ה-DOM ---------- */
@@ -156,7 +163,7 @@
     }
 
     /* ---------- הצגת פרסומת + סיבוב ---------- */
-    function visibleNow() { return (state === 'large' || state === 'small') && !document.hidden; }
+    function visibleNow() { return (state === 'large' || state === 'small') && !document.hidden && !gated; }
     function updatePauseBtn() {
       btnPause.textContent = paused ? '▶' : '⏸';
       btnPause.setAttribute('aria-label', paused ? 'הפעלת החלפת הפרסומות' : 'השהיית החלפת הפרסומות');
@@ -174,7 +181,13 @@
         if (v && !on) { try { v.pause(); v.currentTime = 0; } catch (e) { /* ignore */ } }
       });
       ensureLoaded(idx);
-      if (multi) { ensureLoaded((idx + 1) % ads.length, true); }
+      if (multi) { ensureLoaded((idx + 1) % ads.length, firstVisit); }        // טעינה כבדה מראש — רק בעמוד הראשון של הביקור
+      if (resumeT > 0 && ads[idx].media_type === 'video') {                   // המשך מאותה שנייה אחרי מעבר עמוד
+        var rv = slides[idx].querySelector('video'), rt = resumeT;
+        resumeT = 0;
+        var applyT = function () { try { rv.currentTime = Math.max(0, Math.min(rt, (rv.duration || rt + 1) - 0.5)); } catch (e) { /* ignore */ } };
+        if (rv.readyState > 0) { applyT(); } else { rv.addEventListener('loadedmetadata', applyT, { once: true }); }
+      }
       var a = ads[idx], href = safeHref(a.link_url);
       ttl.textContent = a.title;
       adv.textContent = a.advertiser || '';
@@ -222,7 +235,7 @@
       return out;
     }
     // אלמנטים שאסור לכסות כשעוזבים את הכרטיס: גלולות הניווט, הלוגו, עיגול השפה, כפתור הנגישות (+ המבורגר במובייל)
-    function chromeRects() { return rectsOf(['.main-nav a', '.logo', '.nav-toggle', '#langBtn', '#a11yFab', '.back-top.is-visible']); }
+    function chromeRects() { return rectsOf(['.main-nav a', '.logo', '.nav-toggle', '#langBtn', '#a11yFab', '.back-top.is-visible', '.cookie-bar', '.cookie-banner', '#cookieBar', '#cookie-banner', '.info-bar', '[data-ads-avoid]']); }
     // ברירת המחדל מתרחקת גם מכותרות ה-Hero ותמונת האולם
     function heroRects() { return rectsOf(['.hero-title', '.hero-badge', '.hero-showroom', '.hero-location', '.hero-showroom-frame']); }
     function hit(x, y, w, h, list, pad) {
@@ -264,12 +277,14 @@
       return spot || { x: wantX, y: wantY };
     }
     function loadPos() {
+      var st = readState();
+      if (st && isFinite(st.x) && isFinite(st.y) && st.x !== null && st.y !== null) { return { x: +st.x, y: +st.y }; }
       var raw = lsGet(POS_KEY);
       if (!raw) { return null; }
       try { var p = JSON.parse(raw); if (p && isFinite(p.x) && isFinite(p.y)) { return { x: +p.x, y: +p.y }; } } catch (e) { /* ignore */ }
       return null;
     }
-    function savePos() { if (pos) { lsSet(POS_KEY, JSON.stringify({ x: Math.round(pos.x), y: Math.round(pos.y) })); } }
+    function savePos() { if (pos) { lsSet(POS_KEY, JSON.stringify({ x: Math.round(pos.x), y: Math.round(pos.y) })); saveState({ x: Math.round(pos.x), y: Math.round(pos.y) }); } }
     function applyPos() {
       card.style.setProperty('--gm-x', Math.round(pos.x) + 'px');
       card.style.setProperty('--gm-y', Math.round(pos.y) + 'px');
@@ -347,7 +362,7 @@
         (f || handle).focus();
       }
     }
-    function toMin() {
+    function toMin(quiet) {
       var r = card.getBoundingClientRect();
       var h = 36, w = 130, b = bounds(w, h), bottom = r.top + r.height / 2 > window.innerHeight / 2;
       var y = bottom ? window.innerHeight - h - 6 : Math.max(6, b.minY);
@@ -360,7 +375,7 @@
       tab.style.setProperty('--gm-y', Math.round(spot.y) + 'px');
       tab.hidden = false;
       schedule();
-      tab.focus();
+      if (quiet !== true) { tab.focus(); }
     }
     function closeAll() {
       ssSet(CLOSED_KEY, '1');
@@ -374,16 +389,16 @@
       if (lastFocus && document.body.contains(lastFocus)) { try { lastFocus.focus(); } catch (e) { /* ignore */ } }
     }
 
-    card.querySelector('.gmpr-shrink').addEventListener('click', function () { toSmall(true, true); });
+    card.querySelector('.gmpr-shrink').addEventListener('click', function () { toSmall(true, true); saveState({ mode: 'small' }); });
     card.querySelector('.gmpr-enlarge').addEventListener('click', function () { toLarge(true); });
-    card.querySelector('.gmpr-min').addEventListener('click', toMin);
+    card.querySelector('.gmpr-min').addEventListener('click', function () { toMin(); saveState({ mode: 'min' }); });
     card.querySelector('.gmpr-close').addEventListener('click', closeAll);
-    tab.addEventListener('click', function () { toSmall(false, true); });
-    backdrop.addEventListener('click', function () { if (state === 'large') { toSmall(true, true); } });
+    tab.addEventListener('click', function () { toSmall(false, true); saveState({ mode: 'small' }); });
+    backdrop.addEventListener('click', function () { if (state === 'large') { toSmall(true, true); saveState({ mode: 'small' }); } });
 
     function onKey(e) {
       if (state !== 'large') { return; }
-      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); toSmall(true, true); return; }
+      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); toSmall(true, true); saveState({ mode: 'small' }); return; }
       if (e.key !== 'Tab') { return; }
       var f = Array.prototype.filter.call(card.querySelectorAll('button, a[href]'), function (el) { return el.offsetParent !== null && !el.disabled && el.tabIndex !== -1; });
       if (!f.length) { return; }
@@ -469,14 +484,43 @@
       if (mq.addEventListener) { mq.addEventListener('change', onMq); }
     }
 
+    /* ---------- שמירת המצב בין עמודים + שער אזור החברים ---------- */
+    function saveNow() {
+      if (state === 'closed') { return; }
+      var v = slides[idx] && slides[idx].querySelector('video');
+      var patch = { adId: ads[idx].id, t: v ? Math.round(v.currentTime * 10) / 10 : 0 };
+      if (!calmNow()) { patch.paused = paused; }
+      if (pos) { patch.x = Math.round(pos.x); patch.y = Math.round(pos.y); }
+      saveState(patch);
+    }
+    window.addEventListener('pagehide', saveNow);
+    document.addEventListener('visibilitychange', function () { if (document.hidden) { saveNow(); } });
+    // tenders.html: אחרי כניסה (אזור החברים) — לא מוצג בכלל
+    var members = document.getElementById('tnMembers');
+    function applyGate() {
+      gated = !!members && !members.hidden;
+      root.hidden = gated;
+      if (gated) {
+        if (state === 'large') { setInert(false); }
+        clearTimeout(timer);
+        slides.forEach(function (el) { var v = el.querySelector('video'); if (v) { v.pause(); } });
+      } else { schedule(); }
+    }
+    if (members && window.MutationObserver) { new MutationObserver(applyGate).observe(members, { attributes: true, attributeFilter: ['hidden'] }); }
+
     /* ---------- פתיחה ראשונה ---------- */
-    updatePauseBtn();
-    ensureLoaded(0, true);
-    for (var fv = 0; fv < ads.length; fv++) { if (ads[fv].media_type === 'video') { ensureLoaded(fv, true); break; } }   // הסרטון הראשון מתחיל להיטען בזמן שהתמונה הראשונה מוצגת
     var lastLarge = parseInt(lsGet(LARGE_KEY) || '0', 10) || 0;
     var wantLarge = ADS_LARGE_FREQUENCY === 'session'
       ? ssGet(LARGE_SESSION_KEY) !== '1'
-      : (Date.now() - lastLarge >= DAY_MS || lastLarge > Date.now());                // מסך מלא גם במובייל
+      : (Date.now() - lastLarge >= DAY_MS || lastLarge > Date.now());                // מסך מלא גם במובייל — רק בעמוד הראשון של הביקור
+    firstVisit = wantLarge;
+    // ממשיכים מאותה פרסומת ושנייה שהיו בעמוד הקודם
+    if (saved0.adId) {
+      for (var k = 0; k < ads.length; k++) { if (ads[k].id === saved0.adId) { idx = k; resumeT = +saved0.t || 0; break; } }
+    }
+    updatePauseBtn();
+    ensureLoaded(idx, wantLarge);
+    if (wantLarge) { for (var fv = 0; fv < ads.length; fv++) { if (ads[fv].media_type === 'video') { ensureLoaded(fv, true); break; } } }   // הסרטון הראשון מתחיל להיטען בזמן שהתמונה מוצגת
     pos = loadPos();
     if (wantLarge) {
       // ממקמים מראש את הקטן (המיקום שאליו ההקטנה תנוע), ואז פותחים את הגדול
@@ -485,7 +529,12 @@
     } else {
       card.hidden = false;
       toSmall(false, false);
-      if (!calmNow() && card.animate) { card.animate([{ opacity: 0, transform: 'translateY(12px)' }, { opacity: 1, transform: 'none' }], { duration: 300, easing: 'ease-out' }); }
+      if (FORM_PAGE || saved0.mode === 'min') {
+        toMin(true);                                                // בעמודי טפסים / אחרי מזעור — לשונית "פרסומות ▲"; לא נשמר כבחירת משתמש
+      } else if (!calmNow() && card.animate) {
+        card.animate([{ opacity: 0, transform: 'translateY(12px)' }, { opacity: 1, transform: 'none' }], { duration: 300, easing: 'ease-out' });
+      }
     }
+    applyGate();
   }
 })();
