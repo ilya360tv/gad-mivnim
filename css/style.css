@@ -9092,9 +9092,3 @@ html[dir] body #main #partners .badges-row { margin-top: calc(var(--pt-gap-top) 
 
 /* ===== Hero: השורה "לרשותכם אולם תצוגה…" בגופן המכחול של האתר (אותו מחסנית כמו "משנים את הדרך…" ב-about; בלי קובץ גופן חדש). ריווח אותיות רגיל; הרוחב נקבע ע"י ה-fit-text ב-js/script.js ===== */
 html body .hero .hero-showroom { font-family: "Guttman Yad-Brush", "Gveret Levin", "Rubik", sans-serif; letter-spacing: normal; }
-
-/* ===== Hero: "לרשותכם אולם תצוגה…" — גדול: 40px דסקטופ (≥1024), 22px מובייל (≤768); שורה אחת, בלי הגבלת רוחב ובלי fit-text ===== */
-html body .hero .hero-showroom { font-size: 40px !important; white-space: nowrap !important; max-width: none !important; width: max-content !important; line-height: 1.2 !important; }
-@media (max-width: 1279.98px) { html body .hero .hero-showroom { font-size: 34px !important; } }
-@media (max-width: 1023.98px) { html body .hero .hero-showroom { font-size: 30px !important; } }
-@media (max-width: 768px) { html body .hero .hero-showroom { font-size: 22px !important; } }

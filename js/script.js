@@ -3599,26 +3599,4 @@ function cardScale() {
   if ('MutationObserver' in window) { new MutationObserver(refit).observe(root, { attributes: true, attributeFilter: ['lang', 'dir'] }); }
 })();
 
-/* Hero: השורה "לרשותכם אולם תצוגה…" — גודל הכתב קבוע ב-CSS (40px דסקטופ / 22px מובייל), בלי fit-text שמתאים אותה לרוחב "הרצליה ישראל". */
-/* אם השורה רחבה ממיכל התוכן היא "בורחת" לצד אחד — מזיזים את הבלוק (עם הבאדג') כך שהשורה תהיה ממורכזת על מרכז המסך. */
-(function () {
-  var line = document.querySelector('.hero .hero-showroom');
-  var block = line && line.parentElement;
-  if (!line || !block) { return; }
-  function center() {
-    block.style.translate = '';
-    var r = document.createRange(); r.selectNodeContents(line);
-    var q = r.getBoundingClientRect();
-    if (!(q.width > 20)) { return; }
-    var dx = document.documentElement.clientWidth / 2 - (q.left + q.right) / 2;
-    if (Math.abs(dx) > 0.5) { block.style.translate = dx.toFixed(1) + 'px 0'; }
-  }
-  var tm;
-  var again = function () { clearTimeout(tm); tm = setTimeout(center, 40); };
-  center();
-  window.addEventListener('load', function () { center(); setTimeout(center, 1200); });
-  window.addEventListener('resize', again);
-  window.addEventListener('gm:herofit', center);
-  if (document.fonts && document.fonts.ready) { document.fonts.ready.then(center); }
-  if ('MutationObserver' in window) { new MutationObserver(again).observe(document.documentElement, { attributes: true, attributeFilter: ['lang', 'dir'] }); }
-})();
+/* Hero: גודל הכתב של "לרשותכם אולם תצוגה…" נקבע ב-CSS בלבד (1.62rem דסקטופ / 1.25rem מובייל). */
