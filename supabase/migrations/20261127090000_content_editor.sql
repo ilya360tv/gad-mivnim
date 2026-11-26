@@ -39,21 +39,9 @@ as $$
   );
 $$;
 
--- may the current editor edit this ad? (own non-published ad, or any ad when can_publish)
-create or replace function private.editor_can_edit_ad(p_ad_id uuid)
-returns boolean language sql stable security definer set search_path = ''
-as $$
-  select private.is_editor() and exists (
-    select 1 from public.ads a
-    where a.id = p_ad_id
-      and (private.can_publish() or (a.created_by = (select auth.uid()) and a.status <> 'published'))
-  );
-$$;
-
-revoke all on function private.is_editor(), private.can_publish(), private.editor_can_edit_ad(uuid) from public, anon, authenticated;
+revoke all on function private.is_editor(), private.can_publish() from public, anon, authenticated;
 grant execute on function private.is_editor() to authenticated;
 grant execute on function private.can_publish() to authenticated;
-grant execute on function private.editor_can_edit_ad(uuid) to authenticated;
 
 -- ============ 3. ads: status / ownership / review ============
 alter table public.ads add column if not exists status text not null default 'draft';
@@ -69,6 +57,20 @@ create index if not exists ads_status_idx on public.ads (status);
 
 -- existing ads (5 demo + GAD MIVNIM) stay live
 update public.ads set status = 'published' where status = 'draft' and created_by is null and reviewed_at is null;
+
+-- may the current editor edit this ad? (own non-published ad, or any ad when can_publish)
+create or replace function private.editor_can_edit_ad(p_ad_id uuid)
+returns boolean language sql stable security definer set search_path = ''
+as $$
+  select private.is_editor() and exists (
+    select 1 from public.ads a
+    where a.id = p_ad_id
+      and (private.can_publish() or (a.created_by = (select auth.uid()) and a.status <> 'published'))
+  );
+$$;
+
+revoke all on function private.editor_can_edit_ad(uuid) from public, anon, authenticated;
+grant execute on function private.editor_can_edit_ad(uuid) to authenticated;
 
 -- public: only PUBLISHED ads (+ the old conditions)
 drop policy if exists ads_public_select on public.ads;
