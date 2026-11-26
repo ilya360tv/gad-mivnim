@@ -9096,3 +9096,7 @@ html body .hero .hero-showroom { font-family: "Guttman Yad-Brush", "Gveret Levin
 /* ===== Hero: "הרצליה ישראל | HERZLIYA ISRAEL" — חצי מהגודל: גודל כתב × 0.5 (16px → 8px) וריווח אותיות × 0.5 (4.8px → 2.4px); במובייל מינימום 11px. הריווח בפיצוי המרכוז זהה לריווח האותיות. ===== */
 html body .hero .hero-location { font-size: 8px; letter-spacing: 2.4px; padding-inline-start: 2.4px; }
 @media (max-width: 767.98px) { html body .hero .hero-location { font-size: 11px; } }
+
+/* ===== Hero: באדג' "בקרוב" — 70% מהגודל הקודם: כתב 16→11.2px (מינימום 11px), ריפוד 4px 12px → 2.8px 8.4px, רווח 6→4.2px, אייקון ✦ 15→10.5px, רדיוס × 0.7 (נשאר גלולה מלאה). אותה מסגרת, צבעים, מרכוז ועיגון. ===== */
+html body .hero .hero-badge { font-size: 11.2px; padding: 2.8px 8.4px; gap: 4.2px; border-radius: 699.3px; }
+html body .hero .hero-badge svg { width: 10.5px; height: 10.5px; }
