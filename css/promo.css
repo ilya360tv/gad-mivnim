@@ -125,86 +125,85 @@ html.a11y-no-motion .gmpr-backdrop, html.a11y-no-motion .gmpr-slide, html.a11y-n
 }
 
 /* ==========================================================================
-   דף הבית — "ערוץ טלוויזיה" (.gmpr-tv, מצב inline). במסך מלא ("הגדלה") הכרטיס נראה כמו קודם.
-   הגודל מחושב כאן: הרוחב לפי הגובה הפנוי עד 16px מתחתית המסך (--tv-top / --tv-bottom / --tv-side נמדדים ב-js/promo-window.js).
+   דף הבית — מסגרת "מפוצלת" (.gmpr-split, מצב inline): טקסט מימין (~40%) ומדיה משמאל (~60%). במסך מלא הכרטיס נראה כרגיל.
+   הגודל מחושב כאן: הרוחב לפי הגובה הפנוי עד 16px מתחתית המסך (--split-top / --split-bottom / --split-side נמדדים ב-js/promo-window.js).
    ========================================================================== */
-.gmpr-card:not([data-state="inline"]) .gmpr-screen { display: contents; }
-.gmpr-card:not([data-state="inline"]) .gmpr-live,
-.gmpr-card:not([data-state="inline"]) .gmpr-progress,
-.gmpr-card:not([data-state="inline"]) .gmpr-thumbs,
-.gmpr-card:not([data-state="inline"]) .gmpr-tvfoot { display: none; }
+.gmpr-card:not([data-state="inline"]) .gmpr-stage { display: contents; }
+.gmpr-card:not([data-state="inline"]) .gmpr-panel { display: none; }
 
-.gmpr-card.gmpr-tv[data-state="inline"] {
-  --tv-vh: 100vh;
-  --tv-pad: clamp(8px, 1.2dvh, 13px);
-  --tv-gap: clamp(6px, 1.2dvh, 14px);
-  --tv-thumb: clamp(44px, 8.1dvh, 88px);
-  --tv-foot: 28px;
-  --tv-extra: calc(var(--tv-pad) * 2 + var(--tv-gap) * 3 + var(--tv-thumb) + var(--tv-foot) + 16px);   /* + פס 6px, שוליי שורת התמונות ומסגרת */
-  --tv-fit: calc(var(--tv-vh) - var(--tv-top, 50vh) - var(--tv-bottom, 16px) - var(--tv-extra));       /* הגובה הפנוי למסך הראשי */
-  width: min(max(41.7vw, 640px), calc(var(--tv-fit) * 16 / 9 + var(--tv-pad) * 2 + 2px), var(--tv-side, 92vw));
-  height: auto; aspect-ratio: auto; padding: var(--tv-pad); gap: var(--tv-gap); background: var(--gm-bg);
+.gmpr-card.gmpr-split[data-state="inline"] {
+  --split-vh: 100vh;
+  --split-fit: calc(var(--split-vh) - var(--split-top, 50vh) - var(--split-bottom, 16px));
+  --split-w: min(max(58vw, 640px), 1100px, calc(var(--split-fit) * 1.93), var(--split-side, 92vw));
+  width: var(--split-w); height: calc(var(--split-w) / 1.93); aspect-ratio: auto;
+  flex-direction: row; gap: 0; padding: 8px; background: #12161d;
+  border: 2px solid var(--gm-blue); border-radius: 24px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, .55), 0 0 30px rgba(56, 189, 248, .35);
 }
-@supports (height: 100dvh) { .gmpr-card.gmpr-tv[data-state="inline"] { --tv-vh: 100dvh; } }
+@supports (height: 100dvh) { .gmpr-card.gmpr-split[data-state="inline"] { --split-vh: 100dvh; } }
 
-/* ----- מסך ראשי ----- */
-.gmpr-tv[data-state="inline"] .gmpr-screen { position: relative; flex: none; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 16px; background: #05080c; }
-.gmpr-card.gmpr-tv[data-state="inline"] .gmpr-bar { padding: 12px 14px; gap: 8px; background: linear-gradient(rgba(5, 8, 12, .55), rgba(5, 8, 12, 0)); }
-.gmpr-tv[data-state="inline"] .gmpr-label { order: 0; padding: 5px 14px; font-size: .85rem; }
-.gmpr-tv[data-state="inline"] .gmpr-spacer { order: 1; }
-.gmpr-tv[data-state="inline"] .gmpr-pause { order: 2; display: none; }
-.gmpr-tv[data-state="inline"] .gmpr-next { display: none; }
-.gmpr-card.gmpr-tv[data-state="inline"] .gmpr-enlarge { order: 3; height: 30px; padding: 0 14px; border-radius: 999px; background: rgba(10, 14, 20, .78); }
-.gmpr-card.gmpr-tv[data-state="inline"] .gmpr-enlarge:hover { background: rgba(56, 189, 248, .45); }
-.gmpr-live { order: 4; flex: none; display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 13px; direction: ltr; font-size: .82rem; font-weight: 700; letter-spacing: .04em; color: #fff; background: #dc2626; border-radius: 999px; }
-.gmpr-live::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: #fff; }
-
-/* כותרת + כפתור על הדרגה כהה בתחתית המסך */
-.gmpr-card.gmpr-tv[data-state="inline"] .gmpr-foot {
-  display: flex; position: absolute; bottom: 0; inset-inline: 0; z-index: 3; align-items: flex-end; padding: 44px 18px 14px;
-  background: linear-gradient(rgba(5, 8, 12, 0), rgba(5, 8, 12, .86)); pointer-events: none;
+/* ----- צד הטקסט (מימין) ----- */
+.gmpr-split[data-state="inline"] .gmpr-panel {
+  flex: 0 0 40%; min-width: 0; min-height: 0; overflow: hidden; display: flex; flex-direction: column; align-items: flex-start;
+  gap: calc(var(--split-w) * .011); padding: calc(var(--split-w) * .014) calc(var(--split-w) * .02) 2px calc(var(--split-w) * .016); text-align: right;
 }
-.gmpr-tv[data-state="inline"] .gmpr-ttl strong { font-size: clamp(.95rem, 1.55vw, 1.85rem); line-height: 1.25; text-shadow: 0 2px 8px rgba(0, 0, 0, .8); }
-.gmpr-tv[data-state="inline"] .gmpr-ttl span { display: none; }
-.gmpr-tv[data-state="inline"] .gmpr-cta { min-height: 38px; pointer-events: auto; }
-
-/* ----- פס התקדמות (מתמלא מימין) ----- */
-.gmpr-progress { flex: none; height: 6px; overflow: hidden; border-radius: 6px; background: #2b333d; }
-.gmpr-progress i { display: block; width: 100%; height: 100%; background: var(--gm-blue); transform: scaleX(0); transform-origin: 100% 50%; }
-
-/* ----- תמונות ממוזערות: ממורכזות; כשאין מקום — נגללות לרוחב ----- */
-.gmpr-thumbs { flex: none; display: flex; gap: clamp(8px, .65vw, 12px); margin: -4px; padding: 4px; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; }
-.gmpr-thumbs::-webkit-scrollbar { display: none; }
-.gmpr-thumb {
-  flex: none; width: calc(var(--tv-thumb) * 1.66); height: var(--tv-thumb); padding: 0; overflow: hidden; display: grid; place-items: center; cursor: pointer;
-  color: #fff; background: #05080c; border: 2px solid #4b5561; border-radius: 10px;
+.gmpr-split[data-state="inline"] .gmpr-panel > * { flex: none; }
+.gmpr-split[data-state="inline"] .gmpr-pill { padding: .35em 1.3em; font-size: clamp(.72rem, calc(var(--split-w) * .016), 1.1rem); }
+.gmpr-by { font-size: clamp(.8rem, calc(var(--split-w) * .02), 1.35rem); font-weight: 700; line-height: 1.2; color: var(--gm-blue); margin-top: calc(var(--split-w) * .008); }
+.gmpr-head {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden;
+  font-size: clamp(1.1rem, calc(var(--split-w) * .038), 2.8rem); font-weight: 700; line-height: 1.22; color: #fff; overflow-wrap: anywhere;
 }
-.gmpr-thumb:first-child { margin-inline-start: auto; }
-.gmpr-thumb:last-child { margin-inline-end: auto; }
-.gmpr-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.gmpr-thumb:hover { border-color: #94a3b8; }
-.gmpr-thumb[aria-current="true"] { border: 3px solid var(--gm-blue); }
-.gmpr-thumb:focus-visible, .gmpr-tvpause:focus-visible { outline: 3px solid #fff; outline-offset: 1px; }
+.gmpr-bullets { list-style: none; margin: calc(var(--split-w) * .004) 0 0; padding: 0; display: flex; flex-direction: column; gap: .35em; font-size: clamp(.8rem, calc(var(--split-w) * .0205), 1.4rem); line-height: 1.35; color: #b6c0cb; }
+.gmpr-bullets[hidden] { display: none; }
+.gmpr-bullets li { display: flex; gap: .65em; align-items: baseline; }
+.gmpr-bullets li::before { content: "✓"; flex: none; color: var(--gm-blue); font-weight: 700; }
+.gmpr-card.gmpr-split[data-state="inline"] .gmpr-pcta { min-height: clamp(34px, calc(var(--split-w) * .043), 54px); padding: 0 1.2em; margin-top: calc(var(--split-w) * .006); font-size: clamp(.85rem, calc(var(--split-w) * .022), 1.45rem); box-shadow: 0 6px 18px rgba(56, 189, 248, .35); }
+.gmpr-card.gmpr-split[data-state="inline"] .gmpr-pcta[hidden] { display: none; }
+.gmpr-split[data-state="inline"] .gmpr-ctlrow { margin-top: auto; align-self: stretch; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 2px; }
+.gmpr-ctls { display: flex; align-items: center; gap: 10px; }
+.gmpr-round {
+  width: clamp(38px, calc(var(--split-w) * .038), 46px); height: clamp(38px, calc(var(--split-w) * .038), 46px); padding: 0; display: grid; place-items: center;
+  font: inherit; font-size: clamp(.75rem, calc(var(--split-w) * .015), 1rem); font-weight: 700; line-height: 1; color: #fff; cursor: pointer;
+  background: transparent; border: 2px solid #8b96a3; border-radius: 50%;
+}
+.gmpr-prev, .gmpr-pnext { font-size: clamp(1.2rem, calc(var(--split-w) * .025), 1.7rem) !important; padding-bottom: 3px !important; }
+.gmpr-round:hover { border-color: var(--gm-blue); background: rgba(56, 189, 248, .22); }
+.gmpr-round:focus-visible, .gmpr-card.gmpr-split .gmpr-pcta:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+.gmpr-count { font-size: clamp(.85rem, calc(var(--split-w) * .019), 1.25rem); font-weight: 700; color: #b6c0cb; }
+.gmpr-card.gmpr-split.is-tight[data-state="inline"] .gmpr-bullets { display: none; }
 
-/* ----- שורה תחתונה: "הבא בתור" מימין · השהיה ומונה משמאל ----- */
-.gmpr-tvfoot { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; height: var(--tv-foot); font-size: clamp(.78rem, 1.7dvh, 1.05rem); color: #aab3bd; }
-.gmpr-upnext { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-.gmpr-tvctl { flex: none; display: flex; align-items: center; gap: 10px; }
-.gmpr-tvpause { position: relative; width: 34px; height: 28px; padding: 0; font: inherit; font-size: .8rem; line-height: 1; color: #fff; cursor: pointer; background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .28); border-radius: 8px; }
-.gmpr-tvpause::after { content: ""; position: absolute; inset: -8px -5px; }          /* שטח לחיצה 44px */
-.gmpr-tvpause:hover { background: rgba(56, 189, 248, .35); border-color: var(--gm-blue); }
-.gmpr-count { font-weight: 700; }
+/* ----- המדיה (משמאל): ממלאת את המסגרת, מעבר רך בין פרסומות ----- */
+.gmpr-split[data-state="inline"] .gmpr-stage { position: relative; flex: 1 1 0; min-width: 0; min-height: 0; overflow: hidden; border-radius: 18px; background: #05080c; }
+.gmpr-card.gmpr-split[data-state="inline"] .gmpr-slide .gmpr-bg { display: none; }
+.gmpr-card.gmpr-split[data-state="inline"] .gmpr-slide > a > img:not(.gmpr-bg), .gmpr-card.gmpr-split[data-state="inline"] .gmpr-slide > a > video,
+.gmpr-card.gmpr-split[data-state="inline"] .gmpr-slide > div > img:not(.gmpr-bg), .gmpr-card.gmpr-split[data-state="inline"] .gmpr-slide > div > video { object-fit: cover; }
+/* בפינת המדיה: רק "הגדלה" */
+.gmpr-card.gmpr-split[data-state="inline"] .gmpr-bar { inset: 10px auto auto 10px; padding: 0; background: none; }
+.gmpr-split[data-state="inline"] .gmpr-bar > :not(.gmpr-enlarge) { display: none; }
+.gmpr-card.gmpr-split[data-state="inline"] .gmpr-enlarge { height: 32px; padding: 0 14px; border-radius: 999px; background: rgba(10, 14, 20, .78); }
+.gmpr-card.gmpr-split[data-state="inline"] .gmpr-enlarge:hover { background: rgba(56, 189, 248, .5); }
 
-/* ----- מובייל: אותו עיצוב ברוחב התוכן; המסך הראשי מתקצר אם אין גובה ----- */
+/* ----- מובייל: המדיה למעלה, הטקסט מתחתיה; עד 2 נקודות ----- */
 @media (max-width: 768px) {
-  .gmpr-card.gmpr-tv[data-state="inline"] { --tv-pad: 8px; --tv-gap: 7px; --tv-thumb: clamp(40px, 6dvh, 52px); width: calc(100vw - 24px); }
-  .gmpr-tv[data-state="inline"] .gmpr-screen { aspect-ratio: auto; height: max(90px, min(var(--tv-fit), calc((100vw - 42px) * 9 / 16))); border-radius: 12px; }
-  .gmpr-card.gmpr-tv[data-state="inline"] .gmpr-bar { padding: 8px; gap: 6px; }
-  .gmpr-tv[data-state="inline"] .gmpr-label { padding: 3px 10px; font-size: .75rem; }
-  .gmpr-card.gmpr-tv[data-state="inline"] .gmpr-enlarge, .gmpr-live { height: 28px; padding: 0 10px; font-size: .74rem; }
-  .gmpr-card.gmpr-tv[data-state="inline"] .gmpr-foot { padding: 26px 10px 8px; gap: 8px; }
-  .gmpr-tv[data-state="inline"] .gmpr-cta { min-height: 34px; padding: 0 14px; font-size: .85rem; }
+  .gmpr-card.gmpr-split[data-state="inline"] {
+    --split-w: calc(100vw - 24px); flex-direction: column-reverse; width: var(--split-w);
+    height: min(var(--split-fit), calc((100vw - 44px) * .5625 + 190px)); border-radius: 20px; padding: 6px;
+  }
+  .gmpr-split[data-state="inline"] .gmpr-stage { flex: 1 1 0; min-height: 96px; border-radius: 15px; }
+  .gmpr-split[data-state="inline"] .gmpr-panel { flex: 0 0 auto; gap: 5px; padding: 7px 6px 2px; overflow: visible; }
+  .gmpr-split[data-state="inline"] .gmpr-pill { position: absolute; top: 14px; right: 14px; z-index: 4; }
+  .gmpr-split[data-state="inline"] .gmpr-by { display: none; }
+  .gmpr-head { font-size: 1.08rem; }
+  .gmpr-bullets { margin: 0; gap: 1px; font-size: .84rem; }
+  .gmpr-bullets li:nth-child(n+3) { display: none; }
+  .gmpr-split[data-state="inline"] .gmpr-ctlrow { margin-top: 2px; }
+  /* הכפתור ושורת השליטה באותה שורה */
+  .gmpr-split[data-state="inline"] .gmpr-panel { flex-flow: row wrap; align-items: center; }
+  .gmpr-split[data-state="inline"] .gmpr-head, .gmpr-split[data-state="inline"] .gmpr-bullets { flex: 0 0 100%; }
+  .gmpr-card.gmpr-split[data-state="inline"] .gmpr-pcta { min-height: 40px; margin: 0; padding: 0 16px; font-size: .9rem; max-width: 44%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .gmpr-split[data-state="inline"] .gmpr-ctlrow { flex: 1 1 0; align-self: center; margin: 0; padding: 0; justify-content: flex-end; flex-direction: row-reverse; }
+  .gmpr-ctls { gap: 6px; }
+  .gmpr-round { width: 40px; height: 40px; }
+  .gmpr-card.gmpr-split[data-state="inline"] .gmpr-enlarge { height: 30px; padding: 0 11px; font-size: .76rem; }
 }
-.gmpr-card.gmpr-tv.is-tight[data-state="inline"] { --tv-foot: 0px; --tv-extra: calc(var(--tv-pad) * 2 + var(--tv-gap) * 2 + var(--tv-thumb) + 16px); }
-.gmpr-tv.is-tight[data-state="inline"] .gmpr-tvfoot { display: none; }
-.gmpr-card.gmpr-tv.is-tight[data-state="inline"] .gmpr-pause { display: inline-flex; }

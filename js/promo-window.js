@@ -1,8 +1,8 @@
 /* ==========================================================================
    GAD MIVNIM — חלון הפרסומות בכל העמודים הציבוריים (קובץ משותף יחיד; הקבצים נקראים promo כדי שחוסמי פרסומות לא יחסמו אותם).
    נטען ב-defer (לא חוסם רינדור). הרשימה והטעינה המוקדמת — js/promo-boot.js (משובץ ב-<head> ע"י tools/build-pages.js).
-   דף הבית (index.html): אין חלון קופץ — אותו נגן חי בתוך מסגרת תמונת האולם (.hero-showroom-frame, מצב inline), בעיצוב "ערוץ טלוויזיה"
-   (class gmpr-tv): מסך ראשי עם LIVE, פס התקדמות, תמונות ממוזערות, "הבא בתור" ומונה. 'הגדלה' פותחת את הפרסומת במסך מלא; Esc / ✕ / הקטנה חוזרים למסגרת. בלי פרסומות פעילות — תמונת האולם המקורית נשארת.
+   דף הבית (index.html): אין חלון קופץ — אותו נגן חי בתוך מסגרת תמונת האולם (.hero-showroom-frame, מצב inline), בעיצוב "מפוצל"
+   (class gmpr-split): צד טקסט מימין (מפרסם, כותרת, עד 3 נקודות, כפתור, מונה ושליטה) ומדיה משמאל. 'הגדלה' פותחת את הפרסומת במסך מלא; Esc / ✕ / הקטנה חוזרים למסגרת. בלי פרסומות פעילות — תמונת האולם המקורית נשארת.
    בשאר העמודים: מסך מלא — פעם אחת בביקור, בעמוד הראשון שנפתח. בכל עמוד אחר: הכרטיס הקטן באותו מיקום ובאותה פרסומת/שנייה (sessionStorage gm:ads-state).
    בעמודי טפסים (careers / contact / tenders) הכרטיס מתחיל ממוזער. באזור החברים של tenders אחרי כניסה — לא מוצג.
    פרסומות של החברה ושל שותפיה בלבד. בלי רשתות פרסום, בלי מעקב, בלי עוגיות, בלי סטטיסטיקה (גרסה 1).
@@ -151,98 +151,79 @@
       return el;
     });
 
-    /* ---------- דף הבית: "ערוץ טלוויזיה" — מסך ראשי, פס התקדמות, תמונות ממוזערות, שורת "הבא בתור" ---------- */
-    var tv = null, tvDone = 0, tvStart = 0, tvByTimer = false, tvRaf = 0;   // זמן שעבר בפרסומת הנוכחית (לתמונה), לפס ההתקדמות
+    /* ---------- דף הבית: מסגרת מפוצלת — צד טקסט (ימין) + מדיה (שמאל) ---------- */
+    var split = null;
     function make(tag, cls, html) { var n = document.createElement(tag); n.className = cls; if (html) { n.innerHTML = html; } return n; }
-    function buildTv() {
-      card.classList.add('gmpr-tv');
-      var bar = card.querySelector('.gmpr-bar'), screenBox = make('div', 'gmpr-screen');
-      card.insertBefore(screenBox, card.firstChild);
-      screenBox.appendChild(bar);
-      screenBox.appendChild(media);
-      screenBox.appendChild(card.querySelector('.gmpr-foot'));
-      var live = make('span', 'gmpr-live', 'LIVE');
-      live.setAttribute('aria-hidden', 'true');
-      bar.appendChild(live);
-      var progress = make('div', 'gmpr-progress', '<i></i>');
-      progress.setAttribute('aria-hidden', 'true');
-      var strip = make('div', 'gmpr-thumbs');
-      strip.setAttribute('role', 'group');
-      strip.setAttribute('aria-label', 'בחירת פרסומת');
-      var thumbs = ads.map(function (a, i) {
-        var b = make('button', 'gmpr-thumb'), src = a.media_type === 'video' ? a.poster_path : a.media_path;
-        b.type = 'button';
-        b.setAttribute('aria-label', 'מעבר לפרסומת: ' + a.title);
-        b.innerHTML = src ? '<img src="' + esc(BUCKET_URL + src) + '" alt="' + esc(a.alt_text) + '" loading="lazy" decoding="async" draggable="false">' : '<span aria-hidden="true">▶</span>';
-        b.addEventListener('click', function () {
-          var v = slides[i].querySelector('video');
-          if (v) { try { v.currentTime = 0; } catch (e) { /* ignore */ } }
-          resumeT = 0;
-          showAd(i);
-        });
-        strip.appendChild(b);
-        return b;
-      });
-      var foot = make('div', 'gmpr-tvfoot', '<span class="gmpr-upnext"></span><span class="gmpr-tvctl"><button type="button" class="gmpr-tvpause"></button><bdi class="gmpr-count" dir="ltr"></bdi></span>');
-      card.appendChild(progress);
-      card.appendChild(strip);
-      card.appendChild(foot);
-      tv = { screen: screenBox, bar: progress.firstChild, strip: strip, thumbs: thumbs, upnext: foot.querySelector('.gmpr-upnext'), count: foot.querySelector('.gmpr-count'), pause: foot.querySelector('.gmpr-tvpause') };
-      tv.pause.addEventListener('click', function () { paused = !paused; updatePauseBtn(); schedule(); });
-    }
-    // הממוזערת הנוכחית תמיד בתוך השורה — גוללים רק את השורה, לא את העמוד
-    function tvReveal() {
-      var r = tv.strip.getBoundingClientRect(), t = tv.thumbs[idx].getBoundingClientRect();
-      if (!r.width || (t.left >= r.left && t.right <= r.right)) { return; }
-      tv.strip.scrollBy({ left: (t.left + t.width / 2) - (r.left + r.width / 2), behavior: calmNow() ? 'auto' : 'smooth' });
-    }
-    function tvMark() {
-      tv.thumbs.forEach(function (b, k) { if (k === idx) { b.setAttribute('aria-current', 'true'); } else { b.removeAttribute('aria-current'); } });
-      tv.upnext.textContent = multi ? 'הבא בתור: ' + ads[(idx + 1) % ads.length].title : '';
-      tv.count.textContent = (idx + 1) + ' / ' + ads.length;
-      tvDone = 0; tvStart = 0; tvByTimer = false;
-      tv.bar.style.transform = 'scaleX(0)';
-      tvReveal();
-    }
-    function tvDraw() {
-      var v = slides[idx].querySelector('video'), part;
-      if (v && !tvByTimer) { part = v.duration > 0 && isFinite(v.duration) ? v.currentTime / v.duration : 0; }
-      else {
-        var ms = tvDone + (tvStart ? Date.now() - tvStart : 0);
-        part = (multi ? Math.min(ms, ROTATE_MS) : ms % ROTATE_MS) / ROTATE_MS;
+    function buildSplit() {
+      card.classList.add('gmpr-split');
+      var stage = make('div', 'gmpr-stage');
+      card.insertBefore(stage, card.firstChild);
+      stage.appendChild(card.querySelector('.gmpr-bar'));
+      stage.appendChild(media);
+      var round = function (cls, label, glyph) { return '<button type="button" class="gmpr-round ' + cls + '" aria-label="' + label + '">' + glyph + '</button>'; };
+      var panel = make('div', 'gmpr-panel',
+        '<span class="gmpr-label gmpr-pill">פרסומת</span><span class="gmpr-by"></span><strong class="gmpr-head"></strong><ul class="gmpr-bullets"></ul>' +
+        '<a class="gmpr-cta gmpr-pcta" hidden></a>' +
+        // התווים ‹ › מתהפכים אוטומטית בכתיבה מימין לשמאל: "קודמת" (ימין) מצביע ימינה, "הבאה" (שמאל) מצביע שמאלה
+        '<div class="gmpr-ctlrow"><span class="gmpr-ctls">' + (multi ? round('gmpr-prev', 'פרסומת קודמת', '‹') : '') + round('gmpr-ppause', 'עצירה', '❚❚') +
+        (multi ? round('gmpr-pnext', 'פרסומת הבאה', '›') : '') + '</span><bdi class="gmpr-count" dir="ltr"></bdi></div>');
+      card.insertBefore(panel, stage);
+      var q = function (s) { return panel.querySelector(s); };
+      split = { stage: stage, panel: panel, by: q('.gmpr-by'), head: q('.gmpr-head'), list: q('.gmpr-bullets'), cta: q('.gmpr-pcta'), pause: q('.gmpr-ppause'), count: q('.gmpr-count') };
+      split.pause.addEventListener('click', function () { paused = !paused; updatePauseBtn(); schedule(); });
+      if (multi) {
+        q('.gmpr-prev').addEventListener('click', function () { resumeT = 0; showAd(idx - 1); });
+        q('.gmpr-pnext').addEventListener('click', function () { resumeT = 0; showAd(idx + 1); });
       }
-      tv.bar.style.transform = 'scaleX(' + Math.max(0, Math.min(1, part)).toFixed(4) + ')';
     }
-    function tvRun() {
-      cancelAnimationFrame(tvRaf);
-      (function frame() {
-        tvDraw();
-        if (state === 'inline' && !paused && !document.hidden) { tvRaf = requestAnimationFrame(frame); }
-      })();
+    function fillSplit(a, href) {
+      split.by.textContent = a.advertiser || '';
+      split.head.textContent = a.title;
+      split.list.textContent = '';
+      (Array.isArray(a.bullets) ? a.bullets : []).filter(Boolean).slice(0, 3).forEach(function (line) {
+        var li = document.createElement('li');
+        li.textContent = line;
+        split.list.appendChild(li);
+      });
+      split.list.hidden = !split.list.firstChild;
+      var c = split.cta;
+      if (href) {
+        c.hidden = false;
+        c.href = href;
+        c.textContent = a.cta_text || 'לפרטים';
+        if (isExternal(href)) { c.target = '_blank'; c.rel = 'noopener sponsored'; } else { c.removeAttribute('target'); c.rel = 'sponsored'; }
+      } else { c.hidden = true; c.removeAttribute('href'); }
+      split.count.textContent = (idx + 1) + ' / ' + ads.length;
+      fitText();
+    }
+    // אין מקום לכל הטקסט — הנקודות מוסתרות
+    function fitText() {
+      if (!split || card.parentNode !== SLOT) { return; }
+      card.classList.remove('is-tight');
+      var over = split.panel.scrollHeight > split.panel.clientHeight + 1;
+      if (isMobile()) { over = split.stage.offsetHeight < 120 || card.scrollHeight > card.clientHeight + 1; }
+      if (over) { card.classList.add('is-tight'); }
     }
     // גודל: ה-CSS מחשב (min/max עם dvh); כאן רק נמדדים ראש המסגרת, המקום שבין גלולות הצד וכפתור הנגישות
-    function applyTv() {
-      if (!tv || card.parentNode !== SLOT) { return; }
+    function applySplit() {
+      if (!split || card.parentNode !== SLOT) { return; }
       var vw = document.documentElement.clientWidth || window.innerWidth, vh = window.innerHeight, cx = vw / 2;
       var top = layoutTop(SLOT) + (parseFloat(getComputedStyle(SLOT).borderTopWidth) || 0);
       var set = function (k, v) { card.style.setProperty(k, Math.round(v) + 'px'); };
-      card.classList.remove('is-tight');
-      set('--tv-top', top);
-      set('--tv-bottom', 16);
+      set('--split-top', top);
+      set('--split-bottom', 16);
       var side = vw - 24;
       rectsOf(['.main-nav a', '.logo', '.nav-toggle', '#langBtn']).forEach(function (r) {
         if (r.b <= top || r.t >= vh - 16) { return; }                 // לא באותו גובה של המסגרת
         var half = (r.l + r.r) / 2 < cx ? cx - r.r - 12 : r.l - cx - 12;
         side = Math.min(side, half * 2);
       });
-      set('--tv-side', Math.max(240, side));
+      set('--split-side', Math.max(280, side));
       var fab = rectsOf(['#a11yFab'])[0], w = card.offsetWidth;
-      if (fab && fab.l < cx + w / 2 + 8 && fab.r > cx - w / 2 - 8 && fab.b > top) { set('--tv-bottom', Math.max(16, vh - fab.t + 8)); }
-      // מובייל נמוך: שורת "הבא בתור" מוסתרת (כפתור ההשהיה עובר לראש המסך), התמונות הממוזערות נשארות
-      if (isMobile() && tv.screen.offsetHeight < tv.screen.offsetWidth * 9 / 16 * 0.9) { card.classList.add('is-tight'); }
-      tvReveal();
+      if (fab && fab.l < cx + w / 2 + 8 && fab.r > cx - w / 2 - 8 && fab.b > top) { set('--split-bottom', Math.max(16, vh - fab.t + 8)); }
+      fitText();
     }
-    if (INLINE) { buildTv(); }
+    if (INLINE) { buildSplit(); }
 
     function mediaSrcOf(i) { return BUCKET_URL + ads[i].media_path; }
     function ensureLoaded(i, heavy) {
@@ -266,10 +247,10 @@
       btnPause.textContent = paused ? '▶' : '⏸';
       btnPause.setAttribute('aria-label', paused ? 'הפעלת החלפת הפרסומות' : 'השהיית החלפת הפרסומות');
       btnPause.setAttribute('aria-pressed', paused ? 'true' : 'false');
-      if (tv) {
-        tv.pause.textContent = btnPause.textContent;
-        tv.pause.setAttribute('aria-label', btnPause.getAttribute('aria-label'));
-        tv.pause.setAttribute('aria-pressed', btnPause.getAttribute('aria-pressed'));
+      if (split) {
+        split.pause.textContent = paused ? '▶' : '❚❚';
+        split.pause.setAttribute('aria-label', paused ? 'הפעלה' : 'עצירה');
+        split.pause.setAttribute('aria-pressed', paused ? 'true' : 'false');
       }
     }
     function showAd(i) {
@@ -297,37 +278,25 @@
       if (href) {
         cta.hidden = false;
         cta.href = href;
-        cta.textContent = (state === 'inline' ? '' : '→ ') + (a.cta_text || 'לפרטים');
+        cta.textContent = '→ ' + (a.cta_text || 'לפרטים');
         if (isExternal(href)) { cta.target = '_blank'; cta.rel = 'noopener sponsored'; } else { cta.removeAttribute('target'); cta.rel = 'sponsored'; }
       } else { cta.hidden = true; cta.removeAttribute('href'); }
-      if (tv) { tvMark(); }
+      if (split) { fillSplit(a, href); }
       schedule();
     }
     function next() { showAd(idx + 1); }
     function schedule() {
       clearTimeout(timer);
-      if (tv && tvStart) { tvDone += Date.now() - tvStart; tvStart = 0; }
       var v = slides[idx].querySelector('video');
       if (!visibleNow()) { if (v) { v.pause(); } return; }
       if (v) {
-        if (paused) { v.pause(); if (tv) { tvRun(); } return; }
-        var mine = idx, p = v.play();
-        if (p && p.catch) {
-          p.catch(function () {
-            if (!multi || paused || idx !== mine) { return; }          // הופסק כי עברנו פרסומת / השהינו — לא כשל
-            clearTimeout(timer);
-            if (tv) { tvByTimer = true; tvStart = Date.now(); }
-            timer = setTimeout(next, ROTATE_MS);
-          });
-        }
-        if (tv) { if (tvByTimer) { tvStart = Date.now(); timer = setTimeout(next, Math.max(0, ROTATE_MS - tvDone)); } tvRun(); }
+        if (paused) { v.pause(); return; }
+        var p = v.play();
+        var mine = idx;
+        if (p && p.catch) { p.catch(function () { if (multi && !paused && idx === mine) { clearTimeout(timer); timer = setTimeout(next, ROTATE_MS); } }); }
         return;                                                      // סרטון: עובר הלאה ב-ended
       }
-      if (!paused) {
-        if (tv) { tvStart = Date.now(); }
-        if (multi) { timer = setTimeout(next, tv ? Math.max(0, ROTATE_MS - tvDone) : ROTATE_MS); }
-      }
-      if (tv) { tvRun(); }
+      if (multi && !paused) { timer = setTimeout(next, ROTATE_MS); }
     }
     btnPause.addEventListener('click', function () { paused = !paused; updatePauseBtn(); schedule(); });
     if (btnNext) { btnNext.addEventListener('click', function () { showAd(idx + 1); }); }
@@ -359,7 +328,7 @@
       geo = computeGeo();                                           // הגודל של הכרטיס הקטן בשאר העמודים — ללא שינוי
       card.style.setProperty('--ads-w', geo.w + 'px');
       card.style.setProperty('--ads-h', geo.h + 'px');
-      applyTv();
+      applySplit();
     }
     function sizeSmall() { return { w: geo.w, h: geo.h }; }
     function vis(el) {
@@ -509,7 +478,7 @@
       card.hidden = false;
       card.dataset.state = 'inline';
       setRole();
-      applyTv();
+      applySplit();
       if (before && animate) { flip(before, card.getBoundingClientRect()); }
       showAd(idx);
       if (focusIt) { card.querySelector('.gmpr-enlarge').focus(); }
@@ -560,9 +529,10 @@
     card.querySelector('.gmpr-shrink').addEventListener('click', leaveLarge);
     card.querySelector('.gmpr-enlarge').addEventListener('click', function () { toLarge(true); });
     card.querySelector('.gmpr-min').addEventListener('click', function () { toMin(); saveState({ mode: 'min' }); });
-    // דף הבית: אין כפתור ✕ בכלל (המשבצת חלק מהעמוד; בצד מסך מלא — "הקטנה" / Esc). בשאר העמודים ✕ סוגר רק את תצוגת העמוד הנוכחי.
+    // דף הבית: ✕ מופיע רק במסך מלא ומחזיר למסגרת (כמו "הקטנה" / Esc). בשאר העמודים ✕ סוגר רק את תצוגת העמוד הנוכחי.
     var closeBtn = card.querySelector('.gmpr-close');
-    if (INLINE) { closeBtn.remove(); } else { closeBtn.addEventListener('click', closeAll); }
+    if (INLINE) { closeBtn.classList.add('gmpr-only-large'); closeBtn.setAttribute('aria-label', 'סגירה'); closeBtn.addEventListener('click', leaveLarge); }
+    else { closeBtn.addEventListener('click', closeAll); }
     tab.addEventListener('click', function () { toSmall(false, true); saveState({ mode: 'small' }); });
     backdrop.addEventListener('click', function () { if (state === 'large') { leaveLarge(); } });
 
