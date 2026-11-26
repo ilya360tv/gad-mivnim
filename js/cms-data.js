@@ -189,6 +189,27 @@
 
   /* ---------- החלה ---------- */
   var applied = {};
+  // כרטיסי השותפים הם HTML סטטי עם מפתחות i18n (pt1 / pt1s ...): הכותרת והסלוגן מהמסד נכנסים למילון, כדי שיישמרו גם בהחלפת שפה
+  function partnerKeys(rows) {
+    var T = window.GAD_T;
+    if (!T || !document.querySelectorAll) { return; }
+    var by = {};
+    rows.forEach(function (r) { by[r.slug] = r; });
+    Array.prototype.forEach.call(document.querySelectorAll('.partner-chip[data-slug]'), function (c) {
+      var r = by[c.getAttribute('data-slug')], st = c.querySelector('strong[data-i18n]'), sl = c.querySelector('.partner-slogan[data-i18n]');
+      if (!r) { return; }
+      var put = function (el, field) {
+        var k = el && el.getAttribute('data-i18n');
+        if (!k || !/^pt\d+s?$/.test(k)) { return; }
+        var he = field === 'title' ? r.title_he : r.slogan_he;
+        if (!he) { return; }
+        T[k] = T[k] || {};
+        T[k].he = esc(he);
+        LANGS.forEach(function (l) { var v = i18nOf(r, l)[field]; if (v) { T[k][l] = esc(v); } });
+      };
+      put(st, 'title'); put(sl, 'slogan');
+    });
+  }
   function apply(content) {
     // קודם מחשבים הכל מול התוכן המובנה, ורק אחר כך מחליפים (כדי שהמרה אחת לא תשפיע על ההשוואה של אחרת)
     var plan = [];
@@ -201,7 +222,7 @@
       if (t === 'podcast_episodes') { window.PODCAST_DATA = p.data; }
       else if (t === 'projects') { window.PROJECTS_DATA = p.data; }
       else if (t === 'in_progress') { window.IN_PROGRESS_DATA = p.data; }
-      else if (t === 'partners') { window.PARTNERS_DATA = p.data; window.GM_CMS_PARTNERS = p.rows; }
+      else if (t === 'partners') { window.PARTNERS_DATA = p.data; window.GM_CMS_PARTNERS = p.rows; partnerKeys(p.rows); }
       else if (t === 'info_articles') { window.INFO_DATA = p.data; }
       else if (t === 'job_roles') { window.CAREERS_DATA = p.data; window.GM_CMS_ROLES = p.rows; }
       else if (t === 'gallery_items') { window.GALLERY_ITEMS = p.data; }
