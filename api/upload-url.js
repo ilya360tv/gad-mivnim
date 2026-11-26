@@ -11,6 +11,7 @@ const { sb, readBody, handler, httpError, UUID, storageSign } = require('./_supa
 const DOCS = require('../js/contractor-docs.js');
 const resubmit = require('./_resubmit');
 const ads = require('./_ads');
+const editors = require('./_editors');
 
 const BUCKET = 'applicant-docs';
 const MAX_FILES_PER_APPLICANT = 30;
@@ -29,6 +30,10 @@ module.exports = handler(async (req) => {
   if (body.action === 'ads-verify') { return ads.verify(req, body); }
   if (body.action === 'ads-delete') { return ads.del(req, body); }
   if (body.action === 'ads-remove-files') { return ads.removeFiles(req, body); }
+  if (body.action === 'ads-notify-submitted') { return ads.notifySubmitted(req, body); }
+  if (body.action === 'ads-notify-reviewed') { return ads.notifyReviewed(req, body); }
+  // עורכי תוכן (מנהל בלבד — הבדיקה בתוך api/_editors.js)
+  if (typeof body.action === 'string' && body.action.indexOf('editors-') === 0) { return editors.run(req, body); }
   // אותה פונקציה משרתת גם את דף "השלמת מסמכים" (מגבלת 12 פונקציות בתוכנית של Vercel)
   if (body.action === 'resubmit-info') { return resubmit.info(body); }
   if (body.action === 'resubmit-finish') { return resubmit.finish(body); }

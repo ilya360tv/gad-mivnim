@@ -1,0 +1,76 @@
+/* ==========================================================================
+   GAD MIVNIM — content.css: סטודיו תוכן (content.html). נבנה על css/admin.css (אותם צבעים, כפתורים, שדות).
+   ========================================================================== */
+.ct-app { max-width: 1180px; margin: 0 auto; padding: 0 20px 56px; }
+.ct-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 18px 0; border-bottom: 1px solid var(--line); }
+.ct-brand { display: flex; align-items: center; gap: 12px; }
+.ct-brand strong { display: block; color: #fff; font-size: 1.25rem; }
+.ct-brand span { color: var(--muted); font-size: .85rem; }
+.ct-user { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+
+.ct-tabs { display: flex; gap: 8px; flex-wrap: wrap; padding: 18px 0 6px; }
+.ct-tabs button {
+  min-height: 52px; padding: 0 26px; font-size: 1.05rem; font-weight: 700; color: var(--ink-soft);
+  background: var(--surface); border: 2px solid #323b45; border-radius: 999px; cursor: pointer;
+}
+.ct-tabs button:hover { border-color: var(--lb); color: #fff; }
+.ct-tabs button[aria-selected="true"] { color: #0a0c0e; background: var(--lb); border-color: var(--lb); box-shadow: 0 8px 22px var(--lb-glow); }
+.ct-tabs button:focus-visible, .ct-main:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.ct-main { padding-top: 18px; }
+.ct-main:focus { outline: none; }
+
+.ct-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.ct-seg { display: inline-flex; gap: 6px; }
+.ct-seg button { min-height: 40px; padding: 0 16px; font-weight: 700; color: var(--ink-soft); background: transparent; border: 2px solid #4b5561; border-radius: 999px; cursor: pointer; }
+.ct-seg button[aria-pressed="true"] { color: #0a0c0e; background: var(--lb); border-color: var(--lb); }
+.ct-seg button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+.ct-big { min-height: 52px; padding: 0 28px; font-size: 1.05rem; }
+
+.ct-grid { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.ct-card { display: flex; flex-direction: column; gap: 12px; padding: 14px; }
+.ct-thumb { position: relative; aspect-ratio: 16 / 10; border-radius: 10px; overflow: hidden; background: var(--field); display: grid; place-items: center; }
+.ct-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ct-vid { position: absolute; inset-block-start: 8px; inset-inline-start: 8px; padding: 2px 10px; font-size: .75rem; font-weight: 700; color: #fff; background: rgba(0, 0, 0, .65); border-radius: 999px; }
+.ct-card h3 { color: #fff; font-size: 1.1rem; overflow-wrap: anywhere; }
+.ct-meta { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: .88rem; color: var(--muted); }
+.ct-note { padding: 8px 12px; font-size: .9rem; color: var(--warn); background: rgba(251, 191, 36, .08); border: 1px solid rgba(251, 191, 36, .45); border-radius: 10px; overflow-wrap: anywhere; }
+.ct-acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; }
+.ct-acts .adm-btn { flex: 1 1 auto; }
+.adm-chip-rejected-note { color: var(--bad); background: rgba(248, 113, 113, .08); border-color: rgba(248, 113, 113, .5); }
+
+/* טופס */
+.ct-form { max-width: 980px; }
+.ct-section { display: flex; flex-direction: column; gap: 14px; }
+.ct-section + .ct-section { margin-top: 18px; }
+.ct-drop {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-height: 130px; padding: 16px;
+  text-align: center; color: var(--muted); background: var(--field); border: 2px dashed #4b5561; border-radius: 14px; cursor: pointer;
+}
+.ct-drop strong { color: #fff; }
+.ct-drop:hover, .ct-drop.is-over { border-color: var(--lb); background: var(--lb-bg); }
+.ct-drop:focus-within { outline: 3px solid var(--lb-glow); }
+.ct-drop input[type="file"] { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.ct-drop { position: relative; }
+.ct-drop-name { color: var(--ok); font-weight: 700; overflow-wrap: anywhere; }
+.fe-invalid .ct-drop { border-color: #f87171; }
+
+.ct-cues { display: flex; flex-direction: column; gap: 10px; }
+.ct-cue { display: grid; grid-template-columns: 90px minmax(0, 1.4fr) minmax(0, 1.2fr) 90px 90px auto; gap: 10px; align-items: end; padding: 12px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px; }
+.ct-cue .adm-field label { font-size: .8rem; }
+
+.ct-lib { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
+.ct-lib li { display: flex; flex-direction: column; gap: 8px; padding: 12px; }
+.ct-lib .ct-thumb { aspect-ratio: 16 / 10; }
+.ct-lib video { width: 100%; height: 100%; object-fit: cover; }
+
+.ct-sticky { position: sticky; bottom: 0; z-index: 5; display: flex; flex-wrap: wrap; gap: 10px; padding: 12px 0; margin-top: 18px; background: linear-gradient(to top, var(--bg) 70%, transparent); }
+
+@media (max-width: 760px) {
+  .ct-app { padding: 0 14px 48px; }
+  .ct-tabs button { flex: 1 1 100%; }
+  .ct-grid { grid-template-columns: 1fr; }
+  .ct-cue { grid-template-columns: 1fr 1fr; }
+  .ct-sticky .adm-btn { flex: 1 1 100%; min-height: 52px; }
+  .adm-pv-grid { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { .ct-tabs button, .ct-drop { transition: none; } }

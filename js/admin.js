@@ -291,6 +291,7 @@
     contractors: { title: 'קבלנים מאושרים', render: renderContractors },
     applications: { title: 'מועמדויות', render: renderApplications },
     ads: { title: 'פרסומות', render: renderAds },
+    editors: { title: 'עורכי תוכן', render: renderEditors },
     settings: { title: 'הגדרות', render: renderSettings }
   };
   var current = 'dashboard';
@@ -315,6 +316,10 @@
     var badge = $('admPendingBadge');
     badge.hidden = !pending;
     badge.textContent = pending;
+    var adsWait = (data.ads || []).filter(function (a) { return a.status === 'pending'; }).length;
+    var ab = $('admAdsBadge');
+    ab.hidden = !adsWait;
+    ab.textContent = adsWait;
   }
   // טעינה מחדש מהשרת ואז רינדור
   function refresh() {
@@ -1028,29 +1033,47 @@
     return src ? '<img src="' + esc(src) + '" alt="" loading="lazy" width="96" height="60">' : '<span class="adm-ad-nothumb">—</span>';
   };
 
+  var adsFilter = 'all';          // 'all' | 'pending'
+  var pendingAds = function () { return (data.ads || []).filter(function (a) { return a.status === 'pending'; }); };
   function renderAds() {
-    var list = data.ads || [];
+    var all = data.ads || [], waiting = pendingAds().length;
+    var list = adsFilter === 'pending' ? pendingAds() : all;
     content.innerHTML =
+      '<div class="adm-toolbar adm-ads-filter" role="group" aria-label="סינון פרסומות">' +
+        '<button type="button" class="adm-btn adm-btn-sm' + (adsFilter === 'all' ? ' adm-btn-primary' : '') + '" data-adfilter="all" aria-pressed="' + (adsFilter === 'all') + '">כל הפרסומות</button>' +
+        '<button type="button" class="adm-btn adm-btn-sm' + (adsFilter === 'pending' ? ' adm-btn-primary' : '') + '" data-adfilter="pending" aria-pressed="' + (adsFilter === 'pending') + '">ממתינות לאישור' +
+          (waiting ? ' <span class="adm-badge">' + waiting + '</span>' : '') + '</button></div>' +
       '<div class="adm-toolbar"><p class="adm-note adm-ads-hint">גרירה (⠿) או החצים ↑↓ משנים את סדר ההצגה. הפרסומות מתחלפות באתר לפי הסדר הזה.</p>' +
         (list.some(function (a) { return a.is_demo; }) ? '<button type="button" class="adm-btn adm-btn-danger" id="adDemoDel">מחיקת כל פרסומות הדוגמה</button>' : '') +
         '<button type="button" class="adm-btn adm-btn-primary" id="adNew">+ הוספת פרסומת</button></div>' +
       (list.length ? '<ul class="adm-ads" id="adList">' + list.map(function (a, i) {
-        var st = adStatus(a);
-        return '<li class="adm-ad adm-card" data-id="' + esc(a.id) + '" draggable="true">' +
+        var st = adStatus(a), pend = a.status === 'pending';
+        return '<li class="adm-ad adm-card" data-id="' + esc(a.id) + '" draggable="' + (adsFilter === 'all' ? 'true' : 'false') + '">' +
           '<span class="adm-ad-grip" aria-hidden="true" title="גרירה">⠿</span>' +
           '<span class="adm-ad-thumb">' + adThumb(a) + '</span>' +
           '<span class="adm-ad-main"><strong>' + esc(a.title) + (a.is_demo ? ' ' + chip('pending', 'דוגמה') : '') + '</strong><span class="adm-muted">' + esc(a.advertiser) + ' · ' +
             (a.media_type === 'video' ? 'סרטון' : 'תמונה') + '</span>' +
             '<span class="adm-muted">' + (a.starts_at || a.ends_at ? fmtDate(a.starts_at) + ' – ' + fmtDate(a.ends_at) : 'ללא הגבלת תאריכים') + '</span></span>' +
-          '<span class="adm-ad-status">' + chip(ADS_CHIP[st], ADS_STATUS[st]) + '</span>' +
+          '<span class="adm-ad-status">' + (a.status === 'published' ? chip(ADS_CHIP[st], ADS_STATUS[st]) :
+            chip(pend ? 'pending' : (a.reviewed_at ? 'closed' : 'draft'), pend ? 'ממתינה לאישור' : (a.reviewed_at ? 'נדחתה' : 'טיוטת עורך'))) + '</span>' +
           '<label class="adm-switch"><input type="checkbox" data-act="toggle"' + (a.active ? ' checked' : '') + '><span>פעילה</span></label>' +
           '<span class="adm-acts">' +
-            '<button type="button" class="adm-btn adm-btn-sm adm-btn-ghost" data-act="up" aria-label="העלאה למעלה"' + (i === 0 ? ' disabled' : '') + '>↑</button>' +
-            '<button type="button" class="adm-btn adm-btn-sm adm-btn-ghost" data-act="down" aria-label="הורדה למטה"' + (i === list.length - 1 ? ' disabled' : '') + '>↓</button>' +
+            (pend ? '<button type="button" class="adm-btn adm-btn-sm adm-btn-primary" data-act="approve">אישור ופרסום</button>' +
+              '<button type="button" class="adm-btn adm-btn-sm adm-btn-danger" data-act="reject">דחייה</button>' : '') +
+            (adsFilter === 'all' ? '<button type="button" class="adm-btn adm-btn-sm adm-btn-ghost" data-act="up" aria-label="העלאה למעלה"' + (i === 0 ? ' disabled' : '') + '>↑</button>' +
+            '<button type="button" class="adm-btn adm-btn-sm adm-btn-ghost" data-act="down" aria-label="הורדה למטה"' + (i === list.length - 1 ? ' disabled' : '') + '>↓</button>' : '') +
             '<button type="button" class="adm-btn adm-btn-sm" data-act="edit">עריכה</button>' +
             '<button type="button" class="adm-btn adm-btn-sm adm-btn-danger" data-act="delete">מחיקה</button>' +
           '</span></li>';
-      }).join('') + '</ul>' : '<p class="adm-empty adm-card">אין פרסומות עדיין. לחצו על "הוספת פרסומת".</p>');
+      }).join('') + '</ul>' : '<p class="adm-empty adm-card">' + (adsFilter === 'pending' ? 'אין פרסומות שממתינות לאישור.' : 'אין פרסומות עדיין. לחצו על "הוספת פרסומת".') + '</p>');
+    content.querySelectorAll('[data-adfilter]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        adsFilter = b.getAttribute('data-adfilter');
+        renderAds();
+        var again = content.querySelector('[data-adfilter="' + adsFilter + '"]');
+        if (again) { again.focus(); }
+      });
+    });
     $('adNew').addEventListener('click', function () { adForm(null); });
     if ($('adDemoDel')) { $('adDemoDel').addEventListener('click', adDeleteDemo); }
   }
@@ -1100,6 +1123,8 @@
     var id = row.getAttribute('data-id'), a = adById(id), act = b.getAttribute('data-act');
     if (!a) { return; }
     if (act === 'edit') { adForm(a); return; }
+    if (act === 'approve') { adApprove(a, b); return; }
+    if (act === 'reject') { adReject(a); return; }
     if (act === 'up' || act === 'down') {
       var ids = data.ads.map(function (x) { return x.id; }), i = ids.indexOf(id), j = act === 'up' ? i - 1 : i + 1;
       if (j < 0 || j >= ids.length) { return; }
@@ -1137,6 +1162,46 @@
     renderAds();
   });
   content.addEventListener('dragend', function () { dragId = null; var d = content.querySelector('.is-dragging'); if (d) { d.classList.remove('is-dragging'); } });
+
+  // ----- אישור / דחייה של פרסומת שעורך שלח (reviewed_by / reviewed_at נשמרים; הערה חובה בדחייה) -----
+  var meId = null;
+  function whoAmI() {
+    if (meId) { return Promise.resolve(meId); }
+    return store.currentAdmin().then(function (p) { meId = p && p.id; return meId; });
+  }
+  function adApprove(a, btn) {
+    btn.disabled = true;
+    whoAmI().then(function (id) {
+      return store.ads.update(a.id, { status: 'published', reviewed_by: id, reviewed_at: new Date().toISOString(), review_note: null });
+    }).then(function () {
+      store.ads.notifyReviewed(a.id).catch(function () {});
+      toast('הפרסומת אושרה ופורסמה');
+      return refresh();
+    }, function () { btn.disabled = false; failed(); });
+  }
+  function adReject(a) {
+    openModal('דחיית פרסומת',
+      '<form id="adRejForm" class="adm-form" novalidate><p class="adm-p">הפרסומת "<strong>' + esc(a.title) + '</strong>" תחזור לעורך כטיוטה עם ההערה שלכם.</p>' +
+      '<div class="adm-field" data-fe-host><label for="adRejNote">הערה לעורך *</label><textarea id="adRejNote" class="adm-input" maxlength="500"></textarea></div>' +
+      '<p class="adm-error" id="adRejErr" role="alert" hidden></p>' +
+      '<div class="adm-form-actions"><button type="submit" class="adm-btn adm-btn-danger" id="adRejGo">דחייה</button>' +
+      '<button type="button" class="adm-btn adm-btn-ghost" data-close>ביטול</button></div></form>');
+    $('adRejForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var note = $('adRejNote').value.trim();
+      if (!note) { FE.set($('adRejNote'), 'יש לכתוב הערה לעורך'); FE.jump($('adRejNote')); return; }
+      var btn = $('adRejGo');
+      btn.disabled = true;
+      whoAmI().then(function (id) {
+        return store.ads.update(a.id, { status: 'draft', reviewed_by: id, reviewed_at: new Date().toISOString(), review_note: note });
+      }).then(function () {
+        store.ads.notifyReviewed(a.id).catch(function () {});
+        toast('הפרסומת נדחתה, העורך יקבל הודעה');
+        closeModal();
+        return refresh();
+      }, function () { btn.disabled = false; $('adRejErr').textContent = 'הפעולה נכשלה, נסו שוב'; $('adRejErr').hidden = false; });
+    });
+  }
 
   function adDelete(a) {
     openModal('מחיקת פרסומת',
@@ -1289,7 +1354,7 @@
         if (a) {
           if (paths[0] && a.media_path) { oldFiles.push(a.media_path); }
           if (a.poster_path && (paths[1] || type !== 'video')) { oldFiles.push(a.poster_path); }
-        } else { row.sort_order = (data.ads || []).reduce(function (m, x) { return Math.max(m, x.sort_order || 0); }, 0) + 1; }
+        } else { row.status = 'published'; row.sort_order = (data.ads || []).reduce(function (m, x) { return Math.max(m, x.sort_order || 0); }, 0) + 1; }
         return (a ? store.ads.update(a.id, row) : store.ads.add(row)).then(function () {
           if (oldFiles.length) { store.ads.removeFiles(oldFiles).catch(function () {}); }
           uploaded = [];
@@ -1298,6 +1363,78 @@
           refresh();
         }, function () { fail(null, 'השמירה נכשלה, נסו שוב'); });
       }).catch(function (err) { if (err !== null) { fail(null, 'השמירה נכשלה, נסו שוב'); } });
+    });
+  }
+
+  /* ======================= עורכי תוכן (סטודיו תוכן) ======================= */
+  var editorsList = null;
+  var fmtLogin = function (iso) {
+    if (!iso) { return 'טרם נכנס'; }
+    var d = new Date(iso), p = function (n) { return (n < 10 ? '0' : '') + n; };
+    return isNaN(d) ? '—' : fmtDate(iso) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+  };
+  function renderEditors() {
+    content.innerHTML = '<div class="adm-toolbar"><p class="adm-note adm-ads-hint">עורך תוכן מנהל רק פרסומות ומדיה, דרך הדף הנפרד content.html. הוא לא רואה שום נתון אחר באתר.</p>' +
+      '<button type="button" class="adm-btn adm-btn-primary" id="edInvite">+ הזמנת עורך</button></div><div id="edBody"><p class="adm-empty adm-card">טוען…</p></div>';
+    $('edInvite').addEventListener('click', editorInvite);
+    store.editors.list().then(function (r) { editorsList = r.editors || []; drawEditors(); },
+      function () { if ($('edBody')) { $('edBody').innerHTML = '<p class="adm-error">טעינת רשימת העורכים נכשלה, נסו שוב.</p>'; } });
+  }
+  function drawEditors() {
+    if (current !== 'editors' || !$('edBody')) { return; }
+    var list = editorsList || [];
+    $('edBody').innerHTML = list.length ? '<ul class="adm-ads">' + list.map(function (u) {
+      var on = u.status === 'approved';
+      return '<li class="adm-ad adm-card adm-editor" data-id="' + esc(u.id) + '">' +
+        '<span class="adm-ad-main"><strong><bdi>' + esc(u.email || '—') + '</bdi>' + (u.name ? ' · ' + esc(u.name) : '') + '</strong>' +
+          '<span class="adm-muted">כניסה אחרונה: ' + esc(fmtLogin(u.last_sign_in_at)) + '</span></span>' +
+        '<span class="adm-ad-status">' + chip(on ? 'active' : 'draft', on ? 'פעיל' : 'מושבת') + '</span>' +
+        '<label class="adm-switch"><input type="checkbox" data-ed="pub"' + (u.can_publish ? ' checked' : '') + '><span>רשאי לפרסם בלי אישור</span></label>' +
+        '<span class="adm-acts"><button type="button" class="adm-btn adm-btn-sm ' + (on ? 'adm-btn-danger' : '') + '" data-ed="toggle">' + (on ? 'השבתה' : 'הפעלה') + '</button></span></li>';
+    }).join('') + '</ul>' : '<p class="adm-empty adm-card">אין עורכי תוכן עדיין. לחצו על "הזמנת עורך".</p>';
+  }
+  content.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-ed="toggle"]');
+    if (!b || current !== 'editors') { return; }
+    var li = b.closest('.adm-editor'), u = (editorsList || []).filter(function (x) { return x.id === li.getAttribute('data-id'); })[0];
+    if (!u) { return; }
+    var next = u.status === 'approved' ? 'suspended' : 'approved';
+    b.disabled = true;
+    store.editors.set(u.id, { status: next }).then(function () { u.status = next; toast(next === 'approved' ? 'העורך הופעל' : 'העורך הושבת'); drawEditors(); },
+      function () { b.disabled = false; failed(); });
+  });
+  content.addEventListener('change', function (e) {
+    var cb = e.target.closest('[data-ed="pub"]');
+    if (!cb || current !== 'editors') { return; }
+    var u = (editorsList || []).filter(function (x) { return x.id === cb.closest('.adm-editor').getAttribute('data-id'); })[0];
+    if (!u) { return; }
+    cb.disabled = true;
+    store.editors.set(u.id, { can_publish: cb.checked }).then(function () { u.can_publish = cb.checked; cb.disabled = false; toast(cb.checked ? 'העורך רשאי לפרסם בלי אישור' : 'פרסום רק באישור מנהל'); },
+      function () { cb.checked = !cb.checked; cb.disabled = false; failed(); });
+  });
+  function editorInvite() {
+    openModal('הזמנת עורך תוכן',
+      '<form id="edForm" class="adm-form" novalidate><p class="adm-note">העורך יקבל מייל עם קישור לבחירת סיסמה ולכניסה לסטודיו התוכן.</p>' +
+      '<div class="adm-field" data-fe-host><label for="edEmail">אימייל *</label><input type="email" id="edEmail" class="adm-input" dir="ltr" autocomplete="off"></div>' +
+      '<div class="adm-field" data-fe-host><label for="edName">שם (לא חובה)</label><input id="edName" class="adm-input" maxlength="80"></div>' +
+      '<p class="adm-error" id="edErr" role="alert" hidden></p>' +
+      '<div class="adm-form-actions"><button type="submit" class="adm-btn adm-btn-primary" id="edGo">שליחת הזמנה</button>' +
+      '<button type="button" class="adm-btn adm-btn-ghost" data-close>ביטול</button></div></form>');
+    var fe = FE ? FE.attach($('edForm'), [{ el: $('edEmail'), check: function () { return FE.V.email($('edEmail').value); } }]) : null;
+    $('edForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (fe && !fe.check()) { return; }
+      var btn = $('edGo');
+      btn.disabled = true;
+      store.editors.invite($('edEmail').value.trim(), $('edName').value.trim()).then(function () {
+        toast('ההזמנה נשלחה ✓');
+        closeModal();
+        renderEditors();
+      }, function (err) {
+        btn.disabled = false;
+        $('edErr').textContent = err && err.he ? err.he : 'שליחת ההזמנה נכשלה, נסו שוב';
+        $('edErr').hidden = false;
+      });
     });
   }
 
