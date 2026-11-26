@@ -157,7 +157,7 @@ function promoteH1(sec, id) {
 function scriptsFor(page) {
   // js/cms-data.js (CMS): רשימות מהמסד (C1) + טקסטים/תמונות (C2)
   const withCms = ['cms-data'];                       // C2: גם טקסטים/תמונות של כל עמוד (page_blocks) — בכל העמודים
-  const want = new Set(['i18n', 'premium', 'script', 'a11y'].concat(page.data, withCms, page.id === 'hero' ? [] : ['page-scroll']));
+  const want = new Set(['i18n', 'premium', 'script', 'a11y', 'nav-3d'].concat(page.data, withCms, page.id === 'hero' ? [] : ['page-scroll']));
   return SCRIPT_TAGS.filter((tag) => {
     const m = /src="js\/([a-z0-9-]+)\.js/.exec(tag);
     return m && want.has(m[1]);
@@ -216,6 +216,7 @@ Object.keys(SUBPAGES).forEach((file) => {
   s = s.replace(oldHeader, markCurrent(rewriteLinks(header), SUBPAGES[file]));
   s = s.replace(/\n?[ \t]*<footer class="site-footer">[\s\S]*?<\/footer>\n?/, '\n');   // בלי פוטר/שורת זכויות (רק ב-contact.html)
   if (s.indexOf('js/page-scroll.js') < 0) { s = s.replace(/(\n[ \t]*)(<script src="js\/i18n\.js)/, '$1<script src="js/page-scroll.js?v=20261119cd4"></script>$1$2'); }
+  if (s.indexOf('js/nav-3d.js') < 0) { s = s.replace(/(\n[ \t]*)(<script src="js\/a11y\.js[^"]*"><\/script>)/, '$1$2$1<script src="js/nav-3d.js?v=1"></script>'); }
   s = rewriteLinks(s);
   const h = s.indexOf('</head>');
   s = addNavSeen(s.slice(0, h)) + s.slice(h);

@@ -9078,3 +9078,79 @@ html body .hero .hero-badge svg { width: 10.5px; height: 10.5px; }
 
 /* ===== Hero: שורת "הרצליה ישראל" + המסך שמתחתיה עולים עוד (--hero-loc-lift מחושב ב-js/script.js): 12px / 8px מתחת ל"לרשותכם…". ===== */
 .hero .hero-location, .hero .hero-showroom-frame { top: calc(-1 * (var(--hero-grp-lift, 0px) + var(--hero-loc-lift, 0px))); }
+
+/* ===== NAV 3D — זכוכית בעומק + הטיה לכיוון העכבר (js/nav-3d.js) · BEGIN =====
+   עומק בכל הגדלים; שקיעה בלחיצה כשתנועה מותרת; הרמה, הטיה, זוהר וכתם אור רק במחשב עם עכבר. */
+
+/* ----- גלולות: זכוכית כהה, שוליים תכלת 2px, קו ברק למעלה, צל רך ----- */
+body .site-header .main-nav ul li a { position: relative; transition: transform .18s ease, box-shadow .18s ease, color .15s ease; }
+body .site-header .main-nav ul li a::before { content: ""; position: absolute; top: 3px; left: 12%; right: 12%; height: 1px; pointer-events: none; background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, .5), rgba(255, 255, 255, 0)); }
+html:not(.a11y-contrast) body .site-header .main-nav ul li a { color: #bfe8ff; border-color: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; background: linear-gradient(180deg, rgba(42, 57, 75, .9), rgba(10, 14, 20, .9)); box-shadow: inset 0 0 0 2px rgba(56, 189, 248, .5), 0 7px 14px rgba(0, 0, 0, .48), 0 2px 4px rgba(0, 0, 0, .35); }
+html:not(.a11y-contrast) body .site-header .main-nav ul li a:hover,
+html:not(.a11y-contrast) body .site-header .main-nav ul li a:focus-visible { color: #ffffff; background: linear-gradient(180deg, rgba(36, 62, 86, .93), rgba(12, 24, 36, .93)); box-shadow: inset 0 0 0 2px #38bdf8, 0 7px 14px rgba(0, 0, 0, .48), 0 2px 4px rgba(0, 0, 0, .35); }
+/* העמוד הנוכחי: זכוכית תכלת מוארת */
+html:not(.a11y-contrast) body .site-header .main-nav ul li a.is-current,
+html:not(.a11y-contrast) body .site-header .main-nav ul li a.is-current:hover,
+html:not(.a11y-contrast) body .site-header .main-nav ul li a.is-current:focus-visible { color: #04121c; font-weight: 700 !important; background: radial-gradient(120% 110% at 50% 0%, rgba(165, 230, 255, .85), rgba(165, 230, 255, 0) 62%), linear-gradient(180deg, #52c3f1, #2894cb); box-shadow: inset 0 0 0 2px #8bdbff, 0 0 18px rgba(56, 189, 248, .55), 0 7px 14px rgba(0, 0, 0, .45); }
+
+/* ----- עיגולים (לוגו, שפה, נגישות): שפת זכוכית, ברק עליון וצל מרחף — הגדלים, המקומות והצבעים כמו קודם ----- */
+body .site-header .logo,
+body .site-header .lang-btn,
+body .a11y-fab { transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease; }
+body .site-header .logo { position: relative; border-radius: 50%; }
+body .site-header .logo::before,
+body .site-header .lang-btn::before,
+body .a11y-fab::before { content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none; background: radial-gradient(75% 42% at 50% 6%, rgba(255, 255, 255, .28), rgba(255, 255, 255, 0) 70%); box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, .42), inset 0 0 0 2px rgba(160, 224, 255, .38), inset 0 -6px 10px rgba(0, 0, 0, .26); }
+body .site-header .logo::before { inset: -5.2%;                 /* הלוגו מוגדל ב-1.104 */ }
+body .a11y-fab::before { box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, .45), inset 0 0 0 2px rgba(190, 255, 214, .34), inset 0 -6px 10px rgba(0, 0, 0, .22); }
+html:not(.a11y-contrast) body .site-header .logo .logo-img { box-shadow: 0 0 0 1.36px rgba(56, 189, 248, .75), 0 0 10.9px rgba(56, 189, 248, .3), 0 9px 16px rgba(0, 0, 0, .55) !important; }
+html:not(.a11y-contrast) body .site-header .lang-btn { box-shadow: 0 0 0 1.5px rgba(56, 189, 248, .75), 0 0 12px rgba(56, 189, 248, .3), 0 9px 16px rgba(0, 0, 0, .55) !important; }
+html:not(.a11y-contrast) body .a11y-fab { box-shadow: 0 0 0 2px rgba(22, 163, 74, .55), 0 0 18px rgba(22, 163, 74, .4), 0 10px 18px rgba(0, 0, 0, .5); }
+body .a11y-fab:hover { transform: none; }
+
+/* ----- טבעת פוקוס ברורה למקלדת ----- */
+body .site-header .main-nav ul li a:focus-visible,
+body .site-header .logo:focus-visible,
+body .site-header .lang-btn:focus-visible,
+body .a11y-fab:focus-visible { outline: 3px solid #ffffff; outline-offset: 2px; }
+
+/* ----- לחיצה: שוקע 2px. ה-::after שומר את שטח הלחיצה המקורי בזמן התזוזה ----- */
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.a11y-no-motion) body .site-header .main-nav ul li a:active,
+  html:not(.a11y-no-motion) body .site-header .logo:active,
+  html:not(.a11y-no-motion) body .site-header .lang-btn:active,
+  html:not(.a11y-no-motion) body .a11y-fab:active { transform: translateY(2px); }
+  html:not(.a11y-no-motion) body .site-header .main-nav ul li a:active::after,
+  html:not(.a11y-no-motion) body .site-header .logo:active::after,
+  html:not(.a11y-no-motion) body .site-header .lang-btn:active::after,
+  html:not(.a11y-no-motion) body .a11y-fab:active::after { content: ""; position: absolute; top: -4px; right: -1px; bottom: -1px; left: -1px; border-radius: inherit; }
+}
+
+/* ----- מחשב עם עכבר: מתרומם 5px, נוטה לכיוון העכבר (עד 8° / 4°), זוהר וכתם אור ----- */
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  html:not(.a11y-no-motion) body .site-header .main-nav ul li a:hover,
+  html:not(.a11y-no-motion) body .site-header .logo:hover,
+  html:not(.a11y-no-motion) body .site-header .lang-btn:hover,
+  html:not(.a11y-no-motion) body .a11y-fab:hover { transform: perspective(600px) translateY(-5px) rotateX(var(--n3-rx, 0deg)) rotateY(var(--n3-ry, 0deg)); }
+  html:not(.a11y-no-motion) body .site-header .main-nav ul li a:hover::after,
+  html:not(.a11y-no-motion) body .site-header .logo:hover::after,
+  html:not(.a11y-no-motion) body .site-header .lang-btn:hover::after,
+  html:not(.a11y-no-motion) body .a11y-fab:hover::after { content: ""; position: absolute; top: -1px; right: -1px; bottom: -8px; left: -1px; border-radius: inherit; }
+  html:not(.a11y-contrast):not(.a11y-no-motion) body .site-header .main-nav ul li a:hover { background: radial-gradient(70px 46px at var(--n3-mx, 50%) var(--n3-my, 50%), rgba(200, 236, 255, .2), rgba(200, 236, 255, 0) 100%), linear-gradient(180deg, rgba(36, 62, 86, .93), rgba(12, 24, 36, .93)); box-shadow: inset 0 0 0 2px #62cffd, 0 0 18px rgba(56, 189, 248, .5), 0 12px 20px rgba(0, 0, 0, .5); }
+  html:not(.a11y-contrast):not(.a11y-no-motion) body .site-header .main-nav ul li a.is-current:hover { background: radial-gradient(70px 46px at var(--n3-mx, 50%) var(--n3-my, 50%), rgba(200, 236, 255, .35), rgba(200, 236, 255, 0) 100%), radial-gradient(120% 110% at 50% 0%, rgba(165, 230, 255, .85), rgba(165, 230, 255, 0) 62%), linear-gradient(180deg, #52c3f1, #2894cb); box-shadow: inset 0 0 0 2px #c8eeff, 0 0 26px rgba(56, 189, 248, .75), 0 12px 20px rgba(0, 0, 0, .5); }
+  html:not(.a11y-no-motion) body .site-header .logo:hover::before,
+  html:not(.a11y-no-motion) body .site-header .lang-btn:hover::before,
+  html:not(.a11y-no-motion) body .a11y-fab:hover::before { background: radial-gradient(circle at var(--n3-mx, 50%) var(--n3-my, 50%), rgba(255, 255, 255, .3), rgba(255, 255, 255, 0) 55%), radial-gradient(75% 42% at 50% 6%, rgba(255, 255, 255, .28), rgba(255, 255, 255, 0) 70%); }
+  html:not(.a11y-contrast):not(.a11y-no-motion) body .site-header .logo:hover .logo-img { box-shadow: 0 0 0 1.5px #62cffd, 0 0 20px rgba(56, 189, 248, .6), 0 13px 22px rgba(0, 0, 0, .55) !important; }
+  html:not(.a11y-contrast):not(.a11y-no-motion) body .site-header .lang-btn:hover { box-shadow: 0 0 0 1.5px #62cffd, 0 0 20px rgba(56, 189, 248, .6), 0 13px 22px rgba(0, 0, 0, .55) !important; }
+  html:not(.a11y-contrast):not(.a11y-no-motion) body .a11y-fab:hover { box-shadow: 0 0 0 2px rgba(22, 163, 74, .95), 0 0 28px rgba(22, 163, 74, .62), 0 14px 22px rgba(0, 0, 0, .5); }
+  html:not(.a11y-no-motion) body .site-header .main-nav ul li a:active,
+  html:not(.a11y-no-motion) body .site-header .logo:active,
+  html:not(.a11y-no-motion) body .site-header .lang-btn:active,
+  html:not(.a11y-no-motion) body .a11y-fab:active { transform: translateY(2px); }
+  html:not(.a11y-no-motion) body .site-header .main-nav ul li a:active::after,
+  html:not(.a11y-no-motion) body .site-header .logo:active::after,
+  html:not(.a11y-no-motion) body .site-header .lang-btn:active::after,
+  html:not(.a11y-no-motion) body .a11y-fab:active::after { top: -8px; bottom: -1px; }
+}
+/* ===== NAV 3D · END ===== */
