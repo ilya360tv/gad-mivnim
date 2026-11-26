@@ -36,7 +36,7 @@ module.exports = handler(async (req) => {
   if (body.action === 'media-remove') { return media.remove(req, body); }
   if (body.action === 'ads-notify-submitted') { return ads.notifySubmitted(req, body); }
   if (body.action === 'ads-notify-reviewed') { return ads.notifyReviewed(req, body); }
-  // עורכי תוכן (מנהל בלבד — הבדיקה בתוך api/_editors.js)
+  // ניהול משתמשים (מנהל בלבד — הבדיקה בתוך api/_editors.js)
   if (typeof body.action === 'string' && body.action.indexOf('editors-') === 0) { return editors.run(req, body); }
   // אותה פונקציה משרתת גם את דף "השלמת מסמכים" (מגבלת 12 פונקציות בתוכנית של Vercel)
   if (body.action === 'resubmit-info') { return resubmit.info(body); }

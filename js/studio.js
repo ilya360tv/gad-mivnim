@@ -1,6 +1,6 @@
 /* ==========================================================================
-   GAD MIVNIM — studio.js: הסטודיו (CMS) — ניהול כל תוכן האתר ממקום אחד (content.html, מנהל בלבד).
-   מקבל מ-content.js את ה-ctx (store, FE, toast, חלונות...). כל הכתיבה דרך Supabase + RLS (רק מנהל); מחיקה = סל מחזור;
+   GAD MIVNIM — studio.js: הסטודיו (CMS) — ניהול כל תוכן האתר ממקום אחד (content.html, מנהל ומנהל תוכן).
+   מקבל מ-content.js את ה-ctx (store, FE, toast, חלונות...). כל הכתיבה דרך Supabase + RLS (מנהל / מנהל תוכן); מחיקה = סל מחזור;
    כל שמירה שומרת גרסה קודמת (content_versions) → "שחזור גרסה". הפרסומות (חלון הפרסומות) נשארות במסך הקיים — "פרסומות".
    סעיפים: רשימות (פרקים / פרויקטים / בביצוע / שותפים / מאמרים / תפקידים / גלריה), טקסטים ותמונות של כל עמוד (page_blocks),
    ספריית מדיה, סל מחזור, תצוגה מקדימה של טיוטות באתר האמיתי.
@@ -297,7 +297,8 @@
     });
   }
   function d_reopen(r, box) { blockEditor(r, box); }
-  function plainText(v) { var d = document.createElement('div'); d.innerHTML = String(v || '').replace(/<br\s*\/?>/gi, '\n'); return d.textContent || ''; }
+  // DOMParser: מסמך מנותק — שום תג לא נטען ולא רץ
+  function plainText(v) { return new DOMParser().parseFromString(String(v || '').replace(/<br\s*\/?>/gi, '\n'), 'text/html').body.textContent || ''; }
 
   /* ======================= שדה תמונה (העלאה + alt חובה) ======================= */
   function imgField(src, alt, id) {

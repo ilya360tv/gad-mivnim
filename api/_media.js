@@ -1,5 +1,5 @@
 /* ==========================================================================
-   מדיה של ה-CMS (באקט ציבורי "site-media") — צד שרת, מנהל בלבד. לא נתיב עצמאי: מחובר ל-/api/upload-url כ-action
+   מדיה של ה-CMS (באקט ציבורי "site-media") — צד שרת, מנהל או מנהל תוכן בלבד. לא נתיב עצמאי: מחובר ל-/api/upload-url כ-action
    (מגבלת 12 הפונקציות של Vercel). שלושה שלבים להעלאה — כמו בפרסומות:
      media-sign   → { kind, ext, size, base? }  ← קישור העלאה חתום לשם אקראי media/<uuid>.<ext> (תמונה ממוזערת: media/<base>-t.<ext>)
      (הדפדפן מעלה את הקובץ — תמונות כבר הוקטנו שם ל-2000px + תמונה ממוזערת 600px)
@@ -9,7 +9,7 @@
    ========================================================================== */
 'use strict';
 const crypto = require('crypto');
-const { sb, requireAdmin, httpError, UUID } = require('./_supabase');
+const { sb, requireContentManager, httpError, UUID } = require('./_supabase');
 
 const BUCKET = 'site-media';
 const MB = 1024 * 1024;
@@ -51,7 +51,7 @@ async function removeObjects(paths) {
 }
 
 async function sign(req, body) {
-  await requireAdmin(req);
+  await requireContentManager(req);
   const kind = kindOf(body.kind);
   const ext = String(body.ext || '').toLowerCase();
   const want = kind === 'thumb' ? 'image' : kind;
@@ -79,7 +79,7 @@ async function sign(req, body) {
 }
 
 async function verify(req, body) {
-  await requireAdmin(req);
+  await requireContentManager(req);
   const path = String(body.path || '');
   if (!PATH_RE.test(path)) { throw httpError(400, 'bad_path'); }
   const kind = kindOf(body.kind);
@@ -114,7 +114,7 @@ async function usedPaths() {
 }
 
 async function remove(req, body) {
-  await requireAdmin(req);
+  await requireContentManager(req);
   const paths = (Array.isArray(body.paths) ? body.paths : []).map(String).filter((p) => PATH_RE.test(p)).slice(0, 20);
   if (!paths.length) { return { removed: 0, kept: [] }; }
   const blob = await usedPaths();

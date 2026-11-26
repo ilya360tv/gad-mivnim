@@ -291,12 +291,12 @@
     contractors: { title: 'קבלנים מאושרים', render: renderContractors },
     applications: { title: 'מועמדויות', render: renderApplications },
     ads: { title: 'פרסומות', render: renderAds },
-    editors: { title: 'עורכי תוכן', render: renderEditors },
+    editors: { title: 'משתמשים', render: renderEditors },
     settings: { title: 'הגדרות', render: renderSettings }
   };
   var current = 'dashboard';
   function go(view, focus) {
-    if (!VIEWS[view] || (view === 'editors' && !EDITORS_ENABLED)) { view = 'dashboard'; }
+    if (!VIEWS[view]) { view = 'dashboard'; }
     current = view;
     document.querySelectorAll('.adm-nav [data-view]').forEach(function (b) {
       var on = b.getAttribute('data-view') === view;
@@ -1033,7 +1033,7 @@
     return src ? '<img src="' + esc(src) + '" alt="" loading="lazy" width="96" height="60">' : '<span class="adm-ad-nothumb">—</span>';
   };
 
-  // מצב "עורכי תוכן" כבוי: אין עורך חיצוני, רק המנהל מעלה תוכן. הקוד והמסד נשמרים לעתיד — מדליקים כאן (ובדף content.js) ב-true.
+  // זרימת אישור לפרסומות כבויה: מנהלי תוכן מפרסמים ישירות. הקוד נשמר לעתיד — מדליקים כאן (ו-APPROVAL_FLOW ב-content.js) ב-true.
   var EDITORS_ENABLED = false;
   var adsFilter = 'all';          // 'all' | 'pending'
   var pendingAds = function () { return (data.ads || []).filter(function (a) { return a.status === 'pending'; }); };
@@ -1369,74 +1369,114 @@
     });
   }
 
-  /* ======================= עורכי תוכן (סטודיו תוכן) ======================= */
-  var editorsList = null;
+  /* ======================= משתמשים (מנהלים ומנהלי תוכן) ======================= */
+  var usersList = null;
+  var USER_ROLES = { editor: 'מנהל תוכן', admin: 'מנהל' };
+  var USER_ROLE_INFO = {
+    editor: 'כל תוכן האתר בסטודיו התוכן, בלי מערכת הניהול ובלי נתוני קבלנים.',
+    admin: 'גישה מלאה: מערכת הניהול, נתוני הקבלנים, ניהול משתמשים וסטודיו התוכן.'
+  };
   var fmtLogin = function (iso) {
     if (!iso) { return 'טרם נכנס'; }
     var d = new Date(iso), p = function (n) { return (n < 10 ? '0' : '') + n; };
     return isNaN(d) ? '—' : fmtDate(iso) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
   };
+  var userById = function (id) { return (usersList || []).filter(function (x) { return x.id === id; })[0] || null; };
+  var userError = function (err, fallback) { return err && err.he ? err.he : fallback; };
   function renderEditors() {
-    content.innerHTML = '<div class="adm-toolbar"><p class="adm-note adm-ads-hint">עורך תוכן מנהל רק פרסומות ומדיה, דרך הדף הנפרד content.html. הוא לא רואה שום נתון אחר באתר.</p>' +
-      '<button type="button" class="adm-btn adm-btn-primary" id="edInvite">+ הזמנת עורך</button></div><div id="edBody"><p class="adm-empty adm-card">טוען…</p></div>';
-    $('edInvite').addEventListener('click', editorInvite);
-    store.editors.list().then(function (r) { editorsList = r.editors || []; drawEditors(); },
-      function () { if ($('edBody')) { $('edBody').innerHTML = '<p class="adm-error">טעינת רשימת העורכים נכשלה, נסו שוב.</p>'; } });
+    content.innerHTML = '<div class="adm-toolbar"><p class="adm-note adm-ads-hint"><strong>מנהל</strong>: ' + esc(USER_ROLE_INFO.admin) +
+      ' <strong>מנהל תוכן</strong>: ' + esc(USER_ROLE_INFO.editor) + '</p>' +
+      '<button type="button" class="adm-btn adm-btn-primary" id="usAdd">+ הוספת משתמש</button></div><div id="usBody"><p class="adm-empty adm-card">טוען…</p></div>';
+    $('usAdd').addEventListener('click', function () { userForm('', 'editor'); });
+    loadUsers();
+  }
+  function loadUsers() {
+    return store.editors.list().then(function (r) { usersList = r.editors || []; drawEditors(); },
+      function () { if (current === 'editors' && $('usBody')) { $('usBody').innerHTML = '<p class="adm-error">טעינת רשימת המשתמשים נכשלה, נסו שוב.</p>'; } });
   }
   function drawEditors() {
-    if (current !== 'editors' || !$('edBody')) { return; }
-    var list = editorsList || [];
-    $('edBody').innerHTML = list.length ? '<ul class="adm-ads">' + list.map(function (u) {
+    if (current !== 'editors' || !$('usBody')) { return; }
+    var list = usersList || [];
+    $('usBody').innerHTML = list.length ? '<ul class="adm-ads">' + list.map(function (u) {
       var on = u.status === 'approved';
+      var role = USER_ROLES[u.role] + (u.role === 'editor' && !u.can_publish ? ' (טיוטות בלבד)' : '');
       return '<li class="adm-ad adm-card adm-editor" data-id="' + esc(u.id) + '">' +
-        '<span class="adm-ad-main"><strong><bdi>' + esc(u.email || '—') + '</bdi>' + (u.name ? ' · ' + esc(u.name) : '') + '</strong>' +
+        '<span class="adm-ad-main"><strong><bdi>' + esc(u.email || '—') + '</bdi></strong>' +
           '<span class="adm-muted">כניסה אחרונה: ' + esc(fmtLogin(u.last_sign_in_at)) + '</span></span>' +
-        '<span class="adm-ad-status">' + chip(on ? 'active' : 'draft', on ? 'פעיל' : 'מושבת') + '</span>' +
-        '<label class="adm-switch"><input type="checkbox" data-ed="pub"' + (u.can_publish ? ' checked' : '') + '><span>רשאי לפרסם בלי אישור</span></label>' +
-        '<span class="adm-acts"><button type="button" class="adm-btn adm-btn-sm ' + (on ? 'adm-btn-danger' : '') + '" data-ed="toggle">' + (on ? 'השבתה' : 'הפעלה') + '</button></span></li>';
-    }).join('') + '</ul>' : '<p class="adm-empty adm-card">אין עורכי תוכן עדיין. לחצו על "הזמנת עורך".</p>';
+        '<span class="adm-ad-status">' + chip(u.role === 'admin' ? 'general' : 'field', role) + chip(on ? 'active' : 'draft', on ? 'פעיל' : 'מושבת') + '</span>' +
+        '<span class="adm-acts">' + (u.self ? '<span class="adm-muted">החשבון שלך</span>' :
+          '<button type="button" class="adm-btn adm-btn-sm" data-us="toggle">' + (on ? 'השבתה' : 'הפעלה') + '</button>' +
+          '<button type="button" class="adm-btn adm-btn-sm adm-btn-danger" data-us="delete">מחיקה</button>') + '</span></li>';
+    }).join('') + '</ul>' : '<p class="adm-empty adm-card">אין משתמשים להצגה.</p>';
   }
   content.addEventListener('click', function (e) {
-    var b = e.target.closest('[data-ed="toggle"]');
+    var b = e.target.closest('[data-us]');
     if (!b || current !== 'editors') { return; }
-    var li = b.closest('.adm-editor'), u = (editorsList || []).filter(function (x) { return x.id === li.getAttribute('data-id'); })[0];
-    if (!u) { return; }
+    var u = userById(b.closest('.adm-editor').getAttribute('data-id'));
+    if (!u || u.self) { return; }
+    if (b.getAttribute('data-us') === 'delete') { userDelete(u); return; }
     var next = u.status === 'approved' ? 'suspended' : 'approved';
     b.disabled = true;
-    store.editors.set(u.id, { status: next }).then(function () { u.status = next; toast(next === 'approved' ? 'העורך הופעל' : 'העורך הושבת'); drawEditors(); },
-      function () { b.disabled = false; failed(); });
+    store.editors.set(u.id, next).then(function () { u.status = next; toast(next === 'approved' ? 'המשתמש הופעל' : 'המשתמש הושבת'); drawEditors(); },
+      function (err) { b.disabled = false; toast(userError(err, 'הפעולה נכשלה, נסו שוב')); });
   });
-  content.addEventListener('change', function (e) {
-    var cb = e.target.closest('[data-ed="pub"]');
-    if (!cb || current !== 'editors') { return; }
-    var u = (editorsList || []).filter(function (x) { return x.id === cb.closest('.adm-editor').getAttribute('data-id'); })[0];
-    if (!u) { return; }
-    cb.disabled = true;
-    store.editors.set(u.id, { can_publish: cb.checked }).then(function () { u.can_publish = cb.checked; cb.disabled = false; toast(cb.checked ? 'העורך רשאי לפרסם בלי אישור' : 'פרסום רק באישור מנהל'); },
-      function () { cb.checked = !cb.checked; cb.disabled = false; failed(); });
-  });
-  function editorInvite() {
-    openModal('הזמנת עורך תוכן',
-      '<form id="edForm" class="adm-form" novalidate><p class="adm-note">העורך יקבל מייל עם קישור לבחירת סיסמה ולכניסה לסטודיו התוכן.</p>' +
-      '<div class="adm-field" data-fe-host><label for="edEmail">אימייל *</label><input type="email" id="edEmail" class="adm-input" dir="ltr" autocomplete="off"></div>' +
-      '<div class="adm-field" data-fe-host><label for="edName">שם (לא חובה)</label><input id="edName" class="adm-input" maxlength="80"></div>' +
-      '<p class="adm-error" id="edErr" role="alert" hidden></p>' +
-      '<div class="adm-form-actions"><button type="submit" class="adm-btn adm-btn-primary" id="edGo">שליחת הזמנה</button>' +
+  function userDelete(u) {
+    openModal('מחיקת משתמש',
+      '<p class="adm-p">למחוק את המשתמש <strong><bdi>' + esc(u.email) + '</bdi></strong>? לא ניתן לבטל.</p>' +
+      '<p class="adm-note">התוכן שנוצר (מכרזים, פרסומות, טקסטים ותמונות) נשאר באתר.</p>' +
+      '<p class="adm-error" id="usDelErr" role="alert" hidden></p>' +
+      '<div class="adm-form-actions"><button type="button" class="adm-btn adm-btn-danger" id="usDelGo">מחיקה</button>' +
+      '<button type="button" class="adm-btn adm-btn-ghost" data-close>ביטול</button></div>');
+    modalBody.querySelector('[data-close]').focus();
+    $('usDelGo').addEventListener('click', function () {
+      var btn = $('usDelGo');
+      btn.disabled = true;
+      store.editors.remove(u.id).then(function () { toast('המשתמש נמחק'); closeModal(); loadUsers(); }, function (err) {
+        if (!$('usDelErr')) { return; }
+        btn.disabled = false;
+        $('usDelErr').textContent = userError(err, 'המחיקה נכשלה, נסו שוב');
+        $('usDelErr').hidden = false;
+      });
+    });
+  }
+  // שלב 1: אימייל + תפקיד
+  function userForm(email, role) {
+    openModal('הוספת משתמש',
+      '<form id="usForm" class="adm-form" novalidate><p class="adm-note">המשתמש יקבל מייל עם קישור לבחירת סיסמה.</p>' +
+      '<div class="adm-field" data-fe-host><label for="usEmail">אימייל *</label><input type="email" id="usEmail" class="adm-input" dir="ltr" autocomplete="off" value="' + esc(email) + '"></div>' +
+      '<div class="adm-field"><label for="usRole">תפקיד *</label><select id="usRole" class="adm-input">' +
+        Object.keys(USER_ROLES).map(function (k) { return '<option value="' + k + '"' + (k === role ? ' selected' : '') + '>' + USER_ROLES[k] + '</option>'; }).join('') +
+      '</select><span class="adm-note" id="usRoleInfo">' + esc(USER_ROLE_INFO[role]) + '</span></div>' +
+      '<div class="adm-form-actions"><button type="submit" class="adm-btn adm-btn-primary">המשך</button>' +
       '<button type="button" class="adm-btn adm-btn-ghost" data-close>ביטול</button></div></form>');
-    var fe = FE ? FE.attach($('edForm'), [{ el: $('edEmail'), check: function () { return FE.V.email($('edEmail').value); } }]) : null;
-    $('edForm').addEventListener('submit', function (e) {
+    $('usRole').addEventListener('change', function () { $('usRoleInfo').textContent = USER_ROLE_INFO[this.value]; });
+    var fe = FE ? FE.attach($('usForm'), [{ el: $('usEmail'), check: function () { return FE.V.email($('usEmail').value); } }]) : null;
+    $('usForm').addEventListener('submit', function (e) {
       e.preventDefault();
       if (fe && !fe.check()) { return; }
-      var btn = $('edGo');
+      userConfirm($('usEmail').value.trim().toLowerCase(), $('usRole').value);
+    });
+  }
+  // שלב 2: הכתובת מוצגת שוב לאישור לפני השליחה
+  function userConfirm(email, role) {
+    var opener = modalOpener;
+    openModal('אישור לפני שליחה',
+      '<p class="adm-p">ההזמנה תישלח לכתובת:</p><p class="adm-p"><strong><bdi dir="ltr">' + esc(email) + '</bdi></strong></p>' +
+      '<p class="adm-p">תפקיד: <strong>' + esc(USER_ROLES[role]) + '</strong> — ' + esc(USER_ROLE_INFO[role]) + '</p>' +
+      '<p class="adm-error" id="usErr" role="alert" hidden></p>' +
+      '<div class="adm-form-actions"><button type="button" class="adm-btn adm-btn-primary" id="usSend">שליחת הזמנה</button>' +
+      '<button type="button" class="adm-btn adm-btn-ghost" id="usBack">חזרה לתיקון</button></div>');
+    modalOpener = opener;
+    $('usBack').focus();
+    $('usBack').addEventListener('click', function () { var o = modalOpener; userForm(email, role); modalOpener = o; });
+    $('usSend').addEventListener('click', function () {
+      var btn = $('usSend');
       btn.disabled = true;
-      store.editors.invite($('edEmail').value.trim(), $('edName').value.trim()).then(function () {
-        toast('ההזמנה נשלחה ✓');
-        closeModal();
-        renderEditors();
-      }, function (err) {
+      store.editors.invite(email, role).then(function () { toast('ההזמנה נשלחה ✓'); closeModal(); loadUsers(); }, function (err) {
+        if (!$('usErr')) { return; }
         btn.disabled = false;
-        $('edErr').textContent = err && err.he ? err.he : 'שליחת ההזמנה נכשלה, נסו שוב';
-        $('edErr').hidden = false;
+        $('usErr').textContent = userError(err, 'שליחת ההזמנה נכשלה, נסו שוב');
+        $('usErr').hidden = false;
       });
     });
   }

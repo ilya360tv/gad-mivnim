@@ -22,8 +22,8 @@
   var set = function (k, v) { try { if (ss) { ss.setItem(k, v); } } catch (e) { /* ignore */ } };
   var del = function (k) { try { if (ss) { ss.removeItem(k); } } catch (e) { /* ignore */ } };
 
-  /* ---------- תצוגה מקדימה של טיוטות (רק למנהל מחובר): content.html פותח עמוד באתר עם ?cmsPreview=1 ומעביר אסימון לשעה ----------
-     האסימון עובר דרך localStorage לרגע אחד בלבד ונשמר ב-sessionStorage של הלשונית הזו. cms_preview() בודקת במסד שהמשתמש מנהל. */
+  /* ---------- תצוגה מקדימה של טיוטות (רק למנהל / מנהל תוכן מחובר): content.html פותח עמוד באתר עם ?cmsPreview=1 ומעביר אסימון לשעה ----------
+     האסימון עובר דרך localStorage לרגע אחד בלבד ונשמר ב-sessionStorage של הלשונית הזו. cms_preview() בודקת במסד שיש למשתמש הרשאה. */
   var PV = null;
   try {
     if (/[?&]cmsPreview=1(&|$)/.test(location.search)) {
@@ -68,6 +68,25 @@
     if (g.height) { o.height = g.height; }
     return o;
   };
+
+  // אייקון של מאמר נכנס לדף כ-SVG: נבנה מחדש מצורות ומאפיינים מותרים בלבד (בלי סקריפטים, אירועים או HTML)
+  var ICON_TAGS = /^(path|circle|ellipse|rect|line|polyline|polygon|g)$/;
+  var ICON_ATTRS = /^(d|cx|cy|r|rx|ry|x|y|x1|y1|x2|y2|width|height|points|transform|opacity|fill|fill-rule|stroke|stroke-width|stroke-linecap|stroke-linejoin)$/;
+  var ICON_VALUE = /^[A-Za-z0-9#.,()%+\s-]*$/;
+  function cleanIcon(svg) {
+    if (!svg) { return ''; }
+    var doc = new DOMParser().parseFromString('<svg xmlns="http://www.w3.org/2000/svg">' + svg + '</svg>', 'image/svg+xml');
+    var walk = function (node) {
+      return Array.prototype.map.call(node.childNodes, function (ch) {
+        if (ch.nodeType !== 1 || !ICON_TAGS.test(ch.localName)) { return ''; }
+        var attrs = Array.prototype.map.call(ch.attributes, function (a) {
+          return ICON_ATTRS.test(a.name) && ICON_VALUE.test(a.value) ? ' ' + a.name + '="' + a.value + '"' : '';
+        }).join('');
+        return '<' + ch.localName + attrs + '>' + walk(ch) + '</' + ch.localName + '>';
+      }).join('');
+    };
+    return doc.getElementsByTagName('parsererror').length ? '' : walk(doc.documentElement);
+  }
 
   /* ---------- המרה: שורות מהמסד -> מבנה window.*_DATA ---------- */
   var CONVERT = {
@@ -120,7 +139,7 @@
       var b = keyed(window.INFO_DATA, function (a) { return a.slug; });
       return rows.map(function (r) {
         var o = b[r.slug] || {};
-        return { slug: r.slug, icon: r.icon_svg || '', title: L(r, r.title_he, 'title', o.title), teaser: L(r, r.card_text_he, 'teaser', o.teaser),
+        return { slug: r.slug, icon: cleanIcon(r.icon_svg), title: L(r, r.title_he, 'title', o.title), teaser: L(r, r.card_text_he, 'teaser', o.teaser),
           intro: L(r, r.intro_he, 'intro', o.intro), bullets: Llist(r, r.bullets_he, 'bullets', o.bullets), tip: L(r, r.tip_he, 'tip', o.tip) };
       });
     },

@@ -582,6 +582,10 @@ input[type="date"].adm-input { color-scheme: dark; }
 .adm-ad-main strong { color: #fff; overflow-wrap: anywhere; }
 .adm-ad .adm-acts { max-width: none; flex-wrap: nowrap; }
 .adm-ads-hint { flex: 1 1 260px; }
+/* שורת משתמש (לשונית "משתמשים") */
+.adm-ad.adm-editor { grid-template-columns: minmax(0, 1fr) auto auto; }
+.adm-editor .adm-ad-main strong { overflow-wrap: anywhere; }
+.adm-editor .adm-ad-status { display: flex; flex-wrap: wrap; gap: 6px; }
 .adm-switch { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; color: #fff; font-weight: 500; }
 .adm-switch input { width: 20px; height: 20px; min-height: 0; accent-color: var(--lb); cursor: pointer; }
 .adm-switch input:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
@@ -605,5 +609,6 @@ input[type="date"].adm-input { color-scheme: dark; }
   .adm-ad-thumb { width: 72px; height: 45px; }
   .adm-ad-status, .adm-ad .adm-switch, .adm-ad .adm-acts { grid-column: 1 / -1; }
   .adm-ad .adm-acts { flex-wrap: wrap; }
+  .adm-ad.adm-editor { grid-template-columns: minmax(0, 1fr); }
   .adm-pv-grid { grid-template-columns: 1fr; }
 }

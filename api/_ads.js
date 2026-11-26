@@ -110,7 +110,7 @@ async function del(req, body) {
   if (!ids.length || ids.length > 50 || !ids.every((i) => UUID.test(i))) { throw httpError(400, 'bad_id'); }
   const rows = await sb('/rest/v1/ads?select=id,media_path,poster_path&id=in.(' + ids.join(',') + ')');
   if (!rows || !rows.length) { throw httpError(404, 'not_found'); }
-  if (me.gm_role !== 'admin') {                       // עורך: רק טיוטות שלו
+  if (!me.gm_can_publish) {                           // עורך בלי הרשאת פרסום: רק טיוטות שלו
     const own = await sb('/rest/v1/ads?select=id&status=eq.draft&created_by=eq.' + me.id + '&id=in.(' + ids.join(',') + ')');
     if (!own || own.length !== ids.length) { throw httpError(403, 'not_your_draft'); }
   }

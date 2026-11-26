@@ -1,5 +1,5 @@
 /* ==========================================================================
-   GAD MIVNIM — content.js: סטודיו תוכן (content.html) — מנהל רואה את כל הסטודיו; עורך תוכן מנהל פרסומות ומדיה שלהן בלבד.
+   GAD MIVNIM — content.js: סטודיו תוכן (content.html) — מנהל ומנהל תוכן רואים את כל הסטודיו; עורך בלי הרשאת פרסום — טיוטות פרסומות בלבד.
    ההרשאות נאכפות במסד הנתונים (RLS) ובשרת (/api/upload-url) — המסך רק מציג. אין כאן גישה לשום דבר אחר.
    סטטוס פרסומת: draft (טיוטה) | pending (ממתינה לאישור) | published (פורסמה). "נדחתה" = טיוטה עם הערת מנהל (reviewed_at).
    ========================================================================== */
@@ -23,7 +23,7 @@
   var fmtSize = function (n) { return n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; };
   var chip = function (cls, text) { return '<span class="adm-chip adm-chip-' + cls + '">' + esc(text) + '</span>'; };
 
-  // עורכי תוכן נכנסים לסטודיו (פרסומות בלבד) ומפרסמים ישירות.
+  // מנהלי תוכן (עורך עם הרשאת פרסום) נכנסים לסטודיו ומפרסמים ישירות.
   var EDITORS_ENABLED = true;
   // זרימת אישור כבויה: בלי "ממתינה לאישור", בלי סינון "שלי/כל" ובלי מיילים. הקוד נשמר לעתיד (true = חוזר).
   var APPROVAL_FLOW = false;
@@ -177,16 +177,16 @@
     // מנהל או עורך תוכן פעיל בלבד: כל חשבון אחר מקבל "אין לך הרשאה"
     if (!store.activeEditor(p) || (p.role !== 'admin' && !EDITORS_ENABLED)) { showOnly('denied'); $('ctDeniedTitle').focus(); return; }
     me = p;
-    var admin = isAdmin();
-    // עורך: בלי תפריט הסטודיו (CMS) ובלי קישור לניהול — רק מסך הפרסומות
-    $('ctToAdmin').hidden = !admin;
-    $('ctSidebar').hidden = !admin;
-    $('ctLayout').classList.toggle('is-solo', !admin);
+    var manager = canPub();
+    // קישור לניהול — למנהל בלבד. עורך בלי הרשאת פרסום: בלי תפריט הסטודיו, רק מסך הפרסומות
+    $('ctToAdmin').hidden = !isAdmin();
+    $('ctSidebar').hidden = !manager;
+    $('ctLayout').classList.toggle('is-solo', !manager);
     $('ctSide').innerHTML = '';
     $('ctWho').textContent = p.email || p.fullName || '';
     showOnly('app');
     tab = 'list'; filter = 'all';
-    if (admin && window.Studio) {
+    if (manager && window.Studio) {
       window.Studio.init({ store: store, FE: FE, toast: toast, openModal: openModal, closeModal: closeModal, confirmBox: confirmBox, me: p, fmtSize: fmtSize, fmtDate: fmtDate });
       $('ctSide').innerHTML = window.Studio.menuHtml();
     }
@@ -199,8 +199,8 @@
   }
   var adById = function (id) { return ads.filter(function (a) { return a.id === id; })[0] || null; };
   var isAdmin = function () { return me && me.role === 'admin'; };
-  var canEdit = function (a) { return isAdmin() || me.canPublish || (a.created_by === me.id && a.status !== 'published'); };
-  var canDelete = function (a) { return isAdmin() || (a.created_by === me.id && a.status === 'draft'); };
+  var canEdit = function (a) { return canPub() || (a.created_by === me.id && a.status !== 'published'); };
+  var canDelete = function (a) { return canPub() || (a.created_by === me.id && a.status === 'draft'); };
   var canPub = function () { return isAdmin() || me.canPublish; };
   function statusOf(a) {
     if (!APPROVAL_FLOW) { return a.status === 'published' ? { cls: 'published', text: 'פורסמה' } : { cls: 'draft', text: 'טיוטה' }; }
@@ -230,7 +230,7 @@
   }
   // ----- תפריט הצד: סעיפי הסטודיו -----
   function showSection(id, focus) {
-    if (!isAdmin()) { id = 'ads'; }
+    if (!canPub()) { id = 'ads'; }
     section = id;
     Array.prototype.forEach.call($('ctSide').querySelectorAll('[data-sec]'), function (b) {
       var on = b.getAttribute('data-sec') === id;

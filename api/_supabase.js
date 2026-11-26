@@ -89,6 +89,13 @@ async function requireEditorOrAdmin(req) {
   return user;
 }
 
+// מנהל תוכן (עורך עם הרשאת פרסום) או מנהל — כל תוכן האתר, בלי נתוני קבלנים
+async function requireContentManager(req) {
+  const user = await requireEditorOrAdmin(req);
+  if (!user.gm_can_publish) { throw httpError(403, 'not_content_manager'); }
+  return user;
+}
+
 // "קבלן כללי" לבד, או עד 3 תחומים (אותו כלל כמו באתר)
 function normalizeFields(list) {
   const names = (Array.isArray(list) ? list : [])
@@ -177,4 +184,4 @@ async function storageGet(bucket, objectPath) {
   return buf.length ? buf : null;
 }
 
-module.exports = { GENERAL, sb, requireAdmin, requireEditorOrAdmin, requireUser, normalizeFields, readBody, handler, httpError, UUID, tempPassword, saveTempPassword, storageSign, storageGet };
+module.exports = { GENERAL, sb, requireAdmin, requireEditorOrAdmin, requireContentManager, requireUser, normalizeFields, readBody, handler, httpError, UUID, tempPassword, saveTempPassword, storageSign, storageGet };

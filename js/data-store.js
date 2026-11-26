@@ -622,7 +622,7 @@
     publicUrl: function (path) { return path ? String(CFG.url || '').replace(/\/+$/, '') + '/storage/v1/object/public/site-ads/' + path : ''; }
   };
 
-  /* ---------- CMS (סטודיו תוכן): כל הטבלאות דרך RLS — רק מנהל כותב; מחיקה = סל מחזור (deleted_at); כל שמירה שומרת גרסה (טריגר) ---------- */
+  /* ---------- CMS (סטודיו תוכן): כל הטבלאות דרך RLS — רק מנהל ומנהל תוכן כותבים; מחיקה = סל מחזור (deleted_at); כל שמירה שומרת גרסה (טריגר) ---------- */
   var CMS_TABLES = ['podcast_episodes', 'projects', 'in_progress', 'partners', 'info_articles', 'job_roles', 'gallery_items', 'page_blocks'];
   var cms = {
     TABLES: CMS_TABLES,
@@ -683,8 +683,9 @@
 
   var editors = {
     list: function () { return callApi('/api/upload-url', { action: 'editors-list' }); },
-    invite: function (email, name) { return callApi('/api/upload-url', { action: 'editors-invite', email: email, name: name }); },
-    set: function (id, patch) { return callApi('/api/upload-url', Object.assign({ action: 'editors-set', id: id }, patch)); }
+    invite: function (email, role) { return callApi('/api/upload-url', { action: 'editors-invite', email: email, role: role }); },
+    set: function (id, status) { return callApi('/api/upload-url', { action: 'editors-set', id: id, status: status }); },
+    remove: function (id) { return callApi('/api/upload-url', { action: 'editors-remove', id: id }); }
   };
 
   window.dataStore = {
