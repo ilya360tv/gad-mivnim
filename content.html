@@ -12,73 +12,18 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=15">
+  <link rel="stylesheet" href="css/admin.css?v=17">
   <link rel="stylesheet" href="css/content.css?v=3">
 </head>
 <body class="ct">
 
-  <!-- ===== כניסה ===== -->
-  <main class="adm-login" id="ctLogin" hidden>
-    <form class="adm-card adm-login-card" id="ctLoginForm" novalidate autocomplete="off">
-      <img src="images/gad_mivnim_logo.svg" alt="GAD MIVNIM" class="adm-login-logo" width="88" height="88">
-      <h1 class="adm-login-title">כניסה לסטודיו התוכן</h1>
-      <div class="adm-field" data-fe-host>
-        <label for="ctUser">אימייל</label>
-        <input type="email" id="ctUser" autocomplete="username" dir="ltr">
-      </div>
-      <div class="adm-field" data-fe-host>
-        <label for="ctPass">סיסמה</label>
-        <input type="password" id="ctPass" autocomplete="current-password">
-      </div>
-      <button type="submit" class="adm-btn adm-btn-primary adm-btn-block" id="ctLoginBtn">כניסה</button>
-      <p class="adm-error" id="ctLoginError" role="alert" hidden>אימייל או סיסמה שגויים</p>
-      <p class="adm-error" id="ctLinkError" role="alert" hidden>הקישור אינו תקף, פג תוקפו או שכבר נעשה בו שימוש. אפשר לבקש קישור חדש דרך "שכחתי סיסמה".</p>
-      <p class="adm-ok" id="ctResetDone" role="status" hidden>הסיסמה עודכנה ✓ — אפשר להיכנס עם הסיסמה החדשה.</p>
-      <button type="button" class="adm-linkbtn" id="ctForgot">שכחתי סיסמה</button>
-    </form>
-  </main>
-
-  <!-- ===== שכחתי סיסמה ===== -->
-  <main class="adm-login" id="ctForgotView" hidden>
-    <form class="adm-card adm-login-card" id="ctForgotForm" novalidate autocomplete="off">
-      <h1 class="adm-login-title">איפוס סיסמה</h1>
-      <p class="adm-note">נא להזין את כתובת האימייל שלכם.</p>
-      <div class="adm-field" data-fe-host>
-        <label for="ctForgotEmail">אימייל</label>
-        <input type="email" id="ctForgotEmail" autocomplete="username" dir="ltr">
-      </div>
-      <button type="submit" class="adm-btn adm-btn-primary adm-btn-block" id="ctForgotSend">שליחת קישור לאיפוס</button>
-      <p class="adm-ok" id="ctForgotMsg" role="status" hidden>אם הכתובת רשומה, נשלח אליה קישור לבחירת סיסמה (בתוקף לזמן מוגבל).</p>
-      <button type="button" class="adm-linkbtn" id="ctForgotBack">חזרה לכניסה</button>
-    </form>
-  </main>
-
-  <!-- ===== בחירת סיסמה (אחרי קישור הזמנה / איפוס) ===== -->
-  <main class="adm-login" id="ctResetView" hidden>
-    <form class="adm-card adm-login-card" id="ctResetForm" novalidate autocomplete="off">
-      <h1 class="adm-login-title" id="ctResetTitle" tabindex="-1">בחירת סיסמה</h1>
-      <p class="adm-note">לפחות 12 תווים, כולל אות וספרה.</p>
-      <div class="adm-field" data-fe-host>
-        <label for="ctNewPass">סיסמה חדשה</label>
-        <div class="adm-passwrap"><input type="password" id="ctNewPass" autocomplete="new-password" dir="ltr">
-          <button type="button" class="adm-icon-btn" data-eye aria-pressed="false" aria-label="הצגת הסיסמה">👁</button></div>
-      </div>
-      <div class="adm-field" data-fe-host>
-        <label for="ctNewPass2">אימות סיסמה</label>
-        <div class="adm-passwrap"><input type="password" id="ctNewPass2" autocomplete="new-password" dir="ltr">
-          <button type="button" class="adm-icon-btn" data-eye aria-pressed="false" aria-label="הצגת האימות">👁</button></div>
-      </div>
-      <button type="submit" class="adm-btn adm-btn-primary adm-btn-block" id="ctResetSave">שמירת הסיסמה</button>
-      <p class="adm-error" id="ctResetError" role="alert" hidden></p>
-    </form>
-  </main>
-
   <!-- ===== אין הרשאה ===== -->
   <main class="adm-login" id="ctDenied" hidden>
     <div class="adm-card adm-login-card">
-      <h1 class="adm-login-title" id="ctDeniedTitle" tabindex="-1">אין לך הרשאה לעמוד זה</h1>
+      <h1 class="adm-login-title" id="ctDeniedTitle" tabindex="-1">אין לך הרשאה</h1>
       <p class="adm-note">לחשבון הזה אין הרשאה לסטודיו, או שהוא הושבת. לפרטים פנו למנהל האתר.</p>
-      <button type="button" class="adm-btn adm-btn-primary adm-btn-block" id="ctDeniedOut">יציאה</button>
+      <a href="manage.html" class="adm-btn adm-btn-primary adm-btn-block">החלפת אזור ⇄</a>
+      <button type="button" class="adm-btn adm-btn-ghost adm-btn-block" id="ctDeniedOut">יציאה</button>
     </div>
   </main>
 
@@ -90,6 +35,7 @@
         <div><strong>סטודיו תוכן</strong><span>GAD MIVNIM</span></div>
       </div>
       <div class="ct-user">
+        <a href="manage.html" class="adm-btn adm-btn-ghost adm-btn-sm" id="ctSwitch" hidden>החלפת אזור ⇄</a>
         <a href="admin.html" class="adm-link" id="ctToAdmin" hidden>מעבר לניהול המלא ←</a>
         <span class="adm-muted" id="ctWho"></span>
         <button type="button" class="adm-btn adm-btn-ghost" id="ctLogout">יציאה</button>
@@ -126,9 +72,9 @@
   <p class="adm-toast" id="ctToast" role="status" aria-live="polite"></p>
 
   <script src="js/supabase-config.js?v=1"></script>
-  <script src="js/data-store.js?v=18"></script>
+  <script src="js/data-store.js?v=19"></script>
   <script src="js/form-errors.js?v=2"></script>
   <script src="js/studio.js?v=2"></script>
-  <script src="js/content.js?v=5"></script>
+  <script src="js/content.js?v=6"></script>
 </body>
 </html>

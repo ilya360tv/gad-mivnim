@@ -96,7 +96,7 @@ async function requireContentManager(req) {
   return user;
 }
 
-// קישור חד-פעמי להזמנה ('invite') או לאיפוס סיסמה ('recovery') — Supabase לא שולח מייל, אנחנו שולחים דרך _mailer.js.
+// קישור חד-פעמי לאיפוס סיסמה ('recovery') — Supabase לא שולח מייל, אנחנו שולחים דרך _mailer.js.
 // את הקישור אסור לרשום ללוג או להחזיר לדפדפן.
 async function generateLink(type, email, redirectTo) {
   const data = await sb('/auth/v1/admin/generate_link?redirect_to=' + encodeURIComponent(redirectTo),

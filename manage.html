@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>כניסת צוות | GAD MIVNIM</title>
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#0b0d10">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/admin.css?v=17">
+</head>
+<body>
+
+  <!-- ===== כניסה (Supabase Auth: אימייל + סיסמה) ===== -->
+  <main class="adm-login" id="mgLogin" hidden>
+    <form class="adm-card adm-login-card" id="mgLoginForm" novalidate autocomplete="off">
+      <img src="images/gad_mivnim_logo.svg" alt="GAD MIVNIM" class="adm-login-logo" width="88" height="88">
+      <h1 class="adm-login-title">כניסת צוות</h1>
+      <div class="adm-field" data-fe-host>
+        <label for="mgUser">אימייל</label>
+        <input type="email" id="mgUser" autocomplete="username" dir="ltr">
+      </div>
+      <div class="adm-field" data-fe-host>
+        <label for="mgPass">סיסמה</label>
+        <input type="password" id="mgPass" autocomplete="current-password">
+      </div>
+      <button type="submit" class="adm-btn adm-btn-primary adm-btn-block" id="mgLoginBtn">כניסה</button>
+      <p class="adm-error" id="mgLoginError" role="alert" hidden>אימייל או סיסמה שגויים</p>
+      <p class="adm-error" id="mgLinkError" role="alert" hidden>הקישור אינו תקף, פג תוקפו או שכבר נעשה בו שימוש. אפשר לבקש קישור חדש דרך "שכחתי סיסמה".</p>
+      <p class="adm-ok" id="mgResetDone" role="status" hidden>הסיסמה עודכנה ✓ — אפשר להיכנס עם הסיסמה החדשה.</p>
+      <button type="button" class="adm-linkbtn" id="mgForgot">שכחתי סיסמה</button>
+    </form>
+  </main>
+
+  <!-- ===== שכחתי סיסמה ===== -->
+  <main class="adm-login" id="mgForgotView" hidden>
+    <form class="adm-card adm-login-card" id="mgForgotForm" novalidate autocomplete="off">
+      <h1 class="adm-login-title">איפוס סיסמה</h1>
+      <p class="adm-note">נא להזין את כתובת האימייל שלכם.</p>
+      <div class="adm-field" data-fe-host>
+        <label for="mgForgotEmail">אימייל</label>
+        <input type="email" id="mgForgotEmail" autocomplete="username" dir="ltr">
+      </div>
+      <button type="submit" class="adm-btn adm-btn-primary adm-btn-block" id="mgForgotSend">שליחת קישור לאיפוס</button>
+      <p class="adm-ok" id="mgForgotMsg" role="status" hidden>אם הכתובת רשומה, נשלח אליה קישור לבחירת סיסמה (בתוקף לזמן מוגבל).</p>
+      <button type="button" class="adm-linkbtn" id="mgForgotBack">חזרה לכניסה</button>
+    </form>
+  </main>
+
+  <!-- ===== בחירת סיסמה (אחרי קישור הזמנה / איפוס) ===== -->
+  <main class="adm-login" id="mgResetView" hidden>
+    <form class="adm-card adm-login-card" id="mgResetForm" novalidate autocomplete="off">
+      <h1 class="adm-login-title" id="mgResetTitle" tabindex="-1">בחירת סיסמה</h1>
+      <p class="adm-note">לפחות 12 תווים, כולל אות וספרה.</p>
+      <div class="adm-field" data-fe-host>
+        <label for="mgNewPass">סיסמה חדשה</label>
+        <div class="adm-passwrap"><input type="password" id="mgNewPass" autocomplete="new-password" dir="ltr">
+          <button type="button" class="adm-icon-btn" data-eye aria-pressed="false" aria-label="הצגת הסיסמה">👁</button></div>
+      </div>
+      <div class="adm-field" data-fe-host>
+        <label for="mgNewPass2">אימות סיסמה</label>
+        <div class="adm-passwrap"><input type="password" id="mgNewPass2" autocomplete="new-password" dir="ltr">
+          <button type="button" class="adm-icon-btn" data-eye aria-pressed="false" aria-label="הצגת האימות">👁</button></div>
+      </div>
+      <button type="submit" class="adm-btn adm-btn-primary adm-btn-block" id="mgResetSave">שמירת הסיסמה</button>
+      <p class="adm-error" id="mgResetError" role="alert" hidden></p>
+    </form>
+  </main>
+
+  <!-- ===== בחירת אזור ===== -->
+  <main class="adm-login" id="mgChoose" hidden>
+    <div class="adm-card adm-login-card mg-card">
+      <img src="images/gad_mivnim_logo.svg" alt="GAD MIVNIM" class="adm-login-logo" width="88" height="88">
+      <h1 class="adm-login-title" id="mgChooseTitle" tabindex="-1">לאן נכנסים?</h1>
+      <p class="adm-note" id="mgWho" dir="ltr"></p>
+      <nav class="mg-choices" aria-label="בחירת אזור">
+        <a class="mg-choice" id="mgToContent" href="content.html" hidden><strong>סטודיו תוכן</strong><span>טקסטים, תמונות, פודקאסט, פרויקטים, פרסומות</span></a>
+        <a class="mg-choice" id="mgToAdmin" href="admin.html" hidden><strong>ניהול קבלנים</strong><span>קבלנים, בקשות הצטרפות, מכרזים, משתמשים</span></a>
+      </nav>
+      <button type="button" class="adm-btn adm-btn-ghost adm-btn-block" data-logout>יציאה</button>
+    </div>
+  </main>
+
+  <!-- ===== אין הרשאה ===== -->
+  <main class="adm-login" id="mgDenied" hidden>
+    <div class="adm-card adm-login-card">
+      <h1 class="adm-login-title" id="mgDeniedTitle" tabindex="-1">אין לך הרשאה</h1>
+      <p class="adm-note">לחשבון הזה אין הרשאת צוות, או שהוא הושבת. לפרטים פנו למנהל האתר.</p>
+      <button type="button" class="adm-btn adm-btn-primary adm-btn-block" data-logout>יציאה</button>
+    </div>
+  </main>
+
+  <script src="js/supabase-config.js?v=1"></script>
+  <script src="js/data-store.js?v=19"></script>
+  <script src="js/form-errors.js?v=2"></script>
+  <script src="js/manage.js?v=1"></script>
+</body>
+</html>

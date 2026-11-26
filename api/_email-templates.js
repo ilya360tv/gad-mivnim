@@ -175,19 +175,8 @@ function adReviewed(title, approved, note) {
   };
 }
 
-// ===== מנהלים ומנהלי תוכן: הזמנה ואיפוס סיסמה (קישור חד-פעמי) =====
+// ===== מנהלים ומנהלי תוכן: איפוס סיסמה (קישור חד-פעמי) =====
 const ONE_TIME = 'הקישור אישי, לשימוש חד-פעמי ותקף לזמן מוגבל.';
-function userInvite(roleLabel, link) {
-  return {
-    subject: 'גד מבנים — הזמנה למערכת האתר',
-    text: 'הוזמנת למערכת האתר של גד מבנים בתפקיד ' + roleLabel + '.\nלבחירת סיסמה וכניסה:\n' + link + '\n' + ONE_TIME,
-    html: layout('הוזמנת למערכת האתר',
-      '<p style="margin:0 0 12px;">הוזמנת למערכת האתר של גד מבנים בתפקיד <strong>' + esc(roleLabel) + '</strong>.</p>' +
-      '<p style="margin:0;">לחצו על הכפתור כדי לבחור סיסמה ולהיכנס.</p>' +
-      button(link, 'לבחירת סיסמה') +
-      '<p style="margin:18px 0 0;font-size:13px;color:#5b6560;">' + ONE_TIME + '</p>')
-  };
-}
 function staffPasswordReset(link) {
   return {
     subject: 'גד מבנים — איפוס סיסמה',
@@ -199,4 +188,4 @@ function staffPasswordReset(link) {
   };
 }
 
-module.exports = { userInvite, staffPasswordReset, registrationReceived, docsRequested, approvedAccess, passwordReset, newTender, adminRegistration, participationNotice, tenderSentSummary, adPending, adReviewed, LOGIN, ADMIN };
+module.exports = { staffPasswordReset, registrationReceived, docsRequested, approvedAccess, passwordReset, newTender, adminRegistration, participationNotice, tenderSentSummary, adPending, adReviewed, LOGIN, ADMIN };

@@ -28,9 +28,8 @@
   // זרימת אישור כבויה: בלי "ממתינה לאישור", בלי סינון "שלי/כל" ובלי מיילים. הקוד נשמר לעתיד (true = חוזר).
   var APPROVAL_FLOW = false;
   var RS = store.adminReset;
-  var views = { login: $('ctLogin'), forgot: $('ctForgotView'), reset: $('ctResetView'), denied: $('ctDenied'), app: $('ctApp') };
+  var views = { denied: $('ctDenied'), app: $('ctApp') };
   var panel = $('ctPanel');
-  var isInvite = /[#&]type=invite(&|$)/.test(String(location.hash || ''));
   var me = null;                         // { id, role, canPublish, email, ... }
   var ads = [];
   var tab = 'list', filter = 'mine';
@@ -86,89 +85,13 @@
     });
   }
 
-  /* ---------- כניסה / סיסמה ---------- */
-  var loginFE = FE.attach($('ctLoginForm'), [
-    { el: $('ctUser'), check: function () { return FE.V.email($('ctUser').value); } },
-    { el: $('ctPass'), check: function () { return $('ctPass').value ? '' : 'יש להזין סיסמה'; } }
-  ]);
-  function showLogin() {
-    showOnly('login');
-    $('ctLinkError').hidden = true;
-    $('ctResetDone').hidden = true;
-    $('ctUser').focus();
-  }
-  $('ctLoginForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-    $('ctLoginError').hidden = true;
-    if (!loginFE.check()) { return; }
-    var btn = $('ctLoginBtn');
-    btn.disabled = true;
-    store.signInEditor($('ctUser').value, $('ctPass').value).then(function (p) { return p; }, function () { return null; }).then(function (p) {
-      btn.disabled = false;
-      if (!p) { $('ctLoginError').hidden = false; $('ctPass').value = ''; $('ctPass').focus(); return; }
-      $('ctPass').value = '';
-      enter(p);
-    });
-  });
-  $('ctForgot').addEventListener('click', function () {
-    $('ctForgotMsg').hidden = true;
-    $('ctForgotEmail').value = $('ctUser').value.trim();
-    showOnly('forgot');
-    $('ctForgotEmail').focus();
-  });
-  $('ctForgotBack').addEventListener('click', showLogin);
-  var forgotFE = FE.attach($('ctForgotForm'), [{ el: $('ctForgotEmail'), check: function () { return FE.V.email($('ctForgotEmail').value); } }]);
-  $('ctForgotForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-    if (!forgotFE.check()) { return; }
-    var btn = $('ctForgotSend');
-    btn.disabled = true;
-    RS.request($('ctForgotEmail').value).then(function () { btn.disabled = false; $('ctForgotMsg').hidden = false; });
-  });
-
-  document.querySelectorAll('#ctResetForm [data-eye]').forEach(function (b) {
-    b.addEventListener('click', function () {
-      var input = b.parentNode.querySelector('input'), show = input.type === 'password';
-      input.type = show ? 'text' : 'password';
-      b.setAttribute('aria-pressed', show ? 'true' : 'false');
-    });
-  });
-  var resetFE = FE.attach($('ctResetForm'), [
-    { el: $('ctNewPass'), check: function () {
-      var v = $('ctNewPass').value;
-      return v.length >= 12 && /[A-Za-z֐-׿]/.test(v) && /[0-9]/.test(v) ? '' : 'הסיסמה חייבת להכיל לפחות 12 תווים, כולל אות וספרה';
-    } },
-    { el: $('ctNewPass2'), check: function () { return $('ctNewPass2').value === $('ctNewPass').value ? '' : 'האימות אינו זהה לסיסמה'; } }
-  ]);
-  var RESET_ERR = {
-    same: 'הסיסמה החדשה זהה לסיסמה הקודמת — יש לבחור סיסמה אחרת',
-    weak: 'הסיסמה נחשבת חלשה או מוכרת — יש לבחור סיסמה אחרת',
-    expired: 'הקישור פג תוקף או שכבר נעשה בו שימוש — יש לבקש קישור חדש דרך "שכחתי סיסמה"',
-    other: 'עדכון הסיסמה נכשל, נסו שוב'
-  };
-  function showReset() { showOnly('reset'); $('ctResetTitle').focus(); }
-  function linkProblem() { showLogin(); $('ctLinkError').hidden = false; }
-  $('ctResetForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-    $('ctResetError').hidden = true;
-    if (!resetFE.check()) { return; }
-    var btn = $('ctResetSave');
-    btn.disabled = true;
-    RS.setPassword($('ctNewPass').value).then(function (code) {
-      btn.disabled = false;
-      if (code) { $('ctResetError').textContent = RESET_ERR[code] || RESET_ERR.other; $('ctResetError').hidden = false; return; }
-      $('ctNewPass').value = ''; $('ctNewPass2').value = '';
-      if (isInvite) {                                  // הזמנה: הסיסמה נקבעה — ממשיכים ישר פנימה
-        isInvite = false;
-        store.currentEditor().then(function (p) { if (p) { enter(p); } else { showLogin(); } }, showLogin);
-        return;
-      }
-      RS.finish().then(function () { showLogin(); $('ctResetDone').hidden = false; });
-    });
-  });
-
+  /* ---------- כניסה / יציאה: ההתחברות עצמה בדף manage.html ---------- */
+  // לא מחוברים: לכניסה, ואחריה חזרה לאותו מקום
+  function toLogin() { location.replace('manage.html?next=' + encodeURIComponent('content.html' + location.hash)); }
   function signOut() {
-    store.signOut().then(function () { me = null; ads = []; showLogin(); });
+    me = null; ads = [];
+    views.app.hidden = true;
+    store.signOut().then(function () { location.replace('manage.html'); });
   }
   $('ctLogout').addEventListener('click', signOut);
   $('ctDeniedOut').addEventListener('click', signOut);
@@ -180,6 +103,7 @@
     var manager = canPub();
     // קישור לניהול — למנהל בלבד. עורך בלי הרשאת פרסום: בלי תפריט הסטודיו, רק מסך הפרסומות
     $('ctToAdmin').hidden = !isAdmin();
+    $('ctSwitch').hidden = !isAdmin();          // למי שיש אזור אחד בלבד אין לאן להחליף
     $('ctSidebar').hidden = !manager;
     $('ctLayout').classList.toggle('is-solo', !manager);
     $('ctSide').innerHTML = '';
@@ -638,9 +562,10 @@
 
   /* ---------- התחלה ---------- */
   if (RS.isRecovery || RS.linkError) {
-    if (RS.linkError && !RS.isRecovery) { history.replaceState(null, '', location.pathname); linkProblem(); }
-    else { RS.watch(function () { history.replaceState(null, '', location.pathname); showReset(); }, linkProblem); }
+    location.replace('manage.html' + location.hash);                 // קישור איפוס / הזמנה מהמייל — בחירת הסיסמה בדף הכניסה
   } else {
-    store.currentEditor().then(function (p) { if (p) { enter(p); } else { showLogin(); } }, showLogin);
+    var resume = function () { store.currentEditor().then(function (p) { if (p) { enter(p); } else { toLogin(); } }, toLogin); };
+    resume();
+    window.addEventListener('pageshow', function (e) { if (e.persisted) { resume(); } });
   }
 })();

@@ -1,6 +1,6 @@
 /* ==========================================================================
    GAD MIVNIM — admin.js: מערכת הניהול (admin.html)
-   הנתונים מ-Supabase דרך js/data-store.js. כניסת מנהל = אימייל + סיסמה (Supabase Auth);
+   הנתונים מ-Supabase דרך js/data-store.js. הכניסה בדף manage.html (התחברות משותפת עם סטודיו התוכן);
    ההרשאות נבדקות במסד הנתונים (RLS — רק profiles.role = 'admin').
    אישור קבלן / איפוס סיסמה / השעיית מנוי — דרך /api/approve, /api/reset-password ו-/api/suspend (צד שרת).
    סיסמה זמנית מוצגת בשורת הקבלן עד שהוא מחליף אותה. אין לרשום סיסמאות ללוג.
@@ -13,7 +13,7 @@
 
   var $ = function (id) { return document.getElementById(id); };
   var FE = window.GMFormErrors;                   // הודעות שגיאה ליד השדה + קפיצה לשדה (js/form-errors.js)
-  var loginView = $('admLogin'), appView = $('admApp'), content = $('admContent'), viewTitle = $('admViewTitle');
+  var appView = $('admApp'), content = $('admContent'), viewTitle = $('admViewTitle');
 
   var esc = function (s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; });
@@ -156,132 +156,31 @@
   var tenderById = function (id) { return data.tenders.filter(function (t) { return t.id === id; })[0] || null; };
   var applicantById = function (id) { return data.applicants.filter(function (a) { return a.id === id; })[0] || null; };
 
-  /* ---------- שכחתי סיסמה / בחירת סיסמה חדשה (Supabase Auth בלבד) ---------- */
-  var forgotView = $('admForgotView'), resetView = $('admResetView'), RS = store.adminReset;
-  function showOnly(view) {
-    [loginView, appView, forgotView, resetView].forEach(function (v) { v.hidden = v !== view; });
-  }
-  var forgotFE = FE ? FE.attach($('admForgotForm'), [
-    { el: $('admForgotEmail'), check: function () { return FE.V.email($('admForgotEmail').value); } }
-  ]) : null;
-  $('admForgot').addEventListener('click', function () {
-    $('admForgotMsg').hidden = true;
-    $('admForgotEmail').value = $('admUser').value.trim();
-    showOnly(forgotView);
-    $('admForgotEmail').focus();
-  });
-  $('admForgotBack').addEventListener('click', function () { showLogin(); });
-  $('admForgotForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-    if (forgotFE && !forgotFE.check()) { $('admForgotMsg').hidden = true; return; }
-    var btn = $('admForgotSend');
-    btn.disabled = true;
-    // תמיד אותה הודעה — לא מגלים אם הכתובת קיימת
-    RS.request($('admForgotEmail').value).then(function () {
-      btn.disabled = false;
-      $('admForgotMsg').hidden = false;
-    });
-  });
-  document.querySelectorAll('#admResetForm [data-eye]').forEach(function (b) {
-    b.addEventListener('click', function () {
-      var input = b.parentNode.querySelector('input'), show = input.type === 'password';
-      input.type = show ? 'text' : 'password';
-      b.setAttribute('aria-pressed', show ? 'true' : 'false');
-      b.setAttribute('aria-label', (show ? 'הסתרת ' : 'הצגת ') + (input.id === 'admNewPass' ? 'הסיסמה' : 'האימות'));
-    });
-  });
-  var resetFE = FE ? FE.attach($('admResetForm'), [
-    { el: $('admNewPass'), check: function () {
-      var v = $('admNewPass').value;
-      return v.length >= 12 && /[A-Za-z\u0590-\u05FF]/.test(v) && /[0-9]/.test(v) ? '' : 'הסיסמה חייבת להכיל לפחות 12 תווים, כולל אות וספרה';
-    } },
-    { el: $('admNewPass2'), check: function () { return $('admNewPass2').value === $('admNewPass').value ? '' : 'האימות אינו זהה לסיסמה'; } }
-  ]) : null;
-  var RESET_ERR = {
-    same: 'הסיסמה החדשה זהה לסיסמה הקודמת — יש לבחור סיסמה אחרת',
-    weak: 'הסיסמה נחשבת חלשה או מוכרת — יש לבחור סיסמה אחרת וחזקה יותר',
-    expired: 'הקישור פג תוקף או שכבר נעשה בו שימוש — יש לבקש קישור חדש דרך "שכחתי סיסמה"',
-    other: 'עדכון הסיסמה נכשל, נסו שוב'
-  };
-  function showReset() {
-    showOnly(resetView);
-    $('admResetTitle').focus();
-  }
-  function linkProblem() {
-    showLogin();
-    $('admLinkError').hidden = false;
-  }
-  $('admResetForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-    $('admResetError').hidden = true;
-    if (resetFE && !resetFE.check()) { return; }
-    var btn = $('admResetSave'), pass = $('admNewPass').value;
-    btn.disabled = true;
-    RS.setPassword(pass).then(function (code) {
-      if (code) {
-        btn.disabled = false;
-        $('admResetError').textContent = RESET_ERR[code] || RESET_ERR.other;
-        $('admResetError').hidden = false;
-        return;
-      }
-      $('admNewPass').value = '';
-      $('admNewPass2').value = '';
-      $('admResetOk').hidden = false;
-      RS.finish().then(function () {
-        setTimeout(function () {
-          btn.disabled = false;
-          $('admResetOk').hidden = true;
-          showLogin();
-          $('admResetDone').hidden = false;
-        }, 1500);
-      });
-    });
-  });
-
-  /* ---------- כניסה / יציאה ---------- */
+  /* ---------- כניסה / יציאה: ההתחברות עצמה בדף manage.html ---------- */
+  var deniedView = $('admDenied'), RS = store.adminReset;
   var cleaned = false;
   function showApp() {
     if (!cleaned && store.applicants.cleanupIncoming) { cleaned = true; store.applicants.cleanupIncoming().catch(function () {}); }
-    loginView.hidden = true;
+    deniedView.hidden = true;
     appView.hidden = false;
     go(location.hash.replace('#', '') || 'dashboard', false);
   }
-  function showLogin() {
-    showOnly(loginView);
-    $('admLinkError').hidden = true;
-    $('admResetDone').hidden = true;
-    $('admUser').focus();
+  // לא מחוברים: לכניסה, ואחריה חזרה לאותו מקום
+  function toLogin() { location.replace('manage.html?next=' + encodeURIComponent('admin.html' + location.hash)); }
+  function enter(p) {
+    if (!p) { toLogin(); return; }
+    if (p.role !== 'admin' || p.status !== 'approved') { appView.hidden = true; deniedView.hidden = false; $('admDeniedTitle').focus(); return; }
+    showApp();
   }
-  var loginFE = FE ? FE.attach($('admLoginForm'), [
-    { el: $('admUser'), check: function () { return $('admUser').value.trim() ? '' : 'יש להזין אימייל'; } },
-    { el: $('admPass'), check: function () { return $('admPass').value ? '' : 'יש להזין סיסמה'; } }
-  ]) : null;
-  $('admLoginForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-    if (loginFE && !loginFE.check()) { $('admLoginError').hidden = true; return; }
-    var user = $('admUser').value, pass = $('admPass').value;
-    $('admPass').value = '';
-    var btn = $('admLoginForm').querySelector('button[type="submit"]');
-    btn.disabled = true;
-    store.signInAdmin(user, pass).then(function (p) { return !!p; }, function () { return false; }).then(function (ok) {
-      btn.disabled = false;
-      $('admLoginError').hidden = ok;
-      if (!ok) {
-        if (FE) { FE.mark($('admUser'), 'admLoginError'); FE.jump($('admUser')); FE.clear($('admPass')); } else { $('admPass').focus(); }
-        return;
-      }
-      if (FE) { FE.clear($('admUser')); }
-      showApp();
-    });
-  });
-  $('admLogout').addEventListener('click', function () {
-    store.signOut();
+  function logout() {
     data = { tenders: [], applicants: [], applications: [], contractors: [], ads: [] };
     tempByProfile = {};
     loaded = false;
-    history.replaceState(null, '', location.pathname);
-    showLogin();
-  });
+    appView.hidden = true;
+    store.signOut().then(function () { location.replace('manage.html'); });
+  }
+  $('admLogout').addEventListener('click', logout);
+  $('admDeniedOut').addEventListener('click', logout);
 
   /* ---------- ניווט ---------- */
   var VIEWS = {
@@ -1387,7 +1286,7 @@
     content.innerHTML = '<div class="adm-toolbar"><p class="adm-note adm-ads-hint"><strong>מנהל</strong>: ' + esc(USER_ROLE_INFO.admin) +
       ' <strong>מנהל תוכן</strong>: ' + esc(USER_ROLE_INFO.editor) + '</p>' +
       '<button type="button" class="adm-btn adm-btn-primary" id="usAdd">+ הוספת משתמש</button></div><div id="usBody"><p class="adm-empty adm-card">טוען…</p></div>';
-    $('usAdd').addEventListener('click', function () { userForm('', 'editor'); });
+    $('usAdd').addEventListener('click', userForm);
     loadUsers();
   }
   function loadUsers() {
@@ -1404,7 +1303,8 @@
         '<span class="adm-ad-main"><strong><bdi>' + esc(u.email || '—') + '</bdi></strong>' +
           '<span class="adm-muted">כניסה אחרונה: ' + esc(fmtLogin(u.last_sign_in_at)) + '</span></span>' +
         '<span class="adm-ad-status">' + chip(u.role === 'admin' ? 'general' : 'field', role) + chip(on ? 'active' : 'draft', on ? 'פעיל' : 'מושבת') + '</span>' +
-        '<span class="adm-acts">' + (u.self ? '<span class="adm-muted">החשבון שלך</span>' :
+        '<span class="adm-acts">' + (u.self ? '<span class="adm-muted">החשבון שלך</span>' : '') +
+          '<button type="button" class="adm-btn adm-btn-sm" data-us="password">החלפת סיסמה</button>' + (u.self ? '' :
           '<button type="button" class="adm-btn adm-btn-sm" data-us="toggle">' + (on ? 'השבתה' : 'הפעלה') + '</button>' +
           '<button type="button" class="adm-btn adm-btn-sm adm-btn-danger" data-us="delete">מחיקה</button>') + '</span></li>';
     }).join('') + '</ul>' : '<p class="adm-empty adm-card">אין משתמשים להצגה.</p>';
@@ -1413,7 +1313,9 @@
     var b = e.target.closest('[data-us]');
     if (!b || current !== 'editors') { return; }
     var u = userById(b.closest('.adm-editor').getAttribute('data-id'));
-    if (!u || u.self) { return; }
+    if (!u) { return; }
+    if (b.getAttribute('data-us') === 'password') { userPassword(u); return; }
+    if (u.self) { return; }
     if (b.getAttribute('data-us') === 'delete') { userDelete(u); return; }
     var next = u.status === 'approved' ? 'suspended' : 'approved';
     b.disabled = true;
@@ -1439,45 +1341,127 @@
       });
     });
   }
-  // שלב 1: אימייל + תפקיד
-  function userForm(email, role) {
-    openModal('הוספת משתמש',
-      '<form id="usForm" class="adm-form" novalidate><p class="adm-note">המשתמש יקבל מייל עם קישור לבחירת סיסמה.</p>' +
-      '<div class="adm-field" data-fe-host><label for="usEmail">אימייל *</label><input type="email" id="usEmail" class="adm-input" dir="ltr" autocomplete="off" value="' + esc(email) + '"></div>' +
-      '<div class="adm-field"><label for="usRole">תפקיד *</label><select id="usRole" class="adm-input">' +
-        Object.keys(USER_ROLES).map(function (k) { return '<option value="' + k + '"' + (k === role ? ' selected' : '') + '>' + USER_ROLES[k] + '</option>'; }).join('') +
-      '</select><span class="adm-note" id="usRoleInfo">' + esc(USER_ROLE_INFO[role]) + '</span></div>' +
-      '<div class="adm-form-actions"><button type="submit" class="adm-btn adm-btn-primary">המשך</button>' +
-      '<button type="button" class="adm-btn adm-btn-ghost" data-close>ביטול</button></div></form>');
-    $('usRole').addEventListener('change', function () { $('usRoleInfo').textContent = USER_ROLE_INFO[this.value]; });
-    var fe = FE ? FE.attach($('usForm'), [{ el: $('usEmail'), check: function () { return FE.V.email($('usEmail').value); } }]) : null;
-    $('usForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-      if (fe && !fe.check()) { return; }
-      userConfirm($('usEmail').value.trim().toLowerCase(), $('usRole').value);
+  /* ---------- סיסמה שהמנהל קובע. נשמרת רק בזיכרון של החלון: לא באחסון הדפדפן, לא בלוג ---------- */
+  var PASS_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';   // בלי תווים מבלבלים (0/O, 1/l/I)
+  function strongPassword() {
+    var out, byte = new Uint8Array(1), limit = 256 - (256 % PASS_CHARS.length);
+    do {
+      out = '';
+      while (out.length < 14) {
+        window.crypto.getRandomValues(byte);
+        if (byte[0] < limit) { out += PASS_CHARS.charAt(byte[0] % PASS_CHARS.length); }
+      }
+    } while (!(/[A-Z]/.test(out) && /[a-z]/.test(out) && /[0-9]/.test(out)));
+    return out;
+  }
+  function passwordProblem(v) {
+    if (v.length < 12) { return 'הסיסמה חייבת להכיל לפחות 12 תווים'; }
+    if (!/[A-Za-z֐-׿]/.test(v) || !/[0-9]/.test(v)) { return 'הסיסמה חייבת להכיל לפחות אות אחת וספרה אחת'; }
+    return new TextEncoder().encode(v).length > 72 ? 'הסיסמה ארוכה מדי — עד 72 תווים' : '';
+  }
+  var passFields = function () {
+    return '<div class="adm-field" data-fe-host><label for="usPass">סיסמה *</label><div class="adm-passwrap">' +
+        '<input type="password" id="usPass" class="adm-input" dir="ltr" autocomplete="new-password">' +
+        '<button type="button" class="adm-icon-btn" id="usEye" aria-pressed="false" aria-label="הצגת הסיסמה">' + EYE_ICON + '</button></div>' +
+        '<span class="adm-note">לפחות 12 תווים, כולל אות וספרה.</span></div>' +
+      '<div class="adm-field" data-fe-host><label for="usPass2">אימות סיסמה *</label><input type="password" id="usPass2" class="adm-input" dir="ltr" autocomplete="new-password"></div>' +
+      '<div><button type="button" class="adm-btn adm-btn-sm" id="usGen">יצירת סיסמה חזקה</button></div>';
+  };
+  function showPasswords(show) {
+    $('usPass').type = $('usPass2').type = show ? 'text' : 'password';
+    $('usEye').classList.toggle('is-shown', show);
+    $('usEye').setAttribute('aria-pressed', show ? 'true' : 'false');
+    $('usEye').setAttribute('aria-label', show ? 'הסתרת הסיסמה' : 'הצגת הסיסמה');
+  }
+  var passRules = function () {
+    return [
+      { el: $('usPass'), check: function () { return passwordProblem($('usPass').value); } },
+      { el: $('usPass2'), check: function () { return $('usPass2').value === $('usPass').value ? '' : 'האימות אינו זהה לסיסמה'; } }
+    ];
+  };
+  function bindPasswords() {
+    $('usEye').addEventListener('click', function () { showPasswords($('usPass').type === 'password'); });
+    $('usGen').addEventListener('click', function () {
+      $('usPass').value = $('usPass2').value = strongPassword();
+      showPasswords(true);
+      if (FE) { FE.clear($('usPass')); FE.clear($('usPass2')); }
     });
   }
-  // שלב 2: הכתובת מוצגת שוב לאישור לפני השליחה
-  function userConfirm(email, role) {
+  // שגיאה מהשרת: ליד השדה המתאים אם אפשר, אחרת בתחתית החלון
+  function userFail(err, fallback) {
+    var text = userError(err, fallback);
+    if (!$('usErr')) { toast(text); return; }
+    $('usGo').disabled = false;
+    var field = err && err.message === 'bad_password' ? $('usPass') : (err && /^(email_in_use|bad_email)$/.test(err.message) ? $('usEmail') : null);
+    if (field && FE) { FE.set(field, text); FE.jump(field); return; }
+    $('usErr').textContent = text;
+    $('usErr').hidden = false;
+  }
+  // הסיסמה מוצגת פעם אחת, מיד אחרי השמירה. סגירת החלון מוחקת אותה מהמסך.
+  function showOnce(title, email, password, note, onClose) {
     var opener = modalOpener;
-    openModal('אישור לפני שליחה',
-      '<p class="adm-p">ההזמנה תישלח לכתובת:</p><p class="adm-p"><strong><bdi dir="ltr">' + esc(email) + '</bdi></strong></p>' +
-      '<p class="adm-p">תפקיד: <strong>' + esc(USER_ROLES[role]) + '</strong> — ' + esc(USER_ROLE_INFO[role]) + '</p>' +
-      '<p class="adm-error" id="usErr" role="alert" hidden></p>' +
-      '<div class="adm-form-actions"><button type="button" class="adm-btn adm-btn-primary" id="usSend">שליחת הזמנה</button>' +
-      '<button type="button" class="adm-btn adm-btn-ghost" id="usBack">חזרה לתיקון</button></div>');
+    openModal(title,
+      '<p class="adm-p">משתמש: <strong><bdi dir="ltr">' + esc(email) + '</bdi></strong></p>' +
+      '<p class="adm-note">הסיסמה מוצגת עכשיו בלבד. העתיקו אותה ומסרו למשתמש. ' + esc(note) + '</p>' +
+      '<div class="adm-temp-line"><bdi class="adm-temp-secret" id="usShown" dir="ltr"></bdi>' +
+        '<button type="button" class="adm-btn adm-btn-primary" id="usCopy">העתקה</button></div>' +
+      '<p class="adm-note">כניסה: <bdi dir="ltr">' + esc(location.host + '/manage.html') + '</bdi></p>' +
+      '<div class="adm-form-actions"><button type="button" class="adm-btn adm-btn-ghost" data-close>סגירה</button></div>');
     modalOpener = opener;
-    $('usBack').focus();
-    $('usBack').addEventListener('click', function () { var o = modalOpener; userForm(email, role); modalOpener = o; });
-    $('usSend').addEventListener('click', function () {
-      var btn = $('usSend');
-      btn.disabled = true;
-      store.editors.invite(email, role).then(function () { toast('ההזמנה נשלחה ✓'); closeModal(); loadUsers(); }, function (err) {
-        if (!$('usErr')) { return; }
-        btn.disabled = false;
-        $('usErr').textContent = userError(err, 'שליחת ההזמנה נכשלה, נסו שוב');
-        $('usErr').hidden = false;
-      });
+    $('usShown').textContent = password;
+    $('usCopy').addEventListener('click', function () {
+      copyText(password).then(function () { toast('הסיסמה הועתקה'); }, function () { toast('ההעתקה נכשלה — סמנו והעתיקו ידנית'); });
+    });
+    if (onClose) {
+      var obs = new MutationObserver(function () { if (modal.hidden) { obs.disconnect(); onClose(); } });
+      obs.observe(modal, { attributes: true, attributeFilter: ['hidden'] });
+    }
+  }
+  function userForm() {
+    openModal('הוספת משתמש',
+      '<form id="usForm" class="adm-form" novalidate autocomplete="off"><p class="adm-note">אתם קובעים את הסיסמה. לא נשלח שום מייל.</p>' +
+      '<div class="adm-field" data-fe-host><label for="usEmail">אימייל *</label><input type="email" id="usEmail" class="adm-input" dir="ltr" autocomplete="off"></div>' +
+      '<div class="adm-field"><label for="usRole">תפקיד *</label><select id="usRole" class="adm-input">' +
+        Object.keys(USER_ROLES).map(function (k) { return '<option value="' + k + '">' + USER_ROLES[k] + '</option>'; }).join('') +
+      '</select><span class="adm-note" id="usRoleInfo">' + esc(USER_ROLE_INFO.editor) + '</span></div>' +
+      passFields() +
+      '<p class="adm-error" id="usErr" role="alert" hidden></p>' +
+      '<div class="adm-form-actions"><button type="submit" class="adm-btn adm-btn-primary" id="usGo">הוספת המשתמש</button>' +
+      '<button type="button" class="adm-btn adm-btn-ghost" data-close>ביטול</button></div></form>');
+    bindPasswords();
+    $('usRole').addEventListener('change', function () { $('usRoleInfo').textContent = USER_ROLE_INFO[this.value]; });
+    var fe = FE ? FE.attach($('usForm'), [{ el: $('usEmail'), check: function () { return FE.V.email($('usEmail').value); } }].concat(passRules())) : null;
+    $('usForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      $('usErr').hidden = true;
+      if (fe && !fe.check()) { return; }
+      var email = $('usEmail').value.trim().toLowerCase(), password = $('usPass').value;
+      $('usGo').disabled = true;
+      store.editors.create(email, $('usRole').value, password).then(function () {
+        showOnce('המשתמש נוסף ✓', email, password, '');
+        loadUsers();
+      }, function (err) { userFail(err, 'יצירת המשתמש נכשלה, נסו שוב'); });
+    });
+  }
+  function userPassword(u) {
+    openModal('החלפת סיסמה',
+      '<form id="usForm" class="adm-form" novalidate autocomplete="off"><p class="adm-p">סיסמה חדשה עבור <strong><bdi dir="ltr">' + esc(u.email) + '</bdi></strong></p>' +
+      '<p class="adm-note">' + (u.self ? 'זה החשבון שלך: אחרי ההחלפה תתבקש להתחבר מחדש.' : 'המשתמש ינותק מכל המכשירים.') + '</p>' +
+      passFields() +
+      '<p class="adm-error" id="usErr" role="alert" hidden></p>' +
+      '<div class="adm-form-actions"><button type="submit" class="adm-btn adm-btn-primary" id="usGo">החלפת הסיסמה</button>' +
+      '<button type="button" class="adm-btn adm-btn-ghost" data-close>ביטול</button></div></form>');
+    bindPasswords();
+    var fe = FE ? FE.attach($('usForm'), passRules()) : null;
+    $('usForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      $('usErr').hidden = true;
+      if (fe && !fe.check()) { return; }
+      var password = $('usPass').value;
+      $('usGo').disabled = true;
+      store.editors.setPassword(u.id, password).then(function () {
+        showOnce('הסיסמה הוחלפה ✓', u.email, password, u.self ? 'אחרי הסגירה תועברו לכניסה.' : 'הסיסמה הקודמת כבר לא עובדת.', u.self ? logout : null);
+      }, function (err) { userFail(err, 'החלפת הסיסמה נכשלה, נסו שוב'); });
     });
   }
 
@@ -1511,10 +1495,9 @@
 
   /* ---------- התחלה: כניסה שמורה (עד "יציאה" / סגירת הדפדפן) ---------- */
   if (RS.isRecovery || RS.linkError) {
-    // נפתח מקישור האיפוס במייל: לא נכנסים למערכת — מציגים בחירת סיסמה חדשה (או שגיאה ברורה אם הקישור לא תקף)
-    if (RS.linkError && !RS.isRecovery) { history.replaceState(null, '', location.pathname); linkProblem(); }
-    else { RS.watch(function () { history.replaceState(null, '', location.pathname); showReset(); }, linkProblem); }
+    location.replace('manage.html' + location.hash);                 // קישור איפוס / הזמנה מהמייל — בחירת הסיסמה בדף הכניסה
   } else {
-    store.currentAdmin().then(function (p) { if (p) { showApp(); } else { showLogin(); } }, showLogin);
+    store.currentEditor().then(enter, toLogin);
+    window.addEventListener('pageshow', function (e) { if (e.persisted) { store.currentEditor().then(enter, toLogin); } });
   }
 })();

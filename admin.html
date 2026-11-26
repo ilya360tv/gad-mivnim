@@ -12,66 +12,19 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=16">
+  <link rel="stylesheet" href="css/admin.css?v=17">
   <link rel="stylesheet" href="css/field-select.css?v=2">
 </head>
 <body>
 
-  <!-- ===== כניסת מנהל (Supabase Auth: אימייל + סיסמה) ===== -->
-  <main class="adm-login" id="admLogin" hidden>
-    <form class="adm-card adm-login-card" id="admLoginForm" novalidate autocomplete="off">
-      <img src="images/gad_mivnim_logo.svg" alt="GAD MIVNIM" class="adm-login-logo" width="88" height="88">
-      <h1 class="adm-login-title">כניסה למערכת הניהול</h1>
-      <div class="adm-field">
-        <label for="admUser">אימייל</label>
-        <input type="email" id="admUser" autocomplete="username" dir="ltr">
-      </div>
-      <div class="adm-field">
-        <label for="admPass">סיסמה</label>
-        <input type="password" id="admPass" autocomplete="current-password">
-      </div>
-      <button type="submit" class="adm-btn adm-btn-primary adm-btn-block">כניסה</button>
-      <p class="adm-error" id="admLoginError" role="alert" hidden>אימייל או סיסמה שגויים, או שאין הרשאת מנהל</p>
-      <p class="adm-error" id="admLinkError" role="alert" hidden>הקישור לאיפוס הסיסמה אינו תקף, פג תוקפו או שכבר נעשה בו שימוש. אפשר לבקש קישור חדש דרך "שכחתי סיסמה".</p>
-      <p class="adm-ok" id="admResetDone" role="status" hidden>הסיסמה עודכנה ✓ — אפשר להיכנס עם הסיסמה החדשה.</p>
-      <button type="button" class="adm-linkbtn" id="admForgot">שכחתי סיסמה</button>
-    </form>
-  </main>
-
-  <!-- ===== שכחתי סיסמה (Supabase Auth) ===== -->
-  <main class="adm-login" id="admForgotView" hidden>
-    <form class="adm-card adm-login-card" id="admForgotForm" novalidate autocomplete="off">
-      <h1 class="adm-login-title">איפוס סיסמה</h1>
-      <p class="adm-note">נא להזין את כתובת האימייל של חשבון המנהל.</p>
-      <div class="adm-field" data-fe-host>
-        <label for="admForgotEmail">אימייל</label>
-        <input type="email" id="admForgotEmail" autocomplete="username" dir="ltr">
-      </div>
-      <button type="submit" class="adm-btn adm-btn-primary adm-btn-block" id="admForgotSend">שליחת קישור לאיפוס</button>
-      <p class="adm-ok" id="admForgotMsg" role="status" hidden>אם הכתובת שייכת לחשבון מנהל, נשלח אליה קישור לאיפוס הסיסמה (בתוקף לזמן מוגבל).</p>
-      <button type="button" class="adm-linkbtn" id="admForgotBack">חזרה לכניסה</button>
-    </form>
-  </main>
-
-  <!-- ===== בחירת סיסמה חדשה (אחרי הקישור מהמייל — אירוע PASSWORD_RECOVERY) ===== -->
-  <main class="adm-login" id="admResetView" hidden>
-    <form class="adm-card adm-login-card" id="admResetForm" novalidate autocomplete="off">
-      <h1 class="adm-login-title" id="admResetTitle" tabindex="-1">בחירת סיסמה חדשה</h1>
-      <p class="adm-note">לפחות 12 תווים, כולל אות וספרה.</p>
-      <div class="adm-field" data-fe-host>
-        <label for="admNewPass">סיסמה חדשה</label>
-        <div class="adm-passwrap"><input type="password" id="admNewPass" autocomplete="new-password" dir="ltr">
-          <button type="button" class="adm-icon-btn" data-eye aria-pressed="false" aria-label="הצגת הסיסמה">👁</button></div>
-      </div>
-      <div class="adm-field" data-fe-host>
-        <label for="admNewPass2">אימות סיסמה</label>
-        <div class="adm-passwrap"><input type="password" id="admNewPass2" autocomplete="new-password" dir="ltr">
-          <button type="button" class="adm-icon-btn" data-eye aria-pressed="false" aria-label="הצגת האימות">👁</button></div>
-      </div>
-      <button type="submit" class="adm-btn adm-btn-primary adm-btn-block" id="admResetSave">שמירת הסיסמה</button>
-      <p class="adm-error" id="admResetError" role="alert" hidden></p>
-      <p class="adm-ok" id="admResetOk" role="status" hidden>הסיסמה עודכנה ✓</p>
-    </form>
+  <!-- ===== אין הרשאה (הכניסה עצמה בדף manage.html) ===== -->
+  <main class="adm-login" id="admDenied" hidden>
+    <div class="adm-card adm-login-card">
+      <h1 class="adm-login-title" id="admDeniedTitle" tabindex="-1">אין לך הרשאה</h1>
+      <p class="adm-note">לחשבון הזה אין הרשאה למערכת הניהול.</p>
+      <a href="manage.html" class="adm-btn adm-btn-primary adm-btn-block">החלפת אזור ⇄</a>
+      <button type="button" class="adm-btn adm-btn-ghost adm-btn-block" id="admDeniedOut">יציאה</button>
+    </div>
   </main>
 
   <!-- ===== מערכת הניהול ===== -->
@@ -100,6 +53,7 @@
       <header class="adm-top">
         <h1 class="adm-view-title" id="admViewTitle" tabindex="-1">לוח בקרה</h1>
         <div class="adm-top-actions">
+          <a href="manage.html" class="adm-btn adm-btn-ghost adm-btn-sm">החלפת אזור ⇄</a>
           <a href="content.html" class="adm-link">סטודיו תוכן ←</a>
           <a href="tenders.html" class="adm-link" target="_blank" rel="noopener">לאתר ←</a>
           <button type="button" class="adm-btn adm-btn-ghost" id="admLogout">יציאה</button>
@@ -122,10 +76,10 @@
   <p class="adm-toast" id="admToast" role="status" aria-live="polite"></p>
 
   <script src="js/supabase-config.js?v=1"></script>
-  <script src="js/data-store.js?v=18"></script>
+  <script src="js/data-store.js?v=19"></script>
   <script src="js/field-select.js?v=2"></script>
   <script src="js/form-errors.js?v=2"></script>
   <script src="js/contractor-docs.js?v=2"></script>
-  <script src="js/admin.js?v=17"></script>
+  <script src="js/admin.js?v=18"></script>
 </body>
 </html>

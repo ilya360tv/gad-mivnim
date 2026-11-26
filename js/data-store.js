@@ -50,9 +50,9 @@
     return FIELDS.filter(function (f) { return names.indexOf(f.name) !== -1; }).map(function (f) { return f.name; }).slice(0, MAX_FIELDS);
   }
 
-  /* ---------- לקוח Supabase (נטען פעם אחת, לפי אזור: "site" = קבלנים, "admin" = מנהל) ---------- */
-  // שני אזורים = שתי התחברויות נפרדות באותו דפדפן (מנהל שפותח את עמוד המכרזים לא "נכנס" בו כקבלן)
-  var area = /\/admin(\.html)?$/.test(location.pathname) ? 'admin' : (/\/content(\.html)?$/.test(location.pathname) ? 'content' : 'site');
+  /* ---------- לקוח Supabase (נטען פעם אחת, לפי אזור: "site" = קבלנים, "staff" = צוות) ---------- */
+  // manage.html / admin.html / content.html חולקים התחברות אחת. עמוד המכרזים נפרד (מנהל שפותח אותו לא "נכנס" בו כקבלן)
+  var area = /\/(manage|admin|content)(\.html)?$/.test(location.pathname) ? 'staff' : 'site';
   var clientPromise = null;
   function client() {
     if (!clientPromise) {
@@ -61,7 +61,7 @@
       try { store = window.sessionStorage; store.getItem('x'); } catch (e) { store = undefined; }
       clientPromise = import(LIB).then(function (mod) {
         return mod.createClient(CFG.url, CFG.key, {
-          auth: { storageKey: 'gm-auth-' + area, storage: store, persistSession: true, autoRefreshToken: true, detectSessionInUrl: area === 'admin' || area === 'content' }
+          auth: { storageKey: 'gm-auth-' + area, storage: store, persistSession: true, autoRefreshToken: true, detectSessionInUrl: area === 'staff' }
         });
       });
       clientPromise.catch(function () { clientPromise = null; });   // כשל רשת — ניסיון חוזר בפעם הבאה
@@ -263,7 +263,7 @@
       });
     });
   }
-  // סטודיו תוכן: עורך תוכן או מנהל (אזור התחברות נפרד: gm-auth-content)
+  // צוות: עורך תוכן או מנהל (התחברות משותפת: gm-auth-staff)
   var activeEditor = function (p) { return !!p && p.status === 'approved' && (p.role === 'editor' || p.role === 'admin'); };
   function signInEditor(email, password) {
     if (!email || !password) { return Promise.resolve(null); }
@@ -281,11 +281,13 @@
     return client().then(function (sb) { return myProfile(sb).then(function (p) { return activeAdmin(p) ? p : null; }); });
   }
   function signOut() {
-    return client().then(function (sb) { return sb.auth.signOut(); }).catch(function () {});
+    // צוות: גם אם השרת לא ענה, ההתחברות נמחקת מהדפדפן — "יציאה" מוציאה משלושת הדפים
+    var forget = function () { if (area === 'staff') { try { window.sessionStorage.removeItem('gm-auth-staff'); } catch (e) { /* ignore */ } } };
+    return client().then(function (sb) { return sb.auth.signOut(); }).catch(function () {}).then(forget);
   }
   /* ---------- איפוס סיסמת מנהל / מנהל תוכן — הקישור נשלח מהשרת שלנו (/api/forgot-password); הסיסמה נקבעת ב-Supabase Auth (PASSWORD_RECOVERY / updateUser) ---------- */
   var RESET_KEY = 'gm-admin-reset-at', RESET_GAP_MS = 60 * 1000;
-  var resetHash = (area === 'admin' || area === 'content') ? String(location.hash || '') : '';          // נקרא לפני ש-supabase-js מנקה את הכתובת
+  var resetHash = area === 'staff' ? String(location.hash || '') : '';          // נקרא לפני ש-supabase-js מנקה את הכתובת
   var adminReset = {
     isRecovery: /[#&]type=(recovery|invite)(&|$)/.test(resetHash) && /access_token=/.test(resetHash),
     linkError: /[#&]error(_code)?=/.test(resetHash),
@@ -684,7 +686,8 @@
 
   var editors = {
     list: function () { return callApi('/api/upload-url', { action: 'editors-list' }); },
-    invite: function (email, role) { return callApi('/api/upload-url', { action: 'editors-invite', email: email, role: role }); },
+    create: function (email, role, password) { return callApi('/api/upload-url', { action: 'editors-create', email: email, role: role, password: password }); },
+    setPassword: function (id, password) { return callApi('/api/upload-url', { action: 'editors-password', id: id, password: password }); },
     set: function (id, status) { return callApi('/api/upload-url', { action: 'editors-set', id: id, status: status }); },
     remove: function (id) { return callApi('/api/upload-url', { action: 'editors-remove', id: id }); }
   };
