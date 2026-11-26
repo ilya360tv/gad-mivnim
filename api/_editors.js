@@ -2,18 +2,22 @@
    ניהול משתמשים (מנהלים ומנהלי תוכן) — מנהל בלבד. לא נתיב עצמאי: מחובר ל-/api/upload-url כ-action
    (מגבלת 12 הפונקציות של Vercel; כבר יש 12 קבצים ב-api/).
      editors-list    → { editors: [{ id, email, role, status, can_publish, last_sign_in_at, self }] }
-     editors-invite  → { email, role: 'editor'|'admin' }  מזמין במייל (Supabase inviteUserByEmail); editor = מנהל תוכן (can_publish)
+     editors-invite  → { email, role: 'editor'|'admin' }  קישור הזמנה מ-Supabase (generateLink), נשלח ב-Gmail שלנו; editor = מנהל תוכן (can_publish)
      editors-set     → { id, status: 'approved'|'suspended' }
      editors-remove  → { id }  מוחק את חשבון ההתחברות ואת הפרופיל; התוכן נשאר
    כללים: מנהל לא משבית ולא מוחק את עצמו; תמיד נשאר מנהל פעיל; קבלנים לא נגישים מכאן.
    לא מחזיר ולא יוצר סיסמאות: המשתמש קובע סיסמה בעצמו מהקישור שבמייל.
    ========================================================================== */
 'use strict';
-const { sb, requireAdmin, httpError, UUID } = require('./_supabase');
+const { sb, requireAdmin, generateLink, httpError, UUID } = require('./_supabase');
+const { sendMail } = require('./_mailer');
+const { userInvite } = require('./_email-templates');
 
 const SITE = 'https://gad-mivnim.vercel.app';
 const REDIRECT = { editor: SITE + '/content.html', admin: SITE + '/admin.html' };
 const EMAIL_RE = /^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,}$/;
+const ROLE_LABEL = { editor: 'מנהל תוכן', admin: 'מנהל' };
+const EXISTS = 'הכתובת הזו כבר רשומה במערכת, ולכן לא נשלחה הזמנה. משתמש שמופיע ברשימה יכול לבחור סיסמה דרך "שכחתי סיסמה", או שאפשר למחוק אותו ולהזמין מחדש.';
 
 function he(status, code, message) {
   const e = httpError(status, code);
@@ -50,24 +54,36 @@ async function invite(body) {
   const role = String(body.role || '');
   if (!EMAIL_RE.test(email)) { throw he(400, 'bad_email', 'כתובת המייל לא תקינה'); }
   if (role !== 'editor' && role !== 'admin') { throw he(400, 'bad_role', 'יש לבחור תפקיד'); }
-  if (await emailExists(email)) { throw he(409, 'email_in_use', 'הכתובת הזו כבר רשומה במערכת'); }
-  let user;
+  if (await emailExists(email)) { throw he(409, 'email_in_use', EXISTS); }
+  let made;
   try {
-    user = await sb('/auth/v1/invite?redirect_to=' + encodeURIComponent(REDIRECT[role]), { method: 'POST', body: { email: email } });
+    made = await generateLink('invite', email, REDIRECT[role]);       // יוצר את החשבון; Supabase לא שולח מייל
   } catch (e) {
-    throw he(502, 'invite_failed', 'שליחת ההזמנה נכשלה. ייתכן שנחסמה שליחת המיילים של Supabase — נסו שוב מאוחר יותר');
+    if (/already|registered|exists/i.test(String(e.detail || ''))) { throw he(409, 'email_in_use', EXISTS); }
+    throw he(502, 'invite_failed', 'יצירת ההזמנה נכשלה, נסו שוב');
   }
-  if (!user || !user.id) { throw httpError(502, 'invite_failed'); }
+  if (!made.id) { throw httpError(502, 'invite_failed'); }
+  // כשל אחרי יצירת החשבון — מבטלים אותו כדי שאפשר יהיה להזמין שוב
+  const undo = async (code, message) => {
+    await sb('/auth/v1/admin/users/' + made.id, { method: 'DELETE' }).catch(() => {});
+    throw he(502, code, message);
+  };
+  if (!made.link) { await undo('invite_failed', 'יצירת ההזמנה נכשלה, נסו שוב'); }
   try {
     await sb('/rest/v1/profiles?on_conflict=id', {
       method: 'POST', headers: { Prefer: 'resolution=merge-duplicates,return=minimal' },
-      body: { id: user.id, role: role, status: 'approved', subscription: 'none', can_publish: true, fields: [] }
+      body: { id: made.id, role: role, status: 'approved', subscription: 'none', can_publish: true, fields: [] }
     });
-  } catch (e) {                                       // בלי פרופיל אין הרשאות — מבטלים את החשבון כדי שאפשר יהיה לנסות שוב
-    await sb('/auth/v1/admin/users/' + user.id, { method: 'DELETE' }).catch(() => {});
-    throw he(502, 'profile_failed', 'יצירת המשתמש נכשלה, נסו שוב');
+  } catch (e) {                                       // בלי פרופיל אין הרשאות
+    await undo('profile_failed', 'יצירת המשתמש נכשלה, נסו שוב');
   }
-  return { id: user.id, email: email };
+  try {
+    const mail = userInvite(ROLE_LABEL[role], made.link);
+    await sendMail({ to: email, subject: mail.subject, html: mail.html, text: mail.text });
+  } catch (e) {
+    await undo('mail_failed', 'שליחת המייל נכשלה, ולכן המשתמש לא נוסף. נסו שוב בעוד כמה דקות');
+  }
+  return { id: made.id, email: email };
 }
 
 // המשתמש שעליו פועלים: לא אני, ורק מנהל או מנהל תוכן

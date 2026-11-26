@@ -5,11 +5,16 @@
    שורה ב-temp_credentials, ומייל (אותה תבנית כמו איפוס של המנהל).
    התשובה תמיד אותו משפט — בלי לגלות אם הקוד קיים, ובלי להחזיר את הסיסמה.
    עד 3 בקשות לאותו קוד בשעה.
+   body: { email, area: 'admin'|'content' } — "שכחתי סיסמה" של מנהל / מנהל תוכן: קישור חד-פעמי במייל שלנו
+   (לא מייל של Supabase). אותה תשובה תמיד, בלי להחזיר את הקישור. עד 3 בקשות לאותה כתובת בשעה.
    ========================================================================== */
 'use strict';
-const { sb, readBody, handler, tempPassword, saveTempPassword } = require('./_supabase');
+const crypto = require('crypto');
+const { sb, readBody, handler, tempPassword, saveTempPassword, generateLink } = require('./_supabase');
 const { sendMail, isRealEmail } = require('./_mailer');
-const { passwordReset } = require('./_email-templates');
+const { passwordReset, staffPasswordReset } = require('./_email-templates');
+
+const SITE = 'https://gad-mivnim.vercel.app';
 
 const GENERIC = 'אם הקוד קיים ויש לו מייל שמור, נשלחה אליו סיסמה זמנית';
 
@@ -45,8 +50,37 @@ async function savedEmail(profile) {
   return { to: String(who.email).trim(), name: who.full_name || profile.full_name || '' };
 }
 
+// מנהל / מנהל תוכן פעיל עם הכתובת הזו (קבלנים לא כלולים — להם יש איפוס לפי קוד)
+async function isStaff(email) {
+  const rows = await sb('/rest/v1/profiles?select=id&role=in.(admin,editor)&status=eq.approved');
+  for (const p of rows || []) {
+    const u = await sb('/auth/v1/admin/users/' + p.id).catch(() => null);
+    if (u && String(u.email || '').toLowerCase() === email) { return true; }
+  }
+  return false;
+}
+
+async function staffReset(body) {
+  const email = String(body.email || '').trim().toLowerCase();
+  if (email.length > 254 || !isRealEmail(email)) { return { ok: true }; }
+  try {
+    // בטבלת הניסיונות נשמר רק גיבוב של הכתובת (העמודה מוגבלת ל-20 תווים)
+    if (!(await allowed('E' + crypto.createHash('sha256').update(email).digest('hex').slice(0, 19)))) { return { ok: true }; }
+    if (!(await isStaff(email))) { return { ok: true }; }
+    const made = await generateLink('recovery', email, SITE + (body.area === 'content' ? '/content.html' : '/admin.html'));
+    if (!made.link) { throw new Error('no_link'); }
+    const mail = staffPasswordReset(made.link);
+    await sendMail({ to: email, subject: mail.subject, html: mail.html, text: mail.text });
+  } catch (e) {
+    console.error('staff_reset_fail', e && e.code ? String(e.code) : 'error');
+  }
+  return { ok: true };
+}
+
 module.exports = handler(async (req) => {
-  const code = normalizeCode(readBody(req).userCode);
+  const body = readBody(req);
+  if (body.email !== undefined) { return staffReset(body); }
+  const code = normalizeCode(body.userCode);
   if (!code) { return { ok: true, message: GENERIC }; }
 
   try {

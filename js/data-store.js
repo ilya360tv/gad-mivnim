@@ -283,7 +283,7 @@
   function signOut() {
     return client().then(function (sb) { return sb.auth.signOut(); }).catch(function () {});
   }
-  /* ---------- איפוס סיסמת מנהל — רק Supabase Auth המובנה (resetPasswordForEmail / PASSWORD_RECOVERY / updateUser) ---------- */
+  /* ---------- איפוס סיסמת מנהל / מנהל תוכן — הקישור נשלח מהשרת שלנו (/api/forgot-password); הסיסמה נקבעת ב-Supabase Auth (PASSWORD_RECOVERY / updateUser) ---------- */
   var RESET_KEY = 'gm-admin-reset-at', RESET_GAP_MS = 60 * 1000;
   var resetHash = (area === 'admin' || area === 'content') ? String(location.hash || '') : '';          // נקרא לפני ש-supabase-js מנקה את הכתובת
   var adminReset = {
@@ -295,8 +295,9 @@
       try { last = parseInt(localStorage.getItem(RESET_KEY) || '0', 10) || 0; } catch (e) {}
       if (Date.now() - last < RESET_GAP_MS) { return Promise.resolve(); }
       try { localStorage.setItem(RESET_KEY, String(Date.now())); } catch (e) {}
-      return client().then(function (sb) {
-        return sb.auth.resetPasswordForEmail(String(email).trim(), { redirectTo: location.origin + (area === 'content' ? '/content.html' : '/admin.html') });
+      return fetch('/api/forgot-password', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: String(email).trim(), area: area })
       }).then(function () {}, function () {});
     },
     // מאזין ל-PASSWORD_RECOVERY; אם האירוע כבר עבר והסשן קיים — קורא ל-cb בכל זאת. onNone: אין סשן (קישור פג/נוצל).

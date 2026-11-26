@@ -96,6 +96,14 @@ async function requireContentManager(req) {
   return user;
 }
 
+// קישור חד-פעמי להזמנה ('invite') או לאיפוס סיסמה ('recovery') — Supabase לא שולח מייל, אנחנו שולחים דרך _mailer.js.
+// את הקישור אסור לרשום ללוג או להחזיר לדפדפן.
+async function generateLink(type, email, redirectTo) {
+  const data = await sb('/auth/v1/admin/generate_link?redirect_to=' + encodeURIComponent(redirectTo),
+    { method: 'POST', body: { type: type, email: email, redirect_to: redirectTo } });
+  return { id: data && data.id || '', link: data && data.action_link || '' };
+}
+
 // "קבלן כללי" לבד, או עד 3 תחומים (אותו כלל כמו באתר)
 function normalizeFields(list) {
   const names = (Array.isArray(list) ? list : [])
@@ -184,4 +192,4 @@ async function storageGet(bucket, objectPath) {
   return buf.length ? buf : null;
 }
 
-module.exports = { GENERAL, sb, requireAdmin, requireEditorOrAdmin, requireContentManager, requireUser, normalizeFields, readBody, handler, httpError, UUID, tempPassword, saveTempPassword, storageSign, storageGet };
+module.exports = { GENERAL, sb, requireAdmin, requireEditorOrAdmin, requireContentManager, requireUser, generateLink, normalizeFields, readBody, handler, httpError, UUID, tempPassword, saveTempPassword, storageSign, storageGet };
