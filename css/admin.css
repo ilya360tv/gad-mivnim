@@ -569,9 +569,6 @@ input[type="date"].adm-input { color-scheme: dark; }
 .adm-linkbtn:hover { color: var(--lb-hover); }
 .adm-linkbtn:focus-visible { outline: 3px solid #fff; outline-offset: 3px; border-radius: 6px; }
 .adm-ok { padding: 10px 12px; font-size: .92rem; color: var(--ok); background: rgba(45, 212, 191, .1); border: 1px solid rgba(45, 212, 191, .55); border-radius: 10px; }
-.adm-passwrap { display: flex; align-items: center; gap: 8px; }
-.adm-passwrap input { flex: 1 1 auto; }
-#usEye { width: 44px; height: 44px; flex: none; }
 /* ----- פרסומות (חלון הפרסומות בדף הבית) ----- */
 .adm-ads { list-style: none; display: flex; flex-direction: column; gap: 10px; }
 .adm-ad { display: grid; grid-template-columns: auto 96px minmax(0, 1fr) auto auto auto; align-items: center; gap: 14px; padding: 12px 16px; }

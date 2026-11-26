@@ -20,7 +20,6 @@
   var loginForm = document.getElementById('tnLoginForm');
   var userInput = document.getElementById('tnUser');
   var passInput = document.getElementById('tnPass');
-  var eye       = document.getElementById('tnEye');
   var forgot    = document.getElementById('tnForgot');
   var forgotBox = document.getElementById('tnForgotBox');
   var forgotCode = document.getElementById('tnForgotCode');
@@ -74,18 +73,6 @@
     });
   }
   var currentCode = null;
-
-  function setEyeLabel() {
-    var shown = passInput.type === 'text';
-    eye.setAttribute('aria-label', t(shown ? 'tn_hide_pass' : 'tn_show_pass'));
-    eye.setAttribute('aria-pressed', shown ? 'true' : 'false');
-    eye.classList.toggle('is-shown', shown);
-  }
-
-  eye.addEventListener('click', function () {
-    passInput.type = passInput.type === 'password' ? 'text' : 'password';
-    setEyeLabel();
-  });
 
   forgot.addEventListener('click', function () {
     var open = forgotBox.hidden;
@@ -231,8 +218,6 @@
     var code = userInput.value.trim();             // GM-1001 וגם gm-1001 — הנרמול ב-data-store
     var pass = passInput.value;
     passInput.value = '';                         // הסיסמה לא נשמרת — מנקים מיד
-    passInput.type = 'password';
-    setEyeLabel();
     loginBtn.disabled = true;
     store.signInContractor(code, pass).then(function (user) {
       loginBtn.disabled = false;
@@ -495,11 +480,9 @@
     if (document.fonts && document.fonts.ready) { document.fonts.ready.then(alignOnLoad); }
   }
 
-  /* ---------- 5) החלפת שפה: תוויות שאינן data-i18n (aria-label) ---------- */
-  setEyeLabel();
+  /* ---------- 5) החלפת שפה: טקסטים שאינם data-i18n ---------- */
   if ('MutationObserver' in window) {
     new MutationObserver(function () {
-      setEyeLabel();
       if (!members.hidden) { renderMembers(); }
       if (toast.classList.contains('is-on')) { toast.textContent = t(toastKey); }
       sizeCard();                                                // גלולות הצד משתנות עם השפה

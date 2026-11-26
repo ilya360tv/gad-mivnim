@@ -1360,19 +1360,12 @@
     return new TextEncoder().encode(v).length > 72 ? 'הסיסמה ארוכה מדי — עד 72 תווים' : '';
   }
   var passFields = function () {
-    return '<div class="adm-field" data-fe-host><label for="usPass">סיסמה *</label><div class="adm-passwrap">' +
+    return '<div class="adm-field" data-fe-host><label for="usPass">סיסמה *</label>' +
         '<input type="password" id="usPass" class="adm-input" dir="ltr" autocomplete="new-password">' +
-        '<button type="button" class="adm-icon-btn" id="usEye" aria-pressed="false" aria-label="הצגת הסיסמה">' + EYE_ICON + '</button></div>' +
         '<span class="adm-note">לפחות 12 תווים, כולל אות וספרה.</span></div>' +
       '<div class="adm-field" data-fe-host><label for="usPass2">אימות סיסמה *</label><input type="password" id="usPass2" class="adm-input" dir="ltr" autocomplete="new-password"></div>' +
       '<div><button type="button" class="adm-btn adm-btn-sm" id="usGen">יצירת סיסמה חזקה</button></div>';
   };
-  function showPasswords(show) {
-    $('usPass').type = $('usPass2').type = show ? 'text' : 'password';
-    $('usEye').classList.toggle('is-shown', show);
-    $('usEye').setAttribute('aria-pressed', show ? 'true' : 'false');
-    $('usEye').setAttribute('aria-label', show ? 'הסתרת הסיסמה' : 'הצגת הסיסמה');
-  }
   var passRules = function () {
     return [
       { el: $('usPass'), check: function () { return passwordProblem($('usPass').value); } },
@@ -1380,10 +1373,10 @@
     ];
   };
   function bindPasswords() {
-    $('usEye').addEventListener('click', function () { showPasswords($('usPass').type === 'password'); });
     $('usGen').addEventListener('click', function () {
       $('usPass').value = $('usPass2').value = strongPassword();
-      showPasswords(true);
+      window.GMPasswordEye.show($('usPass'), true);
+      window.GMPasswordEye.show($('usPass2'), true);
       if (FE) { FE.clear($('usPass')); FE.clear($('usPass2')); }
     });
   }

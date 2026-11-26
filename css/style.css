@@ -7332,31 +7332,6 @@ html[dir] body #tenders .tn-login-form { display: flex; flex-direction: column; 
 .tn-login-fields,
 .tn-login-foot { display: flex; flex-direction: column; gap: 16px; }
 
-/* סיסמה + עין */
-.tn-pass { position: relative; }
-html[dir] body #tenders .tn-pass input { padding-inline-end: 52px; }
-.tn-eye {
-  position: absolute;
-  top: 50%;
-  inset-inline-end: 6px;
-  transform: translateY(-50%);
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: #aab3bd;
-  cursor: pointer;
-}
-.tn-eye:hover { color: var(--lb); }
-.tn-eye:focus-visible { outline: 2px solid var(--lb); outline-offset: 2px; }
-.tn-eye .tn-eye-off,
-.tn-eye.is-shown .tn-eye-on { display: none; }
-.tn-eye.is-shown .tn-eye-off { display: block; }
-
 .tn-forgot-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: -4px; }
 .tn-forgot {
   padding: 2px 0;

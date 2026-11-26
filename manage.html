@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=17">
+  <link rel="stylesheet" href="css/admin.css?v=18">
 </head>
 <body>
 
@@ -59,13 +59,11 @@
       <p class="adm-note">לפחות 12 תווים, כולל אות וספרה.</p>
       <div class="adm-field" data-fe-host>
         <label for="mgNewPass">סיסמה חדשה</label>
-        <div class="adm-passwrap"><input type="password" id="mgNewPass" autocomplete="new-password" dir="ltr">
-          <button type="button" class="adm-icon-btn" data-eye aria-pressed="false" aria-label="הצגת הסיסמה">👁</button></div>
+        <input type="password" id="mgNewPass" autocomplete="new-password" dir="ltr">
       </div>
       <div class="adm-field" data-fe-host>
         <label for="mgNewPass2">אימות סיסמה</label>
-        <div class="adm-passwrap"><input type="password" id="mgNewPass2" autocomplete="new-password" dir="ltr">
-          <button type="button" class="adm-icon-btn" data-eye aria-pressed="false" aria-label="הצגת האימות">👁</button></div>
+        <input type="password" id="mgNewPass2" autocomplete="new-password" dir="ltr">
       </div>
       <button type="submit" class="adm-btn adm-btn-primary adm-btn-block" id="mgResetSave">שמירת הסיסמה</button>
       <p class="adm-error" id="mgResetError" role="alert" hidden></p>
@@ -98,6 +96,7 @@
   <script src="js/supabase-config.js?v=1"></script>
   <script src="js/data-store.js?v=19"></script>
   <script src="js/form-errors.js?v=2"></script>
-  <script src="js/manage.js?v=1"></script>
+  <script src="js/password-eye.js?v=1"></script>
+  <script src="js/manage.js?v=2"></script>
 </body>
 </html>

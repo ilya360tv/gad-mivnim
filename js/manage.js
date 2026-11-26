@@ -86,13 +86,6 @@
     RS.request($('mgForgotEmail').value).then(function () { btn.disabled = false; $('mgForgotMsg').hidden = false; });
   });
 
-  document.querySelectorAll('#mgResetForm [data-eye]').forEach(function (b) {
-    b.addEventListener('click', function () {
-      var input = b.parentNode.querySelector('input'), show = input.type === 'password';
-      input.type = show ? 'text' : 'password';
-      b.setAttribute('aria-pressed', show ? 'true' : 'false');
-    });
-  });
   var resetFE = FE.attach($('mgResetForm'), [
     { el: $('mgNewPass'), check: function () {
       var v = $('mgNewPass').value;
