@@ -78,6 +78,17 @@ async function requireUser(req) {
   return user;
 }
 
+// עורך תוכן (role = 'editor') או מנהל — פעיל ומאושר. אין כאן MFA: הוא לא מופעל בפרויקט (ראו הדוח).
+async function requireEditorOrAdmin(req) {
+  const user = await requireUser(req);
+  const rows = await sb('/rest/v1/profiles?select=role,status,can_publish&id=eq.' + encodeURIComponent(user.id));
+  const p = rows && rows[0];
+  if (!p || p.status !== 'approved' || (p.role !== 'admin' && p.role !== 'editor')) { throw httpError(403, 'not_editor'); }
+  user.gm_role = p.role;
+  user.gm_can_publish = p.role === 'admin' || !!p.can_publish;
+  return user;
+}
+
 // "קבלן כללי" לבד, או עד 3 תחומים (אותו כלל כמו באתר)
 function normalizeFields(list) {
   const names = (Array.isArray(list) ? list : [])
@@ -166,4 +177,4 @@ async function storageGet(bucket, objectPath) {
   return buf.length ? buf : null;
 }
 
-module.exports = { GENERAL, sb, requireAdmin, requireUser, normalizeFields, readBody, handler, httpError, UUID, tempPassword, saveTempPassword, storageSign, storageGet };
+module.exports = { GENERAL, sb, requireAdmin, requireEditorOrAdmin, requireUser, normalizeFields, readBody, handler, httpError, UUID, tempPassword, saveTempPassword, storageSign, storageGet };

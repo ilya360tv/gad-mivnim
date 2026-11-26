@@ -10,7 +10,9 @@
    ========================================================================== */
 'use strict';
 const crypto = require('crypto');
-const { sb, requireAdmin, httpError, UUID } = require('./_supabase');
+const { sb, requireAdmin, requireEditorOrAdmin, httpError, UUID } = require('./_supabase');
+const { sendMail, noticeRecipients, isRealEmail } = require('./_mailer');
+const T = require('./_email-templates');
 
 const BUCKET = 'site-ads';
 const MB = 1024 * 1024;
@@ -54,7 +56,7 @@ async function removeObjects(paths) {
 }
 
 async function sign(req, body) {
-  await requireAdmin(req);
+  await requireEditorOrAdmin(req);
   const kind = body.kind === 'video' ? 'video' : 'image';      // 'image' גם לתמונת פוסטר
   const ext = String(body.ext || '').toLowerCase();
   if (EXT[ext] !== kind) {
@@ -76,7 +78,7 @@ async function sign(req, body) {
 }
 
 async function verify(req, body) {
-  await requireAdmin(req);
+  await requireEditorOrAdmin(req);
   const path = String(body.path || '');
   if (!PATH_RE.test(path)) { throw httpError(400, 'bad_path'); }
   const kind = body.kind === 'video' ? 'video' : 'image';
@@ -103,11 +105,15 @@ async function verify(req, body) {
 }
 
 async function del(req, body) {
-  await requireAdmin(req);
+  const me = await requireEditorOrAdmin(req);
   const ids = (Array.isArray(body.ids) ? body.ids : [body.id]).map(String);
   if (!ids.length || ids.length > 50 || !ids.every((i) => UUID.test(i))) { throw httpError(400, 'bad_id'); }
   const rows = await sb('/rest/v1/ads?select=id,media_path,poster_path&id=in.(' + ids.join(',') + ')');
   if (!rows || !rows.length) { throw httpError(404, 'not_found'); }
+  if (me.gm_role !== 'admin') {                       // עורך: רק טיוטות שלו
+    const own = await sb('/rest/v1/ads?select=id&status=eq.draft&created_by=eq.' + me.id + '&id=in.(' + ids.join(',') + ')');
+    if (!own || own.length !== ids.length) { throw httpError(403, 'not_your_draft'); }
+  }
   await sb('/rest/v1/ads?id=in.(' + rows.map((r) => r.id).join(',') + ')', { method: 'DELETE', headers: { Prefer: 'return=minimal' } });
   const files = [];
   rows.forEach((r) => { if (r.media_path) { files.push(r.media_path); } if (r.poster_path) { files.push(r.poster_path); } });
@@ -116,7 +122,7 @@ async function del(req, body) {
 }
 
 async function removeFiles(req, body) {
-  await requireAdmin(req);
+  await requireEditorOrAdmin(req);
   const paths = (Array.isArray(body.paths) ? body.paths : []).map(String).filter((p) => PATH_RE.test(p)).slice(0, 10);
   if (!paths.length) { return { removed: 0 }; }
   const used = await sb('/rest/v1/ads?select=media_path,poster_path');
@@ -127,4 +133,35 @@ async function removeFiles(req, body) {
   return { removed: free.length };
 }
 
-module.exports = { sign, verify, del, removeFiles };
+// עורך שלח לאישור → מייל למנהלים (כותרת בלבד, בלי מדיה)
+async function notifySubmitted(req, body) {
+  const me = await requireEditorOrAdmin(req);
+  const id = String(body.id || '');
+  if (!UUID.test(id)) { throw httpError(400, 'bad_id'); }
+  const rows = await sb('/rest/v1/ads?select=title,status,created_by&id=eq.' + id);
+  const ad = rows && rows[0];
+  if (!ad || ad.status !== 'pending' || (me.gm_role !== 'admin' && ad.created_by !== me.id)) { throw httpError(403, 'not_allowed'); }
+  const msg = T.adPending(ad.title, me.email || '');
+  let sent = 0;
+  for (const to of await noticeRecipients(sb)) {
+    try { await sendMail({ to: to, subject: msg.subject, html: msg.html, text: msg.text }); sent++; } catch (e) { /* ממשיכים לשאר */ }
+  }
+  return { sent: sent };
+}
+
+// מנהל אישר/דחה → מייל לעורך
+async function notifyReviewed(req, body) {
+  await requireAdmin(req);
+  const id = String(body.id || '');
+  if (!UUID.test(id)) { throw httpError(400, 'bad_id'); }
+  const rows = await sb('/rest/v1/ads?select=title,status,created_by,review_note,reviewed_at&id=eq.' + id);
+  const ad = rows && rows[0];
+  if (!ad || !ad.created_by || !ad.reviewed_at) { return { sent: 0 }; }
+  const approved = ad.status === 'published';
+  const user = await sb('/auth/v1/admin/users/' + ad.created_by).catch(() => null);
+  if (!user || !isRealEmail(user.email)) { return { sent: 0 }; }
+  const msg = T.adReviewed(ad.title, approved, ad.review_note);
+  try { await sendMail({ to: user.email, subject: msg.subject, html: msg.html, text: msg.text }); return { sent: 1 }; } catch (e) { return { sent: 0 }; }
+}
+
+module.exports = { sign, verify, del, removeFiles, notifySubmitted, notifyReviewed };

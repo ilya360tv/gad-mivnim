@@ -155,4 +155,24 @@ function tenderSentSummary(title, count) {
   };
 }
 
-module.exports = { registrationReceived, docsRequested, approvedAccess, passwordReset, newTender, adminRegistration, participationNotice, tenderSentSummary, LOGIN, ADMIN };
+// ===== סטודיו תוכן: פרסומות =====
+function adPending(title, editorLabel) {
+  return {
+    subject: 'פרסומת חדשה ממתינה לאישור',
+    html: layout('פרסומת חדשה ממתינה לאישור',
+      '<p>העורך <strong>' + esc(editorLabel || '') + '</strong> שלח לאישור את הפרסומת:</p>' +
+      '<p style="font-size:18px;"><strong>' + esc(title) + '</strong></p>' + button(SITE + '/admin.html#ads', 'לבדיקה ואישור')),
+    text: 'פרסומת חדשה ממתינה לאישור: ' + title + '\n' + SITE + '/admin.html#ads'
+  };
+}
+function adReviewed(title, approved, note) {
+  const head = approved ? 'הפרסומת אושרה ופורסמה' : 'הפרסומת נדחתה';
+  const noteHtml = !approved && note ? '<p>הערת המנהל: <strong>' + esc(note) + '</strong></p>' : '';
+  return {
+    subject: head + ' – ' + title,
+    html: layout(head, '<p style="font-size:18px;"><strong>' + esc(title) + '</strong></p>' + noteHtml + button(SITE + '/content.html', 'לסטודיו התוכן')),
+    text: head + ': ' + title + (!approved && note ? '\nהערה: ' + note : '') + '\n' + SITE + '/content.html'
+  };
+}
+
+module.exports = { registrationReceived, docsRequested, approvedAccess, passwordReset, newTender, adminRegistration, participationNotice, tenderSentSummary, adPending, adReviewed, LOGIN, ADMIN };
