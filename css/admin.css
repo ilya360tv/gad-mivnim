@@ -620,3 +620,7 @@ input[type="date"].adm-input { color-scheme: dark; }
 .mg-choice span { font-size: .92rem; }
 .mg-choice:hover { filter: brightness(1.08); }
 .mg-choice:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+
+/* שמות האזורים בסרגל העליון: כל קישור בשורה אחת, והסרגל נשבר לשורות כשצר */
+.adm-top-actions { flex-wrap: wrap; }
+.adm-top-actions .adm-link { white-space: nowrap; }
