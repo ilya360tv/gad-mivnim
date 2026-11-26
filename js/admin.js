@@ -195,7 +195,7 @@
   };
   var current = 'dashboard';
   function go(view, focus) {
-    if (!VIEWS[view]) { view = 'dashboard'; }
+    if (!VIEWS[view] || view === 'ads') { view = 'dashboard'; }   // פרסומות מנוהלות רק ב-content.html; הקוד נשמר
     current = view;
     document.querySelectorAll('.adm-nav [data-view]').forEach(function (b) {
       var on = b.getAttribute('data-view') === view;
