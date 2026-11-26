@@ -296,7 +296,7 @@
   };
   var current = 'dashboard';
   function go(view, focus) {
-    if (!VIEWS[view]) { view = 'dashboard'; }
+    if (!VIEWS[view] || (view === 'editors' && !EDITORS_ENABLED)) { view = 'dashboard'; }
     current = view;
     document.querySelectorAll('.adm-nav [data-view]').forEach(function (b) {
       var on = b.getAttribute('data-view') === view;
@@ -316,7 +316,7 @@
     var badge = $('admPendingBadge');
     badge.hidden = !pending;
     badge.textContent = pending;
-    var adsWait = (data.ads || []).filter(function (a) { return a.status === 'pending'; }).length;
+    var adsWait = EDITORS_ENABLED ? (data.ads || []).filter(function (a) { return a.status === 'pending'; }).length : 0;
     var ab = $('admAdsBadge');
     ab.hidden = !adsWait;
     ab.textContent = adsWait;
@@ -1033,16 +1033,19 @@
     return src ? '<img src="' + esc(src) + '" alt="" loading="lazy" width="96" height="60">' : '<span class="adm-ad-nothumb">—</span>';
   };
 
+  // מצב "עורכי תוכן" כבוי: אין עורך חיצוני, רק המנהל מעלה תוכן. הקוד והמסד נשמרים לעתיד — מדליקים כאן (ובדף content.js) ב-true.
+  var EDITORS_ENABLED = false;
   var adsFilter = 'all';          // 'all' | 'pending'
   var pendingAds = function () { return (data.ads || []).filter(function (a) { return a.status === 'pending'; }); };
   function renderAds() {
     var all = data.ads || [], waiting = pendingAds().length;
+    if (!EDITORS_ENABLED) { adsFilter = 'all'; }
     var list = adsFilter === 'pending' ? pendingAds() : all;
     content.innerHTML =
-      '<div class="adm-toolbar adm-ads-filter" role="group" aria-label="סינון פרסומות">' +
+      (!EDITORS_ENABLED ? '' : '<div class="adm-toolbar adm-ads-filter" role="group" aria-label="סינון פרסומות">' +
         '<button type="button" class="adm-btn adm-btn-sm' + (adsFilter === 'all' ? ' adm-btn-primary' : '') + '" data-adfilter="all" aria-pressed="' + (adsFilter === 'all') + '">כל הפרסומות</button>' +
         '<button type="button" class="adm-btn adm-btn-sm' + (adsFilter === 'pending' ? ' adm-btn-primary' : '') + '" data-adfilter="pending" aria-pressed="' + (adsFilter === 'pending') + '">ממתינות לאישור' +
-          (waiting ? ' <span class="adm-badge">' + waiting + '</span>' : '') + '</button></div>' +
+          (waiting ? ' <span class="adm-badge">' + waiting + '</span>' : '') + '</button></div>') +
       '<div class="adm-toolbar"><p class="adm-note adm-ads-hint">גרירה (⠿) או החצים ↑↓ משנים את סדר ההצגה. הפרסומות מתחלפות באתר לפי הסדר הזה.</p>' +
         (list.some(function (a) { return a.is_demo; }) ? '<button type="button" class="adm-btn adm-btn-danger" id="adDemoDel">מחיקת כל פרסומות הדוגמה</button>' : '') +
         '<button type="button" class="adm-btn adm-btn-primary" id="adNew">+ הוספת פרסומת</button></div>' +
@@ -1054,7 +1057,7 @@
           '<span class="adm-ad-main"><strong>' + esc(a.title) + (a.is_demo ? ' ' + chip('pending', 'דוגמה') : '') + '</strong><span class="adm-muted">' + esc(a.advertiser) + ' · ' +
             (a.media_type === 'video' ? 'סרטון' : 'תמונה') + '</span>' +
             '<span class="adm-muted">' + (a.starts_at || a.ends_at ? fmtDate(a.starts_at) + ' – ' + fmtDate(a.ends_at) : 'ללא הגבלת תאריכים') + '</span></span>' +
-          '<span class="adm-ad-status">' + (a.status === 'published' ? chip(ADS_CHIP[st], ADS_STATUS[st]) :
+          '<span class="adm-ad-status">' + (a.status === 'published' || !EDITORS_ENABLED ? chip(ADS_CHIP[st], ADS_STATUS[st]) :
             chip(pend ? 'pending' : (a.reviewed_at ? 'closed' : 'draft'), pend ? 'ממתינה לאישור' : (a.reviewed_at ? 'נדחתה' : 'טיוטת עורך'))) + '</span>' +
           '<label class="adm-switch"><input type="checkbox" data-act="toggle"' + (a.active ? ' checked' : '') + '><span>פעילה</span></label>' +
           '<span class="adm-acts">' +

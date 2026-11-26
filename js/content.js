@@ -23,6 +23,8 @@
   var fmtSize = function (n) { return n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; };
   var chip = function (cls, text) { return '<span class="adm-chip adm-chip-' + cls + '">' + esc(text) + '</span>'; };
 
+  // מצב "עורכי תוכן" כבוי (רק המנהל מעלה): בלי סטטוסי אישור, בלי סינון "שלי/כל", בלי מילים על עורך. הקוד נשמר לעתיד (true = חוזר).
+  var EDITORS_ENABLED = false;
   var RS = store.adminReset;
   var views = { login: $('ctLogin'), forgot: $('ctForgotView'), reset: $('ctResetView'), denied: $('ctDenied'), app: $('ctApp') };
   var panel = $('ctPanel');
@@ -171,9 +173,9 @@
   function enter(p) {
     if (!store.activeEditor(p)) { showOnly('denied'); $('ctDeniedTitle').focus(); return; }
     me = p;
-    $('ctWho').textContent = (p.email || p.fullName || '') + (p.role === 'admin' ? ' · מנהל' : '');
+    $('ctWho').textContent = p.email || p.fullName || '';
     showOnly('app');
-    tab = 'list'; filter = p.role === 'admin' ? 'all' : 'mine';
+    tab = 'list'; filter = (p.role === 'admin' || !EDITORS_ENABLED) ? 'all' : 'mine';
     load().then(function () { go('list', false); });
   }
 
@@ -187,6 +189,7 @@
   var canDelete = function (a) { return isAdmin() || (a.created_by === me.id && a.status === 'draft'); };
   var canPub = function () { return isAdmin() || me.canPublish; };
   function statusOf(a) {
+    if (!EDITORS_ENABLED) { return a.status === 'published' ? { cls: 'published', text: 'פורסמה' } : { cls: 'draft', text: 'טיוטה' }; }
     if (a.status === 'published') { return { cls: 'published', text: 'פורסמה' }; }
     if (a.status === 'pending') { return { cls: 'pending', text: 'ממתינה לאישור' }; }
     if (a.reviewed_at) { return { cls: 'closed', text: 'נדחתה' }; }
@@ -228,9 +231,9 @@
   function renderList() {
     var list = ads.filter(function (a) { return filter === 'all' || a.created_by === me.id; });
     panel.innerHTML =
-      '<div class="ct-bar"><div class="ct-seg" role="group" aria-label="סינון">' +
+      '<div class="ct-bar">' + (EDITORS_ENABLED ? '<div class="ct-seg" role="group" aria-label="סינון">' +
         '<button type="button" data-f="mine" aria-pressed="' + (filter === 'mine') + '">הפרסומות שלי</button>' +
-        '<button type="button" data-f="all" aria-pressed="' + (filter === 'all') + '">כל הפרסומות</button></div>' +
+        '<button type="button" data-f="all" aria-pressed="' + (filter === 'all') + '">כל הפרסומות</button></div>' : '<h2 class="adm-h2">הפרסומות</h2>') +
         '<button type="button" class="adm-btn adm-btn-primary ct-big" id="ctAdd">+ פרסומת חדשה</button></div>' +
       (list.length ? '<ul class="ct-grid">' + list.map(function (a) {
         var st = statusOf(a), mine = a.created_by === me.id;
@@ -239,11 +242,11 @@
           '<h3>' + esc(a.title) + '</h3>' +
           '<div class="ct-meta">' + chip(st.cls, st.text) + (a.active ? chip('active', 'פעילה') : chip('draft', 'כבויה')) +
             '<span>' + (a.starts_at || a.ends_at ? fmtDate(a.starts_at) + ' – ' + fmtDate(a.ends_at) : 'ללא הגבלת תאריכים') + '</span>' +
-            (!mine && filter === 'all' ? '<span>(של עורך אחר)</span>' : '') + '</div>' +
-          (st.cls === 'closed' && a.review_note ? '<p class="ct-note"><strong>הערת המנהל:</strong> ' + esc(a.review_note) + '</p>' : '') +
+            (EDITORS_ENABLED && !mine && filter === 'all' ? '<span>(של עורך אחר)</span>' : '') + '</div>' +
+          (EDITORS_ENABLED && st.cls === 'closed' && a.review_note ? '<p class="ct-note"><strong>הערת המנהל:</strong> ' + esc(a.review_note) + '</p>' : '') +
           '<div class="ct-acts">' +
             (canEdit(a) ? '<button type="button" class="adm-btn" data-act="edit">עריכה</button>' : '') +
-            (a.status === 'draft' && canEdit(a) ? '<button type="button" class="adm-btn adm-btn-primary" data-act="submit">' + (canPub() ? 'פרסום' : 'שליחה לאישור') + '</button>' : '') +
+            (a.status !== 'published' && canEdit(a) && (EDITORS_ENABLED ? a.status === 'draft' : true) ? '<button type="button" class="adm-btn adm-btn-primary" data-act="submit">' + (canPub() ? 'פרסום' : 'שליחה לאישור') + '</button>' : '') +
             (canDelete(a) ? '<button type="button" class="adm-btn adm-btn-danger" data-act="delete">מחיקה</button>' : '') +
           '</div></li>';
       }).join('') + '</ul>' : '<p class="adm-empty adm-card">' + (filter === 'mine' ? 'עדיין אין לך פרסומות. לחצו על "פרסומת חדשה".' : 'אין פרסומות.') + '</p>');
@@ -263,7 +266,7 @@
     else if (act === 'delete') { removeOne(a); }
   });
   function afterStatusChange(a, status) {
-    if (status === 'pending') { store.ads.notifySubmitted(a.id).catch(function () {}); }
+    if (EDITORS_ENABLED && status === 'pending') { store.ads.notifySubmitted(a.id).catch(function () {}); }
   }
   function sendOne(a, btn) {
     var target = canPub() ? 'published' : 'pending';
