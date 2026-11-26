@@ -3605,7 +3605,7 @@ function cardScale() {
   var line1 = document.querySelector('.hero .hero-showroom');
   var line2 = document.querySelector('.hero .hero-location');
   if (!line1 || !line2) { return; }
-  var MIN = 14;
+  var MIN = 10;                                               // גופן המכחול רחב יותר: במובייל השורה קטנה מעט אך נשארת בשורה אחת
   function textW(el) {
     var rg = document.createRange(); rg.selectNodeContents(el);
     return rg.getBoundingClientRect().width;
