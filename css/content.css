@@ -78,6 +78,7 @@
 /* ===== סטודיו (CMS): תפריט צד + רשימות + בלוקים ===== */
 .ct-app { max-width: 1480px; }
 .ct-layout { display: grid; grid-template-columns: 270px minmax(0, 1fr); gap: 24px; align-items: start; padding-top: 18px; }
+.ct-layout.is-solo { grid-template-columns: minmax(0, 1fr); }
 .ct-menubtn { display: none; width: 100%; min-height: 48px; margin-bottom: 8px; }
 .ct-side { position: sticky; top: 12px; max-height: calc(100vh - 24px); overflow-y: auto; padding: 12px; background: var(--surface); border-radius: 16px; box-shadow: 0 0 0 1px rgba(56, 189, 248, .25); }
 .ct-side ul { list-style: none; display: flex; flex-direction: column; gap: 2px; }

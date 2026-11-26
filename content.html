@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="css/admin.css?v=15">
-  <link rel="stylesheet" href="css/content.css?v=2">
+  <link rel="stylesheet" href="css/content.css?v=3">
 </head>
 <body class="ct">
 
@@ -77,7 +77,7 @@
   <main class="adm-login" id="ctDenied" hidden>
     <div class="adm-card adm-login-card">
       <h1 class="adm-login-title" id="ctDeniedTitle" tabindex="-1">אין לך הרשאה לעמוד זה</h1>
-      <p class="adm-note">לחשבון הזה אין הרשאת ניהול. לפרטים פנו למנהל האתר.</p>
+      <p class="adm-note">לחשבון הזה אין הרשאה לסטודיו, או שהוא הושבת. לפרטים פנו למנהל האתר.</p>
       <button type="button" class="adm-btn adm-btn-primary adm-btn-block" id="ctDeniedOut">יציאה</button>
     </div>
   </main>
@@ -90,14 +90,14 @@
         <div><strong>סטודיו תוכן</strong><span>GAD MIVNIM</span></div>
       </div>
       <div class="ct-user">
-        <a href="admin.html" class="adm-link">מעבר לניהול המלא ←</a>
+        <a href="admin.html" class="adm-link" id="ctToAdmin" hidden>מעבר לניהול המלא ←</a>
         <span class="adm-muted" id="ctWho"></span>
         <button type="button" class="adm-btn adm-btn-ghost" id="ctLogout">יציאה</button>
       </div>
     </header>
 
-    <div class="ct-layout">
-    <aside class="ct-sidebar">
+    <div class="ct-layout" id="ctLayout">
+    <aside class="ct-sidebar" id="ctSidebar">
       <button type="button" class="adm-btn adm-btn-ghost ct-menubtn" id="ctMenuBtn" aria-expanded="false" aria-controls="ctSide">☰ תפריט הסטודיו</button>
       <nav class="ct-side" id="ctSide" aria-label="תפריט הסטודיו"></nav>
     </aside>
@@ -129,6 +129,6 @@
   <script src="js/data-store.js?v=16"></script>
   <script src="js/form-errors.js?v=2"></script>
   <script src="js/studio.js?v=1"></script>
-  <script src="js/content.js?v=3"></script>
+  <script src="js/content.js?v=4"></script>
 </body>
 </html>
