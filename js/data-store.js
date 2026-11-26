@@ -622,6 +622,65 @@
     publicUrl: function (path) { return path ? String(CFG.url || '').replace(/\/+$/, '') + '/storage/v1/object/public/site-ads/' + path : ''; }
   };
 
+  /* ---------- CMS (סטודיו תוכן): כל הטבלאות דרך RLS — רק מנהל כותב; מחיקה = סל מחזור (deleted_at); כל שמירה שומרת גרסה (טריגר) ---------- */
+  var CMS_TABLES = ['podcast_episodes', 'projects', 'in_progress', 'partners', 'info_articles', 'job_roles', 'gallery_items', 'page_blocks'];
+  var cms = {
+    TABLES: CMS_TABLES,
+    list: function (table) {
+      return client().then(function (sb) {
+        return sb.from(table).select('*').is('deleted_at', null).order('sort_order', { ascending: true }).order('created_at', { ascending: true }).then(unwrap);
+      });
+    },
+    blocks: function (page) {
+      return client().then(function (sb) {
+        return sb.from('page_blocks').select('*').eq('page', page).is('deleted_at', null).order('sort_order', { ascending: true }).then(unwrap);
+      });
+    },
+    bin: function (table) {
+      return client().then(function (sb) {
+        return sb.from(table).select('*').not('deleted_at', 'is', null).order('deleted_at', { ascending: false }).then(unwrap);
+      });
+    },
+    insert: function (table, row) { return client().then(function (sb) { return sb.from(table).insert(row).select().single().then(unwrap); }); },
+    update: function (table, id, patch) { return client().then(function (sb) { return sb.from(table).update(patch).eq('id', id).select().single().then(unwrap); }); },
+    trash: function (table, id) { return cms.update(table, id, { deleted_at: new Date().toISOString() }); },
+    restore: function (table, id) { return cms.update(table, id, { deleted_at: null }); },
+    destroy: function (table, id) { return client().then(function (sb) { return sb.from(table).delete().eq('id', id).then(unwrap); }); },
+    reorder: function (table, ids) {
+      return client().then(function (sb) {
+        return Promise.all(ids.map(function (id, i) { return sb.from(table).update({ sort_order: i + 1 }).eq('id', id).then(unwrap); }));
+      });
+    },
+    versions: function (table, id) {
+      return client().then(function (sb) {
+        return sb.from('content_versions').select('*').eq('table_name', table).eq('row_id', id).order('saved_at', { ascending: false }).limit(30).then(unwrap);
+      });
+    },
+    purgeBin: function () { return client().then(function (sb) { return sb.rpc('cms_purge_bin').then(unwrap); }); },
+    // מוסר מ-sessionStorage של תצוגה מקדימה: האסימון של המנהל עובר ללשונית התצוגה המקדימה (תקף לשעה)
+    previewToken: function () {
+      return client().then(function (sb) {
+        return sb.auth.getSession().then(function (r) { return r.data && r.data.session ? r.data.session.access_token : ''; });
+      });
+    },
+    // העלאת מדיה (באקט site-media): מחזיר { url, path, thumbUrl? }. הוקטנה בדפדפן לפני כן (ראו js/studio.js).
+    upload: function (file, kind, base) {
+      var ext = extOf(file.name || (kind === 'thumb' ? 'x.jpg' : ''));
+      return callApi('/api/upload-url', { action: 'media-sign', kind: kind, ext: ext, size: file.size, base: base }).then(function (r) {
+        return client().then(function (sb) {
+          return sb.storage.from('site-media').uploadToSignedUrl(r.path, r.token, file, { contentType: file.type || MIME[ext] || 'application/octet-stream', cacheControl: '31536000' }).then(unwrap);
+        }).then(function () { return callApi('/api/upload-url', { action: 'media-verify', kind: kind, path: r.path }); });
+      });
+    },
+    removeFiles: function (paths) { return callApi('/api/upload-url', { action: 'media-remove', paths: paths }); },
+    files: function () {
+      return client().then(function (sb) {
+        return sb.storage.from('site-media').list('media', { limit: 1000, sortBy: { column: 'created_at', order: 'desc' } }).then(unwrap);
+      });
+    },
+    publicUrl: function (path) { return path ? String(CFG.url || '').replace(/\/+$/, '') + '/storage/v1/object/public/site-media/' + path : ''; }
+  };
+
   var editors = {
     list: function () { return callApi('/api/upload-url', { action: 'editors-list' }); },
     invite: function (email, name) { return callApi('/api/upload-url', { action: 'editors-invite', email: email, name: name }); },
@@ -635,6 +694,6 @@
     checkFile: checkFile, rateLimited: rateLimited, submitApplicant: submitApplicant,
     signInContractor: signInContractor, currentContractor: currentContractor, signInAdmin: signInAdmin, currentAdmin: currentAdmin, signInEditor: signInEditor, currentEditor: currentEditor, activeEditor: activeEditor,
     signOut: signOut, changePassword: changePassword, adminReset: adminReset,
-    tenders: tenders, applications: applications, applicants: applicants, contractors: contractors, contractorJoin: contractorJoin, ads: ads, editors: editors
+    tenders: tenders, applications: applications, applicants: applicants, contractors: contractors, contractorJoin: contractorJoin, ads: ads, editors: editors, cms: cms
   };
 })();

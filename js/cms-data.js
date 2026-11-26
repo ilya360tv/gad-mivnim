@@ -22,6 +22,22 @@
   var set = function (k, v) { try { if (ss) { ss.setItem(k, v); } } catch (e) { /* ignore */ } };
   var del = function (k) { try { if (ss) { ss.removeItem(k); } } catch (e) { /* ignore */ } };
 
+  /* ---------- תצוגה מקדימה של טיוטות (רק למנהל מחובר): content.html פותח עמוד באתר עם ?cmsPreview=1 ומעביר אסימון לשעה ----------
+     האסימון עובר דרך localStorage לרגע אחד בלבד ונשמר ב-sessionStorage של הלשונית הזו. cms_preview() בודקת במסד שהמשתמש מנהל. */
+  var PV = null;
+  try {
+    if (/[?&]cmsPreview=1(&|$)/.test(location.search)) {
+      var raw = window.localStorage.getItem('gm:cms-pv-token');
+      if (raw) { set('gm:cms-pv', raw); window.localStorage.removeItem('gm:cms-pv-token'); }
+      var qs = location.search.replace(/([?&])cmsPreview=1(&|$)/, function (m, a, b) { return b ? a : ''; }).replace(/[?&]$/, '');
+      if (window.history && history.replaceState) { history.replaceState(null, '', location.pathname + qs + location.hash); }
+    }
+    var pvRaw = get('gm:cms-pv');
+    PV = pvRaw ? JSON.parse(pvRaw) : null;
+    if (PV && (!PV.token || !PV.exp || PV.exp < Date.now())) { PV = null; del('gm:cms-pv'); }
+  } catch (e) { PV = null; }
+  if (PV) { KEY = 'gm:cms-pv-data'; TTL = 2 * 60 * 1000; RL = 'gm:cms-pv-rl'; }
+
   /* ---------- עזרים ---------- */
   function i18nOf(row, lang) { return (row.i18n && row.i18n[lang]) || {}; }
   // { he, en, ru, fr } לשדה: עברית מהמסד; שפות — מהמסד, אחרת מהתרגום המובנה (אם יש)
@@ -252,9 +268,9 @@
 
   if (!fresh) {
     if (window.fetch) {
-      fetch(CFG.url + '/rest/v1/rpc/cms_public', {
+      fetch(CFG.url + '/rest/v1/rpc/' + (PV ? 'cms_preview' : 'cms_public'), {
         method: 'POST',
-        headers: { apikey: CFG.key, Authorization: 'Bearer ' + CFG.key, 'Content-Type': 'application/json' },
+        headers: { apikey: CFG.key, Authorization: 'Bearer ' + (PV ? PV.token : CFG.key), 'Content-Type': 'application/json' },
         body: '{}'
       }).then(function (r) { return r.ok ? r.json() : null; }).then(function (data) {
         if (!data || typeof data !== 'object') { return; }
@@ -274,6 +290,14 @@
 
   /* ---------- שותפים ותפקידים: הכרטיסים עצמם הם HTML סטטי — מתאימים אותם לתוכן מהמסד ---------- */
   document.addEventListener('DOMContentLoaded', function () {
+    if (PV) {
+      var bar = document.createElement('div');
+      bar.setAttribute('role', 'status');
+      bar.style.cssText = 'position:fixed;inset-inline:0;bottom:0;z-index:2147483000;display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;padding:10px 16px;background:#fbbf24;color:#1a1400;font:700 14px Rubik,Arial,sans-serif;text-align:center;direction:rtl';
+      bar.innerHTML = '<span>תצוגה מקדימה של טיוטה — מוצג רק לך, לא לגולשים</span><button type="button" style="font:inherit;padding:4px 14px;border:2px solid #1a1400;border-radius:999px;background:transparent;color:inherit;cursor:pointer">יציאה מהתצוגה המקדימה</button>';
+      bar.querySelector('button').addEventListener('click', function () { del('gm:cms-pv'); del('gm:cms-pv-data'); del('gm:cms-pv-rl'); window.location.reload(); });
+      document.body.appendChild(bar);
+    }
     applyImgs();
     var prow = window.GM_CMS_PARTNERS;
     if (prow && applied.partners) {
