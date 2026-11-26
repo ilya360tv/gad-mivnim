@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="css/admin.css?v=15">
-  <link rel="stylesheet" href="css/content.css?v=1">
+  <link rel="stylesheet" href="css/content.css?v=2">
 </head>
 <body class="ct">
 
@@ -96,13 +96,21 @@
       </div>
     </header>
 
-    <nav class="ct-tabs" role="tablist" aria-label="סטודיו תוכן">
+    <div class="ct-layout">
+    <aside class="ct-sidebar">
+      <button type="button" class="adm-btn adm-btn-ghost ct-menubtn" id="ctMenuBtn" aria-expanded="false" aria-controls="ctSide">☰ תפריט הסטודיו</button>
+      <nav class="ct-side" id="ctSide" aria-label="תפריט הסטודיו"></nav>
+    </aside>
+    <div class="ct-content">
+    <nav class="ct-tabs" id="ctTabs" role="tablist" aria-label="פרסומות" hidden>
       <button type="button" role="tab" id="tab-list" aria-controls="ctPanel" aria-selected="true" data-tab="list">הפרסומות</button>
       <button type="button" role="tab" id="tab-new" aria-controls="ctPanel" aria-selected="false" tabindex="-1" data-tab="new">פרסומת חדשה</button>
       <button type="button" role="tab" id="tab-media" aria-controls="ctPanel" aria-selected="false" tabindex="-1" data-tab="media">ספריית מדיה</button>
     </nav>
 
-    <main class="ct-main" id="ctPanel" role="tabpanel" tabindex="-1" aria-labelledby="tab-list"></main>
+    <main class="ct-main" id="ctPanel" tabindex="-1"></main>
+    </div>
+    </div>
   </div>
 
   <!-- חלון אישור -->
@@ -118,8 +126,9 @@
   <p class="adm-toast" id="ctToast" role="status" aria-live="polite"></p>
 
   <script src="js/supabase-config.js?v=1"></script>
-  <script src="js/data-store.js?v=15"></script>
+  <script src="js/data-store.js?v=16"></script>
   <script src="js/form-errors.js?v=2"></script>
-  <script src="js/content.js?v=2"></script>
+  <script src="js/studio.js?v=1"></script>
+  <script src="js/content.js?v=3"></script>
 </body>
 </html>

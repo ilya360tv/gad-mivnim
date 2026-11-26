@@ -12,6 +12,7 @@ const DOCS = require('../js/contractor-docs.js');
 const resubmit = require('./_resubmit');
 const ads = require('./_ads');
 const editors = require('./_editors');
+const media = require('./_media');
 
 const BUCKET = 'applicant-docs';
 const MAX_FILES_PER_APPLICANT = 30;
@@ -30,6 +31,9 @@ module.exports = handler(async (req) => {
   if (body.action === 'ads-verify') { return ads.verify(req, body); }
   if (body.action === 'ads-delete') { return ads.del(req, body); }
   if (body.action === 'ads-remove-files') { return ads.removeFiles(req, body); }
+  if (body.action === 'media-sign') { return media.sign(req, body); }
+  if (body.action === 'media-verify') { return media.verify(req, body); }
+  if (body.action === 'media-remove') { return media.remove(req, body); }
   if (body.action === 'ads-notify-submitted') { return ads.notifySubmitted(req, body); }
   if (body.action === 'ads-notify-reviewed') { return ads.notifyReviewed(req, body); }
   // עורכי תוכן (מנהל בלבד — הבדיקה בתוך api/_editors.js)

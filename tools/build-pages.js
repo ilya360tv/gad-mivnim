@@ -155,7 +155,9 @@ function promoteH1(sec, id) {
 }
 
 function scriptsFor(page) {
-  const want = new Set(['i18n', 'premium', 'script', 'a11y'].concat(page.data, page.id === 'hero' ? [] : ['page-scroll']));
+  // js/cms-data.js (CMS): רשימות מהמסד (C1) + טקסטים/תמונות (C2)
+  const withCms = ['cms-data'];                       // C2: גם טקסטים/תמונות של כל עמוד (page_blocks) — בכל העמודים
+  const want = new Set(['i18n', 'premium', 'script', 'a11y'].concat(page.data, withCms, page.id === 'hero' ? [] : ['page-scroll']));
   return SCRIPT_TAGS.filter((tag) => {
     const m = /src="js\/([a-z0-9-]+)\.js/.exec(tag);
     return m && want.has(m[1]);

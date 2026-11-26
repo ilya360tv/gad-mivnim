@@ -32,6 +32,7 @@
   var me = null;                         // { id, role, canPublish, email, ... }
   var ads = [];
   var tab = 'list', filter = 'mine';
+  var section = 'home';                  // הסעיף בתפריט הצד (js/studio.js מנהל את כל הסעיפים חוץ מ-"פרסומות")
   var editing = null;                    // פרסומת בעריכה (או null = חדשה)
 
   /* ---------- כלים ---------- */
@@ -171,12 +172,17 @@
   $('ctDeniedOut').addEventListener('click', signOut);
 
   function enter(p) {
-    if (!store.activeEditor(p)) { showOnly('denied'); $('ctDeniedTitle').focus(); return; }
+    // הסטודיו הוא למנהל בלבד (אין עורכים): כל חשבון אחר מקבל "אין לך הרשאה"
+    if (!p || p.status !== 'approved' || p.role !== 'admin') { showOnly('denied'); $('ctDeniedTitle').focus(); return; }
     me = p;
     $('ctWho').textContent = p.email || p.fullName || '';
     showOnly('app');
-    tab = 'list'; filter = (p.role === 'admin' || !EDITORS_ENABLED) ? 'all' : 'mine';
-    load().then(function () { go('list', false); });
+    tab = 'list'; filter = 'all';
+    if (window.Studio) {
+      window.Studio.init({ store: store, FE: FE, toast: toast, openModal: openModal, closeModal: closeModal, confirmBox: confirmBox, me: p, fmtSize: fmtSize, fmtDate: fmtDate });
+      $('ctSide').innerHTML = window.Studio.menuHtml();
+    }
+    load().then(function () { showSection(section, false); });
   }
 
   /* ---------- נתונים ---------- */
@@ -214,6 +220,35 @@
     if (name === 'list') { renderList(); } else if (name === 'new') { renderForm(editing); } else { renderMedia(); }
     if (focus !== false) { panel.focus(); }
   }
+  // ----- תפריט הצד: סעיפי הסטודיו -----
+  function showSection(id, focus) {
+    section = id;
+    Array.prototype.forEach.call($('ctSide').querySelectorAll('[data-sec]'), function (b) {
+      var on = b.getAttribute('data-sec') === id;
+      b.classList.toggle('is-on', on);
+      if (on) { b.setAttribute('aria-current', 'page'); } else { b.removeAttribute('aria-current'); }
+    });
+    panel.onclick = null;
+    var isAds = id === 'ads';
+    $('ctTabs').hidden = !isAds;
+    panel.removeAttribute('aria-labelledby');
+    $('ctSide').classList.remove('is-open');
+    $('ctMenuBtn').setAttribute('aria-expanded', 'false');
+    if (isAds) { editing = null; go('list', focus); }
+    else if (window.Studio) { window.Studio.render(id, panel); if (focus !== false) { panel.focus(); } }
+    try { history.replaceState(null, '', '#' + id); } catch (e) { /* ignore */ }
+  }
+  $('ctSide').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-sec]');
+    if (b) { showSection(b.getAttribute('data-sec'), true); }
+  });
+  $('ctMenuBtn').addEventListener('click', function () {
+    var open = $('ctSide').classList.toggle('is-open');
+    this.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  var hashSec = (location.hash || '').replace('#', '');
+  if (hashSec && /^[a-z-]+$/.test(hashSec)) { section = hashSec; }
+
   tabs.forEach(function (b, i) {
     b.addEventListener('click', function () {
       if (b.getAttribute('data-tab') === 'new' && tab !== 'new') { editing = null; }
@@ -252,7 +287,7 @@
       }).join('') + '</ul>' : '<p class="adm-empty adm-card">' + (filter === 'mine' ? 'עדיין אין לך פרסומות. לחצו על "פרסומת חדשה".' : 'אין פרסומות.') + '</p>');
   }
   panel.addEventListener('click', function (e) {
-    if (tab !== 'list') { return; }
+    if (section !== 'ads' || tab !== 'list') { return; }
     var f = e.target.closest('[data-f]');
     if (f) { filter = f.getAttribute('data-f'); renderList(); var again = panel.querySelector('[data-f="' + filter + '"]'); if (again) { again.focus(); } return; }
     if (e.target.closest('#ctAdd')) { editing = null; go('new'); return; }
@@ -564,7 +599,7 @@
   }
   function drawLib() {
     Promise.all([store.ads.files(), load()]).then(function (r) {
-      if (tab !== 'media') { return; }
+      if (section !== 'ads' || tab !== 'media') { return; }
       var files = (r[0] || []).filter(function (f) { return f && f.name && f.metadata; });
       var use = {};
       ads.forEach(function (a) {
@@ -582,7 +617,7 @@
     }, function () { $('ctLibBody').innerHTML = '<p class="adm-error">טעינת הספרייה נכשלה, נסו שוב.</p>'; });
   }
   panel.addEventListener('click', function (e) {
-    if (tab !== 'media') { return; }
+    if (section !== 'ads' || tab !== 'media') { return; }
     var b = e.target.closest('[data-del]');
     if (!b) { return; }
     var path = b.closest('li').getAttribute('data-path');
