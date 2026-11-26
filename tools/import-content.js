@@ -63,7 +63,7 @@ tables.projects = Object.keys(PROJ).map((slug, i) => {
   const c = PROJ[slug];
   return {
     slug: slug, sector: c.sector, client_name_he: c.name, subtitle_he: c.subtitle || null, city_he: c.city || null,
-    logo: c.logo || slug, title_he: c.title || null, items_he: c.items || [], description_he: c.description || null,
+    logo: c.logo === undefined ? slug : c.logo, title_he: c.title || null, items_he: c.items || [], description_he: c.description || null,
     gallery: (c.images || []).map((im, j) => normImg(im, c.name, j)),
     i18n: c.i18n || {}, status: 'published', sort_order: i + 1
   };
@@ -161,6 +161,8 @@ function lit(col, v) {
   if (typeof v === 'boolean') { return v ? 'true' : 'false'; }
   return q(v);
 }
+module.exports = { tables: tables };
+if (require.main !== module) { return; }          // require() לבדיקות: בלי לכתוב קובץ
 const NL = String.fromCharCode(10);
 const head = [
   '-- CMS C1 import: the CURRENT site content (podcast, projects, in-progress, partners, info, careers, gallery) -> database.',

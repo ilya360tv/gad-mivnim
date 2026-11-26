@@ -429,8 +429,18 @@ document.addEventListener('DOMContentLoaded', function () {
     };
     // תמונות לפי פרויקט (בלי קטנות ובלי כפולות), מחולקות לסירוגין בין שתי השורות
     var galSeen = {}, galRows = [{}, {}], galN = 0;     // מונה משותף — שתי השורות כמעט שוות
-    Object.keys(window.PROJECTS_DATA).forEach(function (slug) {
-      var c = window.PROJECTS_DATA[slug];
+    // מקור התמונות: טבלת gallery_items מהמסד (cms-data.js) כשנערכה; אחרת תמונות הפרויקטים (כמו היום)
+    var galSource = window.PROJECTS_DATA;
+    if (window.GALLERY_ITEMS && window.GALLERY_ITEMS.length) {
+      galSource = {};
+      window.GALLERY_ITEMS.forEach(function (g) {
+        var k = g.slug || '_';
+        var base = window.PROJECTS_DATA[k] || {};
+        (galSource[k] = galSource[k] || { name: base.name || '', images: [] }).images.push({ src: g.src, alt: g.alt, width: g.width, height: g.height });
+      });
+    }
+    Object.keys(galSource).forEach(function (slug) {
+      var c = galSource[slug];
       (c.images || []).forEach(function (im, i) {
         var src = typeof im === 'string' ? im : im.src;
         if (!src || galSeen[src]) { return; }
