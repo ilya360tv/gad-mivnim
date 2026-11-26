@@ -3599,55 +3599,26 @@ function cardScale() {
   if ('MutationObserver' in window) { new MutationObserver(refit).observe(root, { attributes: true, attributeFilter: ['lang', 'dir'] }); }
 })();
 
-/* Hero: השורה "לרשותכם אולם תצוגה…" באותו רוחב בדיוק כמו "הרצליה ישראל | HERZLIYA ISRAEL" (fit-text: משנים רק את גודל הכתב של השורה הראשונה).
-   גובה השורה נשמר כמו שהיה (flex ממורכז), כך שהבאדג', התמונה והכותרת לא זזים. מתחת ל-14px — השורה נשברת לשתי שורות ממורכזות. */
+/* Hero: השורה "לרשותכם אולם תצוגה…" — גודל הכתב קבוע ב-CSS (40px דסקטופ / 22px מובייל), בלי fit-text שמתאים אותה לרוחב "הרצליה ישראל". */
+/* אם השורה רחבה ממיכל התוכן היא "בורחת" לצד אחד — מזיזים את הבלוק (עם הבאדג') כך שהשורה תהיה ממורכזת על מרכז המסך. */
 (function () {
-  var line1 = document.querySelector('.hero .hero-showroom');
-  var line2 = document.querySelector('.hero .hero-location');
-  if (!line1 || !line2) { return; }
-  var MIN = 10;                                               // גופן המכחול רחב יותר: במובייל השורה קטנה מעט אך נשארת בשורה אחת
-  function textW(el) {
-    var rg = document.createRange(); rg.selectNodeContents(el);
-    return rg.getBoundingClientRect().width;
-  }
-  function fit() {
-    ['fontSize', 'height', 'display', 'alignItems', 'justifyContent', 'whiteSpace', 'textAlign', 'maxWidth', 'marginInline'].forEach(function (k) { line1.style[k] = ''; });
-    var h0 = line1.getBoundingClientRect().height;          // גובה המקורי — נשמר
-    var want = textW(line2);
-    if (!(want > 20) || !(h0 > 0)) { return; }
-    line1.style.whiteSpace = 'nowrap';
-    var base = parseFloat(getComputedStyle(line1).fontSize) || 16;
-    var size = base;
-    for (var i = 0; i < 3; i++) {                           // התכנסות (הרוחב לינארי בגודל הכתב)
-      line1.style.fontSize = size.toFixed(3) + 'px';
-      var w = textW(line1);
-      if (!(w > 20)) { return; }
-      var next = size * want / w;
-      if (Math.abs(next - size) < 0.02) { size = next; break; }
-      size = next;
-    }
-    if (size < MIN) {                                       // קטן מדי — נשבר לשתי שורות, ממורכז
-      line1.style.fontSize = MIN + 'px';
-      line1.style.whiteSpace = 'normal';
-      line1.style.textAlign = 'center';
-      line1.style.maxWidth = (want + 2).toFixed(1) + 'px';        // השבירה בתוך רוחב השורה התחתונה
-      line1.style.marginInline = 'auto';
-    } else {
-      line1.style.fontSize = size.toFixed(2) + 'px';
-    }
-    line1.style.display = 'flex'; line1.style.alignItems = 'center'; line1.style.justifyContent = 'center';
-    line1.style.height = h0.toFixed(2) + 'px';
+  var line = document.querySelector('.hero .hero-showroom');
+  var block = line && line.parentElement;
+  if (!line || !block) { return; }
+  function center() {
+    block.style.translate = '';
+    var r = document.createRange(); r.selectNodeContents(line);
+    var q = r.getBoundingClientRect();
+    if (!(q.width > 20)) { return; }
+    var dx = document.documentElement.clientWidth / 2 - (q.left + q.right) / 2;
+    if (Math.abs(dx) > 0.5) { block.style.translate = dx.toFixed(1) + 'px 0'; }
   }
   var tm;
-  var refit = function () { clearTimeout(tm); tm = setTimeout(fit, 40); };
-  fit();
-  window.addEventListener('load', fit);
-  window.addEventListener('resize', refit);
-  if (document.fonts && document.fonts.ready) { document.fonts.ready.then(fit); }
-  if ('MutationObserver' in window) {
-    var mo = new MutationObserver(refit);
-    mo.observe(line1, { childList: true, characterData: true, subtree: true });
-    mo.observe(line2, { childList: true, characterData: true, subtree: true });
-    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['lang', 'dir'] });
-  }
+  var again = function () { clearTimeout(tm); tm = setTimeout(center, 40); };
+  center();
+  window.addEventListener('load', function () { center(); setTimeout(center, 1200); });
+  window.addEventListener('resize', again);
+  window.addEventListener('gm:herofit', center);
+  if (document.fonts && document.fonts.ready) { document.fonts.ready.then(center); }
+  if ('MutationObserver' in window) { new MutationObserver(again).observe(document.documentElement, { attributes: true, attributeFilter: ['lang', 'dir'] }); }
 })();
