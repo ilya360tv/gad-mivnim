@@ -3584,9 +3584,31 @@ function cardScale() {
     if (Math.abs(next - cur) < 0.05) { return; }
     root.style.setProperty('--hero-grp-lift', next.toFixed(2) + 'px');
   }
+  /* שורת "הרצליה ישראל" (והמסך שמתחתיה) עולה קרוב יותר ל"לרשותכם…": רווח של 12px (דסקטופ) / 8px (מובייל) בין תחתית הכתב של "לרשותכם" לראש הכתב של "הרצליה". הזזה ויזואלית (--hero-loc-lift). */
+  function restRange(el) {
+    var rg = document.createRange(); rg.selectNodeContents(el);
+    var r = rg.getBoundingClientRect(), ty = 0;
+    for (var n = el; n && n !== document.body; n = n.parentElement) {
+      var t = getComputedStyle(n).transform;
+      var m = t && t !== 'none' && t.match(/matrix\(([^)]+)\)/);
+      if (m) { var a = m[1].split(','); if (a.length === 6) { ty += parseFloat(a[5]) || 0; } }
+    }
+    return { top: r.top - ty, bottom: r.bottom - ty };
+  }
+  function fitLoc() {
+    var sh = document.querySelector('.hero .hero-showroom'), loc = document.querySelector('.hero .hero-location');
+    if (!sh || !loc) { return; }
+    var want = window.matchMedia('(max-width: 768px)').matches ? 8 : 12;
+    var cur = parseFloat(root.style.getPropertyValue('--hero-loc-lift')) || 0;
+    var gap = restRange(loc).top - restRange(sh).bottom;
+    var next = Math.max(0, cur + (gap - want));
+    if (Math.abs(next - cur) < 0.05) { return; }
+    root.style.setProperty('--hero-loc-lift', next.toFixed(2) + 'px');
+  }
   function fit() {
     fitTitle();
     fitGroup();
+    fitLoc();
     try { window.dispatchEvent(new Event('gm:herofit')); } catch (e) { /* ignore */ }
   }
   var tm;

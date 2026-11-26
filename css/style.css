@@ -9100,3 +9100,6 @@ html body .hero .hero-location { font-size: 8px; letter-spacing: 2.4px; padding-
 /* ===== Hero: באדג' "בקרוב" — 70% מהגודל הקודם: כתב 16→11.2px (מינימום 11px), ריפוד 4px 12px → 2.8px 8.4px, רווח 6→4.2px, אייקון ✦ 15→10.5px, רדיוס × 0.7 (נשאר גלולה מלאה). אותה מסגרת, צבעים, מרכוז ועיגון. ===== */
 html body .hero .hero-badge { font-size: 11.2px; padding: 2.8px 8.4px; gap: 4.2px; border-radius: 699.3px; }
 html body .hero .hero-badge svg { width: 10.5px; height: 10.5px; }
+
+/* ===== Hero: שורת "הרצליה ישראל" + המסך שמתחתיה עולים עוד (--hero-loc-lift מחושב ב-js/script.js): 12px / 8px מתחת ל"לרשותכם…". ===== */
+.hero .hero-location, .hero .hero-showroom-frame { top: calc(-1 * (var(--hero-grp-lift, 0px) + var(--hero-loc-lift, 0px))); }
