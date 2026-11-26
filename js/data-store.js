@@ -52,7 +52,7 @@
 
   /* ---------- לקוח Supabase (נטען פעם אחת, לפי אזור: "site" = קבלנים, "admin" = מנהל) ---------- */
   // שני אזורים = שתי התחברויות נפרדות באותו דפדפן (מנהל שפותח את עמוד המכרזים לא "נכנס" בו כקבלן)
-  var area = /\/admin(\.html)?$/.test(location.pathname) ? 'admin' : 'site';
+  var area = /\/admin(\.html)?$/.test(location.pathname) ? 'admin' : (/\/content(\.html)?$/.test(location.pathname) ? 'content' : 'site');
   var clientPromise = null;
   function client() {
     if (!clientPromise) {
@@ -61,7 +61,7 @@
       try { store = window.sessionStorage; store.getItem('x'); } catch (e) { store = undefined; }
       clientPromise = import(LIB).then(function (mod) {
         return mod.createClient(CFG.url, CFG.key, {
-          auth: { storageKey: 'gm-auth-' + area, storage: store, persistSession: true, autoRefreshToken: true, detectSessionInUrl: area === 'admin' }
+          auth: { storageKey: 'gm-auth-' + area, storage: store, persistSession: true, autoRefreshToken: true, detectSessionInUrl: area === 'admin' || area === 'content' }
         });
       });
       clientPromise.catch(function () { clientPromise = null; });   // כשל רשת — ניסיון חוזר בפעם הבאה
@@ -215,12 +215,12 @@
     return sb.auth.getSession().then(function (r) {
       var s = r.data && r.data.session;
       if (!s) { return null; }
-      return sb.from('profiles').select('id, role, full_name, fields, user_code, status, subscription').eq('id', s.user.id).maybeSingle().then(unwrap)
+      return sb.from('profiles').select('id, role, full_name, fields, user_code, status, subscription, can_publish').eq('id', s.user.id).maybeSingle().then(unwrap)
         .then(function (p) {
           if (!p) { return null; }
           var meta = s.user.user_metadata || {};
           return { id: p.id, role: p.role, fullName: p.full_name || '', fields: p.fields || [], userCode: p.user_code || '',
-            status: p.status, subscription: p.subscription, mustChange: !!meta.must_change_password };
+            status: p.status, subscription: p.subscription, canPublish: !!p.can_publish, email: s.user.email || '', mustChange: !!meta.must_change_password };
         });
     });
   }
@@ -263,6 +263,20 @@
       });
     });
   }
+  // סטודיו תוכן: עורך תוכן או מנהל (אזור התחברות נפרד: gm-auth-content)
+  var activeEditor = function (p) { return !!p && p.status === 'approved' && (p.role === 'editor' || p.role === 'admin'); };
+  function signInEditor(email, password) {
+    if (!email || !password) { return Promise.resolve(null); }
+    return client().then(function (sb) {
+      return sb.auth.signInWithPassword({ email: String(email).trim(), password: password }).then(function (r) {
+        if (r.error) { return null; }
+        return myProfile(sb);                 // גם משתמש שאינו עורך מוחזר — הדף מציג "אין הרשאה" ויציאה
+      });
+    });
+  }
+  function currentEditor() {
+    return client().then(function (sb) { return myProfile(sb); });
+  }
   function currentAdmin() {
     return client().then(function (sb) { return myProfile(sb).then(function (p) { return activeAdmin(p) ? p : null; }); });
   }
@@ -271,9 +285,9 @@
   }
   /* ---------- איפוס סיסמת מנהל — רק Supabase Auth המובנה (resetPasswordForEmail / PASSWORD_RECOVERY / updateUser) ---------- */
   var RESET_KEY = 'gm-admin-reset-at', RESET_GAP_MS = 60 * 1000;
-  var resetHash = area === 'admin' ? String(location.hash || '') : '';          // נקרא לפני ש-supabase-js מנקה את הכתובת
+  var resetHash = (area === 'admin' || area === 'content') ? String(location.hash || '') : '';          // נקרא לפני ש-supabase-js מנקה את הכתובת
   var adminReset = {
-    isRecovery: /[#&]type=recovery(&|$)/.test(resetHash) && /access_token=/.test(resetHash),
+    isRecovery: /[#&]type=(recovery|invite)(&|$)/.test(resetHash) && /access_token=/.test(resetHash),
     linkError: /[#&]error(_code)?=/.test(resetHash),
     // בקשה אחת לדקה לכל דפדפן (ועוד המגבלות של Supabase). לא מגלים אם הכתובת קיימת — המסך מציג תמיד אותה הודעה.
     request: function (email) {
@@ -282,7 +296,7 @@
       if (Date.now() - last < RESET_GAP_MS) { return Promise.resolve(); }
       try { localStorage.setItem(RESET_KEY, String(Date.now())); } catch (e) {}
       return client().then(function (sb) {
-        return sb.auth.resetPasswordForEmail(String(email).trim(), { redirectTo: location.origin + '/admin.html' });
+        return sb.auth.resetPasswordForEmail(String(email).trim(), { redirectTo: location.origin + (area === 'content' ? '/content.html' : '/admin.html') });
       }).then(function () {}, function () {});
     },
     // מאזין ל-PASSWORD_RECOVERY; אם האירוע כבר עבר והסשן קיים — קורא ל-cb בכל זאת. onNone: אין סשן (קישור פג/נוצל).
@@ -584,7 +598,34 @@
     },
     remove: function (ids) { return callApi('/api/upload-url', { action: 'ads-delete', ids: ids }); },
     removeFiles: function (paths) { return callApi('/api/upload-url', { action: 'ads-remove-files', paths: paths }); },
+    // סטטוס: 'draft' | 'pending' | 'published'. ההרשאות נאכפות ב-RLS, לא כאן.
+    notifySubmitted: function (id) { return callApi('/api/upload-url', { action: 'ads-notify-submitted', id: id }); },
+    notifyReviewed: function (id) { return callApi('/api/upload-url', { action: 'ads-notify-reviewed', id: id }); },
+    // ספריית מדיה: כל הקבצים בבאקט (עם גודל), דורש מדיניות SELECT על storage.objects (20261127100000)
+    files: function () {
+      return client().then(function (sb) {
+        return sb.storage.from('site-ads').list('ads', { limit: 1000, sortBy: { column: 'created_at', order: 'desc' } }).then(unwrap);
+      });
+    },
+    cues: {
+      list: function (hostId) { return client().then(function (sb) { return sb.from('ad_cues').select('*').eq('host_ad_id', hostId).order('at_second', { ascending: true }).then(unwrap); }); },
+      // מחליף את כל הסימונים של הפרסומת המארחת
+      replace: function (hostId, rows) {
+        return client().then(function (sb) {
+          return sb.from('ad_cues').delete().eq('host_ad_id', hostId).then(unwrap).then(function () {
+            if (!rows.length) { return []; }
+            return sb.from('ad_cues').insert(rows.map(function (r) { return Object.assign({ host_ad_id: hostId }, r); })).then(unwrap);
+          });
+        });
+      }
+    },
     publicUrl: function (path) { return path ? String(CFG.url || '').replace(/\/+$/, '') + '/storage/v1/object/public/site-ads/' + path : ''; }
+  };
+
+  var editors = {
+    list: function () { return callApi('/api/upload-url', { action: 'editors-list' }); },
+    invite: function (email, name) { return callApi('/api/upload-url', { action: 'editors-invite', email: email, name: name }); },
+    set: function (id, patch) { return callApi('/api/upload-url', Object.assign({ action: 'editors-set', id: id }, patch)); }
   };
 
   window.dataStore = {
@@ -592,8 +633,8 @@
     fieldByName: function (name) { return FIELDS.filter(function (f) { return f.name === name; })[0] || null; },
     fieldsOf: fieldsOf, isGeneral: isGeneral, normalizeFields: normalizeFields,
     checkFile: checkFile, rateLimited: rateLimited, submitApplicant: submitApplicant,
-    signInContractor: signInContractor, currentContractor: currentContractor, signInAdmin: signInAdmin, currentAdmin: currentAdmin,
+    signInContractor: signInContractor, currentContractor: currentContractor, signInAdmin: signInAdmin, currentAdmin: currentAdmin, signInEditor: signInEditor, currentEditor: currentEditor, activeEditor: activeEditor,
     signOut: signOut, changePassword: changePassword, adminReset: adminReset,
-    tenders: tenders, applications: applications, applicants: applicants, contractors: contractors, contractorJoin: contractorJoin, ads: ads
+    tenders: tenders, applications: applications, applicants: applicants, contractors: contractors, contractorJoin: contractorJoin, ads: ads, editors: editors
   };
 })();

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>סטודיו תוכן | GAD MIVNIM</title>
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#0b0d10">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/admin.css?v=14">
+  <link rel="stylesheet" href="css/content.css?v=1">
+</head>
+<body class="ct">
+
+  <!-- ===== כניסה ===== -->
+  <main class="adm-login" id="ctLogin" hidden>
+    <form class="adm-card adm-login-card" id="ctLoginForm" novalidate autocomplete="off">
+      <img src="images/gad_mivnim_logo.svg" alt="GAD MIVNIM" class="adm-login-logo" width="88" height="88">
+      <h1 class="adm-login-title">כניסה לסטודיו התוכן</h1>
+      <div class="adm-field" data-fe-host>
+        <label for="ctUser">אימייל</label>
+        <input type="email" id="ctUser" autocomplete="username" dir="ltr">
+      </div>
+      <div class="adm-field" data-fe-host>
+        <label for="ctPass">סיסמה</label>
+        <input type="password" id="ctPass" autocomplete="current-password">
+      </div>
+      <button type="submit" class="adm-btn adm-btn-primary adm-btn-block" id="ctLoginBtn">כניסה</button>
+      <p class="adm-error" id="ctLoginError" role="alert" hidden>אימייל או סיסמה שגויים</p>
+      <p class="adm-error" id="ctLinkError" role="alert" hidden>הקישור אינו תקף, פג תוקפו או שכבר נעשה בו שימוש. אפשר לבקש קישור חדש דרך "שכחתי סיסמה".</p>
+      <p class="adm-ok" id="ctResetDone" role="status" hidden>הסיסמה עודכנה ✓ — אפשר להיכנס עם הסיסמה החדשה.</p>
+      <button type="button" class="adm-linkbtn" id="ctForgot">שכחתי סיסמה</button>
+    </form>
+  </main>
+
+  <!-- ===== שכחתי סיסמה ===== -->
+  <main class="adm-login" id="ctForgotView" hidden>
+    <form class="adm-card adm-login-card" id="ctForgotForm" novalidate autocomplete="off">
+      <h1 class="adm-login-title">איפוס סיסמה</h1>
+      <p class="adm-note">נא להזין את כתובת האימייל שלכם.</p>
+      <div class="adm-field" data-fe-host>
+        <label for="ctForgotEmail">אימייל</label>
+        <input type="email" id="ctForgotEmail" autocomplete="username" dir="ltr">
+      </div>
+      <button type="submit" class="adm-btn adm-btn-primary adm-btn-block" id="ctForgotSend">שליחת קישור לאיפוס</button>
+      <p class="adm-ok" id="ctForgotMsg" role="status" hidden>אם הכתובת רשומה, נשלח אליה קישור לבחירת סיסמה (בתוקף לזמן מוגבל).</p>
+      <button type="button" class="adm-linkbtn" id="ctForgotBack">חזרה לכניסה</button>
+    </form>
+  </main>
+
+  <!-- ===== בחירת סיסמה (אחרי קישור הזמנה / איפוס) ===== -->
+  <main class="adm-login" id="ctResetView" hidden>
+    <form class="adm-card adm-login-card" id="ctResetForm" novalidate autocomplete="off">
+      <h1 class="adm-login-title" id="ctResetTitle" tabindex="-1">בחירת סיסמה</h1>
+      <p class="adm-note">לפחות 12 תווים, כולל אות וספרה.</p>
+      <div class="adm-field" data-fe-host>
+        <label for="ctNewPass">סיסמה חדשה</label>
+        <div class="adm-passwrap"><input type="password" id="ctNewPass" autocomplete="new-password" dir="ltr">
+          <button type="button" class="adm-icon-btn" data-eye aria-pressed="false" aria-label="הצגת הסיסמה">👁</button></div>
+      </div>
+      <div class="adm-field" data-fe-host>
+        <label for="ctNewPass2">אימות סיסמה</label>
+        <div class="adm-passwrap"><input type="password" id="ctNewPass2" autocomplete="new-password" dir="ltr">
+          <button type="button" class="adm-icon-btn" data-eye aria-pressed="false" aria-label="הצגת האימות">👁</button></div>
+      </div>
+      <button type="submit" class="adm-btn adm-btn-primary adm-btn-block" id="ctResetSave">שמירת הסיסמה</button>
+      <p class="adm-error" id="ctResetError" role="alert" hidden></p>
+    </form>
+  </main>
+
+  <!-- ===== אין הרשאה ===== -->
+  <main class="adm-login" id="ctDenied" hidden>
+    <div class="adm-card adm-login-card">
+      <h1 class="adm-login-title" id="ctDeniedTitle" tabindex="-1">אין לך הרשאה לעמוד זה</h1>
+      <p class="adm-note">החשבון הזה אינו מוגדר כעורך תוכן, או שהוא הושבת. לפרטים פנו למנהל האתר.</p>
+      <button type="button" class="adm-btn adm-btn-primary adm-btn-block" id="ctDeniedOut">יציאה</button>
+    </div>
+  </main>
+
+  <!-- ===== הסטודיו ===== -->
+  <div class="ct-app" id="ctApp" hidden>
+    <header class="ct-top">
+      <div class="ct-brand">
+        <img src="images/gad_mivnim_logo.svg" alt="" width="44" height="44">
+        <div><strong>סטודיו תוכן</strong><span>GAD MIVNIM</span></div>
+      </div>
+      <div class="ct-user">
+        <span class="adm-muted" id="ctWho"></span>
+        <button type="button" class="adm-btn adm-btn-ghost" id="ctLogout">יציאה</button>
+      </div>
+    </header>
+
+    <nav class="ct-tabs" role="tablist" aria-label="סטודיו תוכן">
+      <button type="button" role="tab" id="tab-list" aria-controls="ctPanel" aria-selected="true" data-tab="list">הפרסומות</button>
+      <button type="button" role="tab" id="tab-new" aria-controls="ctPanel" aria-selected="false" tabindex="-1" data-tab="new">פרסומת חדשה</button>
+      <button type="button" role="tab" id="tab-media" aria-controls="ctPanel" aria-selected="false" tabindex="-1" data-tab="media">ספריית מדיה</button>
+    </nav>
+
+    <main class="ct-main" id="ctPanel" role="tabpanel" tabindex="-1" aria-labelledby="tab-list"></main>
+  </div>
+
+  <!-- חלון אישור -->
+  <div class="adm-modal" id="ctModal" hidden>
+    <div class="adm-modal-backdrop" data-close></div>
+    <div class="adm-modal-box adm-card" role="dialog" aria-modal="true" aria-labelledby="ctModalTitle">
+      <button type="button" class="adm-modal-x" data-close aria-label="סגירה">×</button>
+      <h2 class="adm-modal-title" id="ctModalTitle"></h2>
+      <div id="ctModalBody"></div>
+    </div>
+  </div>
+
+  <p class="adm-toast" id="ctToast" role="status" aria-live="polite"></p>
+
+  <script src="js/supabase-config.js?v=1"></script>
+  <script src="js/data-store.js?v=15"></script>
+  <script src="js/form-errors.js?v=2"></script>
+  <script src="js/content.js?v=1"></script>
+</body>
+</html>
