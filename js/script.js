@@ -3551,7 +3551,7 @@ function cardScale() {
     }
     return (r.top + r.bottom) / 2 - ty;
   }
-  function fit() {
+  function fitTitle() {
     if (!mq.matches) { root.style.removeProperty('--hero-title-lift'); return; }
     var pills = nav.querySelectorAll('ul li a');
     var home = nav.querySelector('a[data-i18n="nav_home"]') || pills[0];
@@ -3561,6 +3561,33 @@ function cardScale() {
     var base = restY(logo) - cur;                                         // מקום הלוגו כש-top = 0
     var lift = base - restY(home);                                        // כמה למעלה כדי להגיע למרכז הגלולה
     root.style.setProperty('--hero-title-lift', lift.toFixed(2) + 'px');
+  }
+  /* קבוצת אולם התצוגה ("בקרוב" + "לרשותכם…" + "הרצליה ישראל" + המסגרת/מסך הפרסומות) עולה למעלה: ראש "בקרוב" = 28px מתחת לתחתית הכותרת הנעה
+     (כולל הלוגו העגול). הזזה ויזואלית בלבד (top:-lift) — הזרימה, הכותרת והניווט לא זזים; המסך הגדל נמדד מחדש (js/promo-window.js) לפי האירוע gm:herofit. */
+  var GRP_GAP = 28;
+  function restBottom(el) {
+    var r = el.getBoundingClientRect(), ty = 0;
+    for (var n = el; n && n !== document.body; n = n.parentElement) {
+      var t = getComputedStyle(n).transform;
+      var m = t && t !== 'none' && t.match(/matrix\(([^)]+)\)/);
+      if (m) { var a = m[1].split(','); if (a.length === 6) { ty += parseFloat(a[5]) || 0; } }
+    }
+    return { top: r.top - ty, bottom: r.bottom - ty };
+  }
+  function fitGroup() {
+    var badge = document.querySelector('.hero .hero-badge');
+    var logo = title.querySelector('.hero-mq__item .hero-title__logo') || title.querySelector('.hero-title__logo') || title;
+    if (!badge || !badge.getBoundingClientRect().height) { return; }
+    var cur = parseFloat(root.style.getPropertyValue('--hero-grp-lift')) || 0;
+    var d = restBottom(badge).top - (restBottom(logo).bottom + GRP_GAP);     // כמה הבאדג' רחוק מהמקום הרצוי
+    var next = Math.max(0, cur + d);
+    if (Math.abs(next - cur) < 0.05) { return; }
+    root.style.setProperty('--hero-grp-lift', next.toFixed(2) + 'px');
+  }
+  function fit() {
+    fitTitle();
+    fitGroup();
+    try { window.dispatchEvent(new Event('gm:herofit')); } catch (e) { /* ignore */ }
   }
   var tm;
   var refit = function () { clearTimeout(tm); tm = setTimeout(fit, 60); };

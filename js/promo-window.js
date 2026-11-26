@@ -227,7 +227,7 @@
       var cached = null;
       try { var cg = JSON.parse(lsGet(GEO_KEY) || 'null'); if (cg && cg.vw === vw && cg.vh === vh && cg.w > 0) { cached = cg; } } catch (e) { /* ignore */ }
       if (!INLINE && cached) { return cached; }                      // בדיוק מה שחושב בדף הבית לגודל מסך הזה
-      var top = INLINE ? layoutTop(SLOT) : Math.round(vh * 0.56);    // עד שדף הבית נמדד: הערכה
+      var top = INLINE ? layoutTop(SLOT) + (parseFloat(getComputedStyle(SLOT).borderTopWidth) || 0) : Math.round(vh * 0.56);    // ראש הכרטיס = בתוך מסגרת המשבצת (אחרי הגבול); עד שדף הבית נמדד: הערכה
       var b = 16, w = Math.min(vw - 24, (vh - top - b) * RATIO);
       var chrome = chromeRects(), fab = rectsOf(['#a11yFab'])[0];
       // כפתור הנגישות: אם המסך היה מכסה אותו — מרימים את המסך מעליו (מובייל)
@@ -530,6 +530,7 @@
     if (INLINE) {
       // המדידה מתעדכנת אחרי שהפריסה מתייצבת (פונטים / טעינה) ובשינוי גודל
       window.addEventListener('load', function () { applyGeo(); });
+      window.addEventListener('gm:herofit', function () { if (state === 'inline') { applyGeo(); } });          // script.js הזיז את קבוצת האולם — מודדים מחדש
       if (document.fonts && document.fonts.ready) { document.fonts.ready.then(function () { applyGeo(); }); }
       setTimeout(applyGeo, 1200);
     }

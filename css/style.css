@@ -9085,3 +9085,7 @@ html[dir] body #main #partners .badges-row { margin-top: calc(var(--pt-gap-top) 
     margin-top: calc(var(--side-top) + var(--side-circle) / 2 + var(--pill-h) / 2 - var(--pt-fs) * 1.3 / 2 - var(--pe-fs) * var(--pe-lh) / 2) !important;
   }
 }
+
+/* ===== Hero: קבוצת אולם התצוגה ("בקרוב" + "לרשותכם…" + "הרצליה ישראל" + מסך הפרסומות) עולה מעלה — 28px מתחת לתחתית הכותרת הנעה והלוגו.
+   הזזה ויזואלית בלבד (top:-lift; --hero-grp-lift מחושב ב-js/script.js) — הזרימה, הכותרת, הניווט והמרווחים בין השורות לא משתנים. ===== */
+.hero .hero-sub-block, .hero .hero-location, .hero .hero-showroom-frame { position: relative; top: calc(-1 * var(--hero-grp-lift, 0px)); }
