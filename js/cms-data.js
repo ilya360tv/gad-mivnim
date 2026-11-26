@@ -154,8 +154,14 @@
     });
     return n;
   }
+  // הטבלה רלוונטית רק בעמוד שבו הנתונים המובנים שלה קיימים (בעמוד אחר אין מה להחליף ואין סיבה לטעון מחדש)
+  var PRESENT = { podcast_episodes: 'PODCAST_DATA', projects: 'PROJECTS_DATA', in_progress: 'IN_PROGRESS_DATA', partners: 'PARTNERS_DATA', info_articles: 'INFO_DATA', job_roles: 'CAREERS_DATA' };
+  function present(t) {
+    if (t === 'gallery_items') { return !!window.PROJECTS_DATA && !!document.getElementById('gallery'); }
+    return !!window[PRESENT[t]];
+  }
   function differs(table, rows) {
-    if (!rows || !rows.length) { return false; }
+    if (!present(table) || !rows || !rows.length) { return false; }
     for (var i = 0; i < rows.length; i++) { if (rows[i].edited) { return true; } }
     var have = builtinSlugs(table);
     if (!have) { return table === 'gallery_items' && rows.length !== builtinGalCount(); }
@@ -188,10 +194,61 @@
     return plan.length > 0;
   }
 
+  /* ---------- טקסטים ותמונות של העמוד (page_blocks, C2) ----------
+     רק בלוקים שנערכו בסטודיו מגיעים לכאן. טקסט: מחליף את הערך ב-window.GAD_T (המילון של js/i18n.js) — אותו מפתח, אותו מנגנון.
+     שפה שהשדה שלה ריק במסד נשארת עם התרגום המובנה. הכל מנוקה גם בדפדפן (בנוסף לניקוי בשרת): בלי סקריפטים ובלי HTML לא מותר. */
+  var ALLOWED = { B: 1, STRONG: 1, I: 1, EM: 1, BR: 1, UL: 1, OL: 1, LI: 1, P: 1, BDI: 1, SPAN: 1, A: 1 };
+  var SAFE_HREF = /^(https:\/\/|\/(?!\/)|mailto:|tel:)/i;
+  var SAFE_IMG = /^(images\/|video\/|https:\/\/[a-z0-9.-]+\.supabase\.co\/storage\/v1\/object\/public\/site-media\/)[A-Za-z0-9_.\/-]+$/;
+  function esc(v) { return String(v).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function cleanRich(html) {
+    var doc = new DOMParser().parseFromString('<body>' + html + '</body>', 'text/html');
+    (function walk(node) {
+      Array.prototype.slice.call(node.childNodes).forEach(function (ch) {
+        if (ch.nodeType === 3) { return; }
+        if (ch.nodeType !== 1) { node.removeChild(ch); return; }
+        if (/^(SCRIPT|STYLE|IFRAME|OBJECT|EMBED)$/.test(ch.tagName)) { node.removeChild(ch); return; }
+        walk(ch);
+        var keep = !!ALLOWED[ch.tagName], href = ch.tagName === 'A' ? ch.getAttribute('href') : null;
+        if (keep && ch.tagName === 'A' && !(href && SAFE_HREF.test(href))) { keep = false; }
+        if (!keep) { while (ch.firstChild) { node.insertBefore(ch.firstChild, ch); } node.removeChild(ch); return; }
+        var cls = ch.tagName !== 'A' ? ch.getAttribute('class') : null;
+        Array.prototype.slice.call(ch.attributes).forEach(function (a) { ch.removeAttribute(a.name); });
+        if (cls && /^[A-Za-z0-9_ -]+$/.test(cls)) { ch.setAttribute('class', cls); }
+        if (ch.tagName === 'A') { ch.setAttribute('href', href); ch.setAttribute('rel', 'noopener'); }
+      });
+    })(doc.body);
+    return doc.body.innerHTML;
+  }
+  var blockImgs = {};
+  function applyBlocks(blocks) {
+    var T = window.GAD_T, changed = false;
+    (blocks || []).forEach(function (b) {
+      if (b.type === 'image' || b.type === 'video') { if (b.image_path && SAFE_IMG.test(b.image_path)) { blockImgs[b.key] = b; changed = true; } return; }
+      if (!T) { return; }
+      ['he', 'en', 'ru', 'fr'].forEach(function (l) {
+        var v = b['value_' + l];
+        if (!v) { return; }
+        (T[b.key] = T[b.key] || {})[l] = b.type === 'rich' ? cleanRich(v) : esc(v);
+        changed = true;
+      });
+    });
+    return changed;
+  }
+  function applyImgs() {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-cms-img]'), function (el) {
+      var b = blockImgs[el.getAttribute('data-cms-img')];
+      if (!b) { return; }
+      el.src = b.image_path;
+      el.removeAttribute('srcset');
+      if (b.image_alt) { el.alt = b.image_alt; }
+    });
+  }
+
   var cached = null;
   try { cached = JSON.parse(get(KEY) || 'null'); } catch (e) { cached = null; }
   var fresh = cached && cached.t && (Date.now() - cached.t) < TTL && cached.data;
-  if (fresh) { apply(cached.data); del(RL); }
+  if (fresh) { apply(cached.data); applyBlocks(cached.data.page_blocks); del(RL); }
 
   if (!fresh) {
     if (window.fetch) {
@@ -202,6 +259,11 @@
       }).then(function (r) { return r.ok ? r.json() : null; }).then(function (data) {
         if (!data || typeof data !== 'object') { return; }
         set(KEY, JSON.stringify({ t: Date.now(), data: data }));
+        // טקסטים ותמונות: מוחלים מיד בלי טעינה מחדש (אותה החלפת שפה שהאתר כבר מכיר)
+        if (applyBlocks(data.page_blocks)) {
+          applyImgs();
+          if (window.setLanguage) { window.setLanguage(document.documentElement.getAttribute('lang') || 'he'); }
+        }
         // בדיקה על הנתונים המובנים (לפני שהוחלפו): אם יש הבדל — טעינה מחדש אחת
         var needs = false;
         Object.keys(CONVERT).forEach(function (t) { if (differs(t, data[t])) { needs = true; } });
@@ -212,6 +274,7 @@
 
   /* ---------- שותפים ותפקידים: הכרטיסים עצמם הם HTML סטטי — מתאימים אותם לתוכן מהמסד ---------- */
   document.addEventListener('DOMContentLoaded', function () {
+    applyImgs();
     var prow = window.GM_CMS_PARTNERS;
     if (prow && applied.partners) {
       var chips = document.querySelectorAll('.partner-chip[data-slug]'), by = {};
