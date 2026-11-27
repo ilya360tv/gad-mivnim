@@ -37,6 +37,27 @@ document.addEventListener('DOMContentLoaded', function () {
     return sources.filter(function (c) { return currentSector === 'all' || sectorOf(c) === currentSector; });
   }
 
+  /* ----- עיגולי תוכן (.gm-item): רוחב צעד בפס נע, ו-tooltip עם הסלוגן המלא ----- */
+  function gmStep(track, sample) {
+    if (!sample) { return 140; }
+    track.innerHTML = '';
+    track.appendChild(sample.cloneNode(true));
+    var w = track.firstChild.offsetWidth;
+    track.innerHTML = '';
+    return (w || 116) + 24;
+  }
+  var gmTip = function (e) {                    // בריחוף / פוקוס — גם בעותקים של הפס הנע ובכל שפה
+    var it = e.target.closest ? e.target.closest('.gm-item') : null;
+    if (!it) { return; }
+    var text = function (el) { return el.textContent.replace(/\s+/g, ' ').trim(); };
+    var lines = Array.prototype.map.call(it.querySelectorAll('.gm-sub:not(.is-soon)'), text).filter(Boolean);
+    var title = it.querySelector('.gm-title');
+    var tip = lines.join(' · ') || (title ? text(title) : '');
+    if (it.getAttribute('title') !== tip) { it.setAttribute('title', tip); }
+  };
+  document.addEventListener('pointerover', gmTip, true);
+  document.addEventListener('focusin', gmTip, true);
+
   /* ----- מנוע פס נע משותף (פס לוגואי #projects ופס הכרטיסים של #in-progress) -----
          התנועה ב-JS: offset בפיקסלים בטווח [-W, 0), כש-W = רוחב עותק אחד. גרירה, גלגלת ותנופה
          משנים את אותו offset, והלולאה אינסופית וחלקה לשני הכיוונים.
@@ -465,23 +486,38 @@ document.addEventListener('DOMContentLoaded', function () {
     var galAll = galLists[0].concat(galLists[1]);        // ה-lightbox עובר על כל תמונות הגלריה
     galAll.forEach(function (p, i) { p.i = i; });
 
-    var galTile = function (p, hidden) {
+    var galTile = function (p, hidden) {                // עיגול (.gm-circle) + שם הפרויקט מתחתיו
       var b = document.createElement('button');
       b.type = 'button';
-      b.className = 'gal-tile';
+      b.className = 'gm-item gm-gal';
       b.setAttribute('data-gi', p.i);
       if (hidden) { b.setAttribute('aria-hidden', 'true'); b.setAttribute('tabindex', '-1'); }
       else { b.setAttribute('aria-label', p.alt); }
+      var c = document.createElement('span');
+      c.className = 'gm-circle';
       var img = document.createElement('img');
       img.src = p.src; img.alt = hidden ? '' : p.alt;
       img.loading = 'lazy'; img.decoding = 'async'; img.draggable = false;
-      b.appendChild(img);
+      c.appendChild(img);
+      var t = document.createElement('span');
+      t.className = 'gm-title';
+      t.textContent = galName(p.slug);
+      b.appendChild(c);
+      b.appendChild(t);
       return b;
     };
+    if ('MutationObserver' in window) {                 // החלפת שפה — שמות הפרויקטים מתחת לעיגולים
+      new MutationObserver(function () {
+        Array.prototype.forEach.call(galSec.querySelectorAll('.gm-gal'), function (b) {
+          var p = galAll[+b.getAttribute('data-gi')], t = b.querySelector('.gm-title'), name = p ? galName(p.slug) : '';
+          if (t && t.textContent !== name) { t.textContent = name; }
+        });
+      }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    }
     galAll.forEach(function (p) { galGrid.appendChild(galTile(p, false)); });
 
     galSec.addEventListener('click', function (e) {
-      var t = e.target.closest ? e.target.closest('.gal-tile[data-gi]') : null;
+      var t = e.target.closest ? e.target.closest('.gm-gal[data-gi]') : null;
       if (!t || !window.openImageLightbox) { return; }
       window.openImageLightbox(galAll.map(function (p) {
         return { src: p.src, alt: p.alt, caption: galName(p.slug) };
@@ -1500,7 +1536,7 @@ document.addEventListener('DOMContentLoaded', function () {
       pmSetPaused(false);
       if (pmFrom && document.body.contains(pmFrom)) { pmFrom.focus(); }
       else if (pmFrom) {
-        var again = document.querySelector('.project-item[data-client="' + pmFrom.getAttribute('data-client') + '"]:not([aria-hidden="true"]), .progress-card[data-client="' + pmFrom.getAttribute('data-client') + '"]:not([aria-hidden="true"])');
+        var again = document.querySelector('.project-item[data-client="' + pmFrom.getAttribute('data-client') + '"]:not([aria-hidden="true"]), .ip-item[data-client="' + pmFrom.getAttribute('data-client') + '"]:not([aria-hidden="true"])');
         if (again) { again.focus(); }
       }
       pmFrom = null; pmSlug = null;
@@ -1513,12 +1549,12 @@ document.addEventListener('DOMContentLoaded', function () {
     var ipSecEl = document.getElementById('in-progress');
     if (ipSecEl) {                                       // כרטיסי #in-progress: לחיצה אמיתית בלבד (גרירה נבלעת במנוע הפס)
       ipSecEl.addEventListener('click', function (e) {
-        var c = e.target.closest ? e.target.closest('.progress-card[data-client]') : null;
+        var c = e.target.closest ? e.target.closest('.ip-item[data-client]') : null;
         if (c && ipSecEl.contains(c)) { openProject(c); }
       });
       ipSecEl.addEventListener('keydown', function (e) {
         if (e.key !== 'Enter' && e.key !== ' ') { return; }
-        var c = e.target.closest ? e.target.closest('.progress-card[data-client]') : null;
+        var c = e.target.closest ? e.target.closest('.ip-item[data-client]') : null;
         if (c && e.target === c) { e.preventDefault(); openProject(c); }
       });
     }
@@ -1612,8 +1648,8 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!ptCard) { return; }
       var d = PTDATA[ptCard.getAttribute('data-slug')] || {};
       var title = ptCard.querySelector('strong');
-      var tag = ptCard.querySelector('.partner-slogan');
-      var cardImg = ptCard.querySelector('.partner-photo img');
+      var tag = ptCard.querySelector('.pt-slogan');
+      var cardImg = ptCard.querySelector('.gm-circle img');
       ptName.textContent = title ? title.textContent : '';
       ptTag.textContent = tag ? tag.textContent : '';
       ptTag.classList.toggle('is-soon', !!(tag && tag.classList.contains('is-soon')));
@@ -1672,12 +1708,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     ptSec.addEventListener('click', function (e) {
-      var c = e.target.closest ? e.target.closest('.partner-chip[data-slug]') : null;
+      var c = e.target.closest ? e.target.closest('.pt-item[data-slug]') : null;
       if (c) { e.preventDefault(); openPartner(c); }
     });
     ptSec.addEventListener('keydown', function (e) {
       if (e.key !== 'Enter' && e.key !== ' ') { return; }
-      var c = e.target.closest ? e.target.closest('.partner-chip[data-slug]') : null;
+      var c = e.target.closest ? e.target.closest('.pt-item[data-slug]') : null;
       if (c && e.target === c) { e.preventDefault(); openPartner(c); }
     });
     ptm.addEventListener('click', function (e) {
@@ -1712,46 +1748,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var ptqBox = ptSec.querySelector('.pt-marquee');
     var ptqTrack = ptqBox ? ptqBox.querySelector('.pt-track') : null;
     if (ptGrid && ptqBox && ptqTrack) {
-      // הסלוגן של כל כרטיס עובר לפס באמצע התמונה (אותו פס כמו ב-#services / עמודי החטיבות). הכרטיס נגמר מיד אחרי התמונה.
-      // ה-<span class="partner-slogan"> עצמו (עם data-i18n, וכך החלון והתרגום ממשיכים לעבוד) הופך לטקסט האמיתי ב-.slogan-src.
-      Array.prototype.forEach.call(ptGrid.querySelectorAll('.partner-chip'), function (chip) {
-        var photo = chip.querySelector('.partner-photo'), sl = chip.querySelector('.partner-slogan');
-        if (!photo || !sl || photo.querySelector('.slogan-band')) { return; }
-        var band = document.createElement('div'); band.className = 'slogan-band';
-        sl.classList.add('slogan-src'); band.appendChild(sl);
-        var mq = document.createElement('div'); mq.className = 'slogan-mq'; mq.setAttribute('aria-hidden', 'true');
-        var tr = document.createElement('div'); tr.className = 'slogan-mq__track'; mq.appendChild(tr); band.appendChild(mq);
-        photo.appendChild(band);
-      });
-      // מופע מנוע אחד לכל כרטיס בפס (~35px/s, רווח 40px, עצירה במעבר עכבר). כרטיס מחוץ למסך — המנוע עוצר את הלולאה בעצמו (IntersectionObserver על הפס).
-      var ptqSloganRun = function (chip) {
-        var band = chip.querySelector('.slogan-band');
-        var box = band && band.querySelector('.slogan-mq');
-        var track = box && box.querySelector('.slogan-mq__track');
-        var src = band && band.querySelector('.slogan-src');
-        if (!(box && track && src)) { return; }
-        if (!chip._sq) {
-          var eng = initMarquee(box, track, { speed: 35, isPaused: function () { return chip.matches(':hover'); } });
-          var addItem = function () {
-            var one = document.createElement('span');
-            one.className = 'slogan-mq__item' + (src.classList.contains('is-soon') ? ' is-soon' : '');
-            one.textContent = src.textContent;
-            track.appendChild(one);
-          };
-          chip._sq = function () {
-            if (!src.textContent.trim() || !box.isConnected) { return; }
-            track.innerHTML = '';
-            addItem();
-            var w = track.children[0].getBoundingClientRect().width || 200;
-            var reps = Math.max(1, Math.ceil(((box.clientWidth || chip.clientWidth || 200) + w) / (w + 40)));
-            track.innerHTML = '';
-            for (var k = 0; k < reps * 2; k++) { addItem(); }
-            eng.measure(reps);
-          };
-        }
-        chip._sq();
-      };
-      var ptqSrc = Array.prototype.slice.call(ptGrid.querySelectorAll('.partner-chip'));
+      var ptqSrc = Array.prototype.slice.call(ptGrid.querySelectorAll('.pt-item'));
       // שתי שורות (כמו #projects / #in-progress): שורה 1 בכיוון הנוכחי, שורה 2 בכיוון ההפוך; אותו מנוע, שני מופעים, ~40px/s
       var ptqBox2 = ptSec.querySelector('.pt-marquee--2');
       var ptqTrack2 = ptqBox2 ? ptqBox2.querySelector('.pt-track') : null;
@@ -1766,20 +1763,8 @@ document.addEventListener('DOMContentLoaded', function () {
       var ptqE2 = (ptqBox2 && ptqTrack2) ? initMarquee(ptqBox2, ptqTrack2, { speed: 40, dir: -1, isPaused: ptqPaused(ptqBox2) }) : null;
 
       var ptqBuild = function () {
-        var iw = window.innerWidth;
-        var gap = 16;
-        var vw = ptqBox.clientWidth || iw;
-        // רוחב כרטיס כמו ברשת (= כרטיסי #services): דסקטופ 5 בשורה, טאבלט 2 בשורה (עד 900px);
-        // מובייל: מעט קטן יותר, אותן פרופורציות
-        var cardW = iw < 768 ? 205
-          : iw < 1024 ? Math.round((Math.min(vw, 900) - 20) / 2)
-          : Math.round((vw - 4 * gap) / 5 * cardScale());
-        [ptqBox, ptqBox2].forEach(function (b) {
-          if (!b) { return; }
-          b.style.setProperty('--pt-card-w', cardW + 'px');
-          b.style.setProperty('--pt-card-gap', gap + 'px');
-        });
-        var step = cardW + gap;
+        var vw = ptqBox.clientWidth || window.innerWidth;
+        var step = gmStep(ptqTrack, ptqSrc[0]);       // רוחב העיגול נקבע ב-CSS (--gm-circle)
         function fill(track, eng, list) {
           var reps = Math.max(1, Math.ceil((vw + step) / (step * list.length)));
           function set(hidden) {
@@ -1808,23 +1793,7 @@ document.addEventListener('DOMContentLoaded', function () {
           fill(ptqTrack, ptqE, ptqSrc);
         }
         if (window.setLanguage) { window.setLanguage(document.documentElement.getAttribute('lang') || 'he'); }
-        Array.prototype.forEach.call(ptSec.querySelectorAll('.pt-track .partner-chip'), ptqSloganRun);
-        ptqTitles();
       };
-      // כל אזורי הכותרת בגובה הכותרת הגבוהה ביותר (כותרת ארוכה נשברת לשתי שורות) — התמונות נשארות על קו אחד
-      var ptqTitles = function () {
-        ptqBox.style.removeProperty('--pt-title-h');
-        var h = 0;
-        ptqTrack.querySelectorAll('.partner-chip strong').forEach(function (t) { h = Math.max(h, t.offsetHeight); });
-        if (h) { ptqBox.style.setProperty('--pt-title-h', h + 'px'); }
-        // כותרת וסלוגן נחתכים ב-"…" אחרי 2 שורות — הטקסט המלא ב-title
-        ptSec.querySelectorAll('.pt-track .partner-chip strong, .pt-track .partner-chip .partner-slogan').forEach(function (e) {
-          var t = e.textContent.replace(/\s+/g, ' ').trim();
-          if (e.getAttribute('title') !== t) { e.setAttribute('title', t); }
-        });
-      };
-      if (document.fonts && document.fonts.ready) { document.fonts.ready.then(function () { ptqTitles(); Array.prototype.forEach.call(ptSec.querySelectorAll('.pt-track .partner-chip'), ptqSloganRun); }); }
-
       ptqBox.hidden = false;
       ptqBox.classList.add('is-on');
       ptGrid.classList.add('is-replaced');
@@ -2392,7 +2361,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var ipTrack = ipBox ? ipBox.querySelector('.ip-track') : null;
 
   if (ipSec && ipGrid && ipBox && ipTrack) {
-    var ipSrc = Array.prototype.slice.call(ipGrid.querySelectorAll('.progress-card'));
+    var ipSrc = Array.prototype.slice.call(ipGrid.querySelectorAll('.ip-item'));
     // שתי שורות (כמו #projects): שורה 1 בכיוון הנוכחי, שורה 2 בכיוון ההפוך; אותו מנוע, שני מופעים, ~40px/s
     var ipBox2 = ipSec.querySelector('.ip-marquee--2');
     var ipTrack2 = ipBox2 ? ipBox2.querySelector('.ip-track') : null;
@@ -2407,8 +2376,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var ipE2 = (ipBox2 && ipTrack2) ? initMarquee(ipBox2, ipTrack2, { speed: 40, dir: -1, isPaused: ipPaused(ipBox2) }) : null;
 
     var ipBuild = function () {
-      var narrow = window.innerWidth < 768;
-      var step = (narrow ? 115 : 145) + 16;   // אותו אריח כמו פס הלוגואים
+      var step = gmStep(ipTrack, ipSrc[0]);   // רוחב העיגול נקבע ב-CSS (--gm-circle)
       var vw = ipBox.clientWidth || window.innerWidth;
       function fill(track, eng, list) {
         var reps = Math.max(1, Math.ceil((vw + step) / (step * list.length)));
@@ -2439,22 +2407,6 @@ document.addEventListener('DOMContentLoaded', function () {
       if (window.setLanguage) { window.setLanguage(document.documentElement.getAttribute('lang') || 'he'); }
     };
 
-    // שם / מיקום ארוכים נחתכים ב-"…" — הטקסט המלא ב-title (גם אחרי החלפת שפה)
-    var ipTitles = function () {
-      Array.prototype.forEach.call(ipSec.querySelectorAll('.ip-track .progress-name, .ip-track .progress-loc'), function (e) {
-        var t = e.textContent.replace(/\s+/g, ' ').trim();
-        if (e.getAttribute('title') !== t) { e.setAttribute('title', t); }
-      });
-    };
-    var ipTitleTimer;
-    if ('MutationObserver' in window) {
-      new MutationObserver(function () { clearTimeout(ipTitleTimer); ipTitleTimer = setTimeout(ipTitles, 30); })
-        .observe(ipTrack, { childList: true, characterData: true, subtree: true });
-      if (ipTrack2) {
-        new MutationObserver(function () { clearTimeout(ipTitleTimer); ipTitleTimer = setTimeout(ipTitles, 30); })
-          .observe(ipTrack2, { childList: true, characterData: true, subtree: true });
-      }
-    }
     ipBox.hidden = false;
     ipBox.classList.add('is-on');
     ipGrid.classList.add('is-replaced');
@@ -2634,70 +2586,6 @@ document.addEventListener('DOMContentLoaded', function () {
         .observe(src, { childList: true, subtree: true, characterData: true });
     }
   })();
-
-
-  /* ---------------------------------------------------------------
-     9ב'') #services — הסלוגן של כל חטיבה רץ כפס נע על תחתית התמונה (מדרג כהה). מנוע initMarquee, מופע לכל כרטיס: ~35px/s,
-         רווח 40px בלי "•", עצירה במעבר עכבר על הכרטיס. הטקסט האמיתי פעם אחת ב-.slogan-src; העותקים הנעים aria-hidden.
-         "עצירת אנימציות" / prefers-reduced-motion — סלוגן סטטי ממורכז (CSS).
-     --------------------------------------------------------------- */
-  // כרטיסי הקטגוריות בעמודי החטיבות (.division-page .cards-row > .card): בונים את אותו פס סלוגן על התמונה — ה-<p class="card-tagline"> עצמו
-  // (עם data-i18n, כך שהתרגום ממשיך לעבוד) עובר לתוך הפס כטקסט האמיתי; הכרטיס נגמר מיד אחרי התמונה. כרטיס בלי סלוגן — בלי פס.
-  Array.prototype.forEach.call(document.querySelectorAll('.division-page .cards-row > .card'), function (card) {
-    var media = card.querySelector('.card-media');
-    var tags = card.querySelectorAll('.card-tagline');
-    if (!media || !tags.length || media.querySelector('.slogan-band')) { return; }
-    var band = document.createElement('div'); band.className = 'slogan-band';
-    Array.prototype.forEach.call(tags, function (p) { p.classList.remove('card-tagline'); p.classList.add('slogan-src'); band.appendChild(p); });
-    var mq = document.createElement('div'); mq.className = 'slogan-mq'; mq.setAttribute('aria-hidden', 'true');
-    var tr = document.createElement('div'); tr.className = 'slogan-mq__track'; mq.appendChild(tr); band.appendChild(mq);
-    media.appendChild(band);
-  });
-
-  Array.prototype.forEach.call(document.querySelectorAll('.slogan-band'), function (bandEl) {
-    var card = bandEl.closest('.card');
-    var box = bandEl.querySelector('.slogan-mq');
-    var track = box ? box.querySelector('.slogan-mq__track') : null;
-    var srcs = bandEl.querySelectorAll('.slogan-src');
-    var src = bandEl;
-    if (!(card && box && track && srcs.length)) { return; }
-    var eng = initMarquee(box, track, { speed: 35, isPaused: function () { return card.matches(':hover'); } });
-    var GAP = 40;
-    // עותק אחד = כל הסלוגנים של הכרטיס (בכרטיס עם שני משפטים — זה אחר זה), 40px ביניהם
-    var addCopy = function () {
-      Array.prototype.forEach.call(srcs, function (p) {
-        var one = document.createElement('span');
-        one.className = 'slogan-mq__item';
-        one.textContent = p.textContent;
-        track.appendChild(one);
-      });
-    };
-    var build = function () {
-      var txt = ''; Array.prototype.forEach.call(srcs, function (p) { txt += p.textContent.trim(); });
-      if (!txt || !box.isConnected) { return; }
-      track.innerHTML = '';
-      addCopy();
-      var n = track.children.length;
-      var w = (track.children[n - 1].getBoundingClientRect().right - track.children[0].getBoundingClientRect().left) || 200;
-      var vw = box.clientWidth || card.clientWidth || 200;
-      var reps = Math.max(1, Math.ceil((vw + w) / (w + GAP)));
-      track.innerHTML = '';
-      for (var k = 0; k < reps * 2; k++) { addCopy(); }
-      eng.measure(reps * n);
-    };
-    build();
-    window.addEventListener('load', build);
-    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(build); }
-    var ww = window.innerWidth, tm;
-    window.addEventListener('resize', function () {
-      if (window.innerWidth === ww) { return; }
-      ww = window.innerWidth; clearTimeout(tm); tm = setTimeout(build, 200);
-    });
-    if ('MutationObserver' in window) {
-      var moS = new MutationObserver(function () { clearTimeout(tm); tm = setTimeout(build, 50); });
-      Array.prototype.forEach.call(srcs, function (p) { moS.observe(p, { childList: true, subtree: true, characterData: true }); });
-    }
-  });
 
 
   /* ---------------------------------------------------------------

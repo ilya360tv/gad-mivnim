@@ -17,7 +17,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Gveret+Levin&family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 
   <!-- העיצוב שלנו -->
-  <link rel="stylesheet" href="css/style.css?v=20261127g3d">
+  <link rel="stylesheet" href="css/style.css?v=20261127gmc">
   <link rel="stylesheet" href="css/field-select.css?v=2">
   <meta name="theme-color" content="#0b0d10">
   <link rel="icon" href="/favicon.ico" sizes="any">
@@ -141,78 +141,48 @@
         <div class="ip-track"></div>
       </div>
 
-      <div class="progress-grid reveal-group">
-        <article class="progress-card" role="button" tabindex="0" data-client="in-progress-1" aria-haspopup="dialog">
-          <div class="progress-media">
-            <img src="images/image27.jpeg" alt="" loading="lazy" decoding="async">
-            <span class="status-badge" data-i18n="ip_status">בביצוע</span>
-          </div>
-          <div class="progress-body">
-            <h3 class="progress-name"><span data-placeholder data-i18n="ip_name">שם הפרויקט</span></h3>
-            <p class="progress-loc"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg><span data-placeholder data-i18n="ip_loc">מיקום</span></p>
-            <div class="progress-meta"><span data-i18n="ip_progress">התקדמות</span><strong>40%</strong></div>
-            <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="40" aria-label="התקדמות הפרויקט"><span class="progress-fill" style="--p:40%"></span></div>
-          </div>
+      <div class="progress-grid gm-row reveal-group">
+        <article class="gm-item ip-item" role="button" tabindex="0" data-client="in-progress-1" aria-haspopup="dialog" style="--p:40%">
+          <div class="gm-circle"><img src="images/image27.jpeg" alt="" loading="lazy" decoding="async"><i class="gm-ring" aria-hidden="true"></i></div>
+          <h3 class="gm-title"><span data-placeholder data-i18n="ip_name">שם הפרויקט</span></h3>
+          <p class="gm-sub"><span data-placeholder data-i18n="ip_loc">מיקום</span></p>
+          <span class="gm-pct" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="40" aria-label="התקדמות הפרויקט">40%</span>
+          <span class="gm-sr" data-i18n="ip_status">בביצוע</span>
         </article>
-        <article class="progress-card" role="button" tabindex="0" data-client="in-progress-2" aria-haspopup="dialog">
-          <div class="progress-media">
-            <img src="images/image31.jpeg" alt="" loading="lazy" decoding="async">
-            <span class="status-badge" data-i18n="ip_status">בביצוע</span>
-          </div>
-          <div class="progress-body">
-            <h3 class="progress-name"><span data-placeholder data-i18n="ip_name">שם הפרויקט</span></h3>
-            <p class="progress-loc"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg><span data-placeholder data-i18n="ip_loc">מיקום</span></p>
-            <div class="progress-meta"><span data-i18n="ip_progress">התקדמות</span><strong>65%</strong></div>
-            <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="65" aria-label="התקדמות הפרויקט"><span class="progress-fill" style="--p:65%"></span></div>
-          </div>
+        <article class="gm-item ip-item" role="button" tabindex="0" data-client="in-progress-2" aria-haspopup="dialog" style="--p:65%">
+          <div class="gm-circle"><img src="images/image31.jpeg" alt="" loading="lazy" decoding="async"><i class="gm-ring" aria-hidden="true"></i></div>
+          <h3 class="gm-title"><span data-placeholder data-i18n="ip_name">שם הפרויקט</span></h3>
+          <p class="gm-sub"><span data-placeholder data-i18n="ip_loc">מיקום</span></p>
+          <span class="gm-pct" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="65" aria-label="התקדמות הפרויקט">65%</span>
+          <span class="gm-sr" data-i18n="ip_status">בביצוע</span>
         </article>
-        <article class="progress-card" role="button" tabindex="0" data-client="in-progress-3" aria-haspopup="dialog">
-          <div class="progress-media">
-            <img src="images/image89.jpeg" alt="" loading="lazy" decoding="async">
-            <span class="status-badge" data-i18n="ip_status">בביצוע</span>
-          </div>
-          <div class="progress-body">
-            <h3 class="progress-name"><span data-placeholder data-i18n="ip_name">שם הפרויקט</span></h3>
-            <p class="progress-loc"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg><span data-placeholder data-i18n="ip_loc">מיקום</span></p>
-            <div class="progress-meta"><span data-i18n="ip_progress">התקדמות</span><strong>85%</strong></div>
-            <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="85" aria-label="התקדמות הפרויקט"><span class="progress-fill" style="--p:85%"></span></div>
-          </div>
+        <article class="gm-item ip-item" role="button" tabindex="0" data-client="in-progress-3" aria-haspopup="dialog" style="--p:85%">
+          <div class="gm-circle"><img src="images/image89.jpeg" alt="" loading="lazy" decoding="async"><i class="gm-ring" aria-hidden="true"></i></div>
+          <h3 class="gm-title"><span data-placeholder data-i18n="ip_name">שם הפרויקט</span></h3>
+          <p class="gm-sub"><span data-placeholder data-i18n="ip_loc">מיקום</span></p>
+          <span class="gm-pct" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="85" aria-label="התקדמות הפרויקט">85%</span>
+          <span class="gm-sr" data-i18n="ip_status">בביצוע</span>
         </article>
-        <article class="progress-card" role="button" tabindex="0" data-client="in-progress-4" aria-haspopup="dialog">
-          <div class="progress-media">
-            <img src="images/image28.jpeg" alt="" loading="lazy" decoding="async">
-            <span class="status-badge" data-i18n="ip_status">בביצוע</span>
-          </div>
-          <div class="progress-body">
-            <h3 class="progress-name"><span data-placeholder data-i18n="ip_name">שם הפרויקט</span></h3>
-            <p class="progress-loc"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg><span data-placeholder data-i18n="ip_loc">מיקום</span></p>
-            <div class="progress-meta"><span data-i18n="ip_progress">התקדמות</span><strong>25%</strong></div>
-            <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="25" aria-label="התקדמות הפרויקט"><span class="progress-fill" style="--p:25%"></span></div>
-          </div>
+        <article class="gm-item ip-item" role="button" tabindex="0" data-client="in-progress-4" aria-haspopup="dialog" style="--p:25%">
+          <div class="gm-circle"><img src="images/image28.jpeg" alt="" loading="lazy" decoding="async"><i class="gm-ring" aria-hidden="true"></i></div>
+          <h3 class="gm-title"><span data-placeholder data-i18n="ip_name">שם הפרויקט</span></h3>
+          <p class="gm-sub"><span data-placeholder data-i18n="ip_loc">מיקום</span></p>
+          <span class="gm-pct" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="25" aria-label="התקדמות הפרויקט">25%</span>
+          <span class="gm-sr" data-i18n="ip_status">בביצוע</span>
         </article>
-        <article class="progress-card" role="button" tabindex="0" data-client="in-progress-5" aria-haspopup="dialog">
-          <div class="progress-media">
-            <img src="images/image29.jpeg" alt="" loading="lazy" decoding="async">
-            <span class="status-badge" data-i18n="ip_status">בביצוע</span>
-          </div>
-          <div class="progress-body">
-            <h3 class="progress-name"><span data-placeholder data-i18n="ip_name">שם הפרויקט</span></h3>
-            <p class="progress-loc"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg><span data-placeholder data-i18n="ip_loc">מיקום</span></p>
-            <div class="progress-meta"><span data-i18n="ip_progress">התקדמות</span><strong>55%</strong></div>
-            <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="55" aria-label="התקדמות הפרויקט"><span class="progress-fill" style="--p:55%"></span></div>
-          </div>
+        <article class="gm-item ip-item" role="button" tabindex="0" data-client="in-progress-5" aria-haspopup="dialog" style="--p:55%">
+          <div class="gm-circle"><img src="images/image29.jpeg" alt="" loading="lazy" decoding="async"><i class="gm-ring" aria-hidden="true"></i></div>
+          <h3 class="gm-title"><span data-placeholder data-i18n="ip_name">שם הפרויקט</span></h3>
+          <p class="gm-sub"><span data-placeholder data-i18n="ip_loc">מיקום</span></p>
+          <span class="gm-pct" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="55" aria-label="התקדמות הפרויקט">55%</span>
+          <span class="gm-sr" data-i18n="ip_status">בביצוע</span>
         </article>
-        <article class="progress-card" role="button" tabindex="0" data-client="in-progress-6" aria-haspopup="dialog">
-          <div class="progress-media">
-            <img src="images/image33.jpeg" alt="" loading="lazy" decoding="async">
-            <span class="status-badge" data-i18n="ip_status">בביצוע</span>
-          </div>
-          <div class="progress-body">
-            <h3 class="progress-name"><span data-placeholder data-i18n="ip_name">שם הפרויקט</span></h3>
-            <p class="progress-loc"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg><span data-placeholder data-i18n="ip_loc">מיקום</span></p>
-            <div class="progress-meta"><span data-i18n="ip_progress">התקדמות</span><strong>90%</strong></div>
-            <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="90" aria-label="התקדמות הפרויקט"><span class="progress-fill" style="--p:90%"></span></div>
-          </div>
+        <article class="gm-item ip-item" role="button" tabindex="0" data-client="in-progress-6" aria-haspopup="dialog" style="--p:90%">
+          <div class="gm-circle"><img src="images/image33.jpeg" alt="" loading="lazy" decoding="async"><i class="gm-ring" aria-hidden="true"></i></div>
+          <h3 class="gm-title"><span data-placeholder data-i18n="ip_name">שם הפרויקט</span></h3>
+          <p class="gm-sub"><span data-placeholder data-i18n="ip_loc">מיקום</span></p>
+          <span class="gm-pct" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="90" aria-label="התקדמות הפרויקט">90%</span>
+          <span class="gm-sr" data-i18n="ip_status">בביצוע</span>
         </article>
       </div>
     </div>
@@ -324,14 +294,14 @@
 
   <!-- הסקריפטים שלנו -->
 
-  <script src="js/page-scroll.js?v=20261119cd4"></script>
+  <script src="js/page-scroll.js?v=20261127gmc"></script>
   <script src="js/i18n.js?v=20261119dv2"></script>
   <script src="js/premium.js?v=20261119ps1"></script>
   <script src="js/projects-data.js?v=1"></script>
   <script src="js/in-progress-data.js?v=1"></script>
-  <script src="js/cms-data.js?v=2"></script>
-  <script src="js/script.js?v=20261130gt5"></script>
+  <script src="js/cms-data.js?v=3"></script>
+  <script src="js/script.js?v=20261127gmc"></script>
   <script src="js/a11y.js?v=20261118fab1"></script>
-  <script src="js/nav-3d.js?v=2"></script>
+  <script src="js/nav-3d.js?v=3"></script>
 </body>
 </html>

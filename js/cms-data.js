@@ -214,8 +214,8 @@
     if (!T || !document.querySelectorAll) { return; }
     var by = {};
     rows.forEach(function (r) { by[r.slug] = r; });
-    Array.prototype.forEach.call(document.querySelectorAll('.partner-chip[data-slug]'), function (c) {
-      var r = by[c.getAttribute('data-slug')], st = c.querySelector('strong[data-i18n]'), sl = c.querySelector('.partner-slogan[data-i18n]');
+    Array.prototype.forEach.call(document.querySelectorAll('.pt-item[data-slug]'), function (c) {
+      var r = by[c.getAttribute('data-slug')], st = c.querySelector('strong[data-i18n]'), sl = c.querySelector('.pt-slogan[data-i18n]');
       if (!r) { return; }
       var put = function (el, field) {
         var k = el && el.getAttribute('data-i18n');
@@ -227,6 +227,7 @@
         LANGS.forEach(function (l) { var v = i18nOf(r, l)[field]; if (v) { T[k][l] = esc(v); } });
       };
       put(st, 'title'); put(sl, 'slogan');
+      if (sl && r.slogan_he) { sl.classList.remove('is-soon'); }
     });
   }
   function apply(content) {
@@ -341,16 +342,16 @@
     applyImgs();
     var prow = window.GM_CMS_PARTNERS;
     if (prow && applied.partners) {
-      var chips = document.querySelectorAll('.partner-chip[data-slug]'), by = {};
+      var chips = document.querySelectorAll('.pt-item[data-slug]'), by = {};
       prow.forEach(function (r) { by[r.slug] = r; });
       Array.prototype.forEach.call(chips, function (c) {
         var r = by[c.getAttribute('data-slug')];
         if (!r) { c.hidden = true; return; }
-        var strong = c.querySelector('strong'), img = c.querySelector('.partner-photo img'), sl = c.querySelector('.partner-slogan');
+        var strong = c.querySelector('strong'), img = c.querySelector('.gm-circle img'), sl = c.querySelector('.pt-slogan');
         var lang = document.documentElement.getAttribute('lang') || 'he';
         if (lang === 'he') {
           if (strong && r.title_he) { strong.textContent = r.title_he; }
-          if (sl && r.slogan_he) { sl.textContent = r.slogan_he; }
+          if (sl && r.slogan_he) { sl.textContent = r.slogan_he; sl.classList.remove('is-soon'); }
         }
         if (img && r.image_path) { img.src = r.image_path; img.alt = r.image_alt || r.title_he || ''; }
       });

@@ -1,12 +1,12 @@
 /* ==========================================================================
-   GAD MIVNIM — nav-3d.js: הטיה עדינה וכתם אור לכיוון העכבר בגלולות הצד, בעיגול הלוגו, בעיגול השפה, בכפתור הנגישות ובגלולת כותרת העמוד.
+   GAD MIVNIM — nav-3d.js: הטיה עדינה וכתם אור לכיוון העכבר בגלולות הצד, בעיגול הלוגו, בעיגול השפה, בכפתור הנגישות, בגלולת כותרת העמוד ובעיגולי התוכן (.gm-circle).
    ה-JS רק מזין משתני CSS (--n3-rx / --n3-ry / --n3-mx / --n3-my); כל העיצוב ב-css/style.css (בלוק "NAV 3D").
    פועל רק במחשב עם עכבר (≥1024px, hover, pointer fine). בלי תנועה כשמופעל "עצירת אנימציות" או prefers-reduced-motion.
    ========================================================================== */
 (function () {
   'use strict';
   if (!window.matchMedia) { return; }
-  var TARGETS = '.site-header .main-nav ul li a, .site-header .logo, .site-header .lang-btn, .a11y-fab, #main .page-eyebrow';
+  var TARGETS = '.site-header .main-nav ul li a, .site-header .logo, .site-header .lang-btn, .a11y-fab, #main .page-eyebrow, #main .gm-circle';
   var MAX_X = 4, MAX_Y = 8;                                        // מעלות: rotateX / rotateY
   var VARS = ['--n3-rx', '--n3-ry', '--n3-mx', '--n3-my'];
   var fine = window.matchMedia('(min-width: 1024px) and (hover: hover) and (pointer: fine)');

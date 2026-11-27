@@ -5375,22 +5375,25 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
 }
 
 /* ----- הלוגו בהדר ועיגול השפות — אותו גודל (גדול בכ-18%): 85px מחשב / 66px טאבלט+טלפון ----- */
+:root { --lang-circle: clamp(61px, 4.43vw, 85px); }          /* קוטר עיגול השפה — מקור יחיד */
+@media (max-width: 1023.98px) { :root { --lang-circle: 66px; } }
 .site-header .logo-img,
 .site-header .lang-btn {
-  width: clamp(61px, 4.43vw, 85px) !important;
-  height: clamp(61px, 4.43vw, 85px) !important;
-  min-width: clamp(61px, 4.43vw, 85px);
+  width: var(--lang-circle) !important;
+  height: var(--lang-circle) !important;
+  min-width: var(--lang-circle);
   flex-shrink: 0;
 }
 .site-header .logo-img {
   box-shadow: 0 0 0 1.5px rgba(56, 189, 248, .75), 0 0 12px rgba(56, 189, 248, .3) !important;
 }
-.site-header .lang-btn {
+.site-header .lang-btn,
+.gm-circle {
   box-shadow: 0 0 0 1.5px rgba(56, 189, 248, .75), 0 0 12px rgba(56, 189, 248, .3) !important;
 }
 @media (max-width: 1023.98px) {
   .site-header .logo-img,
-  .site-header .lang-btn { width: 66px !important; height: 66px !important; min-width: 66px; }
+  .site-header .lang-btn { width: var(--lang-circle) !important; height: var(--lang-circle) !important; min-width: var(--lang-circle); }
 }
 
 /* ----- הלוגו מוגדל ב-1.104 (כדי שהדיסק ימלא את הטבעת) — לכן הריבוע שלו קטן ב-1/1.104, והקוטר הנראה (כולל הטבעת) זהה בדיוק לעיגול השפות ----- */
@@ -5434,7 +5437,7 @@ html.a11y-no-motion .about-mq__src > * { display: inline-block; margin-inline: 1
     --side-top: clamp(16px, 1.25vw, 24px);         /* ריווח עליון */
     --side-pill-h: clamp(30px, 1.875vw, 36px);     /* גובה גלולה */
     --side-font: clamp(11px, .68vw, 13px);         /* גודל כתב בגלולה */
-    --side-circle: clamp(61px, 4.43vw, 85px);      /* עיגול הלוגו / השפות — גדול בכ-18% */
+    --side-circle: var(--lang-circle);             /* עיגול הלוגו / השפות — גדול בכ-18% */
     --side-bottom: 24px;                           /* מרווח מתחתית המסך */
     --pill-h: var(--side-pill-h);                  /* גובה הגלולה בפועל (עברית — שורה אחת) */
     /* רווח בין גלולות: חצי מהחלוקה השווה של הגובה הפנוי (לא פרוסות על כל הגובה — מתחילות מתחת לעיגול); מינימום 10px */
@@ -9107,15 +9110,18 @@ html:not(.a11y-no-motion) body #main .section-eyebrow.page-eyebrow.n3-on { trans
 /* ----- עיגולים (לוגו, שפה, נגישות): שפת זכוכית, ברק עליון וצל מרחף — הגדלים, המקומות והצבעים כמו קודם ----- */
 body .site-header .logo,
 body .site-header .lang-btn,
+body #main .gm-circle,
 body .a11y-fab { transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease; }
 body .site-header .logo { position: relative; border-radius: 50%; }
 body .site-header .logo::before,
 body .site-header .lang-btn::before,
+body #main .gm-circle::before,
 body .a11y-fab::before { content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none; background: radial-gradient(75% 42% at 50% 6%, rgba(255, 255, 255, .28), rgba(255, 255, 255, 0) 70%); box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, .42), inset 0 0 0 2px rgba(160, 224, 255, .38), inset 0 -6px 10px rgba(0, 0, 0, .26); }
 body .site-header .logo::before { inset: -5.2%;                 /* הלוגו מוגדל ב-1.104 */ }
 body .a11y-fab::before { box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, .45), inset 0 0 0 2px rgba(190, 255, 214, .34), inset 0 -6px 10px rgba(0, 0, 0, .22); }
 html:not(.a11y-contrast) body .site-header .logo .logo-img { box-shadow: 0 0 0 1.36px rgba(56, 189, 248, .75), 0 0 10.9px rgba(56, 189, 248, .3), 0 9px 16px rgba(0, 0, 0, .55) !important; }
-html:not(.a11y-contrast) body .site-header .lang-btn { box-shadow: 0 0 0 1.5px rgba(56, 189, 248, .75), 0 0 12px rgba(56, 189, 248, .3), 0 9px 16px rgba(0, 0, 0, .55) !important; }
+html:not(.a11y-contrast) body .site-header .lang-btn,
+html:not(.a11y-contrast) body #main .gm-circle { box-shadow: 0 0 0 1.5px rgba(56, 189, 248, .75), 0 0 12px rgba(56, 189, 248, .3), 0 9px 16px rgba(0, 0, 0, .55) !important; }
 html:not(.a11y-contrast) body .a11y-fab { box-shadow: 0 0 0 2px rgba(22, 163, 74, .55), 0 0 18px rgba(22, 163, 74, .4), 0 10px 18px rgba(0, 0, 0, .5); }
 body .a11y-fab:hover { transform: none; }
 
@@ -9123,6 +9129,7 @@ body .a11y-fab:hover { transform: none; }
 body .site-header .main-nav ul li a:focus-visible,
 body .site-header .logo:focus-visible,
 body .site-header .lang-btn:focus-visible,
+body #main .gm-item:focus-visible .gm-circle,
 body .a11y-fab:focus-visible { outline: 3px solid #ffffff; outline-offset: 2px; }
 
 /* ----- לחיצה: שוקע 2px. ה-::after שומר את שטח הלחיצה המקורי בזמן התזוזה ----- */
@@ -9142,11 +9149,13 @@ body .a11y-fab:focus-visible { outline: 3px solid #ffffff; outline-offset: 2px; 
   html:not(.a11y-no-motion) body .site-header .main-nav ul li a:hover,
   html:not(.a11y-no-motion) body .site-header .logo:hover,
   html:not(.a11y-no-motion) body .site-header .lang-btn:hover,
+  html:not(.a11y-no-motion) body #main .gm-circle:hover,
   html:not(.a11y-no-motion) body .a11y-fab:hover,
   html:not(.a11y-no-motion) body #main .section-eyebrow.page-eyebrow:hover { transform: perspective(600px) translateY(-5px) rotateX(var(--n3-rx, 0deg)) rotateY(var(--n3-ry, 0deg)); }
   html:not(.a11y-no-motion) body .site-header .main-nav ul li a:hover::after,
   html:not(.a11y-no-motion) body .site-header .logo:hover::after,
   html:not(.a11y-no-motion) body .site-header .lang-btn:hover::after,
+  html:not(.a11y-no-motion) body #main .gm-circle:hover::after,
   html:not(.a11y-no-motion) body .a11y-fab:hover::after { content: ""; position: absolute; top: -1px; right: -1px; bottom: -8px; left: -1px; border-radius: inherit; }
   html:not(.a11y-contrast):not(.a11y-no-motion) body .site-header .main-nav ul li a:hover,
   html:not(.a11y-contrast):not(.a11y-no-motion) body #main .section-eyebrow.page-eyebrow:hover::after { background: radial-gradient(70px 46px at var(--n3-mx, 50%) var(--n3-my, 50%), rgba(200, 236, 255, .2), rgba(200, 236, 255, 0) 100%), linear-gradient(180deg, rgba(36, 62, 86, .93), rgba(12, 24, 36, .93)); box-shadow: inset 0 0 0 2px #62cffd, 0 0 18px rgba(56, 189, 248, .5), 0 12px 20px rgba(0, 0, 0, .5); }
@@ -9154,9 +9163,11 @@ body .a11y-fab:focus-visible { outline: 3px solid #ffffff; outline-offset: 2px; 
   html:not(.a11y-contrast):not(.a11y-no-motion) body #main .section-eyebrow.page-eyebrow:hover::before { bottom: calc(var(--pe-frame-y) * -1 - 9px); }
   html:not(.a11y-no-motion) body .site-header .logo:hover::before,
   html:not(.a11y-no-motion) body .site-header .lang-btn:hover::before,
+  html:not(.a11y-no-motion) body #main .gm-circle:hover::before,
   html:not(.a11y-no-motion) body .a11y-fab:hover::before { background: radial-gradient(circle at var(--n3-mx, 50%) var(--n3-my, 50%), rgba(255, 255, 255, .3), rgba(255, 255, 255, 0) 55%), radial-gradient(75% 42% at 50% 6%, rgba(255, 255, 255, .28), rgba(255, 255, 255, 0) 70%); }
   html:not(.a11y-contrast):not(.a11y-no-motion) body .site-header .logo:hover .logo-img { box-shadow: 0 0 0 1.5px #62cffd, 0 0 20px rgba(56, 189, 248, .6), 0 13px 22px rgba(0, 0, 0, .55) !important; }
-  html:not(.a11y-contrast):not(.a11y-no-motion) body .site-header .lang-btn:hover { box-shadow: 0 0 0 1.5px #62cffd, 0 0 20px rgba(56, 189, 248, .6), 0 13px 22px rgba(0, 0, 0, .55) !important; }
+  html:not(.a11y-contrast):not(.a11y-no-motion) body .site-header .lang-btn:hover,
+  html:not(.a11y-contrast):not(.a11y-no-motion) body #main .gm-circle:hover { box-shadow: 0 0 0 1.5px #62cffd, 0 0 20px rgba(56, 189, 248, .6), 0 13px 22px rgba(0, 0, 0, .55) !important; }
   html:not(.a11y-contrast):not(.a11y-no-motion) body .a11y-fab:hover { box-shadow: 0 0 0 2px rgba(22, 163, 74, .95), 0 0 28px rgba(22, 163, 74, .62), 0 14px 22px rgba(0, 0, 0, .5); }
   html:not(.a11y-no-motion) body .site-header .main-nav ul li a:active,
   html:not(.a11y-no-motion) body .site-header .logo:active,
@@ -9168,3 +9179,39 @@ body .a11y-fab:focus-visible { outline: 3px solid #ffffff; outline-offset: 2px; 
   html:not(.a11y-no-motion) body .a11y-fab:active::after { top: -8px; bottom: -1px; }
 }
 /* ===== NAV 3D · END ===== */
+
+/* ===== CIRCLE CARDS — כרטיסי התוכן כעיגולים: שותפים, שירותים ועמודי החטיבות, פרויקטים בביצוע, גלריה · BEGIN =====
+   הטבעת, הזכוכית, הצל והריחוף של .gm-circle מוגדרים פעם אחת יחד עם עיגול השפה (בלוק "NAV 3D"). כאן רק גודל, טקסט ופריסה.
+   קוטר העיגולים — משתנה אחד: --gm-circle (כרגע = קוטר עיגול השפה). */
+:root { --gm-circle: var(--lang-circle); --gm-gap: 24px; --gm-item: calc(var(--gm-circle) + 56px); }
+@media (max-width: 767.98px) { :root { --gm-item: calc(var(--gm-circle) + 32px); } }
+
+/* שורות ממורכזות, ריווח אחיד */
+html[dir] body #main#main#main .gm-row:not(.is-replaced),
+html.a11y-no-motion[dir] body #main#main#main .gm-row.is-replaced { display: flex !important; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: var(--gm-gap) !important; width: 100%; max-width: none !important; margin: 12px auto 0 !important; padding: 12px 0; }
+html[dir] body #main#main#main .gm-item { position: relative; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; flex: 0 0 auto; width: var(--gm-item); margin: 0 !important; padding: 0; font: inherit; color: inherit; text-align: center; text-decoration: none; background: none; border: 0; border-radius: 0; box-shadow: none; overflow: visible; outline: 0; }
+html[dir] body #main#main#main .gm-row > .gm-item { width: min(var(--gm-item), calc((100% - 2 * var(--gm-gap)) / 3)); }
+html[dir] body #main#main#main :is(a, button, [role="button"]).gm-item { cursor: pointer; }
+
+/* העיגול: התמונה ממלאת אותו */
+html[dir] body #main .gm-circle { position: relative; display: block; flex: none; width: var(--gm-circle); height: var(--gm-circle); margin: 0; border-radius: 50%; background: rgba(10, 12, 14, .55); }
+html[dir] body #main#main#main .gm-circle > img { display: block; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: center; border-radius: 50%; transform: none; }
+
+/* כותרת (עד 2 שורות), שורת סלוגן אחת, אחוז התקדמות */
+html[dir] body #main#main#main#main#main#main#main .gm-item .gm-title { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; box-sizing: border-box; flex: none; width: 100%; height: auto; min-height: 0 !important; margin: 12px 0 0 !important; padding: 0 !important; font-family: 'Rubik', 'Segoe UI', Arial, sans-serif !important; font-size: 14px !important; font-weight: 700 !important; line-height: 1.3 !important; letter-spacing: normal !important; white-space: normal !important; text-align: center !important; text-shadow: none; color: #38bdf8 !important; overflow-wrap: anywhere; }
+html[dir] body #main#main#main#main#main#main#main .gm-item .gm-sub { display: block; flex: none; width: 100%; min-height: 0; margin: 4px 0 0 !important; padding: 0 !important; font-family: 'Rubik', 'Segoe UI', Arial, sans-serif !important; font-size: 12px !important; font-weight: 400 !important; line-height: 16px !important; letter-spacing: normal !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center !important; color: #a9b4c0 !important; }
+html[dir] body #main#main#main#main#main#main#main .gm-item .gm-sub.is-soon { display: none; }
+/* משפט שני ומעלה, וסטטוס — לקוראי מסך בלבד (המשפט המלא גם ב-tooltip) */
+html[dir] body #main#main#main#main#main#main#main .gm-item .gm-sub ~ .gm-sub,
+html[dir] body #main#main#main .gm-item .gm-sr { position: absolute; width: 1px; height: 1px; margin: 0 !important; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.gm-pct { direction: ltr; margin-top: 4px; font-size: 12px; font-weight: 700; line-height: 16px; color: #7dd3fc; }
+/* התקדמות: טבעת תכלת דקה סביב העיגול (לפי --p של הכרטיס) */
+.gm-ring { position: absolute; inset: -6px; border-radius: 50%; pointer-events: none; background: conic-gradient(#38bdf8 var(--p, 0%), rgba(56, 189, 248, .18) 0); -webkit-mask: radial-gradient(closest-side, transparent calc(100% - 3.5px), #000 calc(100% - 3px)); mask: radial-gradient(closest-side, transparent calc(100% - 3.5px), #000 calc(100% - 3px)); }
+
+/* שני הפסים הנעים: אותו מנוע, רווח 24px בין עיגולים ובין השורות; מקום להרמה בריחוף ולצל */
+html[dir] body #main#main#main :is(#partners, #in-progress, #gallery) :is(.pt-marquee, .ip-marquee, .gal-marquee).is-on { margin: 0 !important; padding: 12px 0 !important; }
+html[dir] body #main#main#main :is(#partners, #in-progress, #gallery) :is(.pt-marquee, .ip-marquee).is-on:not(.pt-marquee--2):not(.ip-marquee--2) { margin-top: 12px !important; }
+html[dir] body #main #gallery .gal-strips { gap: 0; }
+html[dir] body #main#main#main :is(#partners, #in-progress, #gallery) :is(.pt-track, .ip-track, .gal-track) { display: flex; align-items: flex-start; gap: 0; }
+html[dir] body #main#main#main :is(#partners, #in-progress, #gallery) :is(.pt-track, .ip-track, .gal-track) > .gm-item { direction: rtl; height: auto; aspect-ratio: auto; margin-right: var(--gm-gap) !important; }
+/* ===== CIRCLE CARDS · END ===== */
