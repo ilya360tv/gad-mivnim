@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
   /* ---------------------------------------------------------------
      1) סינון פרויקטים — מגזר פרטי / עסקי / הכל
      --------------------------------------------------------------- */
-  var projectItems  = document.querySelectorAll('#projects .projects-grid .project-item');
+  var projectItems  = document.querySelectorAll('#projects .projects-grid .pj-item');
 
   /* ---------------------------------------------------------------
      1ב) פרויקטים — לשוניות מגזר (הכל / עסקי / פרטי) + פס נע אינסופי (marquee) הנגרר בעכבר ובמגע.
@@ -224,8 +224,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var two = !!(marquee2 && mqTrack2 && mqE2) && cards.length > 3;     // ≤3 כרטיסים: שורה אחת סטטית וממורכזת
 
     var vw = marquee.clientWidth || window.innerWidth;
-    var cardW = window.innerWidth < 768 ? 115 : 145;
-    var step  = cardW + 16;
+    var step = gmStep(mqTrack, cards[0]);                              // רוחב העיגול נקבע ב-CSS (--gm-circle)
 
     function makeSet(list, reps, hidden) {
       var frag = document.createDocumentFragment();
@@ -234,15 +233,7 @@ document.addEventListener('DOMContentLoaded', function () {
           var n = c.cloneNode(true);
           n.classList.remove('is-hidden', 'reveal');
           var im = n.querySelector('img');
-          var ttl = im ? (im.getAttribute('alt') || '') : '';
-          if ((n.tagName === 'A' || n.tagName === 'BUTTON') && ttl) { n.setAttribute('aria-label', ttl); }
           if (im) { im.setAttribute('draggable', 'false'); }
-          if (im && !im.parentNode.classList.contains('project-media')) {
-            var wrap = document.createElement('div');
-            wrap.className = 'project-media';
-            im.parentNode.insertBefore(wrap, im);
-            wrap.appendChild(im);
-          }
           if (hidden || r > 0) {                                  // עותקים כפולים: לא נקראים ולא נכנסים בטאב
             n.setAttribute('aria-hidden', 'true');
             if (n.tagName === 'A' || n.tagName === 'BUTTON') { n.setAttribute('tabindex', '-1'); }
@@ -276,12 +267,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // מציג את התוכן של הלשונית הנוכחית: פס/רשת, או הודעת "בקרוב" כשאין לקוחות במגזר
   function renderSector() {
-    sources.forEach(function (c) {                                // אריחי טקסט (לקוח בלי לוגו): שם לפי השפה
-      var tn = c.querySelector('.logo-name'), dd = PDATA[c.getAttribute('data-client')];
-      if (!tn || !dd) { return; }
+    sources.forEach(function (c) {                                // שם הלקוח ותיאור העבודה מתחת לעיגול — לפי השפה
+      var dd = PDATA[c.getAttribute('data-client')];
+      if (!dd) { return; }
       var lg = document.documentElement.getAttribute('lang') || 'he';
-      var nm = (lg !== 'he' && dd.i18n && dd.i18n[lg] && dd.i18n[lg].name) || dd.name;
-      tn.textContent = nm; c.setAttribute('aria-label', nm);
+      var tr = (lg !== 'he' && dd.i18n && dd.i18n[lg]) || {};
+      var tn = c.querySelector('.gm-title'), ts = c.querySelector('.gm-sub');
+      if (tn) { tn.textContent = tr.name || dd.name; }
+      if (ts) { ts.textContent = tr.title || dd.title || ''; }
     });
     var cards = matching();
     var empty = !cards.length;
@@ -1536,14 +1529,14 @@ document.addEventListener('DOMContentLoaded', function () {
       pmSetPaused(false);
       if (pmFrom && document.body.contains(pmFrom)) { pmFrom.focus(); }
       else if (pmFrom) {
-        var again = document.querySelector('.project-item[data-client="' + pmFrom.getAttribute('data-client') + '"]:not([aria-hidden="true"]), .ip-item[data-client="' + pmFrom.getAttribute('data-client') + '"]:not([aria-hidden="true"])');
+        var again = document.querySelector('.pj-item[data-client="' + pmFrom.getAttribute('data-client') + '"]:not([aria-hidden="true"]), .ip-item[data-client="' + pmFrom.getAttribute('data-client') + '"]:not([aria-hidden="true"])');
         if (again) { again.focus(); }
       }
       pmFrom = null; pmSlug = null;
     }
 
     projSection.addEventListener('click', function (e) {
-      var b = e.target.closest ? e.target.closest('.project-item[data-client]') : null;
+      var b = e.target.closest ? e.target.closest('.pj-item[data-client]') : null;
       if (b && projSection.contains(b)) { openProject(b); }
     });
     var ipSecEl = document.getElementById('in-progress');

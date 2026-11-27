@@ -9180,7 +9180,7 @@ body .a11y-fab:focus-visible { outline: 3px solid #ffffff; outline-offset: 2px; 
 }
 /* ===== NAV 3D · END ===== */
 
-/* ===== CIRCLE CARDS — כרטיסי התוכן כעיגולים: שותפים, שירותים ועמודי החטיבות, פרויקטים בביצוע, גלריה · BEGIN =====
+/* ===== CIRCLE CARDS — כרטיסי התוכן כעיגולים: שותפים, שירותים ועמודי החטיבות, הפרויקטים שלנו, פרויקטים בביצוע, גלריה · BEGIN =====
    הטבעת, הזכוכית, הצל והריחוף של .gm-circle מוגדרים פעם אחת יחד עם עיגול השפה (בלוק "NAV 3D"). כאן רק גודל, טקסט ופריסה.
    קוטר העיגולים — משתנה אחד: --gm-circle (כרגע = קוטר עיגול השפה). */
 :root { --gm-circle: var(--lang-circle); --gm-gap: 24px; --gm-item: calc(var(--gm-circle) + 56px); }
@@ -9209,9 +9209,13 @@ html[dir] body #main#main#main .gm-item .gm-sr { position: absolute; width: 1px;
 .gm-ring { position: absolute; inset: -6px; border-radius: 50%; pointer-events: none; background: conic-gradient(#38bdf8 var(--p, 0%), rgba(56, 189, 248, .18) 0); -webkit-mask: radial-gradient(closest-side, transparent calc(100% - 3.5px), #000 calc(100% - 3px)); mask: radial-gradient(closest-side, transparent calc(100% - 3.5px), #000 calc(100% - 3px)); }
 
 /* שני הפסים הנעים: אותו מנוע, רווח 24px בין עיגולים ובין השורות; מקום להרמה בריחוף ולצל */
-html[dir] body #main#main#main :is(#partners, #in-progress, #gallery) :is(.pt-marquee, .ip-marquee, .gal-marquee).is-on { margin: 0 !important; padding: 12px 0 !important; }
-html[dir] body #main#main#main :is(#partners, #in-progress, #gallery) :is(.pt-marquee, .ip-marquee).is-on:not(.pt-marquee--2):not(.ip-marquee--2) { margin-top: 12px !important; }
+html[dir] body #main#main#main :is(#projects, #partners, #in-progress, #gallery) :is(.marquee, .pt-marquee, .ip-marquee, .gal-marquee).is-on { margin: 0 !important; padding: 12px 0 !important; }
+html[dir] body #main#main#main :is(#projects, #partners, #in-progress, #gallery) :is(.marquee, .pt-marquee, .ip-marquee).is-on:not(.marquee--2):not(.pt-marquee--2):not(.ip-marquee--2) { margin-top: 12px !important; }
 html[dir] body #main #gallery .gal-strips { gap: 0; }
-html[dir] body #main#main#main :is(#partners, #in-progress, #gallery) :is(.pt-track, .ip-track, .gal-track) { display: flex; align-items: flex-start; gap: 0; }
-html[dir] body #main#main#main :is(#partners, #in-progress, #gallery) :is(.pt-track, .ip-track, .gal-track) > .gm-item { direction: rtl; height: auto; aspect-ratio: auto; margin-right: var(--gm-gap) !important; }
+html[dir] body #main#main#main :is(#projects, #partners, #in-progress, #gallery) :is(.marquee-track, .pt-track, .ip-track, .gal-track) { display: flex; align-items: flex-start; gap: 0; }
+html[dir] body #main#main#main :is(#projects, #partners, #in-progress, #gallery) :is(.marquee-track, .pt-track, .ip-track, .gal-track) > .gm-item { direction: rtl; height: auto; aspect-ratio: auto; margin-right: var(--gm-gap) !important; }
+/* הפרויקטים שלנו: לוגו של לקוח מוצג שלם (בלי חיתוך) על עיגול בהיר; שורה ריקה (בלי תיאור) לא תופסת מקום */
+html[dir] body #main .gm-circle.gm-logo { display: flex; align-items: center; justify-content: center; background: #f4f5f6; }
+html[dir] body #main#main#main .gm-circle.gm-logo > img { width: 80%; height: 64%; object-fit: contain; border-radius: 0; }
+html[dir] body #main#main#main#main#main#main#main .gm-item .gm-sub:empty { display: none; }
 /* ===== CIRCLE CARDS · END ===== */
