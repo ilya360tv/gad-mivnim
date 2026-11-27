@@ -184,9 +184,9 @@
           '<bdi class="gmpr-time" dir="ltr"></bdi><span class="gmpr-gap"></span><bdi class="gmpr-count" dir="ltr"></bdi>' +
           btn('gmpr-yfull', 'מסך מלא', ICON.full, 'הגדלה') + '</div>'));
       main.appendChild(player);
-      main.appendChild(make('strong', 'gmpr-ytitle'));
-      main.appendChild(make('div', 'gmpr-channel',
-        '<img class="gmpr-avatar" src="' + LOGO + '" alt="" width="44" height="44" decoding="async"><span class="gmpr-who"><strong></strong><span>פרסומת · הרצליה</span></span><a class="gmpr-ycta" hidden></a>'));
+      main.appendChild(make('div', 'gmpr-info',                       // בלוק אחד מתחת לנגן: כותרת + שורת "ערוץ"
+        '<strong class="gmpr-ytitle"></strong><div class="gmpr-channel"><img class="gmpr-avatar" src="' + LOGO + '" alt="" width="36" height="36" decoding="async">' +
+        '<span class="gmpr-who"><strong></strong><span>פרסומת · הרצליה</span></span><a class="gmpr-ycta" hidden></a></div>'));
       card.insertBefore(main, card.firstChild);
       var queue = make('div', 'gmpr-queue', '<div class="gmpr-qhead" id="gmprQueueHead">הבא בתור</div><div class="gmpr-qscroll"><ul aria-labelledby="gmprQueueHead"></ul></div>');
       card.appendChild(queue);
@@ -267,25 +267,16 @@
       if (yt.order !== idx) {                                       // הרשימה: מהפרסומת שאחרי הנוכחית, במעגל
         var had = yt.list.contains(document.activeElement) ? document.activeElement : null;
         yt.order = idx;
-        for (var n = 1; n <= ads.length; n++) {
-          var k = (idx + n) % ads.length;
-          yt.items[k].li.hidden = k === idx;
-          yt.list.appendChild(yt.items[k].li);
+        for (var n = 0; n < ads.length; n++) {                     // הנוכחית ראשונה (מסומנת), אחריה הבאות במעגל
+          var k = (idx + n) % ads.length, li = yt.items[k].li;
+          li.classList.toggle('is-current', k === idx);
+          if (k === idx) { li.firstChild.setAttribute('aria-current', 'true'); } else { li.firstChild.removeAttribute('aria-current'); }
+          yt.list.appendChild(li);
         }
         if (had && had.offsetParent !== null) { had.focus({ preventScroll: true }); }
         if (!yt.queue.matches(':hover')) { yt.scroll.scrollTop = 0; yt.scroll.scrollLeft = 0; }
       }
       paint();
-    }
-    // אין מקום לכל התוכן — מסתירים את שורת הערוץ; במובייל, אם עדיין צר, מקטינים מעט את הנגן (נשאר 16:9)
-    function fitPlayer(avail) {
-      card.classList.remove('is-tight');
-      card.style.removeProperty('--yt-pw');
-      if (!isMobile()) { if (avail < 300) { card.classList.add('is-tight'); } return; }
-      if (card.offsetHeight <= avail) { return; }
-      card.classList.add('is-tight');
-      var over = card.offsetHeight - avail;
-      if (over > 0) { card.style.setProperty('--yt-pw', Math.floor(Math.max(90, yt.player.offsetHeight - over) * 16 / 9) + 'px'); }
     }
     // גודל: ה-CSS מחשב (min עם dvh); כאן רק נמדדים ראש המסגרת, המקום שבין גלולות הצד וכפתור הנגישות
     function applyPlayer() {
@@ -303,12 +294,32 @@
         side = Math.min(side, half * 2);
       });
       set('--yt-side', Math.max(280, side));
-      fitPlayer(vh - top - bottom);
-      var fab = rectsOf(['#a11yFab'])[0], w = card.offsetWidth;
-      if (fab && fab.l < cx + w / 2 + 8 && fab.r > cx - w / 2 - 8 && fab.b > top && top + card.offsetHeight > fab.t - 8) {
-        bottom = Math.max(17, vh - fab.t + 8);
-        set('--yt-bottom', bottom);
-        fitPlayer(vh - top - bottom);
+      card.classList.remove('is-tight');
+      ['--yt-mob', '--yt-fabl', '--yt-fabr'].forEach(function (k) { card.style.removeProperty(k); });
+      var fab = rectsOf(['#a11yFab'])[0];
+      if (!isMobile()) {
+        if (vh - top - bottom < 300) { card.classList.add('is-tight'); }   // מסך נמוך מאוד — בלי שורת הערוץ
+        var w = card.offsetWidth;
+        if (fab && fab.l < cx + w / 2 + 8 && fab.r > cx - w / 2 - 8 && fab.b > top && top + card.offsetHeight > fab.t - 8) {
+          bottom = Math.max(17, vh - fab.t + 8);
+          set('--yt-bottom', bottom);
+          if (vh - top - bottom < 300) { card.classList.add('is-tight'); }
+        }
+        return;
+      }
+      // מובייל: נגן ברוחב מלא. אם אין גובה — בטלפון מסתירים את שורת הערוץ; אם עדיין צר (או בטאבלט) מקטינים מעט את הרוחב
+      var full = vw - 24, over = card.offsetHeight - (vh - top - bottom);
+      if (over > 0) {
+        if (full <= 500 || over * 16 / 9 > full * .35) { card.classList.add('is-tight'); over = card.offsetHeight - (vh - top - bottom); }
+        if (over > 0) { set('--yt-mob', Math.max(200, full - Math.ceil(over * 16 / 9) - 1)); }
+      }
+      // שורת התמונות מתקצרת ליד כפתור הנגישות, כדי לא לעבור מתחתיו
+      if (fab) {
+        var cw = card.offsetWidth, qTop = top + yt.queue.offsetTop;
+        if (qTop < fab.b + 8 && qTop + yt.queue.offsetHeight > fab.t - 8) {
+          if ((fab.l + fab.r) / 2 > cx) { set('--yt-fabr', Math.max(0, cx + cw / 2 - (fab.l - 8))); }
+          else { set('--yt-fabl', Math.max(0, fab.r + 8 - (cx - cw / 2))); }
+        }
       }
     }
     if (INLINE) { buildPlayer(); }

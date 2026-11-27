@@ -125,113 +125,115 @@ html.a11y-no-motion .gmpr-backdrop, html.a11y-no-motion .gmpr-slide, html.a11y-n
 }
 
 /* ==========================================================================
-   דף הבית — נגן בסגנון YouTube (.gmpr-yt, מצב inline), בלי מסגרת: נגן + כותרת + שורת ערוץ משמאל (~70%), "הבא בתור" מימין (~30%).
-   הכול יושב ישירות על רקע ה-Hero. במסך מלא הכרטיס נראה כמו קודם.
+   דף הבית — נגן בסגנון YouTube (.gmpr-yt, מצב inline), בלי מסגרת חיצונית: נגן 68% משמאל, "הבא בתור" 32% מימין, רווח 24px,
+   שתי העמודות מתחילות באותו גובה ובאותו גובה כולל. הטקסט תמיד על לוח זכוכית כהה רך (--yt-glass), לא ישירות על הרקע.
+   סולם: מרווחים 8/12/16/24, פינות 8/14/16, גופן 12/13/14/15/18. במסך מלא הכרטיס נראה כמו קודם.
    הגודל מחושב כאן לפי הגובה הפנוי עד 16px מתחתית המסך (--yt-top / --yt-bottom / --yt-side נמדדים ב-js/promo-window.js).
    ========================================================================== */
 .gmpr-card:not([data-state="inline"]) .gmpr-main, .gmpr-card:not([data-state="inline"]) .gmpr-player { display: contents; }
-.gmpr-card:not([data-state="inline"]) .gmpr-badge, .gmpr-card:not([data-state="inline"]) .gmpr-ctrl, .gmpr-card:not([data-state="inline"]) .gmpr-ytitle,
-.gmpr-card:not([data-state="inline"]) .gmpr-channel, .gmpr-card:not([data-state="inline"]) .gmpr-queue { display: none; }
+.gmpr-card:not([data-state="inline"]) .gmpr-badge, .gmpr-card:not([data-state="inline"]) .gmpr-ctrl, .gmpr-card:not([data-state="inline"]) .gmpr-info,
+.gmpr-card:not([data-state="inline"]) .gmpr-queue { display: none; }
 
 .gmpr-card.gmpr-yt[data-state="inline"] {
   --yt-vh: 100vh;
-  --yt-meta: 90px;                                  /* כותרת (10+26) + שורת ערוץ (8+46) */
-  --yt-shadow: 0 1px 2px #000, 0 0 4px rgba(0, 0, 0, .95), 0 0 10px rgba(0, 0, 0, .85), 0 0 20px rgba(0, 0, 0, .6);
+  --yt-meta: 100px;                                 /* 8 רווח + לוח הכותרת והערוץ (92) */
+  --yt-glass: rgba(10, 14, 20, .55);
+  --yt-grey: #c3ccd6;
   --yt-fit: calc(var(--yt-vh) - var(--yt-top, 50vh) - var(--yt-bottom, 16px));
-  --yt-w: min(1180px, var(--yt-side, 92vw), calc(((var(--yt-fit) - var(--yt-meta)) * 1.7778 + 16px) / .71));
-  --yt-mw: calc(var(--yt-w) * .71 - 16px);
-  width: var(--yt-w); height: calc(var(--yt-mw) * .5625 + var(--yt-meta)); aspect-ratio: auto;
-  flex-direction: row-reverse; justify-content: center; gap: 16px; overflow: visible;
+  --yt-cap: min(1180px, var(--yt-side, 92vw));
+  /* רוחב הנגן: לפי הגובה, ובתוך הרוחב — 68% (והרשימה לא צרה מ-280px, במסכים נמוכים) */
+  --yt-mw: min(calc((var(--yt-fit) - var(--yt-meta)) * 1.7778), calc((var(--yt-cap) - 24px) * .68), calc(var(--yt-cap) - 304px));
+  --yt-lw: max(280px, calc(var(--yt-mw) * .4706));  /* 32 / 68 */
+  width: calc(var(--yt-mw) + 24px + var(--yt-lw)); height: calc(var(--yt-mw) * .5625 + var(--yt-meta)); aspect-ratio: auto;
+  flex-direction: row-reverse; justify-content: center; align-items: stretch; gap: 24px; overflow: visible;
   background: none; border: 0; border-radius: 0; box-shadow: none; text-align: right;
 }
 @supports (height: 100dvh) { .gmpr-card.gmpr-yt[data-state="inline"] { --yt-vh: 100dvh; } }
-.gmpr-card.gmpr-yt.is-tight[data-state="inline"] { --yt-meta: 36px; }
+.gmpr-card.gmpr-yt.is-tight[data-state="inline"] { --yt-meta: 56px; }
 .gmpr-card.gmpr-yt[data-state="inline"] .gmpr-bar { display: none; }
 .gmpr-yt[data-state="inline"] .gmpr-main { flex: 0 0 var(--yt-mw); min-width: 0; display: flex; flex-direction: column; }
+.gmpr-yt[data-state="inline"] .gmpr-info, .gmpr-yt[data-state="inline"] .gmpr-queue { background: var(--yt-glass); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-radius: 16px; color: #fff; }
 
 /* ----- הנגן ----- */
 .gmpr-yt[data-state="inline"] .gmpr-player { position: relative; isolation: isolate; flex: none; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 14px; background: #05080c; }
 .gmpr-yt[data-state="inline"] .gmpr-player:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
 .gmpr-yt[data-state="inline"] .gmpr-slide a:focus-visible { outline-offset: -4px; }
 .gmpr-card.gmpr-yt[data-state="inline"] .gmpr-slide .gmpr-bg { inset: -56px; width: calc(100% + 112px); height: calc(100% + 112px); max-width: none; filter: blur(24px) brightness(.7) saturate(1.2); }
-.gmpr-badge { position: absolute; top: 10px; right: 10px; z-index: 3; padding: .35em 1.2em; font-size: clamp(.72rem, calc(var(--yt-w) * .0125), .95rem); font-weight: 700; line-height: 1.3; color: #111; background: #ffcc00; border-radius: 6px; pointer-events: none; }
+.gmpr-badge { position: absolute; top: 12px; right: 12px; z-index: 3; padding: 3px 8px; font-size: 12px; font-weight: 700; line-height: 16px; color: #111; background: #ffcc00; border-radius: 8px; pointer-events: none; }
 
-/* ----- פס הפקדים (כמו ב-YouTube): התקדמות אדומה מימין לשמאל, מעל מעבר כהה ----- */
-.gmpr-ctrl { position: absolute; bottom: 0; left: 0; right: 0; z-index: 3; padding: 24px 10px 3px; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, .5) 38%, rgba(0, 0, 0, .8)); pointer-events: none; transition: opacity .25s ease; }
+/* ----- פס הפקדים (פרופורציות YouTube): התקדמות 4px (6 בריחוף) מימין לשמאל, שורה בגובה 44px, מעל מעבר כהה ----- */
+.gmpr-ctrl { position: absolute; bottom: 0; left: 0; right: 0; z-index: 3; padding: 24px 8px 0; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, .5) 40%, rgba(0, 0, 0, .8)); pointer-events: none; transition: opacity .25s ease; }
 .gmpr-player.is-idle .gmpr-ctrl { opacity: 0; }
 .gmpr-player.is-idle .gmpr-ctrl:has(:focus-visible) { opacity: 1; }
-.gmpr-prog { position: relative; height: 4px; margin: 0 4px 2px; background: rgba(255, 255, 255, .38); border-radius: 2px; }
-.gmpr-prog i { position: absolute; top: 0; bottom: 0; right: 0; width: 0; background: #ff0033; border-radius: 2px; }
-.gmpr-prog b { position: absolute; top: -4.5px; right: 0; width: 13px; height: 13px; margin-right: -6.5px; background: #ff0033; border-radius: 50%; }
-.gmpr-row { display: flex; align-items: center; gap: 4px; height: 42px; }
-.gmpr-ib { flex: none; width: 40px; height: 40px; padding: 0; display: grid; place-items: center; color: #fff; background: none; border: 0; border-radius: 8px; cursor: pointer; pointer-events: auto; }
-.gmpr-ib svg { width: 24px; height: 24px; fill: currentColor; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .8)); }
+.gmpr-prog { position: relative; height: 4px; margin: 0 8px; background: rgba(255, 255, 255, .38); border-radius: 8px; }
+.gmpr-prog::before { content: ""; position: absolute; inset: -8px 0 -4px; pointer-events: auto; }
+.gmpr-prog i { position: absolute; top: 0; bottom: 0; right: 0; width: 0; background: #ff0033; border-radius: 8px; }
+.gmpr-prog b { position: absolute; top: 50%; right: 0; width: 12px; height: 12px; margin: -6px -6px 0 0; background: #ff0033; border-radius: 50%; }
+@media (hover: hover) { .gmpr-prog:hover { height: 6px; margin-block: -1px; } }
+.gmpr-row { display: flex; align-items: center; gap: 8px; height: 44px; }
+.gmpr-ib { position: relative; flex: none; width: 36px; height: 36px; padding: 0; display: grid; place-items: center; color: #fff; background: none; border: 0; border-radius: 8px; cursor: pointer; pointer-events: auto; }
+.gmpr-ib svg { width: 22px; height: 22px; fill: currentColor; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .8)); }
 .gmpr-ib:hover { background: rgba(255, 255, 255, .18); }
 .gmpr-ib:focus-visible { outline: 3px solid #fff; outline-offset: -2px; }
-.gmpr-time, .gmpr-count { flex: none; white-space: nowrap; font-size: .88rem; font-weight: 500; line-height: 1; color: #fff; text-shadow: 0 1px 2px #000; font-variant-numeric: tabular-nums; }
-.gmpr-time { margin-inline-start: 4px; }
+.gmpr-time, .gmpr-count { flex: none; white-space: nowrap; font-weight: 500; line-height: 16px; color: #fff; text-shadow: 0 1px 2px #000; font-variant-numeric: tabular-nums; }
+.gmpr-time { font-size: 13px; }
 .gmpr-gap { flex: 1 1 auto; }
-.gmpr-count { padding: 6px 10px; background: rgba(0, 0, 0, .6); border-radius: 6px; }
+.gmpr-count { padding: 3px 8px; font-size: 12px; background: rgba(0, 0, 0, .6); border-radius: 8px; }
 
-/* ----- כותרת + שורת "ערוץ" ----- */
-.gmpr-yt[data-state="inline"] .gmpr-ytitle { display: block; flex: none; height: 26px; margin-top: 10px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: clamp(1rem, calc(var(--yt-w) * .017), 1.3rem); font-weight: 700; line-height: 26px; color: #fff; text-shadow: var(--yt-shadow); }
-.gmpr-yt[data-state="inline"] .gmpr-channel { display: flex; flex: none; align-items: center; gap: 10px; height: 46px; margin-top: 8px; }
+/* ----- בלוק אחד מתחת לנגן: כותרת + שורת "ערוץ" ----- */
+.gmpr-yt[data-state="inline"] .gmpr-info { flex: none; display: flex; flex-direction: column; gap: 8px; height: 92px; margin-top: 8px; padding: 12px 16px; }
+.gmpr-yt[data-state="inline"] .gmpr-ytitle { display: block; flex: none; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 18px; font-weight: 700; line-height: 24px; }
+.gmpr-yt[data-state="inline"] .gmpr-channel { display: flex; flex: none; align-items: center; gap: 12px; height: 36px; }
+.gmpr-yt.is-tight[data-state="inline"] .gmpr-info { height: 48px; }
 .gmpr-yt.is-tight[data-state="inline"] .gmpr-channel { display: none; }
-.gmpr-yt .gmpr-avatar { flex: none; width: 42px; height: 42px; object-fit: cover; border-radius: 50%; background: #16191d; box-shadow: 0 0 0 1px rgba(255, 255, 255, .75), 0 2px 8px rgba(0, 0, 0, .6); }
-.gmpr-who { min-width: 0; display: flex; flex-direction: column; line-height: 1.3; color: #fff; text-shadow: var(--yt-shadow); }
-.gmpr-who strong { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: .98rem; font-weight: 700; }
-.gmpr-who span { white-space: nowrap; font-size: .8rem; color: #e3e8ee; }
-.gmpr-ycta { flex: none; max-width: 46%; margin-inline-start: auto; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; padding: 0 22px; font-size: .92rem; font-weight: 700; line-height: 40px; color: #0f0f0f; text-decoration: none; background: #fff; border-radius: 999px; box-shadow: 0 4px 14px rgba(0, 0, 0, .45); }
+.gmpr-yt .gmpr-avatar { flex: none; width: 36px; height: 36px; object-fit: cover; border-radius: 50%; background: #16191d; box-shadow: 0 0 0 1px rgba(255, 255, 255, .6); }
+.gmpr-who { min-width: 0; display: flex; flex-direction: column; }
+.gmpr-who strong { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 14px; font-weight: 700; line-height: 18px; }
+.gmpr-who span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 12px; line-height: 16px; color: var(--yt-grey); }
+.gmpr-ycta { flex: none; max-width: 48%; margin-inline-start: auto; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; padding: 0 16px; font-size: 14px; font-weight: 700; line-height: 36px; color: #0f0f0f; text-decoration: none; background: #fff; border-radius: 999px; }
 .gmpr-ycta:hover { background: #e5e5e5; }
 .gmpr-ycta:focus-visible { outline: 3px solid #38bdf8; outline-offset: 2px; }
 .gmpr-ycta[hidden] { display: none; }
 
-/* ----- "הבא בתור" (מימין) — נגלל בתוך עצמו ----- */
-.gmpr-yt[data-state="inline"] .gmpr-queue { flex: 1 1 0; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 6px; container-type: inline-size; }
+/* ----- "הבא בתור" (מימין) — לוח זכוכית באותו גובה, נגלל בתוך עצמו בלי פס גלילה ----- */
+.gmpr-yt[data-state="inline"] .gmpr-queue { flex: 0 0 var(--yt-lw); min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 8px; padding: 12px; container-type: inline-size; }
 .gmpr-yt.is-single[data-state="inline"] .gmpr-queue { display: none; }
-.gmpr-qhead { flex: none; padding-inline: 3px; font-size: clamp(.95rem, calc(var(--yt-w) * .0155), 1.15rem); font-weight: 700; line-height: 1.4; color: #fff; text-shadow: var(--yt-shadow); }
-.gmpr-qscroll { flex: 1 1 0; min-height: 0; overflow: hidden auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, .5) transparent; }
-.gmpr-yt .gmpr-qscroll ul { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 3px; list-style: none; }
-.gmpr-yt .gmpr-qscroll li { margin: 0; padding: 0; }
-.gmpr-yt .gmpr-qscroll li[hidden] { display: none; }
-.gmpr-item { display: flex; align-items: flex-start; gap: 10px; width: 100%; padding: 0; font: inherit; text-align: right; color: #fff; background: none; border: 0; border-radius: 10px; cursor: pointer; }
-.gmpr-item:hover { background: rgba(0, 0, 0, .45); }
-.gmpr-item:focus-visible { outline: 3px solid #fff; outline-offset: 0; }
-.gmpr-thumb { position: relative; flex: 0 0 46%; max-width: 150px; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 10px; background: #12161d; box-shadow: 0 3px 10px rgba(0, 0, 0, .45); }
+.gmpr-qhead { flex: none; padding-inline: 8px; font-size: 15px; font-weight: 700; line-height: 20px; }
+.gmpr-qscroll { flex: 1 1 0; min-height: 0; overflow: hidden auto; overscroll-behavior: contain; scrollbar-width: none; border-radius: 8px; }
+.gmpr-qscroll::-webkit-scrollbar { display: none; }
+.gmpr-yt .gmpr-qscroll ul { display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.gmpr-yt .gmpr-qscroll li { flex: none; height: 80px; margin: 0; padding: 0; }
+.gmpr-item { display: flex; align-items: flex-start; gap: 8px; width: 100%; height: 80px; overflow: hidden; padding: 4px 8px; font: inherit; text-align: right; color: #fff; background: none; border: 0; border-radius: 8px; cursor: pointer; }
+.gmpr-item:hover { background: rgba(255, 255, 255, .08); }
+.gmpr-qscroll li.is-current .gmpr-item { background: rgba(125, 211, 252, .13); box-shadow: inset -3px 0 0 #7dd3fc; }
+.gmpr-item:focus-visible { outline: 2px solid #fff; outline-offset: -2px; }
+.gmpr-thumb { position: relative; flex: none; width: 128px; height: 72px; overflow: hidden; border-radius: 8px; background: #12161d; }
 .gmpr-thumb img { position: absolute; display: block; }
 .gmpr-thumb .t-bg { inset: -16px; width: calc(100% + 32px); height: calc(100% + 32px); max-width: none; object-fit: cover; filter: blur(9px) brightness(.75); }
 .gmpr-thumb .t-fg { inset: 0; width: 100%; height: 100%; object-fit: contain; }
-.gmpr-dur { position: absolute; left: 4px; bottom: 4px; padding: 2px 5px; font-size: .7rem; font-weight: 700; line-height: 1.2; color: #fff; background: rgba(0, 0, 0, .82); border-radius: 4px; }
+.gmpr-dur { position: absolute; left: 4px; bottom: 4px; padding: 2px 5px; font-size: 11px; font-weight: 700; line-height: 14px; color: #fff; background: rgba(0, 0, 0, .82); border-radius: 8px; }
 .gmpr-dur[hidden] { display: none; }
-.gmpr-itxt { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 2px; padding-top: 2px; text-shadow: var(--yt-shadow); }
-.gmpr-itxt strong { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; font-size: .88rem; font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
-.gmpr-itxt > span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: .76rem; color: #e3e8ee; }
-@container (max-width: 240px) {
-  .gmpr-item { gap: 7px; }
-  .gmpr-itxt strong { font-size: .78rem; }
-  .gmpr-itxt > span { font-size: .68rem; }
+.gmpr-itxt { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.gmpr-itxt strong { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; font-size: 14px; font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
+.gmpr-itxt > span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 12px; line-height: 16px; color: #dae1e9; }
+@container (max-width: 236px) {
+  .gmpr-thumb { width: 96px; height: 54px; }
 }
 
-/* ----- מובייל: נגן ברוחב מלא, כותרת וערוץ מתחתיו, "הבא בתור" = שורת תמונות לגלילה לצדדים (3 נראות) ----- */
+/* ----- מובייל: נגן ברוחב מלא, מתחתיו כותרת וערוץ, ומתחתם שורת תמונות לגלילה לצדדים (אותו עיצוב פריט) ----- */
 @media (max-width: 768px) {
-  .gmpr-card.gmpr-yt[data-state="inline"] { --yt-w: calc(100vw - 24px); height: auto; flex-direction: column; justify-content: flex-start; gap: 5px; }
-  .gmpr-yt[data-state="inline"] .gmpr-main { flex: none; align-items: center; }
-  .gmpr-yt[data-state="inline"] .gmpr-player { width: var(--yt-pw, 100%); }
-  .gmpr-yt[data-state="inline"] .gmpr-ytitle { align-self: stretch; height: 22px; margin-top: 4px; font-size: .98rem; line-height: 22px; }
-  .gmpr-yt[data-state="inline"] .gmpr-channel { align-self: stretch; height: 38px; margin-top: 4px; }
-  .gmpr-yt .gmpr-avatar { width: 36px; height: 36px; }
-  .gmpr-who strong { font-size: .9rem; }
-  .gmpr-who span { font-size: .74rem; }
-  .gmpr-ycta { padding: 0 16px; font-size: .85rem; line-height: 36px; }
-  .gmpr-badge { top: 8px; right: 8px; }
+  .gmpr-card.gmpr-yt[data-state="inline"] { width: var(--yt-mob, calc(100vw - 24px)); height: auto; flex-direction: column; justify-content: flex-start; gap: 8px; }
+  .gmpr-yt[data-state="inline"] .gmpr-main { flex: none; }
+  .gmpr-yt[data-state="inline"] .gmpr-info { height: auto; padding: 8px 12px; }
+  .gmpr-yt .gmpr-ib { width: 40px; height: 40px; }
   .gmpr-ctrl { padding-inline: 4px; }
-  .gmpr-yt[data-state="inline"] .gmpr-queue { flex: none; container-type: normal; }
+  .gmpr-row { gap: 4px; }
+  .gmpr-badge { top: 8px; right: 8px; }
+  .gmpr-yt[data-state="inline"] .gmpr-queue { flex: none; padding: 8px; margin-right: var(--yt-fabr, 0px); margin-left: var(--yt-fabl, 0px); container-type: normal; }
   .gmpr-qhead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-  .gmpr-qscroll { flex: none; overflow: auto hidden; scroll-snap-type: x mandatory; scrollbar-width: none; }
-  .gmpr-yt .gmpr-qscroll ul { flex-direction: row; gap: 6px; padding: 2px 0; }
-  .gmpr-yt .gmpr-qscroll li { flex: 0 0 calc((100% - 12px) / 3); scroll-snap-align: start; }
-  .gmpr-thumb { flex: 1 1 auto; max-width: none; }
+  .gmpr-qscroll { flex: none; overflow: auto hidden; scroll-snap-type: x mandatory; }
+  .gmpr-yt .gmpr-qscroll ul { flex-direction: row; width: max-content; }
+  .gmpr-yt .gmpr-qscroll li { scroll-snap-align: start; }
+  .gmpr-item { width: auto; padding: 4px; }
   .gmpr-itxt { display: none; }
-  .gmpr-item:focus-visible { outline-offset: -3px; }
-  .gmpr-item:focus-visible .gmpr-thumb { opacity: .8; }
 }
