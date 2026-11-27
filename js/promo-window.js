@@ -2,8 +2,8 @@
    GAD MIVNIM — חלון הפרסומות בכל העמודים הציבוריים (קובץ משותף יחיד; הקבצים נקראים promo כדי שחוסמי פרסומות לא יחסמו אותם).
    נטען ב-defer (לא חוסם רינדור). הרשימה והטעינה המוקדמת — js/promo-boot.js (משובץ ב-<head> ע"י tools/build-pages.js).
    דף הבית (index.html): אין חלון קופץ — אותו נגן חי במקום תמונת האולם (.hero-showroom-frame, מצב inline), בסגנון YouTube
-   (class gmpr-yt), בלי מסגרת: משמאל נגן 16:9 (הפרסומת במלואה מעל עותק מטושטש שלה, תג "פרסומת", פס התקדמות אדום ופקדים), מתחתיו כותרת
-   ושורת "ערוץ" עם כפתור לקישור; מימין "הבא בתור" — כל הפרסומות הבאות, לחיצה מנגנת. במובייל הרשימה היא שורת תמונות נגללת לצדדים.
+   (class gmpr-yt), בלי מסגרת וממורכז: נגן 16:9 (הפרסומת במלואה מעל עותק מטושטש שלה, תג "פרסומת", פס התקדמות אדום ופקדים),
+   ומתחתיו כותרת ושורת "ערוץ" עם כפתור לקישור.
    'מסך מלא' (הגדלה) פותח את הפרסומת על כל המסך; Esc / ✕ / הקטנה חוזרים. בלי פרסומות פעילות — תמונת האולם המקורית נשארת.
    בשאר העמודים: מסך מלא — פעם אחת בביקור, בעמוד הראשון שנפתח. בכל עמוד אחר: הכרטיס הקטן באותו מיקום ובאותה פרסומת/שנייה (sessionStorage gm:ads-state).
    בעמודי טפסים (careers / contact / tenders) הכרטיס מתחיל ממוזער. באזור החברים של tenders אחרי כניסה — לא מוצג.
@@ -153,7 +153,7 @@
       return el;
     });
 
-    /* ---------- דף הבית: נגן בסגנון YouTube + רשימת "הבא בתור" (בלי מסגרת) ---------- */
+    /* ---------- דף הבית: נגן בסגנון YouTube (בלי מסגרת) ---------- */
     var yt = null;
     var LOGO = 'images/gad_mivnim_logo.svg', COMPANY = 'GAD MIVNIM';
     var shownIdx = -1, elapsed = 0, runStart = 0, stillMode = false;     // כמה זמן הפרסומת הנוכחית כבר נוגנה (תמונה)
@@ -169,7 +169,6 @@
     function togglePlay() { paused = !paused; updatePauseBtn(); schedule(); }
     function buildPlayer() {
       card.classList.add('gmpr-yt');
-      card.classList.toggle('is-single', !multi);
       var btn = function (cls, label, glyph, tip) { return '<button type="button" class="gmpr-ib ' + cls + '" aria-label="' + label + '" title="' + (tip || label) + '">' + glyph + '</button>'; };
       var main = make('div', 'gmpr-main');
       var player = make('div', 'gmpr-player');
@@ -188,35 +187,9 @@
         '<strong class="gmpr-ytitle"></strong><div class="gmpr-channel"><img class="gmpr-avatar" src="' + LOGO + '" alt="" width="36" height="36" decoding="async">' +
         '<span class="gmpr-who"><strong></strong><span>פרסומת · הרצליה</span></span><a class="gmpr-ycta" hidden></a></div>'));
       card.insertBefore(main, card.firstChild);
-      var queue = make('div', 'gmpr-queue', '<div class="gmpr-qhead" id="gmprQueueHead">הבא בתור</div><div class="gmpr-qscroll"><ul aria-labelledby="gmprQueueHead"></ul></div>');
-      card.appendChild(queue);
       var q = function (sel) { return card.querySelector(sel); };
-      yt = { main: main, player: player, queue: queue, scroll: q('.gmpr-qscroll'), list: q('.gmpr-qscroll ul'), title: q('.gmpr-ytitle'), name: q('.gmpr-who strong'), cta: q('.gmpr-ycta'),
-        play: q('.gmpr-yplay'), full: q('.gmpr-yfull'), time: q('.gmpr-time'), count: q('.gmpr-count'), fill: q('.gmpr-prog i'), dot: q('.gmpr-prog b'), order: -1 };
-
-      // "הבא בתור": תמונה ממוזערת 16:9 (המדיה במלואה מעל עותק מטושטש שלה — בלי חיתוך), משך, כותרת ומפרסם
-      yt.items = ads.map(function (a, k) {
-        var li = document.createElement('li');
-        var still = a.media_type === 'video' ? a.poster_path : a.media_path;
-        var img = still ? '<img class="t-bg" src="' + esc(BUCKET_URL + still) + '" alt="" loading="lazy" decoding="async" draggable="false"><img class="t-fg" src="' + esc(BUCKET_URL + still) + '" alt="" loading="lazy" decoding="async" draggable="false">' : '';
-        li.innerHTML = '<button type="button" class="gmpr-item" aria-label="' + esc('מעבר לפרסומת: ' + a.title) + '"><span class="gmpr-thumb">' + img +
-          '<bdi class="gmpr-dur" dir="ltr"' + (a.media_type === 'video' ? ' hidden>' : '>' + fmt(ROTATE_MS / 1000)) + '</bdi></span>' +
-          '<span class="gmpr-itxt"><strong>' + esc(a.title) + '</strong><span>' + esc(a.advertiser || COMPANY) + '</span></span></button>';
-        li.firstChild.addEventListener('click', function () {
-          resumeT = 0;
-          if (!calmNow()) { paused = false; updatePauseBtn(); }
-          showAd(k);
-          yt.player.focus({ preventScroll: true });
-        });
-        var v = slides[k].querySelector('video');
-        if (v) {                                                    // סרטון: האורך האמיתי, ברגע שהוא ידוע
-          v.addEventListener('durationchange', function () {
-            if (!isFinite(v.duration) || v.duration <= 0) { return; }
-            var d = li.querySelector('.gmpr-dur'); d.textContent = fmt(Math.round(v.duration)); d.hidden = false;
-          });
-        }
-        return { li: li };
-      });
+      yt = { player: player, title: q('.gmpr-ytitle'), name: q('.gmpr-who strong'), cta: q('.gmpr-ycta'),
+        play: q('.gmpr-yplay'), full: q('.gmpr-yfull'), time: q('.gmpr-time'), count: q('.gmpr-count'), fill: q('.gmpr-prog i'), dot: q('.gmpr-prog b') };
 
       yt.play.addEventListener('click', togglePlay);
       yt.full.addEventListener('click', function () { toLarge(true); });
@@ -236,9 +209,6 @@
       };
       ['pointerenter', 'pointermove', 'pointerdown', 'focusin', 'keydown'].forEach(function (ev) { player.addEventListener(ev, yt.wake); });
       yt.wake();
-      // אורכי הסרטונים לרשימה — רק אחרי שהדף נטען (מטא-דאטה בלבד)
-      var meta = function () { setTimeout(function () { ads.forEach(function (a, k) { if (a.media_type === 'video') { ensureLoaded(k); } }); }, 800); };
-      if (document.readyState === 'complete') { meta(); } else { window.addEventListener('load', meta); }
       var loop = function () { if (state === 'closed') { return; } if (state === 'inline' && !document.hidden) { paint(); } window.requestAnimationFrame(loop); };
       window.requestAnimationFrame(loop);
     }
@@ -264,18 +234,6 @@
         if (isExternal(href)) { c.target = '_blank'; c.rel = 'noopener sponsored'; } else { c.removeAttribute('target'); c.rel = 'sponsored'; }
       } else { c.hidden = true; c.removeAttribute('href'); }
       yt.count.textContent = (idx + 1) + ' / ' + ads.length;
-      if (yt.order !== idx) {                                       // הרשימה: מהפרסומת שאחרי הנוכחית, במעגל
-        var had = yt.list.contains(document.activeElement) ? document.activeElement : null;
-        yt.order = idx;
-        for (var n = 0; n < ads.length; n++) {                     // הנוכחית ראשונה (מסומנת), אחריה הבאות במעגל
-          var k = (idx + n) % ads.length, li = yt.items[k].li;
-          li.classList.toggle('is-current', k === idx);
-          if (k === idx) { li.firstChild.setAttribute('aria-current', 'true'); } else { li.firstChild.removeAttribute('aria-current'); }
-          yt.list.appendChild(li);
-        }
-        if (had && had.offsetParent !== null) { had.focus({ preventScroll: true }); }
-        if (!yt.queue.matches(':hover')) { yt.scroll.scrollTop = 0; yt.scroll.scrollLeft = 0; }
-      }
       paint();
     }
     // גודל: ה-CSS מחשב (min עם dvh); כאן רק נמדדים ראש המסגרת, המקום שבין גלולות הצד וכפתור הנגישות
@@ -295,32 +253,22 @@
       });
       set('--yt-side', Math.max(280, side));
       card.classList.remove('is-tight');
-      ['--yt-mob', '--yt-fabl', '--yt-fabr'].forEach(function (k) { card.style.removeProperty(k); });
+      card.style.removeProperty('--yt-mob');
       var fab = rectsOf(['#a11yFab'])[0];
-      if (!isMobile()) {
-        if (vh - top - bottom < 300) { card.classList.add('is-tight'); }   // מסך נמוך מאוד — בלי שורת הערוץ
-        var w = card.offsetWidth;
-        if (fab && fab.l < cx + w / 2 + 8 && fab.r > cx - w / 2 - 8 && fab.b > top && top + card.offsetHeight > fab.t - 8) {
-          bottom = Math.max(17, vh - fab.t + 8);
-          set('--yt-bottom', bottom);
-          if (vh - top - bottom < 300) { card.classList.add('is-tight'); }
-        }
-        return;
+      var tooShort = function () { if (!isMobile() && vh - top - bottom < 300) { card.classList.add('is-tight'); } };   // מסך נמוך מאוד — בלי שורת הערוץ
+      tooShort();
+      // כפתור הנגישות: אם הנגן היה מגיע אליו — הוא מסתיים מעליו
+      var w = card.offsetWidth;
+      if (fab && fab.l < cx + w / 2 + 8 && fab.r > cx - w / 2 - 8 && fab.b > top && top + card.offsetHeight > fab.t - 8) {
+        bottom = Math.max(17, vh - fab.t + 8);
+        set('--yt-bottom', bottom);
+        tooShort();
       }
-      // מובייל: נגן ברוחב מלא. אם אין גובה — בטלפון מסתירים את שורת הערוץ; אם עדיין צר (או בטאבלט) מקטינים מעט את הרוחב
+      if (!isMobile()) { return; }
+      // מובייל: נגן ברוחב מלא. חסר מעט גובה — מקטינים מעט את הרוחב; חסר הרבה — קודם מסתירים את שורת הערוץ
       var full = vw - 24, over = card.offsetHeight - (vh - top - bottom);
-      if (over > 0) {
-        if (full <= 500 || over * 16 / 9 > full * .35) { card.classList.add('is-tight'); over = card.offsetHeight - (vh - top - bottom); }
-        if (over > 0) { set('--yt-mob', Math.max(200, full - Math.ceil(over * 16 / 9) - 1)); }
-      }
-      // שורת התמונות מתקצרת ליד כפתור הנגישות, כדי לא לעבור מתחתיו
-      if (fab) {
-        var cw = card.offsetWidth, qTop = top + yt.queue.offsetTop;
-        if (qTop < fab.b + 8 && qTop + yt.queue.offsetHeight > fab.t - 8) {
-          if ((fab.l + fab.r) / 2 > cx) { set('--yt-fabr', Math.max(0, cx + cw / 2 - (fab.l - 8))); }
-          else { set('--yt-fabl', Math.max(0, fab.r + 8 - (cx - cw / 2))); }
-        }
-      }
+      if (over * 16 / 9 > full * .15) { card.classList.add('is-tight'); over = card.offsetHeight - (vh - top - bottom); }
+      if (over > 0) { set('--yt-mob', Math.max(200, full - Math.ceil(over * 16 / 9) - 1)); }
     }
     if (INLINE) { buildPlayer(); }
 

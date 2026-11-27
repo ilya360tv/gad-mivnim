@@ -62,7 +62,7 @@ const SUBPAGES = {
 };
 
 /* ---------- חלון הפרסומות המשותף: משובץ ב-<head> של כל עמוד ציבורי (מקור יחיד: js/promo-boot.js + js/promo-window.js + css/promo.css) ---------- */
-const ADS_VER = '17';
+const ADS_VER = '18';
 function adsBlock() {
   const boot = read('js/promo-boot.js').replace(/\/\*[\s\S]*?\*\//, '').trim();   // בלי הערת הכותרת (חוסך משקל בכל עמוד)
   return '  <!-- gm-ads:start — חלון פרסומות משותף (נבנה ע"י tools/build-pages.js; לא עורכים ידנית) -->\n' +
