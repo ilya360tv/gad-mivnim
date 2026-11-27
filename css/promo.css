@@ -119,9 +119,9 @@
 .gmpr-tab:hover { background: #172433; }
 
 /* ----- תנועה: "עצירת אנימציות" / prefers-reduced-motion — בלי זום, בלי הקטנה מונפשת, בלי מעבר רך ----- */
-html.a11y-no-motion .gmpr-backdrop, html.a11y-no-motion .gmpr-slide, html.a11y-no-motion .gmpr-slide.is-on { transition: none !important; }
+html.a11y-no-motion .gmpr-backdrop, html.a11y-no-motion .gmpr-slide, html.a11y-no-motion .gmpr-slide.is-on, html.a11y-no-motion .gmpr-pbg img { transition: none !important; }
 @media (prefers-reduced-motion: reduce) {
-  .gmpr-backdrop, .gmpr-slide, .gmpr-slide.is-on
+  .gmpr-backdrop, .gmpr-slide, .gmpr-slide.is-on, .gmpr-pbg img { transition: none !important; }
 }
 
 /* ==========================================================================
@@ -145,43 +145,53 @@ html.a11y-no-motion .gmpr-backdrop, html.a11y-no-motion .gmpr-slide, html.a11y-n
 /* ----- צד הטקסט (מימין) ----- */
 .gmpr-split[data-state="inline"] .gmpr-panel {
   flex: 0 0 40%; min-width: 0; min-height: 0; overflow: hidden; display: flex; flex-direction: column; align-items: flex-start;
-  gap: calc(var(--split-w) * .011); padding: calc(var(--split-w) * .014) calc(var(--split-w) * .02) 2px calc(var(--split-w) * .016); text-align: right;
+  gap: calc(var(--split-w) * .011); padding: calc(var(--split-w) * .014) calc(var(--split-w) * .02) 8px calc(var(--split-w) * .016); text-align: right;
+  position: relative; isolation: isolate; border-radius: 18px; margin-left: 8px; text-shadow: 0 1px 3px rgba(0, 0, 0, .6);
 }
+/* רקע "זכוכית": עותק מוגדל, מטושטש ומוחשך של הפרסומת הנוכחית (מעבר רך), עם קו פנימי תכלת עדין.
+   brightness + שכבה כהה 55% — גם מעל תמונה לבנה לגמרי הטקסט נשאר בניגודיות 4.5:1 לפחות */
+.gmpr-pbg { position: absolute; inset: 0; z-index: -1; overflow: hidden; border-radius: inherit; background: #12161d; pointer-events: none; }
+.gmpr-pbg img { position: absolute; inset: -56px; width: calc(100% + 112px); height: calc(100% + 112px); max-width: none; object-fit: cover; filter: blur(24px) brightness(.65) saturate(1.15); opacity: 0; transition: opacity .7s ease; }
+.gmpr-pbg img.is-on { opacity: 1; }
+.gmpr-pbg::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: rgba(5, 8, 12, .55); box-shadow: inset 0 0 0 1px rgba(125, 211, 252, .38), inset 0 0 16px rgba(56, 189, 248, .14); }
 .gmpr-split[data-state="inline"] .gmpr-panel > * { flex: none; }
 .gmpr-split[data-state="inline"] .gmpr-pill { padding: .35em 1.3em; font-size: clamp(.72rem, calc(var(--split-w) * .016), 1.1rem); }
-.gmpr-by { font-size: clamp(.8rem, calc(var(--split-w) * .02), 1.35rem); font-weight: 700; line-height: 1.2; color: var(--gm-blue); margin-top: calc(var(--split-w) * .008); }
+.gmpr-by { font-size: clamp(.8rem, calc(var(--split-w) * .02), 1.35rem); font-weight: 700; line-height: 1.2; color: #7dd3fc; margin-top: calc(var(--split-w) * .008); }
 .gmpr-head {
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden;
   font-size: clamp(1.1rem, calc(var(--split-w) * .038), 2.8rem); font-weight: 700; line-height: 1.22; color: #fff; overflow-wrap: anywhere;
 }
-.gmpr-bullets { list-style: none; margin: calc(var(--split-w) * .004) 0 0; padding: 0; display: flex; flex-direction: column; gap: .35em; font-size: clamp(.8rem, calc(var(--split-w) * .0205), 1.4rem); line-height: 1.35; color: #b6c0cb; }
+.gmpr-head[hidden] { display: none; }
+.gmpr-bullets { list-style: none; margin: calc(var(--split-w) * .004) 0 0; padding: 0; display: flex; flex-direction: column; gap: .35em; font-size: clamp(.8rem, calc(var(--split-w) * .0205), 1.4rem); line-height: 1.35; color: #e2e8f0; }
 .gmpr-bullets[hidden] { display: none; }
 .gmpr-bullets li { display: flex; gap: .65em; align-items: baseline; }
-.gmpr-bullets li::before { content: "✓"; flex: none; color: var(--gm-blue); font-weight: 700; }
+.gmpr-bullets li::before { content: "✓"; flex: none; color: #7dd3fc; font-weight: 700; }
 .gmpr-card.gmpr-split[data-state="inline"] .gmpr-pcta { min-height: clamp(34px, calc(var(--split-w) * .043), 54px); padding: 0 1.2em; margin-top: calc(var(--split-w) * .006); font-size: clamp(.85rem, calc(var(--split-w) * .022), 1.45rem); box-shadow: 0 6px 18px rgba(56, 189, 248, .35); }
 .gmpr-card.gmpr-split[data-state="inline"] .gmpr-pcta[hidden] { display: none; }
 .gmpr-split[data-state="inline"] .gmpr-ctlrow { margin-top: auto; align-self: stretch; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 2px; }
-.gmpr-ctls { display: flex; align-items: center; gap: 10px; }
+.gmpr-ctls { flex: none; display: flex; align-items: center; gap: 10px; }
 .gmpr-round {
   width: clamp(38px, calc(var(--split-w) * .038), 46px); height: clamp(38px, calc(var(--split-w) * .038), 46px); padding: 0; display: grid; place-items: center;
   font: inherit; font-size: clamp(.75rem, calc(var(--split-w) * .015), 1rem); font-weight: 700; line-height: 1; color: #fff; cursor: pointer;
-  background: transparent; border: 2px solid #8b96a3; border-radius: 50%;
+  background: rgba(5, 8, 12, .4); border: 2px solid #a9b4c0; border-radius: 50%;
 }
 .gmpr-prev, .gmpr-pnext { font-size: clamp(1.2rem, calc(var(--split-w) * .025), 1.7rem) !important; padding-bottom: 3px !important; }
 .gmpr-round:hover { border-color: var(--gm-blue); background: rgba(56, 189, 248, .22); }
 .gmpr-round:focus-visible, .gmpr-card.gmpr-split .gmpr-pcta:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
-.gmpr-count { font-size: clamp(.85rem, calc(var(--split-w) * .019), 1.25rem); font-weight: 700; color: #b6c0cb; }
+.gmpr-count { flex: none; white-space: nowrap; line-height: 1; font-size: clamp(.85rem, calc(var(--split-w) * .019), 1.25rem); font-weight: 700; color: #e2e8f0; }
 .gmpr-card.gmpr-split.is-tight[data-state="inline"] .gmpr-bullets { display: none; }
 
-/* ----- המדיה (משמאל): ממלאת את המסגרת, מעבר רך בין פרסומות ----- */
+/* ----- המדיה (משמאל): הפרסומת במלואה (contain, בלי חיתוך) מעל עותק מטושטש ומוחשך שלה, מעבר רך בין פרסומות ----- */
 .gmpr-split[data-state="inline"] .gmpr-stage { position: relative; flex: 1 1 0; min-width: 0; min-height: 0; overflow: hidden; border-radius: 18px; background: #05080c; }
-.gmpr-card.gmpr-split[data-state="inline"] .gmpr-slide .gmpr-bg { display: none; }
-.gmpr-card.gmpr-split[data-state="inline"] .gmpr-slide > a > img:not(.gmpr-bg), .gmpr-card.gmpr-split[data-state="inline"] .gmpr-slide > a > video,
-.gmpr-card.gmpr-split[data-state="inline"] .gmpr-slide > div > img:not(.gmpr-bg), .gmpr-card.gmpr-split[data-state="inline"] .gmpr-slide > div > video { object-fit: cover; }
-/* בפינת המדיה: רק "הגדלה" */
-.gmpr-card.gmpr-split[data-state="inline"] .gmpr-bar { inset: 10px auto auto 10px; padding: 0; background: none; }
+.gmpr-card.gmpr-split[data-state="inline"] .gmpr-slide .gmpr-bg { inset: -56px; width: calc(100% + 112px); height: calc(100% + 112px); max-width: none; filter: blur(24px) brightness(.65) saturate(1.15); }
+.gmpr-split[data-state="inline"] .gmpr-slide > a::after, .gmpr-split[data-state="inline"] .gmpr-slide > div::after { content: ""; position: absolute; inset: 0; z-index: 0; background: rgba(5, 8, 12, .55); pointer-events: none; }
+/* המדיה הייתה מגיעה לכפתור "הגדלה" (needs-corner נמדד ב-JS) — משאירים פס פנוי, סימטרי כדי להישאר במרכז */
+.gmpr-card.gmpr-split[data-state="inline"] .gmpr-slide.needs-corner > a > img:not(.gmpr-bg), .gmpr-card.gmpr-split[data-state="inline"] .gmpr-slide.needs-corner > a > video,
+.gmpr-card.gmpr-split[data-state="inline"] .gmpr-slide.needs-corner > div > img:not(.gmpr-bg), .gmpr-card.gmpr-split[data-state="inline"] .gmpr-slide.needs-corner > div > video { padding-block: 36px; }
+/* בפינה השמאלית התחתונה של המדיה: רק "הגדלה", קטן */
+.gmpr-card.gmpr-split[data-state="inline"] .gmpr-bar { inset: auto auto 6px 6px; padding: 0; background: none; }
 .gmpr-split[data-state="inline"] .gmpr-bar > :not(.gmpr-enlarge) { display: none; }
-.gmpr-card.gmpr-split[data-state="inline"] .gmpr-enlarge { height: 32px; padding: 0 14px; border-radius: 999px; background: rgba(10, 14, 20, .78); }
+.gmpr-card.gmpr-split[data-state="inline"] .gmpr-enlarge { height: 26px; min-width: 0; padding: 0 10px; font-size: .74rem; border-radius: 999px; background: rgba(10, 14, 20, .78); }
 .gmpr-card.gmpr-split[data-state="inline"] .gmpr-enlarge:hover { background: rgba(56, 189, 248, .5); }
 
 /* ----- מובייל: המדיה למעלה, הטקסט מתחתיה; עד 2 נקודות ----- */
@@ -191,9 +201,9 @@ html.a11y-no-motion .gmpr-backdrop, html.a11y-no-motion .gmpr-slide, html.a11y-n
     height: min(var(--split-fit), calc((100vw - 44px) * .5625 + 190px)); border-radius: 20px; padding: 6px;
   }
   .gmpr-split[data-state="inline"] .gmpr-stage { flex: 1 1 0; min-height: 96px; border-radius: 15px; }
-  .gmpr-split[data-state="inline"] .gmpr-panel { flex: 0 0 auto; gap: 5px; padding: 7px 6px 2px; overflow: visible; }
-  .gmpr-split[data-state="inline"] .gmpr-pill { position: absolute; top: 14px; right: 14px; z-index: 4; }
-  .gmpr-split[data-state="inline"] .gmpr-by { display: none; }
+  .gmpr-split[data-state="inline"] .gmpr-panel { flex: 0 0 auto; gap: 5px 6px; margin: 6px 0 0; padding: 8px; overflow: visible; border-radius: 15px; }
+  /* שורה ראשונה: "פרסומת" + שם המפרסם */
+  .gmpr-split[data-state="inline"] .gmpr-by { flex: 1 1 calc(100% - 100px); min-width: 0; margin: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
   .gmpr-head { font-size: 1.08rem; }
   .gmpr-bullets { margin: 0; gap: 1px; font-size: .84rem; }
   .gmpr-bullets li:nth-child(n+3) { display: none; }
@@ -205,5 +215,11 @@ html.a11y-no-motion .gmpr-backdrop, html.a11y-no-motion .gmpr-slide, html.a11y-n
   .gmpr-split[data-state="inline"] .gmpr-ctlrow { flex: 1 1 0; align-self: center; margin: 0; padding: 0; justify-content: flex-end; flex-direction: row-reverse; }
   .gmpr-ctls { gap: 6px; }
   .gmpr-round { width: 40px; height: 40px; }
-  .gmpr-card.gmpr-split[data-state="inline"] .gmpr-enlarge { height: 30px; padding: 0 11px; font-size: .76rem; }
+  .gmpr-card.gmpr-split[data-state="inline"] .gmpr-slide.needs-corner > a > img:not(.gmpr-bg), .gmpr-card.gmpr-split[data-state="inline"] .gmpr-slide.needs-corner > a > video,
+  .gmpr-card.gmpr-split[data-state="inline"] .gmpr-slide.needs-corner > div > img:not(.gmpr-bg), .gmpr-card.gmpr-split[data-state="inline"] .gmpr-slide.needs-corner > div > video { padding-block: 0 34px; }
+}
+@media (max-width: 380px) {
+  .gmpr-ctls { gap: 4px; }
+  .gmpr-card.gmpr-split .gmpr-round { width: 38px; height: 38px; }
+  .gmpr-card.gmpr-split[data-state="inline"] .gmpr-pcta { padding: 0 12px; max-width: 40%; }
 }

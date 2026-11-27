@@ -30,7 +30,7 @@
     if (c && Array.isArray(c.rows) && c.t <= Date.now() && Date.now() - c.t < TTL) { cached = c.rows; }
   } catch (e) { /* ignore */ }
   if (cached) { G.list = Promise.resolve(cached); preload(cached); return; }
-  G.list = fetch(U + '/rest/v1/ads?select=id,title,advertiser,media_path,media_type,poster_path,alt_text,link_url,cta_text,bullets&order=sort_order.asc,created_at.asc&limit=30',
+  G.list = fetch(U + '/rest/v1/ads?select=id,title,advertiser,media_path,media_type,poster_path,alt_text,link_url,cta_text,bullets,text_in_media&order=sort_order.asc,created_at.asc&limit=30',
     { headers: { apikey: K, Authorization: 'Bearer ' + K } })
     .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error('http_' + r.status)); })
     .then(function (rows) {

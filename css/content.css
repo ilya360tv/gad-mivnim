@@ -58,7 +58,8 @@
 .ct-split-ctl > span { display: flex; gap: .5em; }
 .ct-split-ctl i { display: grid; place-items: center; width: 2.4em; height: 2.4em; font-style: normal; font-size: .85em; color: #fff; border: 1px solid #8b96a3; border-radius: 50%; }
 .ct-split-media { flex: 1 1 0; min-width: 0; overflow: hidden; display: grid; place-items: center; background: #000; border-radius: 10px; }
-.ct-split-media img, .ct-split-media video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ct-split-media img, .ct-split-media video { width: 100%; height: 100%; object-fit: contain; display: block; }
+.ct-split-text strong[hidden] { display: none; }
 .ct-drop {
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-height: 130px; padding: 16px;
   text-align: center; color: var(--muted); background: var(--field); border: 2px dashed #4b5561; border-radius: 14px; cursor: pointer;

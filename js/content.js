@@ -283,6 +283,8 @@
             '<div class="adm-field" data-fe-host><label for="ctTitle">כותרת *</label><input id="ctTitle" class="adm-input" maxlength="80" value="' + esc(v.title) + '"></div>' +
             '<div class="adm-field" data-fe-host><label for="ctAdv">שם המפרסם *</label><input id="ctAdv" class="adm-input" maxlength="80" value="' + esc(v.advertiser) + '"></div>' +
           '</div>' +
+          '<div><label class="adm-switch"><input type="checkbox" id="ctTextIn"' + (v.text_in_media ? ' checked' : '') + '><span>הטקסט כבר בתוך התמונה</span></label>' +
+            '<span class="adm-note">בדף הבית לא תוצג הכותרת ליד התמונה או הסרטון.</span></div>' +
           '<div class="adm-field" data-fe-host><label for="ctAlt">תיאור התמונה לקוראי מסך (alt) *</label><input id="ctAlt" class="adm-input" maxlength="150" value="' + esc(v.alt_text) + '"></div>' +
           '<div class="adm-row">' +
             '<div class="adm-field" data-fe-host><label for="ctLink">קישור (לא חובה)</label><input id="ctLink" class="adm-input" dir="ltr" maxlength="500" placeholder="https://..." value="' + esc(v.link_url || '') + '"><span class="adm-note">חיצוני — חייב להתחיל ב-https://. עמוד באתר — למשל /contact.html.</span></div>' +
@@ -348,10 +350,12 @@
       $('pvLC').textContent = '→ ' + ($('ctCta').value.trim() || 'לפרטים');
       $('pvSA').textContent = $('ctAdv').value;
       $('pvST').textContent = $('ctTitle').value || 'כותרת הפרסומת';
+      $('pvST').hidden = $('ctTextIn').checked;
       $('pvSB').innerHTML = bulletsNow().map(function (line) { return '<li>' + esc(line) + '</li>'; }).join('');
       $('pvSC').hidden = !$('ctLink').value.trim();
       $('pvSC').textContent = $('ctCta').value.trim() || 'לפרטים';
     }
+    $('ctTextIn').addEventListener('change', paint);
     function bulletsNow() { return ['ctB1', 'ctB2', 'ctB3'].map(function (id) { return $(id).value.trim(); }).filter(Boolean); }
     ['ctTitle', 'ctLink', 'ctCta', 'ctAdv', 'ctB1', 'ctB2', 'ctB3'].forEach(function (id) { $(id).addEventListener('input', paint); });
 
@@ -488,6 +492,7 @@
           link_url: $('ctLink').value.trim() || null, cta_text: $('ctCta').value.trim() || null,
           starts_at: $('ctStart').value || null, ends_at: $('ctEnd').value || null, active: $('ctActive').checked,
           bullets: bulletsNow().length ? bulletsNow() : null,
+          text_in_media: $('ctTextIn').checked,
           media_type: type, status: status
         };
         if (paths[0]) { row.media_path = paths[0]; }
