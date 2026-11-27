@@ -7925,7 +7925,7 @@ html[dir] body #main .page-eyebrow + * { margin-top: 0 !important; }
 /* מסגרת גלולה סביב כותרת העמוד — רק מסגרת: טבעת 1px ורקע כהה כמו בגלולות הצד, פינות עגולות מלאות.
    המסגרת היא שכבה מאחורי הטקסט (::after, absolute) — לא משנה את גודל הקופסה, ולכן הטקסט וה-h2 נשארים
    בדיוק באותו מקום. הקופסה כבר מאוזנת לריווח האותיות (padding-left .14em), כך שהמסגרת סימטרית סביב הטקסט.
-   כותרת ולא כפתור — בלי hover ובלי סמן יד. */
+   כותרת ולא כפתור — בלי סמן יד ובלי לחיצה. מראה הזכוכית בעומק (כמו בגלולות הצד) — בבלוק "NAV 3D" בסוף הקובץ. */
 html[dir] body #main .section-eyebrow.page-eyebrow {
   position: relative;
   isolation: isolate;
@@ -9080,18 +9080,29 @@ html body .hero .hero-badge svg { width: 10.5px; height: 10.5px; }
 .hero .hero-location, .hero .hero-showroom-frame { top: calc(-1 * (var(--hero-grp-lift, 0px) + var(--hero-loc-lift, 0px))); }
 
 /* ===== NAV 3D — זכוכית בעומק + הטיה לכיוון העכבר (js/nav-3d.js) · BEGIN =====
-   עומק בכל הגדלים; שקיעה בלחיצה כשתנועה מותרת; הרמה, הטיה, זוהר וכתם אור רק במחשב עם עכבר. */
+   עומק בכל הגדלים; שקיעה בלחיצה כשתנועה מותרת; הרמה, הטיה, זוהר וכתם אור רק במחשב עם עכבר.
+   גלולת כותרת העמוד (.page-eyebrow) משתמשת באותם כללים: המסגרת שלה היא ::after, קו הברק הוא ::before. היא לא קישור — בלי לחיצה. */
+:root { --n3-sheen: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, .5), rgba(255, 255, 255, 0)); }
 
 /* ----- גלולות: זכוכית כהה, שוליים תכלת 2px, קו ברק למעלה, צל רך ----- */
 body .site-header .main-nav ul li a { position: relative; transition: transform .18s ease, box-shadow .18s ease, color .15s ease; }
-body .site-header .main-nav ul li a::before { content: ""; position: absolute; top: 3px; left: 12%; right: 12%; height: 1px; pointer-events: none; background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, .5), rgba(255, 255, 255, 0)); }
-html:not(.a11y-contrast) body .site-header .main-nav ul li a { color: #bfe8ff; border-color: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; background: linear-gradient(180deg, rgba(42, 57, 75, .9), rgba(10, 14, 20, .9)); box-shadow: inset 0 0 0 2px rgba(56, 189, 248, .5), 0 7px 14px rgba(0, 0, 0, .48), 0 2px 4px rgba(0, 0, 0, .35); }
+body .site-header .main-nav ul li a::before { content: ""; position: absolute; top: 3px; left: 12%; right: 12%; height: 1px; pointer-events: none; background: var(--n3-sheen); }
+html:not(.a11y-contrast) body .site-header .main-nav ul li a,
+html:not(.a11y-contrast) body #main .section-eyebrow.page-eyebrow::after { color: #bfe8ff; border-color: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; background: linear-gradient(180deg, rgba(42, 57, 75, .9), rgba(10, 14, 20, .9)); box-shadow: inset 0 0 0 2px rgba(56, 189, 248, .5), 0 7px 14px rgba(0, 0, 0, .48), 0 2px 4px rgba(0, 0, 0, .35); }
 html:not(.a11y-contrast) body .site-header .main-nav ul li a:hover,
 html:not(.a11y-contrast) body .site-header .main-nav ul li a:focus-visible { color: #ffffff; background: linear-gradient(180deg, rgba(36, 62, 86, .93), rgba(12, 24, 36, .93)); box-shadow: inset 0 0 0 2px #38bdf8, 0 7px 14px rgba(0, 0, 0, .48), 0 2px 4px rgba(0, 0, 0, .35); }
 /* העמוד הנוכחי: זכוכית תכלת מוארת */
 html:not(.a11y-contrast) body .site-header .main-nav ul li a.is-current,
 html:not(.a11y-contrast) body .site-header .main-nav ul li a.is-current:hover,
 html:not(.a11y-contrast) body .site-header .main-nav ul li a.is-current:focus-visible { color: #04121c; font-weight: 700 !important; background: radial-gradient(120% 110% at 50% 0%, rgba(165, 230, 255, .85), rgba(165, 230, 255, 0) 62%), linear-gradient(180deg, #52c3f1, #2894cb); box-shadow: inset 0 0 0 2px #8bdbff, 0 0 18px rgba(56, 189, 248, .55), 0 7px 14px rgba(0, 0, 0, .45); }
+
+/* ----- גלולת כותרת העמוד: אותו גודל חיצוני כמו קודם (המסגרת + 1px), וקו הברק 3px מתחת לשפה העליונה ----- */
+html:not(.a11y-contrast) body #main .section-eyebrow.page-eyebrow::before,
+html:not(.a11y-contrast) body #main .section-eyebrow.page-eyebrow::after { position: absolute; inset: calc(var(--pe-frame-y) * -1 - 1px) max(calc(var(--pe-frame-x) * -1 - 1px), calc((100% - 100vw) / 2 + 3px)); border-radius: 999px; }
+html:not(.a11y-contrast) body #main .section-eyebrow.page-eyebrow::before { content: ""; display: block; z-index: -1; width: auto; height: auto; margin: 0; background: var(--n3-sheen) 50% 3px / 76% 1px no-repeat; }
+html:not(.a11y-contrast) body #main .section-eyebrow.page-eyebrow::after { z-index: -2; transition: box-shadow .18s ease; }
+/* אחרי הריחוף הראשון (js/nav-3d.js): תנועה מהירה כמו בגלולות הצד, בלי לשנות את אנימציית הכניסה (.reveal) */
+html:not(.a11y-no-motion) body #main .section-eyebrow.page-eyebrow.n3-on { transition: transform .18s ease, opacity .7s ease; }
 
 /* ----- עיגולים (לוגו, שפה, נגישות): שפת זכוכית, ברק עליון וצל מרחף — הגדלים, המקומות והצבעים כמו קודם ----- */
 body .site-header .logo,
@@ -9131,13 +9142,16 @@ body .a11y-fab:focus-visible { outline: 3px solid #ffffff; outline-offset: 2px; 
   html:not(.a11y-no-motion) body .site-header .main-nav ul li a:hover,
   html:not(.a11y-no-motion) body .site-header .logo:hover,
   html:not(.a11y-no-motion) body .site-header .lang-btn:hover,
-  html:not(.a11y-no-motion) body .a11y-fab:hover { transform: perspective(600px) translateY(-5px) rotateX(var(--n3-rx, 0deg)) rotateY(var(--n3-ry, 0deg)); }
+  html:not(.a11y-no-motion) body .a11y-fab:hover,
+  html:not(.a11y-no-motion) body #main .section-eyebrow.page-eyebrow:hover { transform: perspective(600px) translateY(-5px) rotateX(var(--n3-rx, 0deg)) rotateY(var(--n3-ry, 0deg)); }
   html:not(.a11y-no-motion) body .site-header .main-nav ul li a:hover::after,
   html:not(.a11y-no-motion) body .site-header .logo:hover::after,
   html:not(.a11y-no-motion) body .site-header .lang-btn:hover::after,
   html:not(.a11y-no-motion) body .a11y-fab:hover::after { content: ""; position: absolute; top: -1px; right: -1px; bottom: -8px; left: -1px; border-radius: inherit; }
-  html:not(.a11y-contrast):not(.a11y-no-motion) body .site-header .main-nav ul li a:hover { background: radial-gradient(70px 46px at var(--n3-mx, 50%) var(--n3-my, 50%), rgba(200, 236, 255, .2), rgba(200, 236, 255, 0) 100%), linear-gradient(180deg, rgba(36, 62, 86, .93), rgba(12, 24, 36, .93)); box-shadow: inset 0 0 0 2px #62cffd, 0 0 18px rgba(56, 189, 248, .5), 0 12px 20px rgba(0, 0, 0, .5); }
+  html:not(.a11y-contrast):not(.a11y-no-motion) body .site-header .main-nav ul li a:hover,
+  html:not(.a11y-contrast):not(.a11y-no-motion) body #main .section-eyebrow.page-eyebrow:hover::after { background: radial-gradient(70px 46px at var(--n3-mx, 50%) var(--n3-my, 50%), rgba(200, 236, 255, .2), rgba(200, 236, 255, 0) 100%), linear-gradient(180deg, rgba(36, 62, 86, .93), rgba(12, 24, 36, .93)); box-shadow: inset 0 0 0 2px #62cffd, 0 0 18px rgba(56, 189, 248, .5), 0 12px 20px rgba(0, 0, 0, .5); }
   html:not(.a11y-contrast):not(.a11y-no-motion) body .site-header .main-nav ul li a.is-current:hover { background: radial-gradient(70px 46px at var(--n3-mx, 50%) var(--n3-my, 50%), rgba(200, 236, 255, .35), rgba(200, 236, 255, 0) 100%), radial-gradient(120% 110% at 50% 0%, rgba(165, 230, 255, .85), rgba(165, 230, 255, 0) 62%), linear-gradient(180deg, #52c3f1, #2894cb); box-shadow: inset 0 0 0 2px #c8eeff, 0 0 26px rgba(56, 189, 248, .75), 0 12px 20px rgba(0, 0, 0, .5); }
+  html:not(.a11y-contrast):not(.a11y-no-motion) body #main .section-eyebrow.page-eyebrow:hover::before { bottom: calc(var(--pe-frame-y) * -1 - 9px); }
   html:not(.a11y-no-motion) body .site-header .logo:hover::before,
   html:not(.a11y-no-motion) body .site-header .lang-btn:hover::before,
   html:not(.a11y-no-motion) body .a11y-fab:hover::before { background: radial-gradient(circle at var(--n3-mx, 50%) var(--n3-my, 50%), rgba(255, 255, 255, .3), rgba(255, 255, 255, 0) 55%), radial-gradient(75% 42% at 50% 6%, rgba(255, 255, 255, .28), rgba(255, 255, 255, 0) 70%); }

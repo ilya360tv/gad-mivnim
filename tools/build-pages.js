@@ -216,7 +216,7 @@ Object.keys(SUBPAGES).forEach((file) => {
   s = s.replace(oldHeader, markCurrent(rewriteLinks(header), SUBPAGES[file]));
   s = s.replace(/\n?[ \t]*<footer class="site-footer">[\s\S]*?<\/footer>\n?/, '\n');   // בלי פוטר/שורת זכויות (רק ב-contact.html)
   if (s.indexOf('js/page-scroll.js') < 0) { s = s.replace(/(\n[ \t]*)(<script src="js\/i18n\.js)/, '$1<script src="js/page-scroll.js?v=20261119cd4"></script>$1$2'); }
-  if (s.indexOf('js/nav-3d.js') < 0) { s = s.replace(/(\n[ \t]*)(<script src="js\/a11y\.js[^"]*"><\/script>)/, '$1$2$1<script src="js/nav-3d.js?v=1"></script>'); }
+  if (s.indexOf('js/nav-3d.js') < 0) { s = s.replace(/(\n[ \t]*)(<script src="js\/a11y\.js[^"]*"><\/script>)/, '$1$2$1<script src="js/nav-3d.js?v=2"></script>'); }
   s = rewriteLinks(s);
   const h = s.indexOf('</head>');
   s = addNavSeen(s.slice(0, h)) + s.slice(h);
