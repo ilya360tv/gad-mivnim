@@ -70,6 +70,13 @@
 .ct-drop input[type="file"] { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 .ct-drop { position: relative; }
 .ct-drop-name { color: var(--ok); font-weight: 700; overflow-wrap: anywhere; }
+/* תמונת פתיחה שנוצרה אוטומטית מהסרטון */
+.ct-auto { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--field); border: 2px dashed #4b5561; border-radius: 14px; }
+.ct-auto.is-over { border-color: var(--lb); background: var(--lb-bg); }
+.ct-auto img { flex: none; width: 160px; max-width: 45%; aspect-ratio: 16 / 9; object-fit: contain; background: #000; border-radius: 8px; }
+.ct-auto > div { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; min-width: 0; font-weight: 700; color: var(--ok); }
+.ct-auto[hidden], #ctPosterBox[hidden], #ctGen[hidden] { display: none; }
+#ctPosterNote:empty { display: none; }
 .fe-invalid .ct-drop { border-color: #f87171; }
 
 .ct-cues { display: flex; flex-direction: column; gap: 10px; }

@@ -259,9 +259,51 @@
   var validLink = function (v) { return !v || /^https:\/\/[^\s]+$/i.test(v) || /^\/[^\s\/\\][^\s]*$/.test(v); };
   var MODES = { overlay: 'כרטיס מעל הסרטון', midroll: 'הפסקה — פרסומת במסך מלא' };
 
+  // תמונת פתיחה אוטומטית: טוען את הסרטון, קופץ לשנייה ~1 ומצייר את הפריים ל-JPG ברוחב עד 1280, איכות 0.85.
+  // מחזיר Promise<File|null> — לעולם לא נכשל (null = לא הצלחנו, והפרסומת נשמרת בלי תמונה).
+  var POSTER_W = 1280, POSTER_Q = 0.85, POSTER_TIMEOUT = 15000;
+  function frameFromVideo(src) {
+    return new Promise(function (resolve) {
+      var v = document.createElement('video'), done = false, timer = 0;
+      var finish = function (file) {
+        if (done) { return; }
+        done = true;
+        clearTimeout(timer);
+        v.removeAttribute('src');
+        try { v.load(); } catch (e) { /* ignore */ }
+        resolve(file);
+      };
+      var draw = function () {
+        if (done) { return; }
+        if (v.readyState < 2) { v.oncanplay = draw; return; }
+        try {
+          var w = v.videoWidth, h = v.videoHeight;
+          if (!w || !h) { finish(null); return; }
+          var k = Math.min(1, POSTER_W / w), c = document.createElement('canvas');
+          c.width = Math.round(w * k);
+          c.height = Math.round(h * k);
+          c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
+          c.toBlob(function (b) { finish(b ? new File([b], 'poster.jpg', { type: 'image/jpeg' }) : null); }, 'image/jpeg', POSTER_Q);
+        } catch (e) { finish(null); }
+      };
+      timer = setTimeout(function () { finish(null); }, POSTER_TIMEOUT);
+      v.muted = true;
+      v.playsInline = true;
+      v.preload = 'auto';
+      if (!/^blob:/.test(src)) { v.crossOrigin = 'anonymous'; }      // סרטון מהאחסון: בלי זה אסור לקרוא את הפריים
+      v.onerror = function () { finish(null); };
+      v.onloadedmetadata = function () {
+        var t = isFinite(v.duration) && v.duration > 0 ? Math.min(1, v.duration / 2) : 0;
+        if (t > 0) { v.onseeked = draw; v.currentTime = t; } else { v.onloadeddata = draw; }
+      };
+      v.src = src;
+    });
+  }
+
   function renderForm(a) {
     var v = a || { title: '', advertiser: 'GAD MIVNIM', alt_text: '', link_url: '', cta_text: '', starts_at: '', ends_at: '', active: true };
     var pick = { media: null, poster: null }, blobs = [], cues = [];
+    var auto = null, genRun = 0, genWait = null, genState = '';   // auto = { file, url }: תמונת פתיחה שנוצרה מהסרטון
     var mediaNow = function () { return pick.media ? (extOfName(pick.media.name) === 'mp4' ? 'video' : 'image') : (a ? a.media_type : ''); };
     var drop = function (id, label, hint) {
       return '<label class="ct-drop" id="' + id + 'Drop" for="' + id + '"><strong>' + label + '</strong><span>' + hint + '</span>' +
@@ -277,8 +319,12 @@
           '<div class="adm-field" data-fe-host><label for="ctMedia">תמונה או סרטון ' + (a ? '(להחלפה — לא חובה)' : '*') + '</label>' +
             '<div>' + drop('ctMedia', 'גררו לכאן קובץ, או לחצו לבחירה', 'JPG, PNG, WEBP או MP4') + '</div>' +
             '<input type="file" id="ctMediaIn" class="ct-file" hidden></div>' +
-          '<div class="adm-field" id="ctPosterWrap" data-fe-host hidden><label for="ctPoster">תמונת פתיחה לסרטון (פוסטר) ' + (a && a.poster_path ? '(להחלפה — לא חובה)' : '*') + '</label>' +
-            '<div>' + drop('ctPoster', 'גררו לכאן תמונה, או לחצו לבחירה', 'JPG, PNG או WEBP') + '</div></div>' +
+          '<div class="adm-field" id="ctPosterWrap" data-fe-host hidden><label for="ctPoster">תמונת פתיחה לסרטון (פוסטר) ' + (a && a.poster_path ? '(להחלפה — לא חובה)' : '(לא חובה)') + '</label>' +
+            '<div class="ct-auto" id="ctAuto" hidden><img id="ctAutoImg" alt="תמונת הפתיחה שנוצרה מהסרטון"><div><span>תמונת פתיחה נוצרה אוטומטית מהסרטון</span>' +
+              '<button type="button" class="adm-btn adm-btn-sm" id="ctAutoSwap">החלפה</button></div></div>' +
+            '<div id="ctPosterBox">' + drop('ctPoster', 'גררו לכאן תמונה, או לחצו לבחירה', 'JPG, PNG או WEBP') + '</div>' +
+            '<div><button type="button" class="adm-btn adm-btn-sm" id="ctGen" hidden>יצירת תמונת פתיחה מהסרטון</button></div>' +
+            '<span class="adm-note" id="ctPosterNote" role="status"></span></div>' +
           '<div class="adm-row">' +
             '<div class="adm-field" data-fe-host><label for="ctTitle">כותרת *</label><input id="ctTitle" class="adm-input" maxlength="80" value="' + esc(v.title) + '"></div>' +
             '<div class="adm-field" data-fe-host><label for="ctAdv">שם המפרסם *</label><input id="ctAdv" class="adm-input" maxlength="80" value="' + esc(v.advertiser) + '"></div>' +
@@ -335,8 +381,20 @@
       blobs = [];
       var type = mediaNow(), src = '', poster = '';
       if (pick.media) { src = URL.createObjectURL(pick.media); blobs.push(src); } else if (a) { src = store.ads.publicUrl(a.media_path); }
-      if (pick.poster) { poster = URL.createObjectURL(pick.poster); blobs.push(poster); } else if (a && a.poster_path) { poster = store.ads.publicUrl(a.poster_path); }
+      if (pick.poster) { poster = URL.createObjectURL(pick.poster); blobs.push(poster); } else if (auto) { poster = auto.url; } else if (a && a.poster_path && !pick.media) { poster = store.ads.publicUrl(a.poster_path); }
       $('ctPosterWrap').hidden = type !== 'video';
+      var showAuto = !!auto && !pick.poster;
+      $('ctAuto').hidden = !showAuto;
+      $('ctPosterBox').hidden = showAuto;
+      if (showAuto && $('ctAutoImg').getAttribute('src') !== auto.url) { $('ctAutoImg').src = auto.url; }
+      // פרסומת קיימת עם סרטון ובלי תמונת פתיחה — אפשר ליצור אחת מהסרטון
+      var offer = !!a && a.media_type === 'video' && !a.poster_path && !pick.media && !pick.poster && !auto;
+      $('ctGen').hidden = !offer;
+      $('ctGen').disabled = genState === 'busy';
+      if (genState) {
+        $('ctPosterNote').textContent = genState === 'busy' ? 'יוצר תמונת פתיחה מהסרטון…' : (genState === 'video' ? 'כאן מעלים תמונה בלבד – תמונת הפתיחה תיווצר אוטומטית מהסרטון'
+          : (genState === 'fail' && !pick.poster ? 'לא הצלחנו ליצור תמונת פתיחה מהסרטון. אפשר לשמור גם בלי תמונה.' : ''));
+      } else { $('ctPosterNote').textContent = ''; }
       $('ctCueWrap').hidden = type !== 'video';
       $('ctMediaName').textContent = pick.media ? '✓ ' + pick.media.name : '';
       $('ctPosterName').textContent = pick.poster ? '✓ ' + pick.poster.name : '';
@@ -359,16 +417,55 @@
     function bulletsNow() { return ['ctB1', 'ctB2', 'ctB3'].map(function (id) { return $(id).value.trim(); }).filter(Boolean); }
     ['ctTitle', 'ctLink', 'ctCta', 'ctAdv', 'ctB1', 'ctB2', 'ctB3'].forEach(function (id) { $(id).addEventListener('input', paint); });
 
+    function dropAuto() {
+      genRun++;                                                     // תוצאה של ריצה קודמת — מתעלמים ממנה
+      genWait = null;
+      genState = '';
+      if (auto) { URL.revokeObjectURL(auto.url); auto = null; }
+    }
+    function generate(src, ownUrl) {
+      dropAuto();
+      var run = genRun, form = $('ctForm');
+      genState = 'busy';
+      genWait = frameFromVideo(src).then(function (file) {
+        if (ownUrl) { URL.revokeObjectURL(src); }
+        if (run !== genRun) { return; }
+        genWait = null;
+        if (file) { auto = { file: file, url: URL.createObjectURL(file) }; genState = ''; } else { genState = 'fail'; }
+        if (form.isConnected) { paint(); }                        // הטופס הזה עדיין על המסך
+      });
+      paint();
+    }
+    var isVideoFile = function (f) { return /^video\//i.test(f.type || '') || /\.(mp4|mov|m4v|webm|avi|mkv)$/i.test(f.name || ''); };
+
     function setFile(kind, file) {
+      // סרטון שנגרר לתיבת תמונת הפתיחה: אם עוד לא נבחר קובץ ראשי — הוא הקובץ הראשי; אחרת רק הסבר (לא שגיאה)
+      if (kind === 'poster' && file && isVideoFile(file)) {
+        posterIn.value = '';
+        if (!pick.media && extOfName(file.name) === 'mp4') { setFile('media', file); return; }
+        if (genState !== 'busy') { genState = 'video'; }
+        if (!pick.poster) { FE.clear($('ctPoster')); }
+        paint();
+        return;
+      }
       pick[kind] = file || null;
+      if (kind === 'poster' && genState !== 'busy') { genState = ''; }
       var el = kind === 'media' ? $('ctMedia') : $('ctPoster');
       var m = fileMsg(pick[kind], kind);
       if (m) { FE.set(el, m); } else { FE.clear(el); }
+      if (kind === 'media') {
+        dropAuto();
+        if (pick.media && !m && mediaNow() === 'video') { generate(URL.createObjectURL(pick.media), true); return; }
+      }
       paint();
     }
+    $('ctAutoSwap').addEventListener('click', function () { posterIn.click(); });
+    $('ctGen').addEventListener('click', function () {
+      generate(store.ads.publicUrl(a.media_path) + (/\?/.test(store.ads.publicUrl(a.media_path)) ? '&' : '?') + 'frame=1', false);
+    });
     mediaIn.addEventListener('change', function () { setFile('media', this.files[0]); });
     posterIn.addEventListener('change', function () { setFile('poster', this.files[0]); });
-    [['media', $('ctMediaDrop')], ['poster', $('ctPosterDrop')]].forEach(function (pair) {
+    [['media', $('ctMediaDrop')], ['poster', $('ctPosterDrop')], ['poster', $('ctAuto')]].forEach(function (pair) {
       var z = pair[1];
       ['dragenter', 'dragover'].forEach(function (ev) { z.addEventListener(ev, function (e) { e.preventDefault(); z.classList.add('is-over'); }); });
       ['dragleave', 'drop'].forEach(function (ev) { z.addEventListener(ev, function (e) { e.preventDefault(); z.classList.remove('is-over'); }); });
@@ -418,7 +515,7 @@
     paintCues();
     paint();
 
-    $('ctCancel').addEventListener('click', function () { blobs.forEach(function (u) { URL.revokeObjectURL(u); }); editing = null; go('list'); });
+    $('ctCancel').addEventListener('click', function () { blobs.forEach(function (u) { URL.revokeObjectURL(u); }); dropAuto(); editing = null; go('list'); });
 
     // ----- בדיקות -----
     function fileMsg(f, kind) {
@@ -434,7 +531,7 @@
       { el: $('ctMedia'), check: function () { return pick.media ? fileMsg(pick.media, 'media') : (a ? '' : 'יש לבחור תמונה או סרטון'); } },
       { el: $('ctPoster'), check: function () {
         if (mediaNow() !== 'video') { return ''; }
-        return pick.poster ? fileMsg(pick.poster, 'poster') : ((a && a.poster_path) ? '' : 'לסרטון חובה תמונת פתיחה');
+        return pick.poster ? fileMsg(pick.poster, 'poster') : '';
       } },
       { el: $('ctTitle'), check: function () { return $('ctTitle').value.trim() ? '' : 'יש למלא כותרת'; } },
       { el: $('ctAdv'), check: function () { return $('ctAdv').value.trim() ? '' : 'יש למלא את שם המפרסם'; } },
@@ -485,7 +582,13 @@
       };
       var type = mediaNow();
       up(pick.media, type === 'video' ? 'video' : 'image', $('ctMedia')).then(function (mp) {
-        return up(type === 'video' ? pick.poster : null, 'image', $('ctPoster')).then(function (pp) { return [mp, pp]; });
+        if (type !== 'video') { return [mp, null]; }
+        if (pick.poster) { return up(pick.poster, 'image', $('ctPoster')).then(function (pp) { return [mp, pp]; }); }
+        // תמונה אוטומטית: מחכים ליצירה; כל כשל (יצירה / העלאה / בדיקת שרת) — שומרים בלי תמונה, הפרסום לא נחסם
+        return Promise.resolve(genWait).then(function () {
+          if (!auto) { return null; }
+          return store.ads.upload(auto.file, 'image').then(function (r) { uploaded.push(r.path); return r.path; });
+        }).catch(function () { return null; }).then(function (pp) { return [mp, pp]; });
       }).then(function (paths) {
         var row = {
           title: $('ctTitle').value.trim(), advertiser: $('ctAdv').value.trim(), alt_text: $('ctAlt').value.trim(),
@@ -496,11 +599,13 @@
           media_type: type, status: status
         };
         if (paths[0]) { row.media_path = paths[0]; }
-        if (type === 'video') { if (paths[1]) { row.poster_path = paths[1]; } } else { row.poster_path = null; }
+        if (type !== 'video') { row.poster_path = null; }
+        else if (paths[1]) { row.poster_path = paths[1]; }
+        else if (a && paths[0]) { row.poster_path = null; }          // סרטון חדש בלי תמונה: התמונה הישנה שייכת לסרטון הקודם
         var oldFiles = [];
         if (a) {
           if (paths[0] && a.media_path) { oldFiles.push(a.media_path); }
-          if (a.poster_path && (paths[1] || type !== 'video')) { oldFiles.push(a.poster_path); }
+          if (a.poster_path && row.poster_path !== undefined) { oldFiles.push(a.poster_path); }
         } else {
           row.created_by = me.id;
           row.sort_order = ads.reduce(function (m, x) { return Math.max(m, x.sort_order || 0); }, 0) + 1;
@@ -517,6 +622,7 @@
           if (status === 'pending') { afterStatusChange({ id: id }, 'pending'); }
           toast(status === 'published' ? 'הפרסומת פורסמה ✓' : status === 'pending' ? 'הפרסומת נשלחה לאישור ✓' : 'נשמר כטיוטה ✓');
           editing = null;
+          dropAuto();
           setBusy(false);
           return load().then(function () { filter = isAdmin() || !APPROVAL_FLOW ? 'all' : 'mine'; go('list'); });
         }, function () { fail(null, 'השמירה נכשלה, נסו שוב'); });
