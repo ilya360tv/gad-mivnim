@@ -42,24 +42,6 @@
 .ct-form { max-width: 980px; }
 .ct-section { display: flex; flex-direction: column; gap: 14px; }
 .ct-section + .ct-section { margin-top: 18px; }
-/* נקודות בפרסומת + תצוגה מקדימה של המשבצת המפוצלת בדף הבית */
-.ct-bul { min-width: 0; margin: 0; padding: 12px; border: 1px solid var(--line); border-radius: 12px; }
-.ct-bul legend { padding: 0 8px; font-weight: 700; color: #fff; }
-.ct-bul-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 6px; }
-.ct-split { container-type: inline-size; display: flex; aspect-ratio: 1.93; padding: 5px; background: #12161d; border: 2px solid var(--lb); border-radius: 14px; }
-.ct-split-text { flex: 0 0 40%; min-width: 0; overflow: hidden; display: flex; flex-direction: column; align-items: flex-start; gap: 1.2cqw; padding: 1.5cqw 2.2cqw 0; }
-.ct-split-pill { padding: .1em .9em; font-size: max(8px, 2.2cqw); font-weight: 700; color: #0a0c0e; background: var(--lb); border-radius: 999px; }
-.ct-split-by { font-size: max(8px, 2.6cqw); font-weight: 700; color: var(--lb); }
-.ct-split-text strong { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-size: max(11px, 4.4cqw); line-height: 1.2; color: #fff; overflow-wrap: anywhere; }
-.ct-split-text ul { list-style: none; display: flex; flex-direction: column; font-size: max(8px, 2.6cqw); line-height: 1.4; color: #b6c0cb; }
-.ct-split-text li::before { content: "✓"; margin-inline-end: .6em; color: var(--lb); }
-.ct-split .adm-pv-cta { font-size: max(8px, 2.6cqw); }
-.ct-split-ctl { margin-top: auto; align-self: stretch; display: flex; justify-content: space-between; align-items: center; font-size: max(8px, 2.4cqw); color: #b6c0cb; }
-.ct-split-ctl > span { display: flex; gap: .5em; }
-.ct-split-ctl i { display: grid; place-items: center; width: 2.4em; height: 2.4em; font-style: normal; font-size: .85em; color: #fff; border: 1px solid #8b96a3; border-radius: 50%; }
-.ct-split-media { flex: 1 1 0; min-width: 0; overflow: hidden; display: grid; place-items: center; background: #000; border-radius: 10px; }
-.ct-split-media img, .ct-split-media video { width: 100%; height: 100%; object-fit: contain; display: block; }
-.ct-split-text strong[hidden] { display: none; }
 .ct-drop {
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-height: 130px; padding: 16px;
   text-align: center; color: var(--muted); background: var(--field); border: 2px dashed #4b5561; border-radius: 14px; cursor: pointer;
