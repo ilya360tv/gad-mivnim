@@ -435,13 +435,53 @@
         return fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify(body) })
           .then(function (res) {
             return res.json().catch(function () { return {}; }).then(function (data) {
-              if (!res.ok) { var e = new Error(data.error || ('http_' + res.status)); e.status = res.status; e.he = data.message || ''; throw e; }
+              if (!res.ok) { var e = new Error(data.error || ('http_' + res.status)); e.status = res.status; e.he = data.message || ''; e.retryAfter = Number(res.headers.get('Retry-After')) || 0; throw e; }
               return data;
             });
           });
       });
     });
   }
+  /* ---------- כשל בהעלאה: תמיד סיבה מדויקת בעברית (e.he), השלב שבו נכשל והקוד הטכני ---------- */
+  var UPLOAD_STEP = { sign: 'קבלת אישור העלאה', storage: 'העלאת הקובץ לאחסון', verify: 'בדיקת הקובץ בשרת' };
+  function uploadReason(err, step) {
+    if (err && err.he) { return err.he; }                       // הודעה שהשרת (או הדפדפן) כבר ניסחו בעברית
+    var msg = String((err && (err.message || err.error)) || err || '');
+    var status = Number(err && (err.status || err.statusCode)) || 0;
+    var offline = typeof navigator !== 'undefined' && navigator.onLine === false;
+    var network = offline || (!status && /failed to fetch|networkerror|network request failed|load failed|fetch failed|dynamically imported module|importing a module/i.test(msg));
+    var text;
+    if (offline) { text = 'המחשב לא מחובר לאינטרנט. התחברו ונסו שוב'; }
+    else if (network) { text = 'אין תקשורת עם ' + (step === 'storage' ? 'שירות האחסון' : 'השרת') + ' — החיבור לאינטרנט נותק או שהכתובת לא נמצאה. בדקו את החיבור ונסו שוב'; }
+    else if (status === 413 || /exceeded the maximum allowed size|payload too large/i.test(msg)) { text = 'הקובץ גדול ממה שהאחסון מאפשר'; }
+    else if (status === 415 || /mime type/i.test(msg)) { text = 'סוג הקובץ לא מותר באחסון'; }
+    else if (step === 'storage' && /expired|signature|invalid token|jwt/i.test(msg)) { text = 'אישור ההעלאה פג תוקף. נסו להעלות שוב'; }
+    else if (status === 401 || /missing_token|invalid_token|jwt expired/i.test(msg)) { text = 'ההתחברות פגה. לחצו "יציאה", התחברו מחדש ונסו שוב'; }
+    else if (status === 403 || /not_editor|not_admin|not_content_manager|row-level security/i.test(msg)) { text = 'לחשבון הזה אין הרשאה להעלות קבצים. פנו למנהל האתר'; }
+    else if (status === 429) {
+      var wait = err.retryAfter ? Math.ceil(err.retryAfter / 60) : 0;
+      text = 'יותר מדי העלאות ברצף. נסו שוב בעוד ' + (wait > 1 ? wait + ' דקות' : wait === 1 ? 'דקה' : 'כמה דקות');
+    }
+    else if (status === 408 || status === 504 || /timeout|timed out/i.test(msg)) { text = 'השרת לא ענה בזמן. נסו שוב בעוד דקה'; }
+    else if (/server_not_configured/.test(msg)) { text = 'השרת לא מוגדר כראוי (חסרים משתני סביבה). פנו למנהל האתר'; }
+    else if (/storage_error/.test(msg)) { text = 'שגיאה בשירות האחסון. נסו שוב בעוד דקה'; }
+    else if (status >= 500) { text = 'תקלה בשרת. נסו שוב בעוד דקה'; }
+    else if (/decode|encodingerror|source image/i.test(msg + ' ' + ((err && err.name) || ''))) { text = 'הדפדפן לא הצליח לקרוא את הקובץ — ייתכן שהוא פגום'; }
+    else { text = 'שגיאה לא צפויה: ' + (msg || 'ללא פרטים'); }
+    var tech = [status ? 'קוד ' + status : '', msg && msg.length < 80 ? '⁨' + msg + '⁩' : ''].filter(Boolean).join(', ');   // הטקסט הטכני באנגלית מבודד, שלא יתהפך
+    return 'ההעלאה נכשלה: ' + text + ' (' + [UPLOAD_STEP[step] ? 'שלב: ' + UPLOAD_STEP[step] : '', tech].filter(Boolean).join(' · ') + ')';
+  }
+  function uploadStep(step, promise) {
+    return promise.catch(function (err) {
+      if (window.console) { console.warn('upload failed at step "' + step + '"', err); }
+      var e = new Error(String((err && (err.message || err.error)) || 'upload_failed'));
+      e.status = Number(err && (err.status || err.statusCode)) || 0;
+      e.step = step;
+      e.he = uploadReason(err, step);
+      throw e;
+    });
+  }
+
   var applicants = {
     list: function () {
       return client().then(function (sb) {
@@ -593,10 +633,10 @@
     // kind: 'image' | 'video' (תמונת פוסטר = 'image'). מחזיר את הנתיב בבאקט אחרי שהשרת אישר את הקובץ.
     upload: function (file, kind) {
       var ext = extOf(file.name);
-      return callApi('/api/upload-url', { action: 'ads-sign', kind: kind, ext: ext, size: file.size }).then(function (r) {
-        return client().then(function (sb) {
+      return uploadStep('sign', callApi('/api/upload-url', { action: 'ads-sign', kind: kind, ext: ext, size: file.size })).then(function (r) {
+        return uploadStep('storage', client().then(function (sb) {
           return sb.storage.from('site-ads').uploadToSignedUrl(r.path, r.token, file, { contentType: kind === 'video' ? 'video/mp4' : (MIME[ext] || 'image/jpeg'), cacheControl: '31536000' }).then(unwrap);
-        }).then(function () { return callApi('/api/upload-url', { action: 'ads-verify', kind: kind, path: r.path }); });
+        })).then(function () { return uploadStep('verify', callApi('/api/upload-url', { action: 'ads-verify', kind: kind, path: r.path })); });
       });
     },
     remove: function (ids) { return callApi('/api/upload-url', { action: 'ads-delete', ids: ids }); },
@@ -669,10 +709,10 @@
     // העלאת מדיה (באקט site-media): מחזיר { url, path, thumbUrl? }. הוקטנה בדפדפן לפני כן (ראו js/studio.js).
     upload: function (file, kind, base) {
       var ext = extOf(file.name || (kind === 'thumb' ? 'x.jpg' : ''));
-      return callApi('/api/upload-url', { action: 'media-sign', kind: kind, ext: ext, size: file.size, base: base }).then(function (r) {
-        return client().then(function (sb) {
+      return uploadStep('sign', callApi('/api/upload-url', { action: 'media-sign', kind: kind, ext: ext, size: file.size, base: base })).then(function (r) {
+        return uploadStep('storage', client().then(function (sb) {
           return sb.storage.from('site-media').uploadToSignedUrl(r.path, r.token, file, { contentType: file.type || MIME[ext] || 'application/octet-stream', cacheControl: '31536000' }).then(unwrap);
-        }).then(function () { return callApi('/api/upload-url', { action: 'media-verify', kind: kind, path: r.path }); });
+        })).then(function () { return uploadStep('verify', callApi('/api/upload-url', { action: 'media-verify', kind: kind, path: r.path })); });
       });
     },
     removeFiles: function (paths) { return callApi('/api/upload-url', { action: 'media-remove', paths: paths }); },
@@ -699,6 +739,6 @@
     checkFile: checkFile, rateLimited: rateLimited, submitApplicant: submitApplicant,
     signInContractor: signInContractor, currentContractor: currentContractor, signInAdmin: signInAdmin, currentAdmin: currentAdmin, signInEditor: signInEditor, currentEditor: currentEditor, activeEditor: activeEditor,
     signOut: signOut, changePassword: changePassword, adminReset: adminReset,
-    tenders: tenders, applications: applications, applicants: applicants, contractors: contractors, contractorJoin: contractorJoin, ads: ads, editors: editors, cms: cms
+    uploadReason: uploadReason, tenders: tenders, applications: applications, applicants: applicants, contractors: contractors, contractorJoin: contractorJoin, ads: ads, editors: editors, cms: cms
   };
 })();

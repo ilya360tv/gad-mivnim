@@ -319,7 +319,7 @@
         $(id + '_pv').innerHTML = imgTag(r.url, '');
         $(id + '_nm').textContent = '✓ ' + f.name;
         FE.clear(file);
-      }, function (e) { $(id + '_nm').textContent = ''; FE.set(file, errMsg(e, 'ההעלאה נכשלה, נסו שוב')); });
+      }, function (e) { $(id + '_nm').textContent = ''; FE.set(file, store.uploadReason(e)); });
     }
     file.addEventListener('change', function () { pick(this.files[0]); this.value = ''; });
     ['dragenter', 'dragover'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('is-over'); }); });
@@ -518,7 +518,7 @@
           if (!file) { return; }
           $(id + '_cur').textContent = 'מעלה…';
           uploadOther(file, f.kind).then(function (r) { st.src = r.url; $(id + '_cur').textContent = '✓ ' + file.name; $(id + '_rm').hidden = false; FE.clear($(id + '_file')); },
-            function (e) { $(id + '_cur').textContent = st.src ? 'קובץ נוכחי: ' + st.src.split('/').pop() : 'אין קובץ'; FE.set($(id + '_file'), errMsg(e, 'ההעלאה נכשלה, נסו שוב')); });
+            function (e) { $(id + '_cur').textContent = st.src ? 'קובץ נוכחי: ' + st.src.split('/').pop() : 'אין קובץ'; FE.set($(id + '_file'), store.uploadReason(e)); });
         });
         $(id + '_rm').addEventListener('click', function () { st.src = ''; $(id + '_cur').textContent = 'אין קובץ'; this.hidden = true; });
         getters[f.k] = function () { return st.src; };
@@ -631,7 +631,7 @@
         return p.then(function () {
           ctx.toast('מעלה ' + f.name + '…');
           return uploadImage(f).then(function (r) { items.push({ src: r.url, alt: '', width: r.width, height: r.height }); draw(); },
-            function (e) { ctx.toast(f.name + ': ' + errMsg(e, 'ההעלאה נכשלה')); });
+            function (e) { ctx.toast(f.name + ': ' + store.uploadReason(e)); });
         });
       }, Promise.resolve());
     });
@@ -744,7 +744,7 @@
       if (!f) { return; }
       var ext = extOf(f.name), p = (ext === 'mp4' || ext === 'mp3') ? uploadOther(f, ext === 'mp4' ? 'video' : 'audio') : uploadImage(f);
       $('mdErr').hidden = true; ctx.toast('מעלה…');
-      p.then(function () { ctx.toast('הקובץ הועלה ✓'); load(); }, function (e) { $('mdErr').textContent = errMsg(e, 'ההעלאה נכשלה, נסו שוב'); $('mdErr').hidden = false; });
+      p.then(function () { ctx.toast('הקובץ הועלה ✓'); load(); }, function (e) { $('mdErr').textContent = store.uploadReason(e); $('mdErr').hidden = false; });
     });
     $('mdBody').addEventListener('click', function (e) {
       var b = e.target.closest('[data-del]');

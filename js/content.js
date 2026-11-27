@@ -576,7 +576,7 @@
       var up = function (file, kind, el) {
         if (!file) { return Promise.resolve(null); }
         return store.ads.upload(file, kind).then(function (r) { uploaded.push(r.path); return r.path; }, function (err) {
-          fail(el, err && err.he ? err.he : 'ההעלאה נכשלה, נסו שוב');
+          fail(el, store.uploadReason(err));
           throw null;
         });
       };
@@ -648,7 +648,7 @@
       $('ctLibErr').hidden = true;
       toast('מעלה…');
       store.ads.upload(f, kind).then(function () { toast('הקובץ הועלה ✓'); drawLib(); }, function (e2) {
-        $('ctLibErr').textContent = e2 && e2.he ? e2.he : 'ההעלאה נכשלה, נסו שוב'; $('ctLibErr').hidden = false;
+        $('ctLibErr').textContent = store.uploadReason(e2); $('ctLibErr').hidden = false;
       });
     });
     drawLib();

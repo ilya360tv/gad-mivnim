@@ -1236,7 +1236,7 @@
       var up = function (file, kind, el) {
         if (!file) { return Promise.resolve(null); }
         return store.ads.upload(file, kind).then(function (r) { uploaded.push(r.path); return r.path; }, function (err) {
-          fail(el, err && err.he ? err.he : 'ההעלאה נכשלה, נסו שוב');
+          fail(el, store.uploadReason(err));
           throw null;
         });
       };
