@@ -1,8 +1,10 @@
 /* ==========================================================================
    GAD MIVNIM — חלון הפרסומות בכל העמודים הציבוריים (קובץ משותף יחיד; הקבצים נקראים promo כדי שחוסמי פרסומות לא יחסמו אותם).
    נטען ב-defer (לא חוסם רינדור). הרשימה והטעינה המוקדמת — js/promo-boot.js (משובץ ב-<head> ע"י tools/build-pages.js).
-   דף הבית (index.html): אין חלון קופץ — אותו נגן חי בתוך מסגרת תמונת האולם (.hero-showroom-frame, מצב inline), בעיצוב "מפוצל"
-   (class gmpr-split): צד טקסט מימין (מפרסם, כותרת — אלא אם הטקסט כבר בתוך המדיה (text_in_media), עד 3 נקודות, כפתור, מונה ושליטה) ומדיה משמאל, בלי חיתוך. הרקע בשני הצדדים: עותק מטושטש ומוחשך של הפרסומת הנוכחית. 'הגדלה' פותחת את הפרסומת במסך מלא; Esc / ✕ / הקטנה חוזרים למסגרת. בלי פרסומות פעילות — תמונת האולם המקורית נשארת.
+   דף הבית (index.html): אין חלון קופץ — אותו נגן חי במקום תמונת האולם (.hero-showroom-frame, מצב inline), בסגנון YouTube
+   (class gmpr-yt), בלי מסגרת: משמאל נגן 16:9 (הפרסומת במלואה מעל עותק מטושטש שלה, תג "פרסומת", פס התקדמות אדום ופקדים), מתחתיו כותרת
+   ושורת "ערוץ" עם כפתור לקישור; מימין "הבא בתור" — כל הפרסומות הבאות, לחיצה מנגנת. במובייל הרשימה היא שורת תמונות נגללת לצדדים.
+   'מסך מלא' (הגדלה) פותח את הפרסומת על כל המסך; Esc / ✕ / הקטנה חוזרים. בלי פרסומות פעילות — תמונת האולם המקורית נשארת.
    בשאר העמודים: מסך מלא — פעם אחת בביקור, בעמוד הראשון שנפתח. בכל עמוד אחר: הכרטיס הקטן באותו מיקום ובאותה פרסומת/שנייה (sessionStorage gm:ads-state).
    בעמודי טפסים (careers / contact / tenders) הכרטיס מתחיל ממוזער. באזור החברים של tenders אחרי כניסה — לא מוצג.
    פרסומות של החברה ושל שותפיה בלבד. בלי רשתות פרסום, בלי מעקב, בלי עוגיות, בלי סטטיסטיקה (גרסה 1).
@@ -151,102 +153,170 @@
       return el;
     });
 
-    /* ---------- דף הבית: מסגרת מפוצלת — צד טקסט (ימין) + מדיה (שמאל) ---------- */
-    var split = null;
+    /* ---------- דף הבית: נגן בסגנון YouTube + רשימת "הבא בתור" (בלי מסגרת) ---------- */
+    var yt = null;
+    var LOGO = 'images/gad_mivnim_logo.svg', COMPANY = 'GAD MIVNIM';
+    var shownIdx = -1, elapsed = 0, runStart = 0, stillMode = false;     // כמה זמן הפרסומת הנוכחית כבר נוגנה (תמונה)
+    var icon = function (d) { return '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="' + d + '"/></svg>'; };
+    var ICON = {
+      play: icon('M7 4.5v15l12.5-7.5z'),
+      pause: icon('M6 5h4.2v14H6zM13.8 5H18v14h-4.2z'),
+      next: icon('M5 5.5l10 6.5-10 6.5zM16.2 5.5H19v13h-2.8z'),
+      full: icon('M4 4h6v2.6H6.6V10H4zM14 4h6v6h-2.6V6.6H14zM4 14h2.6v3.4H10V20H4zM17.4 14H20v6h-6v-2.6h3.4z')
+    };
+    var fmt = function (s) { s = Math.max(0, s | 0); return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2); };
     function make(tag, cls, html) { var n = document.createElement(tag); n.className = cls; if (html) { n.innerHTML = html; } return n; }
-    function buildSplit() {
-      card.classList.add('gmpr-split');
-      var stage = make('div', 'gmpr-stage');
-      card.insertBefore(stage, card.firstChild);
-      stage.appendChild(card.querySelector('.gmpr-bar'));
-      stage.appendChild(media);
-      var round = function (cls, label, glyph) { return '<button type="button" class="gmpr-round ' + cls + '" aria-label="' + label + '">' + glyph + '</button>'; };
-      var panel = make('div', 'gmpr-panel',
-        '<div class="gmpr-pbg" aria-hidden="true">' + ads.map(function () { return '<img alt="" decoding="async" draggable="false">'; }).join('') + '</div>' +
-        '<span class="gmpr-label gmpr-pill">פרסומת</span><span class="gmpr-by"></span><strong class="gmpr-head"></strong><ul class="gmpr-bullets"></ul>' +
-        '<a class="gmpr-cta gmpr-pcta" hidden></a>' +
-        // התווים ‹ › מתהפכים אוטומטית בכתיבה מימין לשמאל: "קודמת" (ימין) מצביע ימינה, "הבאה" (שמאל) מצביע שמאלה
-        '<div class="gmpr-ctlrow"><span class="gmpr-ctls">' + (multi ? round('gmpr-prev', 'פרסומת קודמת', '‹') : '') + round('gmpr-ppause', 'עצירה', '❚❚') +
-        (multi ? round('gmpr-pnext', 'פרסומת הבאה', '›') : '') + '</span><bdi class="gmpr-count" dir="ltr"></bdi></div>');
-      card.insertBefore(panel, stage);
-      var q = function (s) { return panel.querySelector(s); };
-      split = { stage: stage, panel: panel, by: q('.gmpr-by'), head: q('.gmpr-head'), list: q('.gmpr-bullets'), cta: q('.gmpr-pcta'), pause: q('.gmpr-ppause'), count: q('.gmpr-count'), bg: panel.querySelectorAll('.gmpr-pbg img') };
-      split.pause.addEventListener('click', function () { paused = !paused; updatePauseBtn(); schedule(); });
-      if (multi) {
-        q('.gmpr-prev').addEventListener('click', function () { resumeT = 0; showAd(idx - 1); });
-        q('.gmpr-pnext').addEventListener('click', function () { resumeT = 0; showAd(idx + 1); });
-      }
-    }
-    function fillSplit(a, href) {
-      split.by.textContent = a.advertiser || '';
-      split.head.textContent = a.title;
-      split.head.hidden = !!a.text_in_media;                        // הכותרת כבר בתוך התמונה / הסרטון — לא חוזרים עליה
-      Array.prototype.forEach.call(split.bg, function (im, k) { im.classList.toggle('is-on', k === idx); });
-      split.list.textContent = '';
-      (Array.isArray(a.bullets) ? a.bullets : []).filter(Boolean).slice(0, 3).forEach(function (line) {
+    function togglePlay() { paused = !paused; updatePauseBtn(); schedule(); }
+    function buildPlayer() {
+      card.classList.add('gmpr-yt');
+      card.classList.toggle('is-single', !multi);
+      var btn = function (cls, label, glyph, tip) { return '<button type="button" class="gmpr-ib ' + cls + '" aria-label="' + label + '" title="' + (tip || label) + '">' + glyph + '</button>'; };
+      var main = make('div', 'gmpr-main');
+      var player = make('div', 'gmpr-player');
+      player.tabIndex = 0;
+      player.setAttribute('role', 'group');
+      player.setAttribute('aria-label', 'נגן הפרסומות');
+      player.appendChild(media);
+      player.appendChild(make('span', 'gmpr-badge', 'פרסומת'));
+      player.appendChild(make('div', 'gmpr-ctrl',
+        '<div class="gmpr-prog" aria-hidden="true"><i></i><b></b></div><div class="gmpr-row">' +
+          btn('gmpr-yplay', 'עצירה', ICON.pause) + (multi ? btn('gmpr-ynext', 'פרסומת הבאה', ICON.next) : '') +
+          '<bdi class="gmpr-time" dir="ltr"></bdi><span class="gmpr-gap"></span><bdi class="gmpr-count" dir="ltr"></bdi>' +
+          btn('gmpr-yfull', 'מסך מלא', ICON.full, 'הגדלה') + '</div>'));
+      main.appendChild(player);
+      main.appendChild(make('strong', 'gmpr-ytitle'));
+      main.appendChild(make('div', 'gmpr-channel',
+        '<img class="gmpr-avatar" src="' + LOGO + '" alt="" width="44" height="44" decoding="async"><span class="gmpr-who"><strong></strong><span>פרסומת · הרצליה</span></span><a class="gmpr-ycta" hidden></a>'));
+      card.insertBefore(main, card.firstChild);
+      var queue = make('div', 'gmpr-queue', '<div class="gmpr-qhead" id="gmprQueueHead">הבא בתור</div><div class="gmpr-qscroll"><ul aria-labelledby="gmprQueueHead"></ul></div>');
+      card.appendChild(queue);
+      var q = function (sel) { return card.querySelector(sel); };
+      yt = { main: main, player: player, queue: queue, scroll: q('.gmpr-qscroll'), list: q('.gmpr-qscroll ul'), title: q('.gmpr-ytitle'), name: q('.gmpr-who strong'), cta: q('.gmpr-ycta'),
+        play: q('.gmpr-yplay'), full: q('.gmpr-yfull'), time: q('.gmpr-time'), count: q('.gmpr-count'), fill: q('.gmpr-prog i'), dot: q('.gmpr-prog b'), order: -1 };
+
+      // "הבא בתור": תמונה ממוזערת 16:9 (המדיה במלואה מעל עותק מטושטש שלה — בלי חיתוך), משך, כותרת ומפרסם
+      yt.items = ads.map(function (a, k) {
         var li = document.createElement('li');
-        li.textContent = line;
-        split.list.appendChild(li);
+        var still = a.media_type === 'video' ? a.poster_path : a.media_path;
+        var img = still ? '<img class="t-bg" src="' + esc(BUCKET_URL + still) + '" alt="" loading="lazy" decoding="async" draggable="false"><img class="t-fg" src="' + esc(BUCKET_URL + still) + '" alt="" loading="lazy" decoding="async" draggable="false">' : '';
+        li.innerHTML = '<button type="button" class="gmpr-item" aria-label="' + esc('מעבר לפרסומת: ' + a.title) + '"><span class="gmpr-thumb">' + img +
+          '<bdi class="gmpr-dur" dir="ltr"' + (a.media_type === 'video' ? ' hidden>' : '>' + fmt(ROTATE_MS / 1000)) + '</bdi></span>' +
+          '<span class="gmpr-itxt"><strong>' + esc(a.title) + '</strong><span>' + esc(a.advertiser || COMPANY) + '</span></span></button>';
+        li.firstChild.addEventListener('click', function () {
+          resumeT = 0;
+          if (!calmNow()) { paused = false; updatePauseBtn(); }
+          showAd(k);
+          yt.player.focus({ preventScroll: true });
+        });
+        var v = slides[k].querySelector('video');
+        if (v) {                                                    // סרטון: האורך האמיתי, ברגע שהוא ידוע
+          v.addEventListener('durationchange', function () {
+            if (!isFinite(v.duration) || v.duration <= 0) { return; }
+            var d = li.querySelector('.gmpr-dur'); d.textContent = fmt(Math.round(v.duration)); d.hidden = false;
+          });
+        }
+        return { li: li };
       });
-      split.list.hidden = !split.list.firstChild;
-      var c = split.cta;
+
+      yt.play.addEventListener('click', togglePlay);
+      yt.full.addEventListener('click', function () { toLarge(true); });
+      if (multi) { q('.gmpr-ynext').addEventListener('click', function () { resumeT = 0; showAd(idx + 1); }); }
+      // מקלדת (כשהנגן בפוקוס): רווח = הפעלה/עצירה, חץ ימינה = הבאה, חץ שמאלה = הקודמת
+      player.addEventListener('keydown', function (e) {
+        if (state !== 'inline') { return; }
+        if (e.key === ' ' && e.target === player) { e.preventDefault(); togglePlay(); }
+        else if (multi && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) { e.preventDefault(); resumeT = 0; showAd(idx + (e.key === 'ArrowRight' ? 1 : -1)); }
+      });
+      // מחשב: הפקדים נעלמים אחרי 2.5 שניות בלי תנועת עכבר וחוזרים בריחוף. מגע / "עצירת אנימציות": תמיד מוצגים
+      var idleT = 0, fine = window.matchMedia('(hover: hover) and (pointer: fine)');
+      yt.wake = function () {
+        clearTimeout(idleT);
+        player.classList.remove('is-idle');
+        if (fine.matches && !calmNow()) { idleT = setTimeout(function () { if (!calmNow()) { player.classList.add('is-idle'); } }, 2500); }
+      };
+      ['pointerenter', 'pointermove', 'pointerdown', 'focusin', 'keydown'].forEach(function (ev) { player.addEventListener(ev, yt.wake); });
+      yt.wake();
+      // אורכי הסרטונים לרשימה — רק אחרי שהדף נטען (מטא-דאטה בלבד)
+      var meta = function () { setTimeout(function () { ads.forEach(function (a, k) { if (a.media_type === 'video') { ensureLoaded(k); } }); }, 800); };
+      if (document.readyState === 'complete') { meta(); } else { window.addEventListener('load', meta); }
+      var loop = function () { if (state === 'closed') { return; } if (state === 'inline' && !document.hidden) { paint(); } window.requestAnimationFrame(loop); };
+      window.requestAnimationFrame(loop);
+    }
+    // פס ההתקדמות והשעון: תמונה — 7 שניות; סרטון — האורך האמיתי
+    function paint() {
+      var v = slides[idx].querySelector('video'), cur, total;
+      if (v && !stillMode) { total = isFinite(v.duration) ? v.duration : 0; cur = v.currentTime || 0; }
+      else { total = ROTATE_MS / 1000; cur = Math.min(total, (elapsed + (runStart ? Date.now() - runStart : 0)) / 1000); }
+      var pct = (total > 0 ? Math.min(100, cur / total * 100) : 0).toFixed(2) + '%';
+      if (yt.fill.style.width !== pct) { yt.fill.style.width = pct; yt.dot.style.right = pct; }
+      var all = Math.round(total), text = fmt(Math.min(cur, all)) + ' / ' + fmt(all);
+      if (yt.time.textContent !== text) { yt.time.textContent = text; }
+    }
+    function fillPlayer(a, href) {
+      yt.title.textContent = a.title;
+      yt.title.title = a.title;
+      yt.name.textContent = a.advertiser || COMPANY;
+      var c = yt.cta;
       if (href) {
         c.hidden = false;
         c.href = href;
         c.textContent = a.cta_text || 'לפרטים';
         if (isExternal(href)) { c.target = '_blank'; c.rel = 'noopener sponsored'; } else { c.removeAttribute('target'); c.rel = 'sponsored'; }
       } else { c.hidden = true; c.removeAttribute('href'); }
-      split.count.textContent = (idx + 1) + ' / ' + ads.length;
-      fitText();
+      yt.count.textContent = (idx + 1) + ' / ' + ads.length;
+      if (yt.order !== idx) {                                       // הרשימה: מהפרסומת שאחרי הנוכחית, במעגל
+        var had = yt.list.contains(document.activeElement) ? document.activeElement : null;
+        yt.order = idx;
+        for (var n = 1; n <= ads.length; n++) {
+          var k = (idx + n) % ads.length;
+          yt.items[k].li.hidden = k === idx;
+          yt.list.appendChild(yt.items[k].li);
+        }
+        if (had && had.offsetParent !== null) { had.focus({ preventScroll: true }); }
+        if (!yt.queue.matches(':hover')) { yt.scroll.scrollTop = 0; yt.scroll.scrollLeft = 0; }
+      }
+      paint();
     }
-    // אין מקום לכל הטקסט — הנקודות מוסתרות
-    function fitText() {
-      if (!split || card.parentNode !== SLOT) { return; }
+    // אין מקום לכל התוכן — מסתירים את שורת הערוץ; במובייל, אם עדיין צר, מקטינים מעט את הנגן (נשאר 16:9)
+    function fitPlayer(avail) {
       card.classList.remove('is-tight');
-      var over = split.panel.scrollHeight > split.panel.clientHeight + 1;
-      if (isMobile()) { over = split.stage.offsetHeight < 120 || card.scrollHeight > card.clientHeight + 1; }
-      if (over) { card.classList.add('is-tight'); }
-      slides.forEach(function (el, i) { clearCorner(i); });
+      card.style.removeProperty('--yt-pw');
+      if (!isMobile()) { if (avail < 300) { card.classList.add('is-tight'); } return; }
+      if (card.offsetHeight <= avail) { return; }
+      card.classList.add('is-tight');
+      var over = card.offsetHeight - avail;
+      if (over > 0) { card.style.setProperty('--yt-pw', Math.floor(Math.max(90, yt.player.offsetHeight - over) * 16 / 9) + 'px'); }
     }
-    // כפתור "הגדלה" (פינה שמאלית תחתונה) לא מכסה את הפרסומת: רק כשהמדיה (contain) הייתה מגיעה אליו, משאירים לו פס פנוי
-    function clearCorner(i) {
-      if (!split || card.parentNode !== SLOT) { return; }
-      var el = slides[i], im = el.querySelector('.gmpr-bg'), btn = card.querySelector('.gmpr-enlarge');
-      var W = split.stage.clientWidth, H = split.stage.clientHeight, nw = im.naturalWidth, nh = im.naturalHeight;
-      if (!nw || !nh || !W || !H || !btn.offsetWidth) { return; }
-      var k = Math.min(W / nw, H / nh);
-      el.classList.toggle('needs-corner', (W - nw * k) / 2 < btn.offsetWidth + 10 && (H - nh * k) / 2 < btn.offsetHeight + 10);
-    }
-    // גודל: ה-CSS מחשב (min/max עם dvh); כאן רק נמדדים ראש המסגרת, המקום שבין גלולות הצד וכפתור הנגישות
-    function applySplit() {
-      if (!split || card.parentNode !== SLOT) { return; }
+    // גודל: ה-CSS מחשב (min עם dvh); כאן רק נמדדים ראש המסגרת, המקום שבין גלולות הצד וכפתור הנגישות
+    function applyPlayer() {
+      if (!yt || card.parentNode !== SLOT) { return; }
       var vw = document.documentElement.clientWidth || window.innerWidth, vh = window.innerHeight, cx = vw / 2;
       var top = layoutTop(SLOT) + (parseFloat(getComputedStyle(SLOT).borderTopWidth) || 0);
       var set = function (k, v) { card.style.setProperty(k, Math.round(v) + 'px'); };
-      set('--split-top', top);
-      set('--split-bottom', 16);
+      var bottom = 17;                                              // 16px לפחות גם אחרי עיגול חצאי פיקסלים
+      set('--yt-top', top);
+      set('--yt-bottom', bottom);
       var side = vw - 24;
       rectsOf(['.main-nav a', '.logo', '.nav-toggle', '#langBtn']).forEach(function (r) {
         if (r.b <= top || r.t >= vh - 16) { return; }                 // לא באותו גובה של המסגרת
         var half = (r.l + r.r) / 2 < cx ? cx - r.r - 12 : r.l - cx - 12;
         side = Math.min(side, half * 2);
       });
-      set('--split-side', Math.max(280, side));
+      set('--yt-side', Math.max(280, side));
+      fitPlayer(vh - top - bottom);
       var fab = rectsOf(['#a11yFab'])[0], w = card.offsetWidth;
-      if (fab && fab.l < cx + w / 2 + 8 && fab.r > cx - w / 2 - 8 && fab.b > top) { set('--split-bottom', Math.max(16, vh - fab.t + 8)); }
-      fitText();
+      if (fab && fab.l < cx + w / 2 + 8 && fab.r > cx - w / 2 - 8 && fab.b > top && top + card.offsetHeight > fab.t - 8) {
+        bottom = Math.max(17, vh - fab.t + 8);
+        set('--yt-bottom', bottom);
+        fitPlayer(vh - top - bottom);
+      }
     }
-    if (INLINE) {
-      buildSplit();
-      slides.forEach(function (el, i) { el.querySelector('.gmpr-bg').addEventListener('load', function () { clearCorner(i); }); });
-    }
+    if (INLINE) { buildPlayer(); }
 
     function mediaSrcOf(i) { return BUCKET_URL + ads[i].media_path; }
     function ensureLoaded(i, heavy) {
       var a = ads[i], el = slides[i];
-      var bg = el.querySelector('.gmpr-bg'), pbg = split && split.bg[i];
-      var still = a.media_type === 'video' ? a.poster_path : a.media_path;      // לרקע: התמונה עצמה, ובסרטון — תמונת הפתיחה
-      if (pbg && still && !pbg.getAttribute('src')) { pbg.src = BUCKET_URL + still; }
+      var bg = el.querySelector('.gmpr-bg');
       if (a.media_type === 'video') {
         var v = el.querySelector('video');
         if (bg && !bg.getAttribute('src') && a.poster_path) { bg.src = BUCKET_URL + a.poster_path; }
@@ -265,14 +335,15 @@
       btnPause.textContent = paused ? '▶' : '⏸';
       btnPause.setAttribute('aria-label', paused ? 'הפעלת החלפת הפרסומות' : 'השהיית החלפת הפרסומות');
       btnPause.setAttribute('aria-pressed', paused ? 'true' : 'false');
-      if (split) {
-        split.pause.textContent = paused ? '▶' : '❚❚';
-        split.pause.setAttribute('aria-label', paused ? 'הפעלה' : 'עצירה');
-        split.pause.setAttribute('aria-pressed', paused ? 'true' : 'false');
+      if (yt) {
+        yt.play.innerHTML = paused ? ICON.play : ICON.pause;
+        yt.play.setAttribute('aria-label', paused ? 'הפעלה' : 'עצירה');
+        yt.play.title = paused ? 'הפעלה' : 'עצירה';
       }
     }
     function showAd(i) {
       idx = (i + ads.length) % ads.length;
+      if (idx !== shownIdx) { shownIdx = idx; elapsed = 0; runStart = 0; stillMode = false; }
       slides.forEach(function (el, k) {
         var on = k === idx;
         el.classList.toggle('is-on', on);
@@ -299,22 +370,31 @@
         cta.textContent = '→ ' + (a.cta_text || 'לפרטים');
         if (isExternal(href)) { cta.target = '_blank'; cta.rel = 'noopener sponsored'; } else { cta.removeAttribute('target'); cta.rel = 'sponsored'; }
       } else { cta.hidden = true; cta.removeAttribute('href'); }
-      if (split) { fillSplit(a, href); }
       schedule();
+      if (yt) { fillPlayer(a, href); }
     }
     function next() { showAd(idx + 1); }
+    // תמונה: 7 שניות. בדף הבית עצירה והמשך ממשיכים מאותה נקודה (כמו בנגן וידאו)
+    function runStill() {
+      var wait = INLINE ? Math.max(0, ROTATE_MS - elapsed) : ROTATE_MS;
+      runStart = Date.now();
+      timer = setTimeout(function () {
+        if (multi) { next(); } else { elapsed = 0; runStart = 0; schedule(); }
+      }, wait);
+    }
     function schedule() {
       clearTimeout(timer);
+      if (runStart) { elapsed = Math.min(ROTATE_MS, elapsed + Date.now() - runStart); runStart = 0; }
       var v = slides[idx].querySelector('video');
       if (!visibleNow()) { if (v) { v.pause(); } return; }
       if (v) {
         if (paused) { v.pause(); return; }
         var p = v.play();
         var mine = idx;
-        if (p && p.catch) { p.catch(function () { if (multi && !paused && idx === mine) { clearTimeout(timer); timer = setTimeout(next, ROTATE_MS); } }); }
+        if (p && p.catch) { p.catch(function () { if (multi && !paused && idx === mine) { clearTimeout(timer); stillMode = true; runStill(); } }); }
         return;                                                      // סרטון: עובר הלאה ב-ended
       }
-      if (multi && !paused) { timer = setTimeout(next, ROTATE_MS); }
+      if (!paused && (multi || INLINE)) { runStill(); }
     }
     btnPause.addEventListener('click', function () { paused = !paused; updatePauseBtn(); schedule(); });
     if (btnNext) { btnNext.addEventListener('click', function () { showAd(idx + 1); }); }
@@ -346,7 +426,7 @@
       geo = computeGeo();                                           // הגודל של הכרטיס הקטן בשאר העמודים — ללא שינוי
       card.style.setProperty('--ads-w', geo.w + 'px');
       card.style.setProperty('--ads-h', geo.h + 'px');
-      applySplit();
+      applyPlayer();
     }
     function sizeSmall() { return { w: geo.w, h: geo.h }; }
     function vis(el) {
@@ -496,10 +576,11 @@
       card.hidden = false;
       card.dataset.state = 'inline';
       setRole();
-      applySplit();
+      applyPlayer();
       if (before && animate) { flip(before, card.getBoundingClientRect()); }
       showAd(idx);
-      if (focusIt) { card.querySelector('.gmpr-enlarge').focus(); }
+      applyPlayer();                                                // אחרי שהכותרת והרשימה מולאו
+      if (focusIt) { yt.full.focus(); }
     }
     // יציאה ממסך מלא: בדף הבית — חזרה למסגרת; בשאר העמודים — הכרטיס הקטן
     function leaveLarge() {
@@ -586,6 +667,7 @@
     window.addEventListener('resize', onResize);
     new MutationObserver(function () {
       if (calmNow() && !paused) { paused = true; updatePauseBtn(); schedule(); }
+      if (yt) { yt.wake(); }
     }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     if (window.matchMedia) {
       var mq = window.matchMedia('(prefers-reduced-motion: reduce)');
