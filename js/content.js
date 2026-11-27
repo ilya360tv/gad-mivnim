@@ -283,6 +283,8 @@
             '<div class="adm-field" data-fe-host><label for="ctTitle">כותרת *</label><input id="ctTitle" class="adm-input" maxlength="80" value="' + esc(v.title) + '"></div>' +
             '<div class="adm-field" data-fe-host><label for="ctAdv">שם המפרסם *</label><input id="ctAdv" class="adm-input" maxlength="80" value="' + esc(v.advertiser) + '"></div>' +
           '</div>' +
+          '<div><label class="adm-switch"><input type="checkbox" id="ctTextIn"' + (v.text_in_media ? ' checked' : '') + '><span>הטקסט כבר בתוך התמונה</span></label>' +
+            '<span class="adm-note">בדף הבית לא תוצג הכותרת ליד התמונה או הסרטון.</span></div>' +
           '<div class="adm-field" data-fe-host><label for="ctAlt">תיאור התמונה לקוראי מסך (alt) *</label><input id="ctAlt" class="adm-input" maxlength="150" value="' + esc(v.alt_text) + '"></div>' +
           '<div class="adm-row">' +
             '<div class="adm-field" data-fe-host><label for="ctLink">קישור (לא חובה)</label><input id="ctLink" class="adm-input" dir="ltr" maxlength="500" placeholder="https://..." value="' + esc(v.link_url || '') + '"><span class="adm-note">חיצוני — חייב להתחיל ב-https://. עמוד באתר — למשל /contact.html.</span></div>' +
@@ -292,6 +294,9 @@
             '<div class="adm-field" data-fe-host><label for="ctStart">תאריך התחלה (לא חובה)</label><input type="date" id="ctStart" class="adm-input" value="' + esc(v.starts_at || '') + '"></div>' +
             '<div class="adm-field" data-fe-host><label for="ctEnd">תאריך סיום (לא חובה)</label><input type="date" id="ctEnd" class="adm-input" value="' + esc(v.ends_at || '') + '"></div>' +
           '</div>' +
+          '<fieldset class="ct-bul"><legend>נקודות (עד 3)</legend><div class="ct-bul-row">' + [1, 2, 3].map(function (n) {
+            return '<div class="adm-field"><label for="ctB' + n + '">נקודה ' + n + '</label><input id="ctB' + n + '" class="adm-input" maxlength="40" value="' + esc((v.bullets || [])[n - 1] || '') + '"></div>';
+          }).join('') + '</div><span class="adm-note">לא חובה — מוצגות בדף הבית עם ✓, עד 40 תווים לכל נקודה.</span></fieldset>' +
           '<label class="adm-switch adm-switch-lg"><input type="checkbox" id="ctActive"' + (v.active ? ' checked' : '') + '><span>פעילה (תוצג באתר אחרי שתפורסם)</span></label>' +
         '</div>' +
         '<div class="ct-section" id="ctCueWrap" hidden><h3 class="adm-h2">פרסומות בתוך הסרטון (לא חובה)</h3>' +
@@ -301,7 +306,9 @@
         '<div class="adm-pv ct-section"><h3 class="adm-pv-h">תצוגה מקדימה</h3><div class="adm-pv-grid">' +
           '<div><p class="adm-note">מסך מלא</p><div class="adm-pv-large"><div class="adm-pv-bar"><span>פרסומת</span><span>הקטנה ⤡ ✕</span></div><div class="adm-pv-media" id="pvLM"></div>' +
             '<div class="adm-pv-foot"><strong id="pvLT"></strong><span class="adm-pv-cta" id="pvLC" hidden></span></div></div></div>' +
-          '<div><p class="adm-note">המשבצת בדף הבית</p><div class="adm-pv-small"><div class="adm-pv-bar"><span>פרסומת</span><span>⤢ –</span></div><div class="adm-pv-media" id="pvSM"></div></div></div>' +
+          '<div><p class="adm-note">המשבצת בדף הבית</p><div class="ct-split"><div class="ct-split-text"><span class="ct-split-pill">פרסומת</span><span class="ct-split-by" id="pvSA"></span><strong id="pvST"></strong>' +
+            '<ul id="pvSB"></ul><span class="adm-pv-cta" id="pvSC" hidden></span><span class="ct-split-ctl" aria-hidden="true"><span><i>‹</i><i>❚❚</i><i>›</i></span><bdi dir="ltr">1 / 5</bdi></span></div>' +
+            '<div class="ct-split-media" id="pvSM"></div></div></div>' +
         '</div></div>' +
         '<p class="adm-error" id="ctErr" role="alert" hidden></p>' +
         '<div class="ct-sticky">' +
@@ -341,8 +348,16 @@
       $('pvLT').textContent = $('ctTitle').value || 'כותרת הפרסומת';
       $('pvLC').hidden = !$('ctLink').value.trim();
       $('pvLC').textContent = '→ ' + ($('ctCta').value.trim() || 'לפרטים');
+      $('pvSA').textContent = $('ctAdv').value;
+      $('pvST').textContent = $('ctTitle').value || 'כותרת הפרסומת';
+      $('pvST').hidden = $('ctTextIn').checked;
+      $('pvSB').innerHTML = bulletsNow().map(function (line) { return '<li>' + esc(line) + '</li>'; }).join('');
+      $('pvSC').hidden = !$('ctLink').value.trim();
+      $('pvSC').textContent = $('ctCta').value.trim() || 'לפרטים';
     }
-    ['ctTitle', 'ctLink', 'ctCta'].forEach(function (id) { $(id).addEventListener('input', paint); });
+    $('ctTextIn').addEventListener('change', paint);
+    function bulletsNow() { return ['ctB1', 'ctB2', 'ctB3'].map(function (id) { return $(id).value.trim(); }).filter(Boolean); }
+    ['ctTitle', 'ctLink', 'ctCta', 'ctAdv', 'ctB1', 'ctB2', 'ctB3'].forEach(function (id) { $(id).addEventListener('input', paint); });
 
     function setFile(kind, file) {
       pick[kind] = file || null;
@@ -476,6 +491,8 @@
           title: $('ctTitle').value.trim(), advertiser: $('ctAdv').value.trim(), alt_text: $('ctAlt').value.trim(),
           link_url: $('ctLink').value.trim() || null, cta_text: $('ctCta').value.trim() || null,
           starts_at: $('ctStart').value || null, ends_at: $('ctEnd').value || null, active: $('ctActive').checked,
+          bullets: bulletsNow().length ? bulletsNow() : null,
+          text_in_media: $('ctTextIn').checked,
           media_type: type, status: status
         };
         if (paths[0]) { row.media_path = paths[0]; }

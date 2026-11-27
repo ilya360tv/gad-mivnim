@@ -79,7 +79,7 @@ async function main() {
     const poster = a.poster ? await upload(a.poster) : null;
     rows.push({
       title: a.title, advertiser: a.advertiser, media_path: media, media_type: a.type, poster_path: poster, alt_text: a.alt,
-      link_url: a.link, cta_text: a.cta, starts_at: null, ends_at: null, active: true, sort_order: i + 1, is_demo: true
+      link_url: a.link, cta_text: a.cta, starts_at: null, ends_at: null, active: true, sort_order: i + 1, is_demo: true, text_in_media: true
     });
     console.log('הועלה:', a.file + (a.poster ? ' + ' + a.poster : ''));
   }
